@@ -80,9 +80,9 @@
   <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white text-[11px] sm:text-xs py-1.5 sm:py-2 px-3 sm:px-4 font-medium flex justify-between items-center shadow-md">
     <div class="flex items-center space-x-1.5 sm:space-x-2">
       <span class="bg-black/25 px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wider uppercase flex items-center gap-1 text-amber-200">
-        <i data-lucide="shield-check" class="w-3 sm:w-3.5 h-3 sm:h-3.5"></i> MASTER ADMIN
+        <i data-lucide="shield-check" class="w-3 sm:w-3.5 h-3 sm:h-3.5"></i> OFFICIAL PORTAL
       </span>
-      <span class="font-semibold hidden sm:inline">Yoddha Academy India Management • Central HQ Administration</span>
+      <span class="font-semibold hidden sm:inline">Yoddha Academy India Management • Central Headquarters</span>
       <span class="font-semibold sm:hidden text-[10px]">Central HQ</span>
     </div>
     <div class="flex items-center space-x-2 sm:space-x-4 text-[10px] sm:text-xs font-rajdhani">
@@ -110,7 +110,7 @@
           Yoddha Academy
         </h2>
         <span class="inline-block mt-1 bg-orange-100 text-orange-800 text-[11px] font-extrabold px-3 py-0.5 rounded-full border border-orange-300 uppercase tracking-wider">
-          All India Admin Control Panel
+          All India Management Portal
         </span>
         <p class="text-xs text-slate-500 mt-2 font-medium">Enter your Unique ID and Password to sign in</p>
       </div>
@@ -123,10 +123,10 @@
 
       <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Admin Unique ID *</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Unique ID (Admin / Trainer) *</label>
           <div class="relative">
             <i data-lucide="user-check" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
-            <input type="text" id="admin-input-id" required value="" placeholder="Enter Admin Unique ID" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-10 pr-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 font-mono font-semibold transition">
+            <input type="text" id="admin-input-id" required value="" placeholder="Enter Unique ID (Admin or Trainer ID)" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-10 pr-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 font-mono font-semibold transition">
           </div>
         </div>
 
@@ -152,8 +152,8 @@
         </button>
 
         <div class="pt-2 text-center bg-orange-50/70 p-2.5 rounded-xl border border-orange-100">
-          <p class="text-[11px] text-slate-600 font-medium">Default ID: <strong class="text-orange-700 font-mono">ADMIN-YODDHA-01</strong></p>
-          <p class="text-[11px] text-slate-600 font-medium mt-0.5">Password: <strong class="text-orange-700 font-mono">yoddha2026</strong></p>
+          <p class="text-[11px] text-slate-600 font-medium">Authorized Login: <strong class="text-orange-700">Admin & Certified Trainers</strong></p>
+          <p class="text-[10px] text-slate-500 font-medium mt-0.5">Admin: <span class="font-mono text-orange-800 font-bold">ADMIN-YODDHA-01</span> (Pass: <span class="font-mono text-orange-800 font-bold">yoddha2026</span>) • Or your <span class="font-bold text-slate-700">Trainer ID</span></p>
         </div>
       </form>
     </div>
@@ -178,8 +178,8 @@
                 <h1 onclick="navigateToPage('dashboard')" class="text-base sm:text-2xl font-black text-slate-900 font-rajdhani uppercase tracking-wide cursor-pointer truncate">
                   Yoddha Academy
                 </h1>
-                <span class="bg-orange-500 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full uppercase shadow-sm flex-shrink-0">
-                  Admin Panel
+                <span id="portal-role-badge" class="bg-orange-500 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full uppercase shadow-sm flex-shrink-0">
+                  Academy Portal
                 </span>
               </div>
               <p class="text-[10px] sm:text-xs text-slate-500 font-semibold flex items-center gap-1 truncate">
@@ -193,8 +193,8 @@
           <!-- Controls -->
           <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
             <div class="hidden lg:flex flex-col text-right">
-              <span class="text-xs font-extrabold text-slate-800">Master Administrator</span>
-              <span class="text-[11px] text-orange-700 font-mono font-bold">ADMIN-YODDHA-01</span>
+              <span id="portal-user-name" class="text-xs font-extrabold text-slate-800">Central Headquarters</span>
+              <span id="portal-user-id" class="text-[11px] text-orange-700 font-mono font-bold">ID: ADMIN-YODDHA-01</span>
             </div>
 
             <!-- Inactivity Timer Display Pill -->
@@ -2554,6 +2554,8 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
       adminState.isLoggedIn = false;
       localStorage.removeItem('yoddha_admin_logged');
       localStorage.removeItem('yoddha_last_active_time');
+      localStorage.removeItem('yoddha_current_user');
+      adminState.currentUser = null;
 
       // Clear credentials completely so user must re-enter everything
       const idInput = document.getElementById('admin-input-id');
@@ -2612,10 +2614,28 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
       const errorMsg = document.getElementById('login-error-msg');
       const timeoutBanner = document.getElementById('session-timeout-banner');
 
-      if (id === adminState.adminId && pass === adminState.adminPass) {
+      const isAdmin = (id.toUpperCase() === adminState.adminId.toUpperCase() && pass === adminState.adminPass);
+      const trainer = !isAdmin ? adminState.trainers.find(t => 
+        (t.trainerId || t.id || '').trim().toUpperCase() === id.toUpperCase() && 
+        (t.password || t.pin || '1234') === pass
+      ) : null;
+
+      if (isAdmin || trainer) {
         adminState.isLoggedIn = true;
+        const currentUser = isAdmin ? {
+          role: 'Admin',
+          name: 'Central Headquarters',
+          id: adminState.adminId
+        } : {
+          role: 'Trainer',
+          name: trainer.fullName || trainer.name || 'Trainer',
+          id: trainer.trainerId || trainer.id
+        };
+        adminState.currentUser = currentUser;
+        localStorage.setItem('yoddha_current_user', JSON.stringify(currentUser));
         localStorage.setItem('yoddha_admin_logged', 'true');
         localStorage.setItem('yoddha_last_active_time', Date.now().toString());
+
         if (errorMsg) errorMsg.classList.add('hidden');
         if (timeoutBanner) timeoutBanner.classList.add('hidden');
         checkAuth();
@@ -2627,10 +2647,12 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
     }
 
     function handleAdminLogout() {
-      if (confirm("Are you sure you want to log out of the Admin Panel?")) {
+      if (confirm("Are you sure you want to log out of the Academy Portal?")) {
         adminState.isLoggedIn = false;
         localStorage.removeItem('yoddha_admin_logged');
         localStorage.removeItem('yoddha_last_active_time');
+        localStorage.removeItem('yoddha_current_user');
+        adminState.currentUser = null;
         if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
         if (timerCountdownInterval) clearInterval(timerCountdownInterval);
         
@@ -2658,6 +2680,19 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
     }
 
     function initAdminPortal() {
+      const storedUser = JSON.parse(localStorage.getItem('yoddha_current_user') || 'null');
+      if (storedUser) adminState.currentUser = storedUser;
+      if (!adminState.currentUser) {
+        adminState.currentUser = { role: 'Admin', name: 'Central Headquarters', id: 'ADMIN-YODDHA-01' };
+      }
+
+      const userNameEl = document.getElementById('portal-user-name');
+      const userIdEl = document.getElementById('portal-user-id');
+      const roleBadgeEl = document.getElementById('portal-role-badge');
+      if (userNameEl) userNameEl.textContent = adminState.currentUser.name;
+      if (userIdEl) userIdEl.textContent = 'ID: ' + adminState.currentUser.id;
+      if (roleBadgeEl) roleBadgeEl.textContent = adminState.currentUser.role === 'Admin' ? 'HQ Portal' : 'Trainer Portal';
+
       updateTopMetrics();
       populateDropdowns();
       renderAdminStudents();
