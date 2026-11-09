@@ -86,7 +86,7 @@
       <span class="font-semibold sm:hidden text-[10px]">Central HQ</span>
     </div>
     <div class="flex items-center space-x-2 sm:space-x-4 text-[10px] sm:text-xs font-rajdhani">
-      <span class="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded text-white font-bold">
+      <span id="top-sheet-status-indicator" class="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded text-white font-bold cursor-pointer" onclick="openSyncModal()" title="Click to view Google Sheet status">
         <i data-lucide="sheet" class="w-3 sm:w-3.5 h-3 sm:h-3.5 text-emerald-300"></i> Google Sheet Connected
       </span>
       <span class="hidden sm:flex items-center gap-1 text-orange-100">
@@ -1687,18 +1687,54 @@
           </ol>
         </div>
 
-        <div>
-          <label class="block font-bold text-slate-800 mb-1">Google Apps Script Webhook URL:</label>
+        <!-- STATE 1: CONNECT NEW GOOGLE SHEET (Shown if no sheet saved) -->
+        <div id="sheet-connect-form" class="space-y-1.5">
+          <label class="block font-bold text-slate-800 text-xs">Google Apps Script Webhook URL:</label>
           <div class="flex flex-col sm:flex-row gap-2">
-            <input type="url" id="sheet-webhook-url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono focus:outline-none focus:border-orange-500">
+            <input type="url" id="sheet-webhook-url" placeholder="Paste your Web App URL here (https://script.google.com/.../exec)" class="flex-1 bg-slate-50 border-2 border-orange-200 focus:border-orange-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono focus:outline-none focus:bg-white shadow-inner">
             <div class="flex gap-2">
-              <button onclick="saveWebhookUrl()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 whitespace-nowrap">
+              <button onclick="saveWebhookUrl()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 text-white rounded-xl font-black text-xs shadow-md shadow-emerald-600/20 flex items-center justify-center gap-1.5 whitespace-nowrap transform active:scale-95 transition">
                 <i data-lucide="save" class="w-3.5 h-3.5"></i>
                 <span>Save Webhook</span>
               </button>
               <button onclick="testWebhookConnection()" class="px-4 py-2.5 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 whitespace-nowrap">
                 <i data-lucide="send" class="w-3.5 h-3.5 text-orange-600"></i>
+                <span>Test Sync</span>
+              </button>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium">
+            💡 एकदा सेव्ह केल्यानंतर ही शीट कायमस्वरूपी जोडलेली राहील, पुन्हा पुन्हा लिंक पेस्ट करावी लागणार नाही.
+          </p>
+        </div>
+
+        <!-- STATE 2: ALREADY CONNECTED CARD (Permanent Saved State with Delete Button) -->
+        <div id="sheet-connected-card" class="hidden bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border-2 border-emerald-400 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-md flex-shrink-0">
+                <i data-lucide="check-check" class="w-6 h-6"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <h4 class="text-sm sm:text-base font-black text-slate-900">Google Sheet Active & Connected</h4>
+                  <span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-emerald-300">कायमस्वरूपी सेव्ह</span>
+                </div>
+                <p class="text-[11px] font-mono text-emerald-900 truncate max-w-xs sm:max-w-md mt-0.5 font-bold" id="connected-sheet-url-display">
+                  https://script.google.com/macros/s/...
+                </p>
+              </div>
+            </div>
+
+            <!-- Action buttons for connected sheet -->
+            <div class="flex items-center gap-2 w-full sm:w-auto flex-shrink-0">
+              <button onclick="testWebhookConnection()" class="flex-1 sm:flex-none px-3.5 py-2 bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+                <i data-lucide="send" class="w-3.5 h-3.5 text-emerald-600"></i>
                 <span>Test Live Sync</span>
+              </button>
+              <button onclick="deleteConnectedSheet()" class="flex-1 sm:flex-none px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition" title="Disconnect and delete this Google Sheet">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
+                <span>Delete Sheet</span>
               </button>
             </div>
           </div>
@@ -2517,6 +2553,7 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
         startCountdownTicker();
       }
       checkAuth();
+      updateSheetSyncUI();
     });
 
     function checkAuth() {
@@ -3688,22 +3725,71 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
       }
     }
 
+    function updateSheetSyncUI() {
+      const url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url') || '';
+      const connectForm = document.getElementById('sheet-connect-form');
+      const connectedCard = document.getElementById('sheet-connected-card');
+      const displayUrl = document.getElementById('connected-sheet-url-display');
+      const topIndicator = document.getElementById('top-sheet-status-indicator');
+
+      if (url) {
+        if (connectForm) connectForm.classList.add('hidden');
+        if (connectedCard) connectedCard.classList.remove('hidden');
+        if (displayUrl) displayUrl.textContent = url;
+        if (topIndicator) {
+          topIndicator.innerHTML = '<i data-lucide="sheet" class="w-3 sm:w-3.5 h-3 sm:h-3.5 text-emerald-300"></i> Google Sheet Connected';
+          topIndicator.className = 'flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded text-white font-bold cursor-pointer';
+        }
+      } else {
+        if (connectForm) connectForm.classList.remove('hidden');
+        if (connectedCard) connectedCard.classList.add('hidden');
+        const input = document.getElementById('sheet-webhook-url');
+        if (input) input.value = '';
+        if (topIndicator) {
+          topIndicator.innerHTML = '<i data-lucide="sheet" class="w-3 sm:w-3.5 h-3 sm:h-3.5 text-rose-300"></i> Sheet Disconnected';
+          topIndicator.className = 'flex items-center gap-1 bg-rose-900/50 px-2 py-0.5 rounded text-rose-200 font-bold cursor-pointer';
+        }
+      }
+      lucide.createIcons();
+    }
+
     function saveWebhookUrl() {
       const input = document.getElementById('sheet-webhook-url');
       const url = input ? input.value.trim() : '';
       if (!url) {
-        alert("Please paste your Google Apps Script Web App URL first!");
+        alert("कृपया आधी तुमच्या Google Apps Script ची Web App URL पेस्ट करा!");
         return;
       }
       adminState.webhookUrl = url;
       localStorage.setItem('yoddha_webhook_url', url);
-      alert("✅ Google Apps Script Webhook URL saved successfully!\n\nNow click 'Test Live Sync' or 'Push All Data Now' to verify live Google Sheets sync.");
+      updateSheetSyncUI();
+      alert("✅ Google Sheet कायमस्वरूपी सेव्ह झाली आहे!\n\nआता तुम्हाला पुन्हा पुन्हा लिंक पेस्ट करावी लागणार नाही. जेव्हा नवीन शीट जोडायची असेल, तेव्हा फक्त 'Delete Sheet' वर क्लिक करून जुनी शीट बदलू शकता.");
+    }
+
+    function deleteConnectedSheet() {
+      if (!confirm("तुम्हाला खात्री आहे का ही Google Sheet डिस्कनेक्ट करायची आहे?\n\nजुनी शीट लिंक डिलीट होईल आणि तुम्हाला नवीन गुगल शीटची लिंक जोडता येईल.")) {
+        return;
+      }
+      adminState.webhookUrl = '';
+      localStorage.removeItem('yoddha_webhook_url');
+      updateSheetSyncUI();
+      alert("🗑️ जुनी Google Sheet डिस्कनेक्ट केली आहे!\n\nआता तुम्ही खाली नवीन Google Sheet Webhook लिंक जोडू शकता.");
     }
 
     async function testWebhookConnection() {
-      const url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
+      let url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
+      const inputVal = (document.getElementById('sheet-webhook-url')?.value || '').trim();
+      
+      // Auto-save if typed into input
+      if (!url && inputVal) {
+        url = inputVal;
+        adminState.webhookUrl = url;
+        localStorage.setItem('yoddha_webhook_url', url);
+        updateSheetSyncUI();
+      }
+
       if (!url) {
-        alert("⚠️ Please paste and save your Google Apps Script Web App URL first!");
+        alert("⚠️ कृपया आधी तुमची Web App URL पेस्ट करून 'Save Webhook' करा!");
         return;
       }
 
@@ -3723,13 +3809,23 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
         password: "1234"
       });
 
-      alert("🚀 Test request sent successfully to your Google Sheet!\n\nPlease check your Google Sheet now:\n1. 'Trainers' tab with Kesari/Orange header is created.\n2. Row for Ustad Sachin Patil (YAI-TR-MH-KOP-001) is added!");
+      alert("🚀 Test request थेट Google Sheet वर पाठवला आहे!\n\nकृपया तुमचे Google Sheet उघडून बघा:\n1. 'Trainers' टॅब केशरी हेडिंगसह तयार झाला असेल.\n2. Ustad Sachin Patil (YAI-TR-MH-KOP-001) चा डेटा जमा झाला असेल!");
     }
 
     async function syncAllDataToSheet() {
-      const url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
+      let url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
+      const inputVal = (document.getElementById('sheet-webhook-url')?.value || '').trim();
+      
+      // Auto-save if typed into input
+      if (!url && inputVal) {
+        url = inputVal;
+        adminState.webhookUrl = url;
+        localStorage.setItem('yoddha_webhook_url', url);
+        updateSheetSyncUI();
+      }
+
       if (!url) {
-        alert("⚠️ Please paste and save your Google Apps Script Web App URL first!");
+        alert("⚠️ कृपया आधी तुमची Google Apps Script Web App URL सेव्ह करा!");
         return;
       }
 
@@ -3784,10 +3880,10 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
           });
         }
 
-        if (statusEl) statusEl.innerHTML = '<span class="text-emerald-700 font-bold">✅ Success! All records sent to Google Sheet. Check your sheet tabs!</span>';
-        alert(`🎉 Live Sync Successful!\n\n✔ ${adminState.trainers.length} Trainers pushed to 'Trainers' tab\n✔ ${adminState.students.length} Students pushed to 'Students' tab\n\nPlease check your Google Sheet tabs now!`);
+        if (statusEl) statusEl.innerHTML = '<span class="text-emerald-700 font-bold">✅ सर्व डेटा Google Sheet मध्ये यशस्वीरित्या पाठवला आहे!</span>';
+        alert(`🎉 Live Sync यशस्वी!\n\n✔ ${adminState.trainers.length} ट्रेनर्स 'Trainers' टॅबमध्ये पाठवले\n✔ ${adminState.students.length} विद्यार्थी 'Students' टॅबमध्ये पाठवले\n\nतुमचे Google Sheet उघडून बघा!`);
       } catch (err) {
-        if (statusEl) statusEl.innerHTML = '<span class="text-red-600 font-bold">❌ Error pushing data. Please verify your URL.</span>';
+        if (statusEl) statusEl.innerHTML = '<span class="text-red-600 font-bold">❌ डेटा पाठवताना त्रुटी आली. कृपया URL तपासा.</span>';
       }
     }
 
@@ -3844,9 +3940,7 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
     }
 
     function openSyncModal() {
-      const saved = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url') || '';
-      const input = document.getElementById('sheet-webhook-url');
-      if (input && saved) input.value = saved;
+      updateSheetSyncUI();
       document.getElementById('modal-sync').classList.remove('hidden');
       lucide.createIcons();
     }
