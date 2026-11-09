@@ -223,6 +223,33 @@
       <!-- ================= PAGE 1: MAIN DASHBOARD ================= -->
       <div id="page-dashboard" class="space-y-4 sm:space-y-7 animate-page-enter">
         
+        <!-- DASHBOARD MODE SWITCHER (EXACT SAME DASHBOARD FOR BOTH ADMIN & TRAINER) -->
+        <div class="bg-white border-2 border-orange-200 rounded-2xl p-2.5 sm:p-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="layers" class="w-4 h-4 text-orange-600"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-600">Dashboard View Mode:</span>
+                <span id="active-mode-indicator" class="text-xs font-black text-orange-700 font-rajdhani uppercase tracking-wider bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">
+                  Admin Panel (Central HQ)
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 font-medium">Switch view below to inspect exactly what Admin or Trainer sees</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 w-full sm:w-auto">
+            <button onclick="setPortalRole('Admin')" id="btn-role-admin" class="flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition shadow-sm bg-orange-600 text-white">
+              Admin Panel
+            </button>
+            <button onclick="setPortalRole('Trainer')" id="btn-role-trainer" class="flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition text-slate-700 hover:text-slate-900">
+              Trainer Panel
+            </button>
+          </div>
+        </div>
+        
         <!-- TOP 3 METRICS (COMPACT & MOBILE-RESPONSIVE) -->
         <div>
           <div class="flex items-center justify-between mb-2 px-1">
@@ -2679,20 +2706,79 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
       lucide.createIcons();
     }
 
+    function setPortalRole(role, trainerObj) {
+      if (role === 'Trainer') {
+        const trn = trainerObj || adminState.trainers[0];
+        adminState.currentUser = {
+          role: 'Trainer',
+          name: trn.fullName || trn.name || 'Ustad Sachin Patil',
+          id: trn.trainerId || trn.id || 'YAI-TR-MH-KOP-001',
+          branch: trn.branch || `${trn.district} Akhada`
+        };
+      } else {
+        adminState.currentUser = {
+          role: 'Admin',
+          name: 'Central Headquarters',
+          id: adminState.adminId
+        };
+      }
+
+      localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
+      updatePortalRoleUI();
+    }
+
+    function updatePortalRoleUI() {
+      const user = adminState.currentUser || { role: 'Admin', name: 'Central Headquarters', id: 'ADMIN-YODDHA-01' };
+      const roleBadgeEl = document.getElementById('portal-role-badge');
+      const subtitleEl = document.getElementById('portal-subtitle-text');
+      const userNameEl = document.getElementById('portal-user-name');
+      const userIdEl = document.getElementById('portal-user-id');
+      const indicatorEl = document.getElementById('active-mode-indicator');
+      const btnAdmin = document.getElementById('btn-role-admin');
+      const btnTrainer = document.getElementById('btn-role-trainer');
+
+      const isTrainer = (user.role === 'Trainer');
+
+      if (roleBadgeEl) {
+        roleBadgeEl.textContent = isTrainer ? 'Trainer Panel' : 'Admin Panel';
+        roleBadgeEl.className = isTrainer 
+          ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white text-[9px] sm:text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase shadow-sm flex-shrink-0'
+          : 'bg-orange-500 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full uppercase shadow-sm flex-shrink-0';
+      }
+
+      if (subtitleEl) {
+        subtitleEl.innerHTML = isTrainer
+          ? `<span>${user.branch || 'Kolhapur Main Akhada'}</span><span class="text-slate-300 hidden sm:inline">•</span><span class="text-orange-600 font-bold hidden sm:inline">Certified Trainer Control</span>`
+          : `<span>All India HQ</span><span class="text-slate-300 hidden sm:inline">•</span><span class="text-orange-600 font-bold hidden sm:inline">Official Management</span>`;
+      }
+
+      if (userNameEl) userNameEl.textContent = user.name;
+      if (userIdEl) userIdEl.textContent = 'ID: ' + user.id;
+
+      if (indicatorEl) {
+        indicatorEl.textContent = isTrainer ? `Trainer Panel (${user.name})` : 'Admin Panel (Central HQ)';
+      }
+
+      if (btnAdmin && btnTrainer) {
+        if (isTrainer) {
+          btnTrainer.className = "flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition shadow-sm bg-orange-600 text-white";
+          btnAdmin.className = "flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition text-slate-700 hover:text-slate-900";
+        } else {
+          btnAdmin.className = "flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition shadow-sm bg-orange-600 text-white";
+          btnTrainer.className = "flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition text-slate-700 hover:text-slate-900";
+        }
+      }
+
+      lucide.createIcons();
+    }
+
     function initAdminPortal() {
       const storedUser = JSON.parse(localStorage.getItem('yoddha_current_user') || 'null');
       if (storedUser) adminState.currentUser = storedUser;
       if (!adminState.currentUser) {
         adminState.currentUser = { role: 'Admin', name: 'Central Headquarters', id: 'ADMIN-YODDHA-01' };
       }
-
-      const userNameEl = document.getElementById('portal-user-name');
-      const userIdEl = document.getElementById('portal-user-id');
-      const roleBadgeEl = document.getElementById('portal-role-badge');
-      if (userNameEl) userNameEl.textContent = adminState.currentUser.name;
-      if (userIdEl) userIdEl.textContent = 'ID: ' + adminState.currentUser.id;
-      if (roleBadgeEl) roleBadgeEl.textContent = adminState.currentUser.role === 'Admin' ? 'HQ Portal' : 'Trainer Portal';
-
+      updatePortalRoleUI();
       updateTopMetrics();
       populateDropdowns();
       renderAdminStudents();
