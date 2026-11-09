@@ -1,10 +1,10 @@
 /**
  * =========================================================================
- * 🥋 YODDHA ACADEMY INDIA - GOOGLE SHEETS LIVE BACKEND & AUTH SCRIPT
+ * 🥋 YODDHA ACADEMY INDIA - CENTRAL CLOUD SERVER & LIVE AUTH SCRIPT
  * =========================================================================
  * Features:
  * 1. Live Trainer Authentication (doGet):
- *    - Verifies Trainer ID & Password directly against the 'Trainers' sheet!
+ *    - Verifies Trainer ID & Password directly against Central Records!
  *    - Validates active status before granting access.
  * 2. Multi-Tab In-Place Sync (doPost):
  *    - 'Trainers' (13 Columns - in-place update by Trainer ID)
@@ -33,7 +33,7 @@ function doGet(e) {
 
       var sheet = ss.getSheetByName("Trainers");
       if (!sheet) {
-        result = { status: "error", authenticated: false, message: "Trainers sheet not found in Google Sheet database." };
+        result = { status: "error", authenticated: false, message: "Trainers section not found in Central Cloud Records." };
       } else {
         var data = sheet.getDataRange().getValues();
         var found = false;
@@ -77,7 +77,7 @@ function doGet(e) {
               result = {
                 status: "error",
                 authenticated: false,
-                message: "Incorrect password for Trainer " + id + ". Please verify against the sheet."
+                message: "Incorrect password for Trainer " + id + ". Please verify with Central HQ."
               };
             }
             break;
@@ -88,7 +88,7 @@ function doGet(e) {
           result = {
             status: "error",
             authenticated: false,
-            message: "Trainer ID " + id + " was not found in the Google Sheet database."
+            message: "Trainer ID " + id + " was not found in Official Central Records."
           };
         }
       }
@@ -314,7 +314,7 @@ function doPost(e) {
 }
 
 // -------------------------------------------------------------------------
-// 3. DATABASE SHEET HELPERS
+// 3. CENTRAL RECORD HELPERS
 // -------------------------------------------------------------------------
 function getOrCreateSheet(ss, sheetName, headers) {
   var sheet = ss.getSheetByName(sheetName);
@@ -352,7 +352,7 @@ function updateRowIfExists(sheet, idColIndex, idValue, newRowData) {
 function testSetup() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
 
-  // 1. Create Trainers Sheet with test trainer
+  // 1. Create Trainers Record with test trainer
   var trnSheet = getOrCreateSheet(ss, "Trainers", [
     "Timestamp", "Trainer ID", "Full Name", "Position", "Status",
     "Calling Mobile", "WhatsApp Mobile", "Official Email", "State",
@@ -364,7 +364,7 @@ function testSetup() {
     "Kolhapur", "Kolhapur Main Akhada", "Shivaji Stadium Chowk, Kolhapur", "1234"
   ]);
 
-  // 2. Create Students Sheet with test student
+  // 2. Create Students Record with test student
   var stuSheet = getOrCreateSheet(ss, "Students", [
     "Timestamp", "Student ID", "Student Name", "Date of Birth", "Age",
     "Requested Level", "School Name", "Standard", "School Contact", "School Address",
@@ -380,5 +380,5 @@ function testSetup() {
     500, "UTR90823412998"
   ]);
 
-  Logger.log("✅ Yoddha Academy India Database initialized successfully!");
+  Logger.log("✅ Yoddha Academy India Cloud Records initialized successfully!");
 }
