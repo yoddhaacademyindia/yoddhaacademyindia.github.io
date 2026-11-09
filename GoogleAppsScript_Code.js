@@ -3,11 +3,11 @@
  * 🥋 YODDHA ACADEMY INDIA - GOOGLE SHEETS LIVE SYNC BACKEND SCRIPT
  * =========================================================================
  * Features:
- * 1. Automatic Tab Creation: 'Students' (32 Points) & 'Trainers' (13 Points)
- * 2. Automatic Header Creation with clean Kesari formatting
- * 3. In-Place Update: If Trainer ID or Student ID already exists, it updates
- *    the existing row in-place instead of creating duplicates!
- * 4. Automatic New Row Append for fresh registrations.
+ * 1. Multi-Tab Support: 'Trainers', 'Students', 'Courses', 'Fee Structure', 'Competitions'
+ * 2. Automatic Header Creation with saffron/orange formatting
+ * 3. In-Place Update: If Trainer ID, Student ID, Course ID, or Comp ID already exists,
+ *    it updates the existing row in-place without creating duplicate rows!
+ * 4. Automatic New Row Append for fresh submissions.
  * =========================================================================
  */
 
@@ -18,10 +18,10 @@ function doPost(e) {
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var data = JSON.parse(e.postData.contents);
-    var type = data.type || "";
+    var type = (data.type || "").toUpperCase();
 
     // ---------------------------------------------------------------------
-    // 1. TRAINER REGISTRATION & UPDATE (13 POINTS)
+    // 1. TRAINER REGISTRATION & IN-PLACE UPDATE (13 POINTS)
     // ---------------------------------------------------------------------
     if (type.indexOf("TRAINER") !== -1) {
       var sheet = getOrCreateSheet(ss, "Trainers", [
@@ -47,7 +47,6 @@ function doPost(e) {
         data.password || data.pin || "1234"
       ];
 
-      // Check if Trainer ID already exists in Column 2 (Trainer ID)
       var updated = updateRowIfExists(sheet, 2, trainerId, rowData);
       if (!updated) {
         sheet.appendRow(rowData);
@@ -61,7 +60,7 @@ function doPost(e) {
     }
 
     // ---------------------------------------------------------------------
-    // 2. STUDENT REGISTRATION & UPDATE (32 POINTS)
+    // 2. STUDENT REGISTRATION & IN-PLACE UPDATE (32 POINTS)
     // ---------------------------------------------------------------------
     if (type.indexOf("STUDENT") !== -1) {
       var sheet = getOrCreateSheet(ss, "Students", [
@@ -98,7 +97,6 @@ function doPost(e) {
         data.utrNumber || ""
       ];
 
-      // Check if Student ID already exists in Column 2 (Student ID)
       var updated = updateRowIfExists(sheet, 2, studentId, rowData);
       if (!updated) {
         sheet.appendRow(rowData);
@@ -111,7 +109,99 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // Default fallback
+    // ---------------------------------------------------------------------
+    // 3. COURSE CREATION & UPDATE
+    // ---------------------------------------------------------------------
+    if (type.indexOf("COURSE") !== -1) {
+      var sheet = getOrCreateSheet(ss, "Courses", [
+        "Timestamp", "Course ID", "Course Name", "Duration", "Fee (INR)", "Levels", "Description"
+      ]);
+
+      var courseId = data.id || data.courseId || "";
+      var rowData = [
+        new Date(),
+        courseId,
+        data.name || "",
+        data.duration || "",
+        data.fee || 0,
+        data.levels || "Level 1 to Senior 4",
+        data.desc || ""
+      ];
+
+      var updated = updateRowIfExists(sheet, 2, courseId, rowData);
+      if (!updated) {
+        sheet.appendRow(rowData);
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: updated ? "Course updated in-place" : "Course created",
+        courseId: courseId
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // ---------------------------------------------------------------------
+    // 4. FEE STRUCTURE UPDATE
+    // ---------------------------------------------------------------------
+    if (type.indexOf("FEE") !== -1) {
+      var sheet = getOrCreateSheet(ss, "Fee Structure", [
+        "Timestamp", "Admission Fee (INR)", "Monthly Training Fee (INR)",
+        "Belt Exam Fee (INR)", "Tournament Fee (INR)", "Official UPI ID"
+      ]);
+
+      var rowData = [
+        new Date(),
+        data.admission || 500,
+        data.monthly || 300,
+        data.exam || 350,
+        data.tournament || 400,
+        data.upi || "yoddhaacademy5@okicici"
+      ];
+
+      if (sheet.getLastRow() >= 2) {
+        sheet.getRange(2, 1, 1, rowData.length).setValues([rowData]);
+      } else {
+        sheet.appendRow(rowData);
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Fee Structure updated"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // ---------------------------------------------------------------------
+    // 5. COMPETITION ANNOUNCEMENT & UPDATE
+    // ---------------------------------------------------------------------
+    if (type.indexOf("COMPETITION") !== -1) {
+      var sheet = getOrCreateSheet(ss, "Competitions", [
+        "Timestamp", "Competition ID", "Title", "Date", "Location", "Entry Fee (INR)", "Categories", "Status"
+      ]);
+
+      var compId = data.id || data.compId || "";
+      var rowData = [
+        new Date(),
+        compId,
+        data.title || "",
+        data.date || "",
+        data.location || "",
+        data.fee || 0,
+        data.categories || "",
+        data.status || "Registrations Open"
+      ];
+
+      var updated = updateRowIfExists(sheet, 2, compId, rowData);
+      if (!updated) {
+        sheet.appendRow(rowData);
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: updated ? "Competition updated in-place" : "Competition created",
+        compId: compId
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
     return ContentService.createTextOutput(JSON.stringify({ status: "success", type: type }))
       .setMimeType(ContentService.MimeType.JSON);
 
@@ -129,9 +219,8 @@ function getOrCreateSheet(ss, sheetName, headers) {
   if (!sheet) {
     sheet = ss.insertSheet(sheetName);
     sheet.appendRow(headers);
-    // Format Header Row (Orange/Saffron Header with bold white text)
     var headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground("#ea580c"); // Kesari Color
+    headerRange.setBackground("#ea580c"); // Saffron / Kesari Header
     headerRange.setFontColor("#ffffff");
     headerRange.setFontWeight("bold");
     sheet.setFrozenRows(1);
@@ -161,7 +250,7 @@ function updateRowIfExists(sheet, idColIndex, idValue, newRowData) {
 // =========================================================================
 function testSetup() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  
+
   // 1. Create Trainers Sheet
   var trnSheet = getOrCreateSheet(ss, "Trainers", [
     "Timestamp", "Trainer ID", "Full Name", "Position", "Status",

@@ -118,7 +118,7 @@
       <!-- Auto Logout / Session Expired Notification -->
       <div id="session-timeout-banner" class="hidden text-xs text-amber-900 bg-amber-50 p-3 rounded-xl border border-amber-300 flex items-center gap-2 mb-3">
         <i data-lucide="clock" class="w-4 h-4 flex-shrink-0 text-amber-600"></i>
-        <span><strong>Session Expired:</strong> १० मिनिटे इनॲक्टिव्ह राहिल्यामुळे तुम्ही Logout झाला आहात. कृपया पुन्हा लॉगिन करा.</span>
+        <span><strong>Session Expired:</strong> You were logged out due to 10 minutes of inactivity. Please enter your credentials to login again.</span>
       </div>
 
       <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
@@ -1675,15 +1675,15 @@
         <div class="bg-orange-50/70 border border-orange-200 rounded-2xl p-4 space-y-2">
           <h4 class="font-black text-orange-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
             <i data-lucide="list-ordered" class="w-4 h-4 text-orange-600"></i>
-            <span>Google Sheet चालू करण्याची सोपी पद्धत (२ मिनिटे):</span>
+            <span>Quick Google Sheet Setup Guide (2 Minutes):</span>
           </h4>
           <ol class="list-decimal pl-5 space-y-1.5 font-medium text-slate-800">
-            <li>तुमच्या ब्राउझरमध्ये <strong><a href="https://sheets.new" target="_blank" class="text-orange-700 underline font-bold">sheets.new</a></strong> उघडा आणि शीटला नाव द्या: <strong class="text-slate-900 font-bold">"Yoddha Academy India Database"</strong></li>
-            <li>वर मेनूमध्ये <strong>Extensions ➡️ Apps Script</strong> वर क्लिक करा.</li>
-            <li>खालील कोड कॉपी करून Apps Script मधील सर्व कोड काढून तिथे <strong>Paste</strong> करा.</li>
-            <li>वर उजवीकडे निळ्या <strong>Deploy ➡️ New deployment</strong> वर क्लिक करा.</li>
-            <li>Select type वर <strong>Web app</strong> निवडा, <strong>Who has access: "Anyone"</strong> करा आणि <strong>Deploy</strong> दाबा.</li>
-            <li>मिळणारी <strong>Web app URL</strong> खाली पेस्ट करून <strong>"Save & Test Sync"</strong> दाबा!</li>
+            <li>Open <strong><a href="https://sheets.new" target="_blank" class="text-orange-700 underline font-bold">sheets.new</a></strong> in your browser and name the spreadsheet: <strong class="text-slate-900 font-bold">"Yoddha Academy India Database"</strong></li>
+            <li>In the top menu, click <strong>Extensions ➡️ Apps Script</strong>.</li>
+            <li>Copy the backend code below, clear all existing code in the Apps Script editor, and <strong>Paste</strong> it.</li>
+            <li>In the top-right, click the blue <strong>Deploy ➡️ New deployment</strong> button.</li>
+            <li>Select type: <strong>Web app</strong>, configure Who has access: <strong>"Anyone"</strong>, and click <strong>Deploy</strong>.</li>
+            <li>Copy the generated <strong>Web app URL</strong>, paste it below, and click <strong>"Save Webhook"</strong>!</li>
           </ol>
         </div>
 
@@ -1704,7 +1704,7 @@
             </div>
           </div>
           <p class="text-[11px] text-slate-500 font-medium">
-            💡 एकदा सेव्ह केल्यानंतर ही शीट कायमस्वरूपी जोडलेली राहील, पुन्हा पुन्हा लिंक पेस्ट करावी लागणार नाही.
+            💡 Once saved, this Google Sheet remains permanently connected. You do not need to paste the link again.
           </p>
         </div>
 
@@ -1718,7 +1718,7 @@
               <div class="min-w-0">
                 <div class="flex items-center gap-2">
                   <h4 class="text-sm sm:text-base font-black text-slate-900">Google Sheet Active & Connected</h4>
-                  <span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-emerald-300">कायमस्वरूपी सेव्ह</span>
+                  <span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-emerald-300">Permanently Connected</span>
                 </div>
                 <p class="text-[11px] font-mono text-emerald-900 truncate max-w-xs sm:max-w-md mt-0.5 font-bold" id="connected-sheet-url-display">
                   https://script.google.com/macros/s/...
@@ -1745,10 +1745,10 @@
           <div>
             <h5 class="font-black text-emerald-950 text-xs flex items-center gap-1.5">
               <i data-lucide="upload-cloud" class="w-4 h-4 text-emerald-600"></i>
-              <span>Push All Current Data to Google Sheet (१-क्लिक सिंक)</span>
+              <span>Push All Current Data to Google Sheet (1-Click Sync)</span>
             </h5>
             <p class="text-[11px] text-emerald-800 font-medium mt-0.5">
-              पोर्टलवरील सर्व ४ ट्रेनर्स आणि ५ विद्यार्थी तुमच्या Google Sheet मध्ये लगेच पाठवा.
+              Instantly push all registered trainers and students to your Google Sheet tabs.
             </p>
           </div>
           <button onclick="syncAllDataToSheet()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-600/25 flex items-center gap-1.5 whitespace-nowrap transform active:scale-95 transition">
@@ -1775,9 +1775,9 @@ function doPost(e) {
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var data = JSON.parse(e.postData.contents);
-    var type = data.type || "";
+    var type = (data.type || "").toUpperCase();
 
-    // 1. TRAINER SYNC & IN-PLACE UPDATE (13 POINTS)
+    // 1. TRAINER REGISTRATION & IN-PLACE UPDATE (13 POINTS)
     if (type.indexOf("TRAINER") !== -1) {
       var sheet = getOrCreateSheet(ss, "Trainers", [
         "Timestamp", "Trainer ID", "Full Name", "Position", "Status",
@@ -1786,16 +1786,16 @@ function doPost(e) {
       ]);
       var trnId = data.trainerId || data.id || "";
       var row = [
-        new Date(), trnId, data.fullName || data.name, data.position, data.status,
-        data.mobile || data.phone, data.whatsapp, data.email, data.state,
-        data.district, data.branch, data.address, data.password || data.pin
+        new Date(), trnId, data.fullName || data.name || "", data.position || "Branch Instructor", data.status || "Active",
+        data.mobile || data.phone || "", data.whatsapp || data.mobile || data.phone || "", data.email || "", data.state || "",
+        data.district || "", data.branch || "", data.address || "", data.password || data.pin || "1234"
       ];
       var updated = updateRowIfExists(sheet, 2, trnId, row);
       if (!updated) sheet.appendRow(row);
       return ContentService.createTextOutput(JSON.stringify({ status: "success", updated: updated })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 2. STUDENT SYNC & IN-PLACE UPDATE (32 POINTS)
+    // 2. STUDENT REGISTRATION & IN-PLACE UPDATE (32 POINTS)
     if (type.indexOf("STUDENT") !== -1) {
       var sheet = getOrCreateSheet(ss, "Students", [
         "Timestamp", "Student ID", "Student Name", "Date of Birth", "Age",
@@ -1806,13 +1806,48 @@ function doPost(e) {
       ]);
       var stuId = data.studentId || data.id || "";
       var row = [
-        new Date(), stuId, data.studentName || data.name, data.dob, data.age,
-        data.requestedLevel, data.schoolName, data.standard, data.schoolContact, data.schoolAddress,
-        data.parentName, data.parentMobile, data.city, data.district, data.state,
-        data.admissionDate, data.trainerId, data.trainerName, data.status, data.feeStatus,
-        data.feeAmount, data.utrNumber
+        new Date(), stuId, data.studentName || data.name || "", data.dob || "", data.age || 0,
+        data.requestedLevel || "Level 1", data.schoolName || "", data.standard || "", data.schoolContact || "", data.schoolAddress || "",
+        data.parentName || "", data.parentMobile || "", data.city || "", data.district || "", data.state || "",
+        data.admissionDate || "", data.trainerId || "", data.trainerName || "", data.status || "Active", data.feeStatus || "Paid",
+        data.feeAmount || 500, data.utrNumber || ""
       ];
       var updated = updateRowIfExists(sheet, 2, stuId, row);
+      if (!updated) sheet.appendRow(row);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", updated: updated })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 3. COURSE CREATION & UPDATE
+    if (type.indexOf("COURSE") !== -1) {
+      var sheet = getOrCreateSheet(ss, "Courses", [
+        "Timestamp", "Course ID", "Course Name", "Duration", "Fee (INR)", "Levels", "Description"
+      ]);
+      var courseId = data.id || data.courseId || "";
+      var row = [new Date(), courseId, data.name || "", data.duration || "", data.fee || 0, data.levels || "Level 1 to Senior 4", data.desc || ""];
+      var updated = updateRowIfExists(sheet, 2, courseId, row);
+      if (!updated) sheet.appendRow(row);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", updated: updated })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 4. FEE STRUCTURE UPDATE
+    if (type.indexOf("FEE") !== -1) {
+      var sheet = getOrCreateSheet(ss, "Fee Structure", [
+        "Timestamp", "Admission Fee (INR)", "Monthly Training Fee (INR)", "Belt Exam Fee (INR)", "Tournament Fee (INR)", "Official UPI ID"
+      ]);
+      var row = [new Date(), data.admission || 500, data.monthly || 300, data.exam || 350, data.tournament || 400, data.upi || "yoddhaacademy5@okicici"];
+      if (sheet.getLastRow() >= 2) sheet.getRange(2, 1, 1, row.length).setValues([row]);
+      else sheet.appendRow(row);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", updated: true })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 5. COMPETITION ANNOUNCEMENT & UPDATE
+    if (type.indexOf("COMPETITION") !== -1) {
+      var sheet = getOrCreateSheet(ss, "Competitions", [
+        "Timestamp", "Competition ID", "Title", "Date", "Location", "Entry Fee (INR)", "Categories", "Status"
+      ]);
+      var compId = data.id || data.compId || "";
+      var row = [new Date(), compId, data.title || "", data.date || "", data.location || "", data.fee || 0, data.categories || "", data.status || "Registrations Open"];
+      var updated = updateRowIfExists(sheet, 2, compId, row);
       if (!updated) sheet.appendRow(row);
       return ContentService.createTextOutput(JSON.stringify({ status: "success", updated: updated })).setMimeType(ContentService.MimeType.JSON);
     }
@@ -2535,7 +2570,7 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
       const banner = document.getElementById('session-timeout-banner');
       if (banner) banner.classList.remove('hidden');
 
-      alert("⚠️ सुरक्षितता सूचना (Session Expired):\n\nतुम्ही १० मिनिटे कोणतीही हालचाल केली नसल्याने, अकॅडमी पोर्टलवरून आपोआप Logout झाला आहात.\n\nसुरक्षिततेसाठी पुन्हा सुरू करण्यासाठी तुमचा ID आणि Password टाकून Login करा.");
+      alert("⚠️ Security Notice (Session Expired):\n\nYou were logged out automatically due to 10 minutes of inactivity.\n\nPlease sign in with your ID and Password to resume.");
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -3097,9 +3132,8 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
       saveAdminState();
 
       syncToGoogleSheet({
-        type: "STUDENT_VERIFICATION_APPROVED",
-        studentId: student.studentId,
-        studentName: student.studentName,
+        type: "STUDENT_REGISTRATION_32_POINTS",
+        ...student,
         status: "Active",
         feeStatus: "Paid",
         verifiedAt: new Date().toISOString()
@@ -3626,7 +3660,7 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
       renderAdminTrainers();
       e.target.reset();
       closeFormModal('trainer');
-      alert(`✅ Certified Trainer Registered Successfully!\n\nName: ${fullName}\nTrainer ID: ${trainerId}\nPosition: ${position}\nDistrict: ${district}, ${state}\nMobile: ${mobile} | WhatsApp: ${whatsapp}\nLogin PIN: ${password}\n\nAll 13 data points synchronized to Google Sheet!`);
+      alert(`✅ Certified Trainer Registered Successfully!\n\nName: ${fullName}\nTrainer ID: ${trainerId}\nPosition: ${position}\nDistrict: ${districtName}, ${stateName}\nMobile: ${mobile} | WhatsApp: ${whatsapp}\nLogin PIN: ${password}\n\nAll 13 data points synchronized to Google Sheet!`);
       navigateToPage('trainers');
     }
 
@@ -3757,23 +3791,23 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
       const input = document.getElementById('sheet-webhook-url');
       const url = input ? input.value.trim() : '';
       if (!url) {
-        alert("कृपया आधी तुमच्या Google Apps Script ची Web App URL पेस्ट करा!");
+        alert("⚠️ Please paste your Google Apps Script Web App URL first!");
         return;
       }
       adminState.webhookUrl = url;
       localStorage.setItem('yoddha_webhook_url', url);
       updateSheetSyncUI();
-      alert("✅ Google Sheet कायमस्वरूपी सेव्ह झाली आहे!\n\nआता तुम्हाला पुन्हा पुन्हा लिंक पेस्ट करावी लागणार नाही. जेव्हा नवीन शीट जोडायची असेल, तेव्हा फक्त 'Delete Sheet' वर क्लिक करून जुनी शीट बदलू शकता.");
+      alert("✅ Google Sheet Connected Permanently!\n\nYou do not need to paste the link again. If you ever need to switch sheets, simply click 'Delete Sheet'.");
     }
 
     function deleteConnectedSheet() {
-      if (!confirm("तुम्हाला खात्री आहे का ही Google Sheet डिस्कनेक्ट करायची आहे?\n\nजुनी शीट लिंक डिलीट होईल आणि तुम्हाला नवीन गुगल शीटची लिंक जोडता येईल.")) {
+      if (!confirm("Are you sure you want to disconnect this Google Sheet?\n\nThe current connection will be removed, allowing you to connect a new sheet.")) {
         return;
       }
       adminState.webhookUrl = '';
       localStorage.removeItem('yoddha_webhook_url');
       updateSheetSyncUI();
-      alert("🗑️ जुनी Google Sheet डिस्कनेक्ट केली आहे!\n\nआता तुम्ही खाली नवीन Google Sheet Webhook लिंक जोडू शकता.");
+      alert("🗑️ Google Sheet Disconnected Successfully!\n\nYou can now enter and save a new Google Sheet Webhook URL below.");
     }
 
     async function testWebhookConnection() {
@@ -3789,7 +3823,7 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
       }
 
       if (!url) {
-        alert("⚠️ कृपया आधी तुमची Web App URL पेस्ट करून 'Save Webhook' करा!");
+        alert("⚠️ Please paste your Web App URL and click 'Save Webhook' first!");
         return;
       }
 
@@ -3809,7 +3843,7 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
         password: "1234"
       });
 
-      alert("🚀 Test request थेट Google Sheet वर पाठवला आहे!\n\nकृपया तुमचे Google Sheet उघडून बघा:\n1. 'Trainers' टॅब केशरी हेडिंगसह तयार झाला असेल.\n2. Ustad Sachin Patil (YAI-TR-MH-KOP-001) चा डेटा जमा झाला असेल!");
+      alert("🚀 Test request sent directly to your Google Sheet!\n\nPlease open your Google Sheet to verify:\n1. 'Trainers' tab created with saffron/orange headers.\n2. Ustad Sachin Patil (YAI-TR-MH-KOP-001) test entry added successfully!");
     }
 
     async function syncAllDataToSheet() {
@@ -3825,7 +3859,7 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
       }
 
       if (!url) {
-        alert("⚠️ कृपया आधी तुमची Google Apps Script Web App URL सेव्ह करा!");
+        alert("⚠️ Please configure and save your Google Apps Script Web App URL first!");
         return;
       }
 
@@ -3880,10 +3914,10 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
           });
         }
 
-        if (statusEl) statusEl.innerHTML = '<span class="text-emerald-700 font-bold">✅ सर्व डेटा Google Sheet मध्ये यशस्वीरित्या पाठवला आहे!</span>';
-        alert(`🎉 Live Sync यशस्वी!\n\n✔ ${adminState.trainers.length} ट्रेनर्स 'Trainers' टॅबमध्ये पाठवले\n✔ ${adminState.students.length} विद्यार्थी 'Students' टॅबमध्ये पाठवले\n\nतुमचे Google Sheet उघडून बघा!`);
+        if (statusEl) statusEl.innerHTML = '<span class="text-emerald-700 font-bold">✅ All records synchronized to Google Sheet successfully!</span>';
+        alert(`🎉 Live Sync Successful!\n\n✔ ${adminState.trainers.length} Trainers synced to 'Trainers' tab\n✔ ${adminState.students.length} Students synced to 'Students' tab\n\nPlease check your Google Sheet!`);
       } catch (err) {
-        if (statusEl) statusEl.innerHTML = '<span class="text-red-600 font-bold">❌ डेटा पाठवताना त्रुटी आली. कृपया URL तपासा.</span>';
+        if (statusEl) statusEl.innerHTML = '<span class="text-red-600 font-bold">❌ Error syncing data. Please verify your Web App URL.</span>';
       }
     }
 
