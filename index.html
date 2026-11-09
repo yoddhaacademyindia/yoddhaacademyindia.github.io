@@ -77,16 +77,17 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col selection:bg-kesari-500 selection:text-white">
 
   <!-- ================= TOP STATUS BAR (KESARI & WHITE) ================= -->
-  <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white text-xs py-2 px-4 font-medium flex justify-between items-center shadow-md">
-    <div class="flex items-center space-x-2">
-      <span class="bg-black/25 px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wider uppercase flex items-center gap-1 text-amber-200">
-        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> MASTER ADMIN
+  <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white text-[11px] sm:text-xs py-1.5 sm:py-2 px-3 sm:px-4 font-medium flex justify-between items-center shadow-md">
+    <div class="flex items-center space-x-1.5 sm:space-x-2">
+      <span class="bg-black/25 px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wider uppercase flex items-center gap-1 text-amber-200">
+        <i data-lucide="shield-check" class="w-3 sm:w-3.5 h-3 sm:h-3.5"></i> MASTER ADMIN
       </span>
-      <span class="font-semibold">Yoddha Academy India Management • Central HQ Administration</span>
+      <span class="font-semibold hidden sm:inline">Yoddha Academy India Management • Central HQ Administration</span>
+      <span class="font-semibold sm:hidden text-[10px]">Central HQ</span>
     </div>
-    <div class="flex items-center space-x-4 text-xs font-rajdhani">
-      <span class="flex items-center gap-1 bg-white/20 px-2.5 py-0.5 rounded text-white font-bold">
-        <i data-lucide="sheet" class="w-3.5 h-3.5 text-emerald-300"></i> Google Sheet Connected
+    <div class="flex items-center space-x-2 sm:space-x-4 text-[10px] sm:text-xs font-rajdhani">
+      <span class="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded text-white font-bold">
+        <i data-lucide="sheet" class="w-3 sm:w-3.5 h-3 sm:h-3.5 text-emerald-300"></i> Google Sheet Connected
       </span>
       <span class="hidden sm:flex items-center gap-1 text-orange-100">
         <i data-lucide="lock" class="w-3.5 h-3.5"></i> 256-Bit Encrypted
@@ -96,16 +97,16 @@
 
   <!-- ================= SCREEN 1: ADMIN LOGIN ================= -->
   <div id="admin-login-screen" class="min-h-[85vh] flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-white border-2 border-orange-200 rounded-3xl p-8 shadow-2xl relative overflow-hidden transition-all duration-300">
+    <div class="max-w-md w-full bg-white border-2 border-orange-200 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden transition-all duration-300">
       <div class="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600"></div>
 
-      <div class="text-center mb-7">
-        <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-600 p-1 shadow-lg shadow-orange-500/25 flex items-center justify-center mb-3">
+      <div class="text-center mb-6 sm:mb-7">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-3xl bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-600 p-1 shadow-lg shadow-orange-500/25 flex items-center justify-center mb-3">
           <div class="w-full h-full bg-white rounded-[20px] flex items-center justify-center">
-            <i data-lucide="crown" class="w-10 h-10 text-orange-600"></i>
+            <i data-lucide="crown" class="w-8 h-8 sm:w-10 sm:h-10 text-orange-600"></i>
           </div>
         </div>
-        <h2 class="text-2xl font-black text-slate-900 font-rajdhani uppercase tracking-wider">
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-900 font-rajdhani uppercase tracking-wider">
           Yoddha Academy
         </h2>
         <span class="inline-block mt-1 bg-orange-100 text-orange-800 text-[11px] font-extrabold px-3 py-0.5 rounded-full border border-orange-300 uppercase tracking-wider">
@@ -114,12 +115,18 @@
         <p class="text-xs text-slate-500 mt-2 font-medium">Enter your Unique ID and Password to sign in</p>
       </div>
 
+      <!-- Auto Logout / Session Expired Notification -->
+      <div id="session-timeout-banner" class="hidden text-xs text-amber-900 bg-amber-50 p-3 rounded-xl border border-amber-300 flex items-center gap-2 mb-3">
+        <i data-lucide="clock" class="w-4 h-4 flex-shrink-0 text-amber-600"></i>
+        <span><strong>Session Expired:</strong> १० मिनिटे इनॲक्टिव्ह राहिल्यामुळे तुम्ही Logout झाला आहात. कृपया पुन्हा लॉगिन करा.</span>
+      </div>
+
       <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1.5">Admin Unique ID *</label>
           <div class="relative">
             <i data-lucide="user-check" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
-            <input type="text" id="admin-input-id" required value="ADMIN-YODDHA-01" placeholder="e.g. ADMIN-YODDHA-01" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-10 pr-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 font-mono font-semibold transition">
+            <input type="text" id="admin-input-id" required value="" placeholder="Enter Admin Unique ID" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-10 pr-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 font-mono font-semibold transition">
           </div>
         </div>
 
@@ -127,7 +134,7 @@
           <label class="block text-xs font-bold text-slate-700 mb-1.5">Password *</label>
           <div class="relative">
             <i data-lucide="lock" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
-            <input type="password" id="admin-input-pass" required value="yoddha2026" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 transition">
+            <input type="password" id="admin-input-pass" required value="" placeholder="Enter Password" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 transition">
             <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600">
               <i data-lucide="eye" id="pass-eye-icon" class="w-4 h-4"></i>
             </button>
@@ -144,7 +151,7 @@
           <span>Secure Sign In</span>
         </button>
 
-        <div class="pt-3 text-center bg-orange-50/70 p-3 rounded-xl border border-orange-100">
+        <div class="pt-2 text-center bg-orange-50/70 p-2.5 rounded-xl border border-orange-100">
           <p class="text-[11px] text-slate-600 font-medium">Default ID: <strong class="text-orange-700 font-mono">ADMIN-YODDHA-01</strong></p>
           <p class="text-[11px] text-slate-600 font-medium mt-0.5">Password: <strong class="text-orange-700 font-mono">yoddha2026</strong></p>
         </div>
@@ -157,45 +164,51 @@
     
     <!-- White Header with Kesari Accents -->
     <header class="bg-white sticky top-0 z-40 border-b border-orange-100 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-20">
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16 sm:h-20">
           
-          <div class="flex items-center space-x-3 sm:space-x-4">
-            <div onclick="navigateToPage('dashboard')" class="w-13 h-13 p-0.5 rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-600 shadow-md flex-shrink-0 cursor-pointer">
-              <div class="w-12 h-12 bg-white rounded-[14px] flex items-center justify-center">
-                <i data-lucide="swords" class="w-7 h-7 text-orange-600 transform -rotate-12"></i>
+          <div class="flex items-center space-x-2 sm:space-x-4 min-w-0">
+            <div onclick="navigateToPage('dashboard')" class="w-10 h-10 sm:w-12 sm:h-12 p-0.5 rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-600 shadow-md flex-shrink-0 cursor-pointer flex items-center justify-center">
+              <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
+                <i data-lucide="swords" class="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 transform -rotate-12"></i>
               </div>
             </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h1 onclick="navigateToPage('dashboard')" class="text-xl sm:text-2xl font-black text-slate-900 font-rajdhani uppercase tracking-wide cursor-pointer">
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 sm:gap-2">
+                <h1 onclick="navigateToPage('dashboard')" class="text-base sm:text-2xl font-black text-slate-900 font-rajdhani uppercase tracking-wide cursor-pointer truncate">
                   Yoddha Academy
                 </h1>
-                <span class="bg-orange-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase shadow-sm">
+                <span class="bg-orange-500 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full uppercase shadow-sm flex-shrink-0">
                   Admin Panel
                 </span>
               </div>
-              <p class="text-xs text-slate-500 font-semibold flex items-center gap-1.5">
-                <span>All India Headquarters Central Control</span>
-                <span class="text-slate-300">•</span>
-                <span class="text-orange-600 font-bold hidden sm:inline">Official Multi-Page Management</span>
+              <p class="text-[10px] sm:text-xs text-slate-500 font-semibold flex items-center gap-1 truncate">
+                <span>All India HQ</span>
+                <span class="text-slate-300 hidden sm:inline">•</span>
+                <span class="text-orange-600 font-bold hidden sm:inline">Official Management</span>
               </p>
             </div>
           </div>
 
           <!-- Controls -->
-          <div class="flex items-center space-x-3">
-            <div class="hidden sm:flex flex-col text-right">
+          <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+            <div class="hidden lg:flex flex-col text-right">
               <span class="text-xs font-extrabold text-slate-800">Master Administrator</span>
               <span class="text-[11px] text-orange-700 font-mono font-bold">ADMIN-YODDHA-01</span>
             </div>
 
-            <button onclick="openSyncModal()" class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl transition flex items-center gap-1.5 text-xs font-bold shadow-sm" title="Google Sheet Status">
-              <i data-lucide="sheet" class="w-4 h-4 text-emerald-600"></i>
-              <span class="hidden md:inline">Sheet Sync</span>
+            <!-- Inactivity Timer Display Pill -->
+            <div class="hidden md:flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-xl" title="Auto-logout after 10 mins inactivity">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-600"></i>
+              <span id="auto-logout-timer-display">10:00</span>
+            </div>
+
+            <button onclick="openSyncModal()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl transition flex items-center gap-1 sm:gap-1.5 text-xs font-bold shadow-sm" title="Google Sheet Status">
+              <i data-lucide="sheet" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600"></i>
+              <span class="hidden sm:inline">Sheet Sync</span>
             </button>
 
-            <button onclick="handleAdminLogout()" class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl transition flex items-center gap-1.5 text-xs font-bold shadow-sm">
+            <button onclick="handleAdminLogout()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl transition flex items-center gap-1 sm:gap-1.5 text-xs font-bold shadow-sm">
               <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
               <span>Logout</span>
             </button>
@@ -205,255 +218,244 @@
       </div>
     </header>
 
-    <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1">
+    <main class="max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1">
       
       <!-- ================= PAGE 1: MAIN DASHBOARD ================= -->
-      <div id="page-dashboard" class="space-y-7 animate-page-enter">
+      <div id="page-dashboard" class="space-y-4 sm:space-y-7 animate-page-enter">
         
-        <!-- TOP 3 METRICS (CLICK OPENS DEDICATED NEW PAGE) -->
+        <!-- TOP 3 METRICS (COMPACT & MOBILE-RESPONSIVE) -->
         <div>
-          <div class="flex items-center justify-between mb-3 px-1">
-            <h3 class="text-xs font-extrabold uppercase text-slate-500 tracking-wider flex items-center gap-1.5">
-              <i data-lucide="activity" class="w-4 h-4 text-orange-600"></i> Top Metrics (Click opens dedicated page)
+          <div class="flex items-center justify-between mb-2 px-1">
+            <h3 class="text-[11px] sm:text-xs font-extrabold uppercase text-slate-500 tracking-wider flex items-center gap-1.5">
+              <i data-lucide="activity" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-600"></i> Top Metrics
             </h3>
-            <span class="text-[11px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">
+            <span class="text-[10px] sm:text-[11px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">
               Live Counts
             </span>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+          <div class="grid grid-cols-3 gap-2 sm:gap-6">
             
             <!-- Metric 1: Total Students -->
-            <div onclick="navigateToPage('students')" class="bg-white border-2 border-orange-100 rounded-3xl p-6 shadow-md hover:border-orange-500 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group relative overflow-hidden transform active:scale-98">
-              <div class="absolute -right-4 -bottom-4 w-28 h-28 bg-orange-50 rounded-full group-hover:scale-125 transition-all duration-500 pointer-events-none"></div>
-              <div class="flex justify-between items-start relative z-10">
-                <div>
-                  <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Students</p>
-                  <h3 id="stat-top-students" class="text-3xl sm:text-4xl font-black text-slate-900 font-rajdhani mt-1.5">48</h3>
+            <div onclick="navigateToPage('students')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm hover:border-orange-500 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group relative overflow-hidden transform active:scale-95 flex flex-col justify-between">
+              <div class="flex justify-between items-start">
+                <div class="min-w-0">
+                  <p class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-slate-500 truncate">Students</p>
+                  <h3 id="stat-top-students" class="text-xl sm:text-4xl font-black text-slate-900 font-rajdhani mt-0.5 sm:mt-1.5">3</h3>
                 </div>
-                <div class="p-3.5 bg-orange-100 text-orange-700 rounded-2xl group-hover:bg-gradient-to-tr group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all duration-300 shadow-sm group-hover:rotate-6">
-                  <i data-lucide="users" class="w-7 h-7"></i>
+                <div class="p-1 sm:p-3.5 bg-orange-100 text-orange-700 rounded-lg sm:rounded-2xl group-hover:bg-gradient-to-tr group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
+                  <i data-lucide="users" class="w-3.5 h-3.5 sm:w-7 sm:h-7"></i>
                 </div>
               </div>
-              <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs relative z-10 font-semibold">
-                <span class="text-emerald-700 flex items-center gap-1">
-                  <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-600"></i> Click opens Student Directory
-                </span>
-                <span class="text-orange-600 font-bold group-hover:translate-x-1.5 transition-transform duration-200 flex items-center gap-0.5">
-                  Open Page →
-                </span>
+              <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] sm:text-xs font-bold text-orange-600">
+                <span class="hidden sm:inline text-emerald-700 font-medium truncate">Directory</span>
+                <span class="flex items-center gap-0.5 ml-auto">View →</span>
               </div>
             </div>
 
             <!-- Metric 2: Total Trainers -->
-            <div onclick="navigateToPage('trainers')" class="bg-white border-2 border-orange-100 rounded-3xl p-6 shadow-md hover:border-orange-500 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group relative overflow-hidden transform active:scale-98">
-              <div class="absolute -right-4 -bottom-4 w-28 h-28 bg-amber-50 rounded-full group-hover:scale-125 transition-all duration-500 pointer-events-none"></div>
-              <div class="flex justify-between items-start relative z-10">
-                <div>
-                  <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Trainers</p>
-                  <h3 id="stat-top-trainers" class="text-3xl sm:text-4xl font-black text-slate-900 font-rajdhani mt-1.5">14</h3>
+            <div onclick="navigateToPage('trainers')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm hover:border-orange-500 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group relative overflow-hidden transform active:scale-95 flex flex-col justify-between">
+              <div class="flex justify-between items-start">
+                <div class="min-w-0">
+                  <p class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-slate-500 truncate">Trainers</p>
+                  <h3 id="stat-top-trainers" class="text-xl sm:text-4xl font-black text-slate-900 font-rajdhani mt-0.5 sm:mt-1.5">3</h3>
                 </div>
-                <div class="p-3.5 bg-amber-100 text-amber-700 rounded-2xl group-hover:bg-gradient-to-tr group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all duration-300 shadow-sm group-hover:rotate-6">
-                  <i data-lucide="award" class="w-7 h-7"></i>
+                <div class="p-1 sm:p-3.5 bg-amber-100 text-amber-700 rounded-lg sm:rounded-2xl group-hover:bg-gradient-to-tr group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
+                  <i data-lucide="award" class="w-3.5 h-3.5 sm:w-7 sm:h-7"></i>
                 </div>
               </div>
-              <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs relative z-10 font-semibold">
-                <span class="text-slate-600">5 Indian States</span>
-                <span class="text-orange-600 font-bold group-hover:translate-x-1.5 transition-transform duration-200 flex items-center gap-0.5">
-                  Open Page →
-                </span>
+              <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] sm:text-xs font-bold text-orange-600">
+                <span class="hidden sm:inline text-slate-600 font-medium truncate">Branches</span>
+                <span class="flex items-center gap-0.5 ml-auto">View →</span>
               </div>
             </div>
 
             <!-- Metric 3: Total Courses -->
-            <div onclick="navigateToPage('courses')" class="bg-white border-2 border-orange-100 rounded-3xl p-6 shadow-md hover:border-orange-500 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group relative overflow-hidden transform active:scale-98">
-              <div class="absolute -right-4 -bottom-4 w-28 h-28 bg-orange-50 rounded-full group-hover:scale-125 transition-all duration-500 pointer-events-none"></div>
-              <div class="flex justify-between items-start relative z-10">
-                <div>
-                  <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Courses</p>
-                  <h3 id="stat-top-courses" class="text-3xl sm:text-4xl font-black text-slate-900 font-rajdhani mt-1.5">5</h3>
+            <div onclick="navigateToPage('courses')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm hover:border-orange-500 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group relative overflow-hidden transform active:scale-95 flex flex-col justify-between">
+              <div class="flex justify-between items-start">
+                <div class="min-w-0">
+                  <p class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-slate-500 truncate">Courses</p>
+                  <h3 id="stat-top-courses" class="text-xl sm:text-4xl font-black text-slate-900 font-rajdhani mt-0.5 sm:mt-1.5">5</h3>
                 </div>
-                <div class="p-3.5 bg-orange-100 text-orange-700 rounded-2xl group-hover:bg-gradient-to-tr group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all duration-300 shadow-sm group-hover:rotate-6">
-                  <i data-lucide="book-open" class="w-7 h-7"></i>
+                <div class="p-1 sm:p-3.5 bg-orange-100 text-orange-700 rounded-lg sm:rounded-2xl group-hover:bg-gradient-to-tr group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
+                  <i data-lucide="book-open" class="w-3.5 h-3.5 sm:w-7 sm:h-7"></i>
                 </div>
               </div>
-              <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs relative z-10 font-semibold">
-                <span class="text-orange-700 font-bold">10-Level Curriculum</span>
-                <span class="text-orange-600 font-bold group-hover:translate-x-1.5 transition-transform duration-200 flex items-center gap-0.5">
-                  Open Page →
-                </span>
+              <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] sm:text-xs font-bold text-orange-600">
+                <span class="hidden sm:inline text-orange-700 font-medium truncate">Syllabus</span>
+                <span class="flex items-center gap-0.5 ml-auto">View →</span>
               </div>
             </div>
 
           </div>
         </div>
 
-        <!-- 6 CLICKABLE BUTTONS (CLICK OPENS SEPARATE NEW FULL PAGE) -->
-        <div class="bg-white border-2 border-orange-100 rounded-2xl p-4 shadow-md">
-          <div class="flex items-center justify-between mb-3 px-1">
-            <span class="text-xs font-extrabold uppercase text-slate-600 tracking-wider flex items-center gap-1.5">
-              <i data-lucide="layers" class="w-4 h-4 text-orange-600"></i> View Data Sections (Click button to open new page)
+        <!-- 6 CLICKABLE BUTTONS (2 ROWS OF 3 ON MOBILE, CLEAN GRID) -->
+        <div class="bg-white border-2 border-orange-100 rounded-2xl p-3 sm:p-4 shadow-sm">
+          <div class="flex items-center justify-between mb-2.5 px-1">
+            <span class="text-[11px] sm:text-xs font-extrabold uppercase text-slate-600 tracking-wider flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-600"></i> View Data Sections
             </span>
-            <span class="text-[11px] font-bold text-orange-700 bg-orange-50 px-2.5 py-0.5 rounded-full border border-orange-200">
+            <span class="text-[10px] sm:text-[11px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">
               6 Dedicated Pages
             </span>
           </div>
           
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            <button onclick="navigateToPage('students')" class="py-3.5 px-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all duration-300 flex items-center justify-center gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 transform active:scale-95 group">
+          <div class="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+            <button onclick="navigateToPage('students')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
               <i data-lucide="users" class="w-4 h-4 text-orange-600 group-hover:text-white transition-colors"></i>
-              <span>All Students</span>
+              <span class="truncate">Students</span>
             </button>
-            <button onclick="navigateToPage('verification')" class="py-3.5 px-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all duration-300 flex items-center justify-center gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 transform active:scale-95 group relative">
+            <button onclick="navigateToPage('verification')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group relative">
               <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 group-hover:text-white transition-colors"></i>
-              <span>Verification</span>
-              <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span class="truncate">Verify</span>
+              <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500"></span>
             </button>
-            <button onclick="navigateToPage('trainers')" class="py-3.5 px-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all duration-300 flex items-center justify-center gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 transform active:scale-95 group">
+            <button onclick="navigateToPage('trainers')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
               <i data-lucide="award" class="w-4 h-4 text-orange-600 group-hover:text-white transition-colors"></i>
-              <span>All Trainers</span>
+              <span class="truncate">Trainers</span>
             </button>
-            <button onclick="navigateToPage('courses')" class="py-3.5 px-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all duration-300 flex items-center justify-center gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 transform active:scale-95 group">
+            <button onclick="navigateToPage('courses')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
               <i data-lucide="book-marked" class="w-4 h-4 text-orange-600 group-hover:text-white transition-colors"></i>
-              <span>All Courses</span>
+              <span class="truncate">Courses</span>
             </button>
-            <button onclick="navigateToPage('growth')" class="py-3.5 px-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all duration-300 flex items-center justify-center gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 transform active:scale-95 group">
+            <button onclick="navigateToPage('growth')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
               <i data-lucide="trending-up" class="w-4 h-4 text-orange-600 group-hover:text-white transition-colors"></i>
-              <span>Growth</span>
+              <span class="truncate">Growth</span>
             </button>
-            <button onclick="navigateToPage('competition')" class="py-3.5 px-3 rounded-2xl text-xs sm:text-sm font-extrabold transition-all duration-300 flex items-center justify-center gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg hover:-translate-y-1 transform active:scale-95 group">
+            <button onclick="navigateToPage('competition')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
               <i data-lucide="trophy" class="w-4 h-4 text-orange-600 group-hover:text-white transition-colors"></i>
-              <span>Competition</span>
+              <span class="truncate">Matches</span>
             </button>
           </div>
         </div>
 
-        <!-- THE 5 ACTION CARDS -->
-        <div class="border-t-2 border-orange-200 pt-7 space-y-4">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <!-- THE 5 ACTION CARDS (COMPACT 2-COL ON MOBILE) -->
+        <div class="border-t-2 border-orange-200 pt-5 space-y-3">
+          <div class="flex justify-between items-center px-1">
             <div>
-              <h2 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
-                <i data-lucide="sparkles" class="w-6 h-6 text-orange-600"></i>
-                <span>Data Entry Forms (Click any box to open form)</span>
+              <h2 class="text-base sm:text-2xl font-black text-slate-900 flex items-center gap-1.5">
+                <i data-lucide="sparkles" class="w-4 h-4 sm:w-6 sm:h-6 text-orange-600"></i>
+                <span>Data Entry Forms</span>
               </h2>
-              <p class="text-xs sm:text-sm text-slate-500 font-medium">
-                Click on any box below to open the dedicated form and sync data directly to Google Sheet.
+              <p class="text-[11px] sm:text-sm text-slate-500 font-medium">
+                Click any box to open dedicated official form
               </p>
             </div>
-            <span class="text-xs font-bold text-orange-700 bg-orange-100 px-3 py-1 rounded-full border border-orange-200">
-              5 Action Forms
+            <span class="text-[10px] sm:text-xs font-bold text-orange-700 bg-orange-100 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-orange-200">
+              5 Forms
             </span>
           </div>
 
-          <!-- 5 Animated Action Cards Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <!-- 5 Animated Action Cards Grid (2-col on Mobile, 5-col on Desktop) -->
+          <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4">
             
             <!-- Box 1: Student Registration -->
-            <div onclick="openFormModal('student')" class="bg-white border-2 border-orange-100 rounded-3xl p-5 shadow-md hover:border-orange-500 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
-              <div class="absolute -right-3 -top-3 w-20 h-20 bg-orange-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
+            <div onclick="openFormModal('student')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
+              <div class="absolute -right-3 -top-3 w-16 h-16 sm:w-20 sm:h-20 bg-orange-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
               <div>
-                <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center mb-4 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all duration-300 shadow-sm group-hover:rotate-6">
-                  <i data-lucide="user-plus" class="w-6 h-6"></i>
+                <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center mb-2.5 sm:mb-4 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
+                  <i data-lucide="user-plus" class="w-4 h-4 sm:w-6 sm:h-6"></i>
                 </div>
-                <h4 class="text-base font-black text-slate-900 group-hover:text-orange-600 transition-colors">
+                <h4 class="text-xs sm:text-base font-black text-slate-900 group-hover:text-orange-600 transition-colors">
                   Student Registration
                 </h4>
-                <p class="text-xs text-slate-500 mt-1 font-medium leading-relaxed">
+                <p class="hidden sm:block text-xs text-slate-500 mt-1 font-medium leading-relaxed">
                   Admit a new student with full 32-point academic & level profile.
                 </p>
               </div>
-              <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-orange-600">
-                <span>Open Form (32 Points)</span>
+              <div class="mt-2.5 sm:mt-5 pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-xs font-bold text-orange-600">
+                <span>32 Points Form</span>
                 <span class="p-1 rounded-full bg-orange-50 group-hover:bg-orange-500 group-hover:text-white transition-all">
-                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  <i data-lucide="arrow-right" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
                 </span>
               </div>
             </div>
 
             <!-- Box 2: Trainer Registration -->
-            <div onclick="openFormModal('trainer')" class="bg-white border-2 border-orange-100 rounded-3xl p-5 shadow-md hover:border-orange-500 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
-              <div class="absolute -right-3 -top-3 w-20 h-20 bg-amber-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
+            <div onclick="openFormModal('trainer')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
+              <div class="absolute -right-3 -top-3 w-16 h-16 sm:w-20 sm:h-20 bg-amber-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
               <div>
-                <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mb-4 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all duration-300 shadow-sm group-hover:rotate-6">
-                  <i data-lucide="award" class="w-6 h-6"></i>
+                <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mb-2.5 sm:mb-4 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
+                  <i data-lucide="award" class="w-4 h-4 sm:w-6 sm:h-6"></i>
                 </div>
-                <h4 class="text-base font-black text-slate-900 group-hover:text-orange-600 transition-colors">
+                <h4 class="text-xs sm:text-base font-black text-slate-900 group-hover:text-orange-600 transition-colors">
                   Trainer Registration
                 </h4>
-                <p class="text-xs text-slate-500 mt-1 font-medium leading-relaxed">
+                <p class="hidden sm:block text-xs text-slate-500 mt-1 font-medium leading-relaxed">
                   Authorize a certified trainer with complete 13-point official profile & credentials.
                 </p>
               </div>
-              <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-orange-600">
-                <span>Open Form (13 Points)</span>
+              <div class="mt-2.5 sm:mt-5 pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-xs font-bold text-orange-600">
+                <span>13 Points Form</span>
                 <span class="p-1 rounded-full bg-orange-50 group-hover:bg-orange-500 group-hover:text-white transition-all">
-                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  <i data-lucide="arrow-right" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
                 </span>
               </div>
             </div>
 
             <!-- Box 3: Create Course -->
-            <div onclick="openFormModal('course')" class="bg-white border-2 border-orange-100 rounded-3xl p-5 shadow-md hover:border-orange-500 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
-              <div class="absolute -right-3 -top-3 w-20 h-20 bg-orange-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
+            <div onclick="openFormModal('course')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
+              <div class="absolute -right-3 -top-3 w-16 h-16 sm:w-20 sm:h-20 bg-orange-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
               <div>
-                <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center mb-4 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all duration-300 shadow-sm group-hover:rotate-6">
-                  <i data-lucide="plus-circle" class="w-6 h-6"></i>
+                <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center mb-2.5 sm:mb-4 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
+                  <i data-lucide="plus-circle" class="w-4 h-4 sm:w-6 sm:h-6"></i>
                 </div>
-                <h4 class="text-base font-black text-slate-900 group-hover:text-orange-600 transition-colors">
+                <h4 class="text-xs sm:text-base font-black text-slate-900 group-hover:text-orange-600 transition-colors">
                   Create Course
                 </h4>
-                <p class="text-xs text-slate-500 mt-1 font-medium leading-relaxed">
+                <p class="hidden sm:block text-xs text-slate-500 mt-1 font-medium leading-relaxed">
                   Build a new martial arts training program, duration, and fee.
                 </p>
               </div>
-              <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-orange-600">
-                <span>Open Form</span>
+              <div class="mt-2.5 sm:mt-5 pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-xs font-bold text-orange-600">
+                <span>New Course</span>
                 <span class="p-1 rounded-full bg-orange-50 group-hover:bg-orange-500 group-hover:text-white transition-all">
-                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  <i data-lucide="arrow-right" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
                 </span>
               </div>
             </div>
 
             <!-- Box 4: Fee Structure -->
-            <div onclick="openFormModal('fee')" class="bg-white border-2 border-orange-100 rounded-3xl p-5 shadow-md hover:border-orange-500 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
-              <div class="absolute -right-3 -top-3 w-20 h-20 bg-emerald-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
+            <div onclick="openFormModal('fee')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
+              <div class="absolute -right-3 -top-3 w-16 h-16 sm:w-20 sm:h-20 bg-emerald-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
               <div>
-                <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-4 group-hover:bg-gradient-to-r group-hover:from-emerald-600 group-hover:to-teal-600 group-hover:text-white transition-all duration-300 shadow-sm group-hover:rotate-6">
-                  <i data-lucide="badge-percent" class="w-6 h-6"></i>
+                <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-2.5 sm:mb-4 group-hover:bg-gradient-to-r group-hover:from-emerald-600 group-hover:to-teal-600 group-hover:text-white transition-all shadow-sm">
+                  <i data-lucide="badge-percent" class="w-4 h-4 sm:w-6 sm:h-6"></i>
                 </div>
-                <h4 class="text-base font-black text-slate-900 group-hover:text-emerald-700 transition-colors">
+                <h4 class="text-xs sm:text-base font-black text-slate-900 group-hover:text-emerald-700 transition-colors">
                   Fee Structure
                 </h4>
-                <p class="text-xs text-slate-500 mt-1 font-medium leading-relaxed">
+                <p class="hidden sm:block text-xs text-slate-500 mt-1 font-medium leading-relaxed">
                   Manage admission, monthly, exam, and tournament pricing.
                 </p>
               </div>
-              <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-700">
-                <span>Open Form</span>
+              <div class="mt-2.5 sm:mt-5 pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-xs font-bold text-emerald-700">
+                <span>Fee Pricing</span>
                 <span class="p-1 rounded-full bg-emerald-50 group-hover:bg-emerald-600 group-hover:text-white transition-all">
-                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  <i data-lucide="arrow-right" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
                 </span>
               </div>
             </div>
 
-            <!-- Box 5: Create Competition -->
-            <div onclick="openFormModal('competition')" class="bg-white border-2 border-orange-100 rounded-3xl p-5 shadow-md hover:border-orange-500 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
-              <div class="absolute -right-3 -top-3 w-20 h-20 bg-amber-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
+            <!-- Box 5: Create Competition (Span 2 on mobile for symmetry) -->
+            <div onclick="openFormModal('competition')" class="col-span-2 sm:col-span-1 bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
+              <div class="absolute -right-3 -top-3 w-16 h-16 sm:w-20 sm:h-20 bg-amber-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
               <div>
-                <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center mb-4 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all duration-300 shadow-sm group-hover:rotate-6">
-                  <i data-lucide="trophy" class="w-6 h-6"></i>
+                <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center mb-2.5 sm:mb-4 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
+                  <i data-lucide="trophy" class="w-4 h-4 sm:w-6 sm:h-6"></i>
                 </div>
-                <h4 class="text-base font-black text-slate-900 group-hover:text-orange-600 transition-colors">
+                <h4 class="text-xs sm:text-base font-black text-slate-900 group-hover:text-orange-600 transition-colors">
                   Create Competition
                 </h4>
-                <p class="text-xs text-slate-500 mt-1 font-medium leading-relaxed">
+                <p class="hidden sm:block text-xs text-slate-500 mt-1 font-medium leading-relaxed">
                   Announce new national/state level tournaments, dates, and venue.
                 </p>
               </div>
-              <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-orange-600">
-                <span>Open Form</span>
+              <div class="mt-2.5 sm:mt-5 pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-xs font-bold text-orange-600">
+                <span>New Tournament</span>
                 <span class="p-1 rounded-full bg-orange-50 group-hover:bg-orange-500 group-hover:text-white transition-all">
-                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  <i data-lucide="arrow-right" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
                 </span>
               </div>
             </div>
@@ -2420,8 +2422,100 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
       updateTopMetrics();
     }
 
+    // =========================================================================
+    // ⏱️ 10-MINUTE INACTIVITY AUTO-LOGOUT SYSTEM
+    // =========================================================================
+    const INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes (600,000 ms)
+    let autoLogoutTimer = null;
+    let timerCountdownInterval = null;
+    let secondsRemaining = 600;
+
+    function resetInactivityTimer() {
+      if (!adminState.isLoggedIn) return;
+
+      const now = Date.now();
+      localStorage.setItem('yoddha_last_active_time', now.toString());
+      secondsRemaining = 600;
+      updateTimerDisplay();
+
+      if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
+      autoLogoutTimer = setTimeout(triggerAutoLogout, INACTIVITY_TIMEOUT_MS);
+    }
+
+    function updateTimerDisplay() {
+      const display = document.getElementById('auto-logout-timer-display');
+      if (!display) return;
+      const mins = Math.floor(secondsRemaining / 60);
+      const secs = secondsRemaining % 60;
+      display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function startCountdownTicker() {
+      if (timerCountdownInterval) clearInterval(timerCountdownInterval);
+      timerCountdownInterval = setInterval(() => {
+        if (!adminState.isLoggedIn) {
+          clearInterval(timerCountdownInterval);
+          return;
+        }
+        const lastActive = parseInt(localStorage.getItem('yoddha_last_active_time') || '0');
+        if (lastActive) {
+          const elapsed = Date.now() - lastActive;
+          secondsRemaining = Math.max(0, Math.floor((INACTIVITY_TIMEOUT_MS - elapsed) / 1000));
+          updateTimerDisplay();
+          if (secondsRemaining <= 0) {
+            triggerAutoLogout();
+          }
+        }
+      }, 1000);
+    }
+
+    function setupActivityListeners() {
+      const events = ['mousedown', 'mousemove', 'keypress', 'keydown', 'scroll', 'touchstart', 'click'];
+      events.forEach(evt => {
+        window.addEventListener(evt, resetInactivityTimer, { passive: true });
+      });
+    }
+
+    function triggerAutoLogout() {
+      if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
+      if (timerCountdownInterval) clearInterval(timerCountdownInterval);
+
+      adminState.isLoggedIn = false;
+      localStorage.removeItem('yoddha_admin_logged');
+      localStorage.removeItem('yoddha_last_active_time');
+
+      // Clear credentials completely so user must re-enter everything
+      const idInput = document.getElementById('admin-input-id');
+      const passInput = document.getElementById('admin-input-pass');
+      if (idInput) idInput.value = '';
+      if (passInput) passInput.value = '';
+
+      // Close all open modals
+      const allModals = ['modal-form-student', 'modal-form-trainer', 'modal-edit-trainer', 'modal-form-course', 'modal-form-fee', 'modal-form-competition', 'modal-sync'];
+      allModals.forEach(m => closeModal(m));
+
+      checkAuth();
+
+      const banner = document.getElementById('session-timeout-banner');
+      if (banner) banner.classList.remove('hidden');
+
+      alert("⚠️ सुरक्षितता सूचना (Session Expired):\n\nतुम्ही १० मिनिटे कोणतीही हालचाल केली नसल्याने, अकॅडमी पोर्टलवरून आपोआप Logout झाला आहात.\n\nसुरक्षिततेसाठी पुन्हा सुरू करण्यासाठी तुमचा ID आणि Password टाकून Login करा.");
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
+      setupActivityListeners();
+
+      // Check session validity against 10-minute timeout
+      if (adminState.isLoggedIn) {
+        const lastActive = parseInt(localStorage.getItem('yoddha_last_active_time') || '0');
+        if (lastActive && (Date.now() - lastActive > INACTIVITY_TIMEOUT_MS)) {
+          triggerAutoLogout();
+          return;
+        }
+        resetInactivityTimer();
+        startCountdownTicker();
+      }
       checkAuth();
     });
 
@@ -2444,14 +2538,19 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
       const id = document.getElementById('admin-input-id').value.trim();
       const pass = document.getElementById('admin-input-pass').value.trim();
       const errorMsg = document.getElementById('login-error-msg');
+      const timeoutBanner = document.getElementById('session-timeout-banner');
 
       if (id === adminState.adminId && pass === adminState.adminPass) {
         adminState.isLoggedIn = true;
         localStorage.setItem('yoddha_admin_logged', 'true');
-        errorMsg.classList.add('hidden');
+        localStorage.setItem('yoddha_last_active_time', Date.now().toString());
+        if (errorMsg) errorMsg.classList.add('hidden');
+        if (timeoutBanner) timeoutBanner.classList.add('hidden');
         checkAuth();
+        resetInactivityTimer();
+        startCountdownTicker();
       } else {
-        errorMsg.classList.remove('hidden');
+        if (errorMsg) errorMsg.classList.remove('hidden');
       }
     }
 
@@ -2459,6 +2558,16 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
       if (confirm("Are you sure you want to log out of the Admin Panel?")) {
         adminState.isLoggedIn = false;
         localStorage.removeItem('yoddha_admin_logged');
+        localStorage.removeItem('yoddha_last_active_time');
+        if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
+        if (timerCountdownInterval) clearInterval(timerCountdownInterval);
+        
+        // Blank out inputs so credentials must be re-entered
+        const idInput = document.getElementById('admin-input-id');
+        const passInput = document.getElementById('admin-input-pass');
+        if (idInput) idInput.value = '';
+        if (passInput) passInput.value = '';
+
         checkAuth();
       }
     }
