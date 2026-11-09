@@ -86,11 +86,11 @@
       <span class="font-semibold sm:hidden text-[10px]">Central HQ</span>
     </div>
     <div class="flex items-center space-x-2 sm:space-x-4 text-[10px] sm:text-xs font-rajdhani">
-      <span id="top-sheet-status-indicator" class="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded text-white font-bold cursor-pointer" onclick="openSyncModal()" title="Click to view Google Sheet status">
-        <i data-lucide="sheet" class="w-3 sm:w-3.5 h-3 sm:h-3.5 text-emerald-300"></i> Google Sheet Connected
+      <span class="flex items-center gap-1 text-orange-100">
+        <i data-lucide="lock" class="w-3.5 h-3.5"></i> 256-Bit Encrypted
       </span>
       <span class="hidden sm:flex items-center gap-1 text-orange-100">
-        <i data-lucide="lock" class="w-3.5 h-3.5"></i> 256-Bit Encrypted
+        <i data-lucide="shield" class="w-3.5 h-3.5"></i> Verified Portal
       </span>
     </div>
   </div>
@@ -4009,6 +4009,7 @@ function updateRowIfExists(sheet, idCol, idVal, rowData) {
     }
 
     function openSyncModal() {
+      if (!adminState.isLoggedIn) return;
       updateSheetSyncUI();
       document.getElementById('modal-sync').classList.remove('hidden');
       lucide.createIcons();
