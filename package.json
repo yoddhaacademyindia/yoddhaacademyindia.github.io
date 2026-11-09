@@ -1,0 +1,12 @@
+{
+  "name": "yoddha-academy-india-management",
+  "version": "1.0.0",
+  "description": "All India Management Portal for Yoddha Academy - Lathi-Kathi Martial Arts",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": ["yoddha-academy", "lathi-kathi", "management-portal", "all-india"],
+  "author": "Yoddha Academy HQ",
+  "license": "MIT"
+}
