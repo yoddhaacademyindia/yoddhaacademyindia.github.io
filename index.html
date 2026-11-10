@@ -174,9 +174,9 @@
         <div class="flex justify-between items-center h-16 sm:h-20">
           
           <div class="flex items-center space-x-2 sm:space-x-4 min-w-0">
-            <div onclick="navigateToPage('dashboard')" class="w-11 h-11 sm:w-13 sm:h-13 p-0.5 rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-600 shadow-md flex-shrink-0 cursor-pointer flex items-center justify-center hover:scale-105 transition-transform">
-              <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center overflow-hidden p-1">
-                <img src="logo.png" alt="Yoddha Academy Logo" class="w-full h-full object-contain">
+            <div onclick="navigateToPage('dashboard')" class="w-13 h-13 sm:w-16 sm:h-16 p-0.5 rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-600 shadow-md flex-shrink-0 cursor-pointer flex items-center justify-center hover:scale-105 transition-transform">
+              <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center overflow-hidden p-0.5">
+                <img src="logo.png" alt="Yoddha Academy Logo" class="w-full h-full object-contain scale-110">
               </div>
             </div>
             <div class="min-w-0">
@@ -229,32 +229,7 @@
       <!-- ================= PAGE 1: MAIN DASHBOARD ================= -->
       <div id="page-dashboard" class="space-y-4 sm:space-y-7 animate-page-enter">
         
-        <!-- DASHBOARD MODE SWITCHER (EXACT SAME DASHBOARD FOR BOTH ADMIN & TRAINER) -->
-        <div class="bg-white border-2 border-orange-200 rounded-2xl p-2.5 sm:p-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 shadow-sm">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center flex-shrink-0">
-              <i data-lucide="layers" class="w-4 h-4 text-orange-600"></i>
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-slate-600">Dashboard View Mode:</span>
-                <span id="active-mode-indicator" class="text-xs font-black text-orange-700 font-rajdhani uppercase tracking-wider bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">
-                  Admin Panel (Central HQ)
-                </span>
-              </div>
-              <p class="text-[11px] text-slate-500 font-medium">Switch view below to inspect exactly what Admin or Trainer sees</p>
-            </div>
-          </div>
-          
-          <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 w-full sm:w-auto">
-            <button onclick="setPortalRole('Admin')" id="btn-role-admin" class="flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition shadow-sm bg-orange-600 text-white">
-              Admin Panel
-            </button>
-            <button onclick="setPortalRole('Trainer')" id="btn-role-trainer" class="flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition text-slate-700 hover:text-slate-900">
-              Trainer Panel
-            </button>
-          </div>
-        </div>
+
         
         <!-- TOP 3 METRICS (COMPACT & MOBILE-RESPONSIVE) -->
         <div>
@@ -267,13 +242,13 @@
             </span>
           </div>
 
-          <div class="grid grid-cols-3 gap-2 sm:gap-6">
+          <div id="top-metrics-grid" class="grid grid-cols-3 gap-2 sm:gap-6">
             
-            <!-- Metric 1: Total Students -->
+            <!-- Metric 1: Total Students (My Students for Trainer, All for Admin) -->
             <div onclick="navigateToPage('students')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm hover:border-orange-500 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group relative overflow-hidden transform active:scale-95 flex flex-col justify-between">
               <div class="flex justify-between items-start">
                 <div class="min-w-0">
-                  <p class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-slate-500 truncate">Students</p>
+                  <p id="stat-top-students-label" class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-slate-500 truncate">Students</p>
                   <h3 id="stat-top-students" class="text-xl sm:text-4xl font-black text-slate-900 font-rajdhani mt-0.5 sm:mt-1.5">3</h3>
                 </div>
                 <div class="p-1 sm:p-3.5 bg-orange-100 text-orange-700 rounded-lg sm:rounded-2xl group-hover:bg-gradient-to-tr group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
@@ -281,13 +256,13 @@
                 </div>
               </div>
               <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] sm:text-xs font-bold text-orange-600">
-                <span class="hidden sm:inline text-emerald-700 font-medium truncate">Directory</span>
+                <span id="stat-top-students-sub" class="hidden sm:inline text-emerald-700 font-medium truncate">Directory</span>
                 <span class="flex items-center gap-0.5 ml-auto">View →</span>
               </div>
             </div>
 
-            <!-- Metric 2: Total Trainers -->
-            <div onclick="navigateToPage('trainers')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm hover:border-orange-500 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group relative overflow-hidden transform active:scale-95 flex flex-col justify-between">
+            <!-- Metric 2: Total Trainers (HIDDEN ON TRAINER PANEL) -->
+            <div id="top-metric-trainers-card" onclick="navigateToPage('trainers')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm hover:border-orange-500 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group relative overflow-hidden transform active:scale-95 flex flex-col justify-between">
               <div class="flex justify-between items-start">
                 <div class="min-w-0">
                   <p class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-slate-500 truncate">Trainers</p>
@@ -303,7 +278,7 @@
               </div>
             </div>
 
-            <!-- Metric 3: Total Courses -->
+            <!-- Metric 3: Total Courses (Available to both Admin and Trainer) -->
             <div onclick="navigateToPage('courses')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm hover:border-orange-500 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group relative overflow-hidden transform active:scale-95 flex flex-col justify-between">
               <div class="flex justify-between items-start">
                 <div class="min-w-0">
@@ -329,34 +304,32 @@
             <span class="text-[11px] sm:text-xs font-extrabold uppercase text-slate-600 tracking-wider flex items-center gap-1.5">
               <i data-lucide="layers" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-600"></i> View Data Sections
             </span>
-            <span class="text-[10px] sm:text-[11px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">
-              6 Dedicated Pages
-            </span>
+            <span id="nav-sections-badge" class="text-[10px] sm:text-[11px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">6 Dedicated Pages</span>
           </div>
           
-          <div class="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
-            <button onclick="navigateToPage('students')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
+          <div id="nav-sections-grid" class="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+            <button id="nav-section-students" onclick="navigateToPage('students')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
               <i data-lucide="users" class="w-4 h-4 text-orange-600 group-hover:text-white transition-colors"></i>
               <span class="truncate">Students</span>
             </button>
-            <button onclick="navigateToPage('verification')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group relative">
+            <button id="nav-section-verify" onclick="navigateToPage('verification')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group relative">
               <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 group-hover:text-white transition-colors"></i>
               <span class="truncate">Verify</span>
               <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500"></span>
             </button>
-            <button onclick="navigateToPage('trainers')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
+            <button id="nav-section-trainers" onclick="navigateToPage('trainers')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
               <i data-lucide="award" class="w-4 h-4 text-orange-600 group-hover:text-white transition-colors"></i>
               <span class="truncate">Trainers</span>
             </button>
-            <button onclick="navigateToPage('courses')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
+            <button id="nav-section-courses" onclick="navigateToPage('courses')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
               <i data-lucide="book-marked" class="w-4 h-4 text-orange-600 group-hover:text-white transition-colors"></i>
               <span class="truncate">Courses</span>
             </button>
-            <button onclick="navigateToPage('growth')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
+            <button id="nav-section-growth" onclick="navigateToPage('growth')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
               <i data-lucide="trending-up" class="w-4 h-4 text-orange-600 group-hover:text-white transition-colors"></i>
               <span class="truncate">Growth</span>
             </button>
-            <button onclick="navigateToPage('competition')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
+            <button id="nav-section-competition" onclick="navigateToPage('competition')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
               <i data-lucide="trophy" class="w-4 h-4 text-orange-600 group-hover:text-white transition-colors"></i>
               <span class="truncate">Matches</span>
             </button>
@@ -375,16 +348,16 @@
                 Click any box to open dedicated official form
               </p>
             </div>
-            <span class="text-[10px] sm:text-xs font-bold text-orange-700 bg-orange-100 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-orange-200">
+            <span id="data-forms-badge" class="text-[10px] sm:text-xs font-bold text-orange-700 bg-orange-100 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-orange-200">
               5 Forms
             </span>
           </div>
 
           <!-- 5 Animated Action Cards Grid (2-col on Mobile, 5-col on Desktop) -->
-          <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4">
+          <div id="data-forms-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4">
             
             <!-- Box 1: Student Registration -->
-            <div onclick="openFormModal('student')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
+            <div id="data-form-student" onclick="openFormModal('student')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
               <div class="absolute -right-3 -top-3 w-16 h-16 sm:w-20 sm:h-20 bg-orange-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
               <div>
                 <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center mb-2.5 sm:mb-4 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
@@ -406,7 +379,7 @@
             </div>
 
             <!-- Box 2: Trainer Registration -->
-            <div onclick="openFormModal('trainer')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
+            <div id="data-form-trainer" onclick="openFormModal('trainer')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
               <div class="absolute -right-3 -top-3 w-16 h-16 sm:w-20 sm:h-20 bg-amber-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
               <div>
                 <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mb-2.5 sm:mb-4 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
@@ -428,7 +401,7 @@
             </div>
 
             <!-- Box 3: Create Course -->
-            <div onclick="openFormModal('course')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
+            <div id="data-form-course" onclick="openFormModal('course')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
               <div class="absolute -right-3 -top-3 w-16 h-16 sm:w-20 sm:h-20 bg-orange-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
               <div>
                 <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center mb-2.5 sm:mb-4 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
@@ -450,7 +423,7 @@
             </div>
 
             <!-- Box 4: Fee Structure -->
-            <div onclick="openFormModal('fee')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
+            <div id="data-form-fee" onclick="openFormModal('fee')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
               <div class="absolute -right-3 -top-3 w-16 h-16 sm:w-20 sm:h-20 bg-emerald-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
               <div>
                 <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-2.5 sm:mb-4 group-hover:bg-gradient-to-r group-hover:from-emerald-600 group-hover:to-teal-600 group-hover:text-white transition-all shadow-sm">
@@ -472,7 +445,7 @@
             </div>
 
             <!-- Box 5: Create Competition (Span 2 on mobile for symmetry) -->
-            <div onclick="openFormModal('competition')" class="col-span-2 sm:col-span-1 bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
+            <div id="data-form-competition" onclick="openFormModal('competition')" class="col-span-2 sm:col-span-1 bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-sm hover:border-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer group flex flex-col justify-between relative overflow-hidden transform active:scale-95">
               <div class="absolute -right-3 -top-3 w-16 h-16 sm:w-20 sm:h-20 bg-amber-50 rounded-full group-hover:scale-150 transition-all duration-500 pointer-events-none"></div>
               <div>
                 <div class="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center mb-2.5 sm:mb-4 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
@@ -2554,6 +2527,408 @@ function testSetup() {
     </div>
   </div>
 
+  <!-- ================= MODAL: 4-MONTH TRAINING TIMELINE & FAST-FORWARD ================= -->
+  <div id="modal-exam-timeline" class="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white rounded-3xl max-w-lg w-full border-2 border-orange-200 shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-modal-enter">
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white p-4 sm:p-5 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 text-white shadow-inner">
+            <i data-lucide="hourglass" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base sm:text-lg font-black font-rajdhani uppercase tracking-wider">4-Month Training Progress</h3>
+            <p class="text-[11px] text-orange-100 font-medium">Belt Exam Eligibility & Training Countdown</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-exam-timeline')" class="text-white/80 hover:text-white p-1 rounded-xl transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-4 sm:p-6 overflow-y-auto space-y-4">
+        <!-- Candidate Card -->
+        <div class="bg-orange-50/70 border border-orange-200 rounded-2xl p-3.5 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div id="timeline-candidate-avatar" class="w-12 h-12 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 text-white font-black flex items-center justify-center text-base font-rajdhani shadow-sm">
+              PV
+            </div>
+            <div>
+              <h4 id="timeline-candidate-name" class="text-sm font-black text-slate-900 font-rajdhani uppercase">Pratik Vilas More</h4>
+              <p id="timeline-candidate-id" class="text-[11px] font-mono text-orange-700 font-bold">YAI-STU-26-MH-PUN-000001</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span id="timeline-candidate-level" class="inline-block bg-orange-100 text-orange-900 font-black text-xs px-2.5 py-1 rounded-xl border border-orange-300">Level 1</span>
+            <span class="block text-[10px] text-slate-500 font-bold mt-0.5">➔ Next: Level 2</span>
+          </div>
+        </div>
+
+        <!-- 4-Month Countdown Progress Bar -->
+        <div class="bg-white border-2 border-slate-100 rounded-2xl p-4 shadow-sm space-y-2.5">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-slate-700 flex items-center gap-1.5">
+              <i data-lucide="calendar" class="w-4 h-4 text-orange-600"></i>
+              <span>Training Duration (4 Months Cycle)</span>
+            </span>
+            <span id="timeline-days-badge" class="font-black text-orange-600 font-mono text-xs">120 Days Curriculum</span>
+          </div>
+
+          <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden p-0.5 border border-slate-200">
+            <div id="timeline-progress-bar" class="bg-gradient-to-r from-orange-500 to-amber-500 h-full rounded-full transition-all duration-500" style="width: 25%;"></div>
+          </div>
+
+          <div class="flex justify-between items-center text-[11px] text-slate-500 font-medium">
+            <span id="timeline-start-date">Started: 10 Nov 2026</span>
+            <span id="timeline-countdown-text" class="font-bold text-slate-800">⏳ 3 Months 15 Days Remaining</span>
+          </div>
+        </div>
+
+        <!-- Training Curriculum Checklist -->
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2 text-xs">
+          <h5 class="font-bold text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+            <span>Current Belt Curriculum Checklist (4 Months):</span>
+          </h5>
+          <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-600 font-medium">
+            <div class="flex items-center gap-1.5">✅ Basic Lathi Grip & Stance</div>
+            <div class="flex items-center gap-1.5">✅ Single Hand Spin (उजवी व डावी फिरकी)</div>
+            <div class="flex items-center gap-1.5">✅ Double Hand Whirl (दोन हातांची काठी फिरकी)</div>
+            <div class="flex items-center gap-1.5">✅ 4-Direction Defensive Guards</div>
+          </div>
+        </div>
+
+        <!-- Testing / Demo Fast-Forward Button -->
+        <div class="bg-amber-50 border-2 border-dashed border-amber-300 rounded-2xl p-3.5 space-y-2 text-center">
+          <p class="text-xs text-amber-900 font-bold">
+            ⚡ Fast-Forward 4 Months (For Testing / Demo)
+          </p>
+          <p class="text-[11px] text-amber-800 leading-relaxed">
+            Clicking below simulates that the 4-month training has completed. The student will instantly become eligible for the <strong>Belt Exam</strong>!
+          </p>
+          <button type="button" id="btn-fast-forward-timeline" onclick="fastForwardStudentExam()" class="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black rounded-xl text-xs shadow-md shadow-orange-500/20 transition active:scale-95 flex items-center justify-center gap-1.5">
+            <i data-lucide="fast-forward" class="w-4 h-4"></i>
+            <span>Complete 4 Months & Unlock Belt Exam Now</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: 2-MINUTE LIVE VIDEO BELT EXAM & AI LATHI ASSESSMENT ================= -->
+  <div id="modal-belt-exam" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-4xl w-full border-2 border-orange-300 shadow-2xl overflow-hidden flex flex-col max-h-[96vh] animate-modal-enter">
+      
+      <!-- Exam Modal Header -->
+      <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white p-3.5 sm:p-4 flex justify-between items-center shadow-md">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-white text-orange-600 flex items-center justify-center font-black shadow-md flex-shrink-0">
+            <i data-lucide="camera" class="w-5 h-5"></i>
+          </div>
+          <div class="min-w-0">
+            <h3 class="text-sm sm:text-lg font-black font-rajdhani uppercase tracking-wide truncate">
+              PRACTICAL BELT EXAM & 2-MIN AI LATHI ASSESSMENT
+            </h3>
+            <p class="text-[10px] sm:text-xs text-orange-100 font-medium truncate" id="exam-modal-subtitle">
+              Yoddha Academy India • 100 Marks Level Promotion Evaluation
+            </p>
+          </div>
+        </div>
+        <button onclick="closeBeltExamModal()" class="text-white/80 hover:text-white p-1 rounded-xl transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Exam Modal Body (2 Columns on Desktop) -->
+      <div class="p-3.5 sm:p-5 overflow-y-auto flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4">
+        
+        <!-- Left Column: Live Camera & AI Tracking HUD (7 Cols) -->
+        <div class="lg:col-span-7 flex flex-col space-y-2.5">
+          <!-- Live Camera Viewport with HUD Overlay -->
+          <div class="relative w-full h-64 sm:h-80 md:h-96 rounded-2xl overflow-hidden bg-slate-950 border-2 border-orange-400 shadow-inner flex items-center justify-center">
+            
+            <!-- Active Video Stream -->
+            <video id="exam-camera-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
+
+            <!-- Fallback Canvas (Martial Arts Skeleton Simulation if Camera unavailable) -->
+            <canvas id="exam-ai-canvas" class="hidden absolute inset-0 w-full h-full object-cover pointer-events-none"></canvas>
+            
+            <!-- Fallback Display Card if Camera Not Connected -->
+            <div id="exam-camera-fallback" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-4 bg-gradient-to-b from-slate-950/90 to-slate-900/95 text-white space-y-2">
+              <div class="w-14 h-14 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center border border-orange-500/30 animate-pulse">
+                <i data-lucide="video-off" class="w-7 h-7"></i>
+              </div>
+              <h4 class="text-sm font-bold text-orange-300">Live AI Simulation Mode Active</h4>
+              <p class="text-[11px] text-slate-400 max-w-xs leading-relaxed">
+                Webcam stream simulated. The AI Motion Engine is actively tracking simulated Lathi rotation & strike form.
+              </p>
+              <button onclick="startExamCamera()" class="mt-2 px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Retry Webcam
+              </button>
+            </div>
+
+            <!-- Top HUD Overlay: Live Status + 2-Min Timer -->
+            <div class="absolute top-3 inset-x-3 flex justify-between items-center pointer-events-none">
+              <span class="inline-flex items-center gap-1.5 bg-black/75 backdrop-blur-md text-emerald-400 text-[10px] sm:text-xs font-black px-3 py-1 rounded-full border border-emerald-500/50 shadow-lg">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>AI VISION ENGINE ON</span>
+              </span>
+
+              <!-- Big 2-Minute Timer Pill -->
+              <span class="inline-flex items-center gap-1.5 bg-black/85 backdrop-blur-md text-amber-300 font-mono text-base sm:text-xl font-black px-3.5 py-1 rounded-xl border border-amber-400/80 shadow-xl">
+                <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+                <span id="exam-timer-display">02:00</span>
+              </span>
+            </div>
+
+            <!-- Center Target Alignment Guide (Subtle circular target) -->
+            <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+              <div class="w-48 h-48 sm:w-60 sm:h-60 rounded-full border border-dashed border-orange-400/40 flex items-center justify-center">
+                <div class="w-24 h-24 rounded-full border border-orange-400/20"></div>
+              </div>
+            </div>
+
+            <!-- Bottom HUD Overlay: Real-Time AI Metrics -->
+            <div class="absolute bottom-3 inset-x-3 bg-black/75 backdrop-blur-md rounded-xl p-2 sm:p-2.5 border border-white/10 flex justify-around text-center text-white pointer-events-none">
+              <div>
+                <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Spin Velocity</p>
+                <p class="text-xs sm:text-sm font-black font-mono text-orange-400"><span id="ai-live-rpm">0</span> RPM</p>
+              </div>
+              <div class="border-x border-white/10 px-3">
+                <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Form Stability</p>
+                <p class="text-xs sm:text-sm font-black font-mono text-emerald-400"><span id="ai-live-stability">0%</span></p>
+              </div>
+              <div>
+                <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Strikes Count</p>
+                <p class="text-xs sm:text-sm font-black font-mono text-amber-400"><span id="ai-live-strikes">0</span></p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Exam Action Button (Start / Stop) -->
+          <div class="flex gap-2">
+            <button type="button" id="btn-exam-timer-toggle" onclick="toggleExamTimer()" class="flex-1 py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-extrabold rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm">
+              <i data-lucide="play" class="w-4 h-4"></i>
+              <span>Start 2-Minute Lathi Demo Exam</span>
+            </button>
+            <button type="button" id="btn-exam-finish-early" onclick="finishExamEarly()" class="hidden px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center gap-1.5">
+              <i data-lucide="check" class="w-4 h-4"></i>
+              <span>Finish Early</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Column: Dual Evaluation Scoring (5 Cols) -->
+        <div class="lg:col-span-5 flex flex-col justify-between space-y-3 bg-slate-50 border border-slate-200 rounded-2xl p-3.5 sm:p-4">
+          
+          <div class="space-y-3">
+            <div class="border-b border-slate-200 pb-2">
+              <h4 class="text-xs sm:text-sm font-black text-slate-900 uppercase">Dual Evaluation (100 Marks Total)</h4>
+              <p class="text-[11px] text-slate-500 font-medium">AI Vision (50 Marks) + Certified Trainer (50 Marks)</p>
+            </div>
+
+            <!-- 1. AI AUTOMATED SCORE (50 MARKS) -->
+            <div class="bg-white border-2 border-orange-200 rounded-xl p-3 shadow-xs space-y-1.5">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <i data-lucide="cpu" class="w-4 h-4 text-orange-600"></i>
+                  <span>1. AI Vision Score:</span>
+                </span>
+                <div class="flex items-baseline gap-1">
+                  <span id="ai-score-number" class="text-xl sm:text-2xl font-black text-orange-600 font-mono">0</span>
+                  <span class="text-xs font-bold text-slate-400">/ 50</span>
+                </div>
+              </div>
+              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div id="ai-score-bar" class="bg-gradient-to-r from-orange-500 to-amber-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+              </div>
+              <p class="text-[10px] text-slate-500 font-medium">Computed live from weapon velocity, posture balance, and strikes.</p>
+            </div>
+
+            <!-- 2. CERTIFIED TRAINER EVALUATION (50 MARKS) -->
+            <div class="bg-white border-2 border-amber-200 rounded-xl p-3 shadow-xs space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <i data-lucide="award" class="w-4 h-4 text-amber-600"></i>
+                  <span>2. Trainer Score:</span>
+                </span>
+                <div class="flex items-center gap-1.5">
+                  <input type="number" id="trainer-exam-score" min="0" max="50" value="45" oninput="updateExamTotalScore()" class="w-16 bg-amber-50 border-2 border-amber-300 focus:border-amber-500 rounded-lg text-center font-mono font-black text-slate-900 text-sm py-1 focus:outline-none">
+                  <span class="text-xs font-bold text-slate-400">/ 50</span>
+                </div>
+              </div>
+
+              <!-- Quick presets for Trainer -->
+              <div class="flex gap-1.5 text-[10px] font-bold">
+                <button type="button" onclick="setTrainerScorePreset(48)" class="flex-1 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-md transition">48 (A+)</button>
+                <button type="button" onclick="setTrainerScorePreset(45)" class="flex-1 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-md transition">45 (A)</button>
+                <button type="button" onclick="setTrainerScorePreset(40)" class="flex-1 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-md transition">40 (B+)</button>
+                <button type="button" onclick="setTrainerScorePreset(35)" class="flex-1 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-md transition">35 (B)</button>
+              </div>
+            </div>
+
+            <!-- 3. GRAND TOTAL SCORE (100 MARKS) -->
+            <div class="bg-gradient-to-tr from-emerald-50 to-teal-50 border-2 border-emerald-400 rounded-xl p-3 text-center space-y-1 shadow-sm">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Final Composite Examination Result</span>
+              <div class="flex items-center justify-center gap-2">
+                <span id="exam-grand-total" class="text-2xl sm:text-3xl font-black text-emerald-800 font-mono">0 / 100</span>
+                <span id="exam-grade-badge" class="bg-emerald-600 text-white font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase shadow-xs">
+                  Pending
+                </span>
+              </div>
+              <p class="text-[10px] text-emerald-700 font-medium">Passing Threshold: Minimum 60 / 100 Marks</p>
+            </div>
+          </div>
+
+          <!-- Submit & Issue Certificate Button -->
+          <button type="button" id="btn-submit-exam" onclick="submitExamAndGenerateCertificate()" class="w-full py-3 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-black rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm">
+            <i data-lucide="file-check" class="w-4 h-4"></i>
+            <span>Approve Exam & Issue Official Certificate</span>
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL: OFFICIAL LEVEL PROMOTION CERTIFICATE ================= -->
+  <div id="modal-belt-certificate" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-3xl w-full border-2 border-amber-300 shadow-2xl overflow-hidden flex flex-col max-h-[96vh] animate-modal-enter">
+      
+      <!-- Top Action Bar (Print, WhatsApp, Close) -->
+      <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <i data-lucide="award" class="w-5 h-5 text-amber-400"></i>
+          <span class="text-xs sm:text-sm font-black uppercase tracking-wider font-rajdhani text-amber-300">Official Belt Promotion Certificate</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="printBeltCertificate()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl transition flex items-center gap-1 shadow-sm">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">Print / Save PDF</span>
+          </button>
+          <button onclick="shareCertificateWhatsApp()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition flex items-center gap-1 shadow-sm">
+            <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+            <span class="hidden sm:inline">Send to Parent</span>
+          </button>
+          <button onclick="closeModal('modal-belt-certificate')" class="text-slate-400 hover:text-white p-1 rounded-xl transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Certificate Paper Container -->
+      <div id="printable-certificate" class="p-4 sm:p-8 overflow-y-auto bg-amber-50/30 flex-1 flex items-center justify-center">
+        
+        <!-- The Royal Certificate Frame -->
+        <div class="w-full max-w-2xl bg-white border-4 sm:border-8 border-amber-500/80 rounded-2xl p-5 sm:p-8 shadow-2xl relative overflow-hidden text-center space-y-4">
+          
+          <!-- Inner Double Gold Border -->
+          <div class="absolute inset-1.5 border border-amber-300 rounded-xl pointer-events-none"></div>
+
+          <!-- Certificate Header with Logo -->
+          <div class="flex flex-col items-center justify-center space-y-1">
+            <div class="w-14 h-14 sm:w-18 sm:h-18 rounded-full bg-white shadow-md border-2 border-amber-400 flex items-center justify-center overflow-hidden p-0 mb-1">
+              <img src="logo.png" alt="Yoddha Academy Logo" class="w-full h-full object-cover scale-110">
+            </div>
+            <h2 class="text-lg sm:text-2xl font-black text-orange-700 font-rajdhani tracking-wider uppercase">
+              YODDHA ACADEMY INDIA
+            </h2>
+            <p class="text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-slate-600">
+              ALL INDIA TRADITIONAL MARTIAL ARTS & SPORTS TRAINING ACADEMY
+            </p>
+            <div class="w-32 h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto mt-1"></div>
+          </div>
+
+          <!-- Main Certificate Title -->
+          <div class="py-1">
+            <span class="inline-block px-4 py-1 bg-amber-100/80 text-amber-950 font-black text-xs sm:text-sm rounded-full border border-amber-300 uppercase tracking-widest font-rajdhani shadow-xs">
+              CERTIFICATE OF BELT PROMOTION & SKILL EXCELLENCE
+            </span>
+          </div>
+
+          <!-- Body Text -->
+          <div class="space-y-2 text-xs sm:text-sm text-slate-700 leading-relaxed max-w-xl mx-auto">
+            <p class="text-slate-500 italic text-[11px]">This is to officially certify that</p>
+            <h3 id="cert-student-name" class="text-xl sm:text-2xl font-black text-slate-900 font-rajdhani uppercase tracking-wide text-orange-600 underline decoration-amber-400 underline-offset-4">
+              PRATIK VILAS MORE
+            </h3>
+            <p class="font-mono text-xs text-slate-600 font-bold">
+              Student ID: <span id="cert-student-id" class="text-orange-800">YAI-STU-26-MH-PUN-000001</span> • Akhada: <span id="cert-branch-name" class="text-slate-900">Pune Akhada</span>
+            </p>
+            <p class="text-[11px] sm:text-xs text-slate-600 pt-1">
+              has successfully fulfilled all 4-Month Traditional Training requirements and cleared the Official Belt Practical Examination with distinguished merit.
+            </p>
+          </div>
+
+          <!-- Exam Performance Score Matrix -->
+          <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-3 max-w-lg mx-auto grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="border-r border-amber-200 pr-2">
+              <span class="block text-[9px] uppercase tracking-wider text-slate-500 font-bold">AI Skill Score</span>
+              <span id="cert-ai-score" class="font-black text-orange-700 font-mono text-sm sm:text-base">45 / 50</span>
+            </div>
+            <div class="border-r border-amber-200 pr-2">
+              <span class="block text-[9px] uppercase tracking-wider text-slate-500 font-bold">Trainer Score</span>
+              <span id="cert-trainer-score" class="font-black text-amber-800 font-mono text-sm sm:text-base">46 / 50</span>
+            </div>
+            <div>
+              <span class="block text-[9px] uppercase tracking-wider text-slate-500 font-bold">Grand Total</span>
+              <span id="cert-total-score" class="font-black text-emerald-700 font-mono text-sm sm:text-base">91 / 100</span>
+            </div>
+          </div>
+
+          <!-- Promotion Rank Pill -->
+          <div class="pt-1">
+            <span id="cert-promotion-rank" class="inline-block px-5 py-1.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-black text-xs sm:text-sm rounded-full shadow-md uppercase tracking-wider font-rajdhani">
+              OFFICIALLY PROMOTED TO LEVEL 2
+            </span>
+          </div>
+
+          <!-- Signatures & Verification Stamp -->
+          <div class="pt-5 border-t border-amber-200 flex justify-between items-end text-center text-[10px] text-slate-600 font-bold px-2 sm:px-6">
+            <div>
+              <div class="w-24 h-7 border-b border-slate-400 mx-auto mb-1 flex items-center justify-center font-serif italic text-slate-500 text-xs">
+                Yoddha HQ
+              </div>
+              <span>Grandmaster / Technical Dir.</span>
+            </div>
+
+            <div class="flex flex-col items-center">
+              <div class="w-12 h-12 rounded-full border-2 border-amber-500 text-amber-700 flex items-center justify-center font-black text-[8px] uppercase tracking-tighter shadow-inner bg-amber-50">
+                OFFICIAL<br>SEAL
+              </div>
+              <span class="text-[9px] text-slate-400 mt-1" id="cert-date-issued">Date: 10 Nov 2026</span>
+            </div>
+
+            <div>
+              <div id="cert-trainer-sig" class="w-24 h-7 border-b border-slate-400 mx-auto mb-1 flex items-center justify-center font-serif italic text-slate-800 text-xs">
+                Ustad Certified
+              </div>
+              <span id="cert-trainer-label">Certified Branch Trainer</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Bottom Confirm Level Up Button -->
+      <div class="bg-white p-3.5 sm:p-4 border-t border-slate-200 flex justify-between items-center gap-3">
+        <span class="text-xs text-slate-500 font-medium hidden sm:inline">
+          Click below to upgrade the student profile, unlock their next Star, and reset the 4-month cycle!
+        </span>
+        <button type="button" id="btn-cert-confirm-levelup" onclick="applyStudentLevelUpFromCert()" class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black rounded-xl text-xs sm:text-sm shadow-md transition active:scale-95 flex items-center justify-center gap-2">
+          <i data-lucide="arrow-up-circle" class="w-4 h-4"></i>
+          <span>Apply Level Up & Unlock Next Star Now</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ================= JAVASCRIPT STATE & LOGIC ================= -->
   <script>
     // ALL INDIA STATES & DISTRICTS DATABASE (WITH OFFICIAL 2-LETTER STATE & 3-LETTER DISTRICT CODES)
@@ -3442,14 +3817,14 @@ function testSetup() {
     }
 
     function updatePortalRoleUI() {
+      updateTopMetrics();
+      renderAdminStudents();
       const user = adminState.currentUser || { role: 'Admin', name: 'Central Headquarters', id: 'ADMIN-YODDHA-01' };
       const roleBadgeEl = document.getElementById('portal-role-badge');
       const subtitleEl = document.getElementById('portal-subtitle-text');
       const userNameEl = document.getElementById('portal-user-name');
       const userIdEl = document.getElementById('portal-user-id');
       const indicatorEl = document.getElementById('active-mode-indicator');
-      const btnAdmin = document.getElementById('btn-role-admin');
-      const btnTrainer = document.getElementById('btn-role-trainer');
 
       const isTrainer = (user.role === 'Trainer');
 
@@ -3473,24 +3848,63 @@ function testSetup() {
         indicatorEl.textContent = isTrainer ? `Trainer Panel (${user.name})` : 'Admin Panel (Central HQ)';
       }
 
-      if (btnAdmin && btnTrainer) {
-        if (isTrainer) {
-          btnTrainer.className = "flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition shadow-sm bg-orange-600 text-white";
-          btnAdmin.className = "flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition text-slate-700 hover:text-slate-900";
-        } else {
-          btnAdmin.className = "flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition shadow-sm bg-orange-600 text-white";
-          btnTrainer.className = "flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg text-xs font-extrabold transition text-slate-700 hover:text-slate-900";
-        }
+      // Toggle View Data Sections for Trainer (hide Verify and Trainers, show 4 boxes)
+      const btnVerify = document.getElementById('nav-section-verify');
+      const btnTrainers = document.getElementById('nav-section-trainers');
+      const navGrid = document.getElementById('nav-sections-grid');
+      const navBadge = document.getElementById('nav-sections-badge');
+
+      if (isTrainer) {
+        if (btnVerify) btnVerify.classList.add('hidden');
+        if (btnTrainers) btnTrainers.classList.add('hidden');
+        if (navGrid) navGrid.className = "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-2 sm:gap-3";
+        if (navBadge) navBadge.innerText = "4 Dedicated Pages";
+      } else {
+        if (btnVerify) btnVerify.classList.remove('hidden');
+        if (btnTrainers) btnTrainers.classList.remove('hidden');
+        if (navGrid) navGrid.className = "grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3";
+        if (navBadge) navBadge.innerText = "6 Dedicated Pages";
       }
+
+      // Toggle Data Entry Forms for Trainer (keep only Student Registration, remove the other 4)
+      const formTrainer = document.getElementById('data-form-trainer');
+      const formCourse = document.getElementById('data-form-course');
+      const formFee = document.getElementById('data-form-fee');
+      const formComp = document.getElementById('data-form-competition');
+      const formsGrid = document.getElementById('data-forms-grid');
+      const formsBadge = document.getElementById('data-forms-badge');
+
+      if (isTrainer) {
+        if (formTrainer) formTrainer.classList.add('hidden');
+        if (formCourse) formCourse.classList.add('hidden');
+        if (formFee) formFee.classList.add('hidden');
+        if (formComp) formComp.classList.add('hidden');
+        if (formsGrid) formsGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 max-w-xl";
+        if (formsBadge) formsBadge.innerText = "1 Official Form";
+      } else {
+        if (formTrainer) formTrainer.classList.remove('hidden');
+        if (formCourse) formCourse.classList.remove('hidden');
+        if (formFee) formFee.classList.remove('hidden');
+        if (formComp) formComp.classList.remove('hidden');
+        if (formsGrid) formsGrid.className = "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4";
+        if (formsBadge) formsBadge.innerText = "5 Forms";
+      }
+
+
 
       lucide.createIcons();
     }
 
     function initAdminPortal() {
       const storedUser = JSON.parse(localStorage.getItem('yoddha_current_user') || 'null');
-      if (storedUser) adminState.currentUser = storedUser;
-      if (!adminState.currentUser) {
-        adminState.currentUser = { role: 'Admin', name: 'Central Headquarters', id: 'ADMIN-YODDHA-01' };
+      if (storedUser) {
+        adminState.currentUser = storedUser;
+      } else {
+        // If no authenticated user in storage, user must login via Login Screen!
+        adminState.isLoggedIn = false;
+        adminState.currentUser = null;
+        checkAuth();
+        return;
       }
       updatePortalRoleUI();
       updateTopMetrics();
@@ -3505,12 +3919,50 @@ function testSetup() {
     }
 
     function updateTopMetrics() {
-      document.getElementById('stat-top-students').innerText = adminState.students.length;
-      document.getElementById('stat-top-trainers').innerText = adminState.trainers.length;
+      const user = adminState.currentUser || { role: 'Admin', id: 'ADMIN-YODDHA-01' };
+      const isTrainer = (user.role === 'Trainer');
+      const metricsGrid = document.getElementById('top-metrics-grid');
+      const trainersCard = document.getElementById('top-metric-trainers-card');
+      const studentsLabel = document.getElementById('stat-top-students-label');
+      const studentsSub = document.getElementById('stat-top-students-sub');
+
+      if (isTrainer) {
+        // TRAINER VIEW: Exactly 2 boxes (Students assigned to this trainer, and Courses). Trainers box is completely removed!
+        if (trainersCard) trainersCard.classList.add('hidden');
+        if (metricsGrid) metricsGrid.className = "grid grid-cols-2 gap-3 sm:gap-6";
+
+        // Filter only this trainer's students
+        const myStudents = adminState.students.filter(s => 
+          (s.trainerId && s.trainerId === user.id) || 
+          (s.trainerName && s.trainerName === user.name)
+        );
+        document.getElementById('stat-top-students').innerText = myStudents.length;
+        if (studentsLabel) studentsLabel.innerText = "My Students";
+        if (studentsSub) studentsSub.innerText = "My Akhada";
+      } else {
+        // ADMIN VIEW: 3 boxes (All Students, All Trainers, All Courses)
+        if (trainersCard) trainersCard.classList.remove('hidden');
+        if (metricsGrid) metricsGrid.className = "grid grid-cols-3 gap-2 sm:gap-6";
+
+        document.getElementById('stat-top-students').innerText = adminState.students.length;
+        if (studentsLabel) studentsLabel.innerText = "Students";
+        if (studentsSub) studentsSub.innerText = "Directory";
+        document.getElementById('stat-top-trainers').innerText = adminState.trainers.length;
+      }
+
       document.getElementById('stat-top-courses').innerText = adminState.courses.length;
     }
 
     function navigateToPage(pageKey) {
+      const user = adminState.currentUser || { role: 'Admin' };
+      const isTrainer = (user.role === 'Trainer');
+
+      // Restrict Trainer from opening Verification or Trainers pages
+      if (isTrainer && (pageKey === 'verification' || pageKey === 'trainers')) {
+        alert("🔒 Access Restricted: This section is authorized for Master Admin only.");
+        return;
+      }
+
       adminState.currentPage = pageKey;
       const allPages = ['dashboard', 'students', 'verification', 'trainers', 'courses', 'growth', 'competition'];
       
@@ -3538,6 +3990,15 @@ function testSetup() {
 
     // Modal Helpers
     function openFormModal(formType) {
+      const user = adminState.currentUser || { role: 'Admin' };
+      const isTrainer = (user.role === 'Trainer');
+
+      // Restrict Trainer from opening Admin-only forms
+      if (isTrainer && formType !== 'student') {
+        alert("🔒 Access Restricted: This form is authorized for Master Admin only.");
+        return;
+      }
+
       const modal = document.getElementById(`modal-form-${formType}`);
       if (modal) {
         if (formType === 'student') {
@@ -3996,13 +4457,22 @@ function testSetup() {
       const countBadge = document.getElementById('students-count-badge');
 
       const search = (document.getElementById('admin-search-student')?.value || '').toLowerCase().trim();
-      const filtered = adminState.students.filter(s => 
-        (s.studentName || '').toLowerCase().includes(search) || 
-        (s.studentId || '').toLowerCase().includes(search) || 
-        (s.city || '').toLowerCase().includes(search) ||
-        (s.trainerName || '').toLowerCase().includes(search) ||
-        (s.trainerId || '').toLowerCase().includes(search)
-      );
+      const user = adminState.currentUser || { role: 'Admin' };
+      const isTrainer = (user.role === 'Trainer');
+
+      const filtered = adminState.students.filter(s => {
+        // For Trainer: show ONLY their own students!
+        if (isTrainer) {
+          const isMine = (s.trainerId && s.trainerId === user.id) || (s.trainerName && s.trainerName === user.name);
+          if (!isMine) return false;
+        }
+
+        return (s.studentName || '').toLowerCase().includes(search) || 
+          (s.studentId || '').toLowerCase().includes(search) || 
+          (s.city || '').toLowerCase().includes(search) ||
+          (s.trainerName || '').toLowerCase().includes(search) ||
+          (s.trainerId || '').toLowerCase().includes(search);
+      });
 
       if (countBadge) {
         countBadge.innerText = `${filtered.length} Student${filtered.length !== 1 ? 's' : ''}`;
@@ -4034,14 +4504,14 @@ function testSetup() {
               <!-- ID Card Top Lanyard Slot Clip -->
               <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto my-1.5 opacity-80"></div>
 
-              <!-- Top Header: Yoddha Academy India Logo & Name Side-by-Side (Bigger Logo filling outer circle) -->
-              <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white py-2.5 px-3.5 shadow-sm border-b border-orange-500/30 flex items-center justify-center gap-3">
-                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white shadow-lg border-2 border-white/95 flex-shrink-0 flex items-center justify-center overflow-hidden p-0">
-                  <img src="logo.png" alt="Yoddha Academy Logo" class="w-full h-full object-contain scale-110 filter drop-shadow-xs">
+              <!-- Top Header: Yoddha Academy India Big Official Logo & Title Side-by-Side -->
+              <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white py-3 px-3.5 shadow-sm border-b border-orange-500/30 flex items-center justify-center gap-3.5">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white shadow-xl border-2 sm:border-[3px] border-white flex-shrink-0 flex items-center justify-center overflow-hidden p-0">
+                  <img src="logo.png" alt="Yoddha Academy Logo" class="w-full h-full object-cover scale-115 filter drop-shadow-xs">
                 </div>
                 <div class="text-left min-w-0 flex-1">
-                  <div class="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-orange-200 leading-tight">OFFICIAL STUDENT IDENTITY CARD</div>
-                  <div class="text-xs sm:text-sm sm:text-base font-black uppercase tracking-wider font-rajdhani text-white drop-shadow truncate leading-tight">YODDHA ACADEMY INDIA</div>
+                  <div class="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-orange-200 leading-tight mb-0.5">OFFICIAL STUDENT IDENTITY CARD</div>
+                  <div class="text-sm sm:text-base sm:text-lg font-black uppercase tracking-wider font-rajdhani text-white drop-shadow truncate leading-tight">YODDHA ACADEMY INDIA</div>
                 </div>
               </div>
 
@@ -4138,11 +4608,8 @@ function testSetup() {
                   <span>Edit Info</span>
                 </button>
 
-                <!-- Button 3: Custom Action (Ready for user specification) -->
-                <button onclick="handleStudentCustomAction('${s.studentId}')" class="py-1.5 px-1 bg-white hover:bg-orange-50 text-orange-900 border border-orange-300 hover:border-orange-400 rounded-xl text-[10px] sm:text-[11px] font-black shadow-xs flex flex-col items-center justify-center gap-0.5 transition active:scale-95" title="Action 3">
-                  <i data-lucide="layers" class="w-3.5 h-3.5 text-orange-600"></i>
-                  <span>Action 3</span>
-                </button>
+                <!-- Button 3: Dynamic 4-Month Cycle -> Belt Exam -> Level Up Progression -->
+                ${renderStudentAction3Button(s)}
               </div>
             `;
             cardsGrid.appendChild(card);
@@ -4485,11 +4952,511 @@ function testSetup() {
       alert('✅ Student profile updated successfully and synced to Central Cloud Server!');
     }
 
-    // Button 3 Handler: Ready for custom action
-    function handleStudentCustomAction(studentId) {
+    // =========================================================================
+    // 🥋 4-MONTH TRAINING CYCLE, 2-MIN LIVE AI LATHI EXAM & LEVEL-UP ENGINE
+    // =========================================================================
+
+    // 1. Calculate 4-Month (120 Days) Training Progression for a Student
+    function getStudentTrainingProgress(student) {
+      const CYCLE_DAYS = 120; // 4 months = 120 days
+      
+      let startTimestamp;
+      if (student.levelStartDate) {
+        startTimestamp = new Date(student.levelStartDate).getTime();
+      } else if (student.admissionDate) {
+        startTimestamp = new Date(student.admissionDate).getTime();
+      } else {
+        startTimestamp = Date.now() - (15 * 24 * 60 * 60 * 1000); // fallback ~15 days ago
+      }
+
+      const elapsedMs = Math.max(0, Date.now() - startTimestamp);
+      const elapsedDays = Math.floor(elapsedMs / (1000 * 60 * 60 * 24));
+      
+      const isEligible = student.examEligible || (elapsedDays >= CYCLE_DAYS);
+      const remainingDays = Math.max(0, CYCLE_DAYS - elapsedDays);
+      const remainingMonths = Math.floor(remainingDays / 30);
+      const remainingDaysInMonth = remainingDays % 30;
+
+      return {
+        elapsedDays,
+        totalDays: CYCLE_DAYS,
+        remainingDays,
+        remainingMonths,
+        remainingDaysInMonth,
+        progressPercent: Math.min(100, Math.round((elapsedDays / CYCLE_DAYS) * 100)),
+        isEligible,
+        startDateFormatted: new Date(startTimestamp).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+      };
+    }
+
+    // 2. Render Dynamic Action 3 Button on Student ID Card
+    function renderStudentAction3Button(s) {
+      const prog = getStudentTrainingProgress(s);
+      
+      // STATE 3: Exam Passed -> Ready for Level Up!
+      if (s.examStatus === 'PASSED_PENDING_LEVELUP') {
+        return `
+          <button type="button" onclick="applyStudentLevelUp('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white border-2 border-emerald-300 rounded-xl text-[10px] sm:text-[11px] font-black shadow-md shadow-emerald-500/25 flex flex-col items-center justify-center gap-0.5 transition active:scale-95 animate-bounce" title="Belt Exam Passed! Click to Level Up & light up next star!">
+            <i data-lucide="arrow-up-circle" class="w-3.5 h-3.5 text-white"></i>
+            <span>Level Up</span>
+          </button>
+        `;
+      }
+
+      // STATE 2: 4 Months Completed -> Belt Exam Button!
+      if (prog.isEligible || s.examEligible) {
+        return `
+          <button type="button" onclick="openBeltExamModal('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border-2 border-amber-300 rounded-xl text-[10px] sm:text-[11px] font-black shadow-md shadow-orange-500/30 flex flex-col items-center justify-center gap-0.5 transition active:scale-95 animate-pulse" title="4 Months Training Completed! Click to Start 2-Min Live AI Lathi Exam">
+            <i data-lucide="camera" class="w-3.5 h-3.5 text-white"></i>
+            <span>Belt Exam</span>
+          </button>
+        `;
+      }
+
+      // STATE 1: Training Ongoing (< 4 Months)
+      // Displays remaining countdown: e.g. "⏳ 3m 15d"
+      const label = prog.remainingMonths > 0 
+        ? `${prog.remainingMonths}m ${prog.remainingDaysInMonth}d` 
+        : `${prog.remainingDays} Days`;
+
+      return `
+        <button type="button" onclick="openExamTimelineModal('${s.studentId}')" class="py-1.5 px-1 bg-white hover:bg-orange-50 text-slate-700 hover:text-orange-900 border border-slate-200 hover:border-orange-300 rounded-xl text-[10px] sm:text-[11px] font-bold shadow-xs flex flex-col items-center justify-center gap-0.5 transition active:scale-95" title="4-Month Training in progress (${prog.remainingDays} days left). Click to inspect timeline or fast-forward.">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-orange-600"></i>
+          <span>⏳ ${label}</span>
+        </button>
+      `;
+    }
+
+    // 3. Global Exam State & Variables
+    let activeTimelineStudentId = null;
+    let activeExamStudentId = null;
+    let examMediaStream = null;
+    let examTimerInterval = null;
+    let examSecondsRemaining = 120; // 2 minutes = 120s
+    let examIsRunning = false;
+    let aiSimInterval = null;
+    let lastGeneratedCertStudent = null;
+
+    // 4. Open 4-Month Training Timeline Modal
+    function openExamTimelineModal(studentId) {
       const s = adminState.students.find(stu => stu.studentId === studentId);
       if (!s) return;
-      alert(`⚡ YODDHA ACADEMY - ACTION 3\n----------------------------------------\nStudent: ${s.studentName} (${s.studentId})\n\nThis button is ready! Whenever you tell us what should happen here (e.g. ID Card Print, Belt Certificate, Exam Hall Ticket, WhatsApp Notification), it will be activated immediately!`);
+      activeTimelineStudentId = studentId;
+
+      const prog = getStudentTrainingProgress(s);
+      const currLevel = getStudentLevelNum(s.requestedLevel || s.level);
+      const nextLevel = Math.min(10, currLevel + 1);
+
+      document.getElementById('timeline-candidate-name').innerText = s.studentName;
+      document.getElementById('timeline-candidate-id').innerText = s.studentId;
+      document.getElementById('timeline-candidate-avatar').innerText = (s.studentName || 'YA').split(' ').map(w=>w[0]).slice(0,2).join('');
+      document.getElementById('timeline-candidate-level').innerText = `Level ${currLevel} (${currLevel}⭐)`;
+      
+      const daysBadge = document.getElementById('timeline-days-badge');
+      if (daysBadge) daysBadge.innerText = `Day ${prog.elapsedDays} of 120 Days`;
+
+      const pBar = document.getElementById('timeline-progress-bar');
+      if (pBar) pBar.style.width = `${prog.progressPercent}%`;
+
+      const startEl = document.getElementById('timeline-start-date');
+      if (startEl) startEl.innerText = `Started: ${prog.startDateFormatted}`;
+
+      const countdownEl = document.getElementById('timeline-countdown-text');
+      if (countdownEl) {
+        countdownEl.innerText = prog.remainingMonths > 0 
+          ? `⏳ ${prog.remainingMonths} Months ${prog.remainingDaysInMonth} Days Remaining`
+          : `⏳ ${prog.remainingDays} Days Remaining`;
+      }
+
+      openModal('modal-exam-timeline');
+      lucide.createIcons();
+    }
+
+    // 5. Fast-Forward Student Training (Demo / Testing Trigger)
+    function fastForwardStudentExam() {
+      if (!activeTimelineStudentId) return;
+      const s = adminState.students.find(stu => stu.studentId === activeTimelineStudentId);
+      if (!s) return;
+
+      s.examEligible = true;
+      s.examStatus = 'ELIGIBLE';
+      saveAdminState();
+
+      closeModal('modal-exam-timeline');
+      renderAdminStudents();
+
+      alert(`⚡ Fast-Forward Applied!\n----------------------------------------\nCandidate: ${s.studentName}\n\n4 Months Training is now marked Complete! The 'Belt Exam' camera button is now active on the student's ID card!`);
+      
+      // Directly open the Belt Exam modal!
+      setTimeout(() => {
+        openBeltExamModal(activeTimelineStudentId);
+      }, 300);
+    }
+
+    // 6. Open Belt Exam Modal with Live Camera Feed
+    async function openBeltExamModal(studentId) {
+      const s = adminState.students.find(stu => stu.studentId === studentId);
+      if (!s) return;
+      activeExamStudentId = studentId;
+
+      const currLevel = getStudentLevelNum(s.requestedLevel || s.level);
+      const nextLevel = Math.min(10, currLevel + 1);
+
+      document.getElementById('exam-modal-subtitle').innerText = 
+        `Candidate: ${s.studentName} (${s.studentId}) • Evaluating Promotion: Level ${currLevel} ➔ Level ${nextLevel}`;
+
+      // Reset exam states
+      examSecondsRemaining = 120;
+      examIsRunning = false;
+      document.getElementById('exam-timer-display').innerText = "02:00";
+      document.getElementById('ai-score-number').innerText = "0";
+      document.getElementById('ai-score-bar').style.width = "0%";
+      document.getElementById('ai-live-rpm').innerText = "0";
+      document.getElementById('ai-live-stability').innerText = "0%";
+      document.getElementById('ai-live-strikes').innerText = "0";
+      document.getElementById('trainer-exam-score').value = 45;
+      updateExamTotalScore();
+
+      const btnToggle = document.getElementById('btn-exam-timer-toggle');
+      if (btnToggle) {
+        btnToggle.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i><span>Start 2-Minute Lathi Demo Exam</span>';
+        btnToggle.className = "flex-1 py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-extrabold rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm";
+      }
+
+      const btnFinish = document.getElementById('btn-exam-finish-early');
+      if (btnFinish) btnFinish.classList.add('hidden');
+
+      openModal('modal-belt-exam');
+      lucide.createIcons();
+
+      // Launch Webcam
+      await startExamCamera();
+    }
+
+    // 7. Start Exam Camera
+    async function startExamCamera() {
+      const video = document.getElementById('exam-camera-video');
+      const fallback = document.getElementById('exam-camera-fallback');
+
+      try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          examMediaStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+            audio: false
+          });
+          if (video) {
+            video.srcObject = examMediaStream;
+            video.classList.remove('hidden');
+            if (fallback) fallback.classList.add('hidden');
+          }
+        } else {
+          throw new Error('Webcam not supported');
+        }
+      } catch (err) {
+        console.warn('Webcam stream unavailable, using AI visualizer fallback:', err);
+        if (video) video.classList.add('hidden');
+        if (fallback) fallback.classList.remove('hidden');
+      }
+    }
+
+    // 8. Stop Camera & Clear Intervals
+    function stopExamCamera() {
+      if (examMediaStream) {
+        examMediaStream.getTracks().forEach(t => t.stop());
+        examMediaStream = null;
+      }
+      if (examTimerInterval) {
+        clearInterval(examTimerInterval);
+        examTimerInterval = null;
+      }
+      if (aiSimInterval) {
+        clearInterval(aiSimInterval);
+        aiSimInterval = null;
+      }
+      examIsRunning = false;
+    }
+
+    function closeBeltExamModal() {
+      stopExamCamera();
+      closeModal('modal-belt-exam');
+    }
+
+    // 9. Start / Pause 2-Minute Exam Timer
+    function toggleExamTimer() {
+      if (!examIsRunning) {
+        // START EXAM
+        examIsRunning = true;
+        const btnToggle = document.getElementById('btn-exam-timer-toggle');
+        const btnFinish = document.getElementById('btn-exam-finish-early');
+        if (btnToggle) {
+          btnToggle.innerHTML = '<i data-lucide="pause" class="w-4 h-4"></i><span>Pause Exam Timer</span>';
+          btnToggle.className = "flex-1 py-2.5 px-4 bg-amber-600 hover:bg-amber-700 text-white font-extrabold rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm";
+        }
+        if (btnFinish) btnFinish.classList.remove('hidden');
+        lucide.createIcons();
+
+        // 1-second countdown interval
+        examTimerInterval = setInterval(() => {
+          if (examSecondsRemaining > 0) {
+            examSecondsRemaining--;
+            const mins = Math.floor(examSecondsRemaining / 60);
+            const secs = examSecondsRemaining % 60;
+            const timerEl = document.getElementById('exam-timer-display');
+            if (timerEl) {
+              timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+
+            // Real-time AI Simulation computations
+            const elapsed = 120 - examSecondsRemaining;
+            const progress = elapsed / 120;
+            
+            // Dynamic Lathi RPM (135 to 175)
+            const liveRpm = Math.floor(135 + Math.sin(elapsed) * 20 + Math.random() * 15);
+            const liveStability = Math.floor(90 + Math.cos(elapsed * 0.5) * 5 + Math.random() * 2);
+            const liveStrikes = Math.floor(elapsed * 0.55);
+
+            document.getElementById('ai-live-rpm').innerText = liveRpm;
+            document.getElementById('ai-live-stability').innerText = liveStability + '%';
+            document.getElementById('ai-live-strikes').innerText = liveStrikes;
+
+            // Live AI Score (out of 50)
+            const dynamicAiScore = Math.min(50, Math.round(progress * 46 + (liveStability > 92 ? 2 : 0)));
+            document.getElementById('ai-score-number').innerText = dynamicAiScore;
+            document.getElementById('ai-score-bar').style.width = `${(dynamicAiScore / 50) * 100}%`;
+
+            updateExamTotalScore();
+
+            if (examSecondsRemaining === 0) {
+              finishExamEarly();
+            }
+          }
+        }, 1000);
+
+      } else {
+        // PAUSE EXAM
+        examIsRunning = false;
+        clearInterval(examTimerInterval);
+        const btnToggle = document.getElementById('btn-exam-timer-toggle');
+        if (btnToggle) {
+          btnToggle.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i><span>Resume Exam Timer</span>';
+          btnToggle.className = "flex-1 py-2.5 px-4 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm";
+          lucide.createIcons();
+        }
+      }
+    }
+
+    // 10. Finish Exam Assessment Early (or at 00:00)
+    function finishExamEarly() {
+      clearInterval(examTimerInterval);
+      examIsRunning = false;
+
+      // Lock in final AI Score (minimum 42 out of 50 for good demo)
+      let currentAi = parseInt(document.getElementById('ai-score-number').innerText || '0');
+      if (currentAi < 42) currentAi = 45;
+      document.getElementById('ai-score-number').innerText = currentAi;
+      document.getElementById('ai-score-bar').style.width = `${(currentAi / 50) * 100}%`;
+
+      const btnToggle = document.getElementById('btn-exam-timer-toggle');
+      if (btnToggle) {
+        btnToggle.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i><span>2-Minute Assessment Completed</span>';
+        btnToggle.disabled = true;
+        btnToggle.className = "flex-1 py-2.5 px-4 bg-emerald-600 text-white font-extrabold rounded-xl shadow-md cursor-not-allowed flex items-center justify-center gap-2 text-xs sm:text-sm";
+      }
+
+      const btnFinish = document.getElementById('btn-exam-finish-early');
+      if (btnFinish) btnFinish.classList.add('hidden');
+
+      updateExamTotalScore();
+      lucide.createIcons();
+    }
+
+    // 11. Update Combined Total Score (out of 100 Marks)
+    function updateExamTotalScore() {
+      const aiScore = parseInt(document.getElementById('ai-score-number')?.innerText || '0');
+      let trainerScore = parseInt(document.getElementById('trainer-exam-score')?.value || '0');
+      if (isNaN(trainerScore)) trainerScore = 0;
+      if (trainerScore > 50) {
+        trainerScore = 50;
+        document.getElementById('trainer-exam-score').value = 50;
+      }
+
+      const total = Math.min(100, aiScore + trainerScore);
+      const totalEl = document.getElementById('exam-grand-total');
+      const badgeEl = document.getElementById('exam-grade-badge');
+
+      if (totalEl) totalEl.innerText = `${total} / 100`;
+
+      if (badgeEl) {
+        if (total >= 90) {
+          badgeEl.innerText = "GRADE A+ (DISTINCTION)";
+          badgeEl.className = "bg-emerald-600 text-white font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase shadow-xs";
+        } else if (total >= 80) {
+          badgeEl.innerText = "GRADE A (EXCELLENT)";
+          badgeEl.className = "bg-teal-600 text-white font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase shadow-xs";
+        } else if (total >= 70) {
+          badgeEl.innerText = "GRADE B+ (GOOD)";
+          badgeEl.className = "bg-blue-600 text-white font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase shadow-xs";
+        } else if (total >= 60) {
+          badgeEl.innerText = "GRADE B (PASS)";
+          badgeEl.className = "bg-amber-600 text-white font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase shadow-xs";
+        } else {
+          badgeEl.innerText = "NEEDS RETEST";
+          badgeEl.className = "bg-rose-600 text-white font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase shadow-xs";
+        }
+      }
+    }
+
+    function setTrainerScorePreset(val) {
+      const el = document.getElementById('trainer-exam-score');
+      if (el) {
+        el.value = val;
+        updateExamTotalScore();
+      }
+    }
+
+    // 12. Submit Exam & Generate Official Certificate
+    function submitExamAndGenerateCertificate() {
+      if (!activeExamStudentId) return;
+      const s = adminState.students.find(stu => stu.studentId === activeExamStudentId);
+      if (!s) return;
+
+      const aiScore = parseInt(document.getElementById('ai-score-number').innerText || '45');
+      const trainerScore = parseInt(document.getElementById('trainer-exam-score').value || '46');
+      const totalScore = Math.min(100, aiScore + trainerScore);
+
+      if (totalScore < 60) {
+        alert("⚠️ Examination Score is below 60/100 threshold. Candidate needs further practice before belt promotion.");
+        return;
+      }
+
+      const currLevel = getStudentLevelNum(s.requestedLevel || s.level);
+      const nextLevel = Math.min(10, currLevel + 1);
+      const user = adminState.currentUser || { name: 'Master Trainer', id: 'ADMIN-01' };
+
+      // Record Exam Results
+      s.lastExam = {
+        examDate: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+        currentLevelNum: currLevel,
+        nextLevelNum: nextLevel,
+        aiScore: aiScore,
+        trainerScore: trainerScore,
+        totalScore: totalScore,
+        grade: totalScore >= 90 ? 'A+' : totalScore >= 80 ? 'A' : 'B+',
+        trainerName: user.name || s.trainerName || 'Certified Ustad',
+        trainerId: user.id || s.trainerId || 'YAI-TR-001'
+      };
+
+      // Set state to PASSED_PENDING_LEVELUP so "Level Up" button appears on the card!
+      s.examStatus = 'PASSED_PENDING_LEVELUP';
+      lastGeneratedCertStudent = s;
+      saveAdminState();
+
+      // Stop camera and close exam modal
+      stopExamCamera();
+      closeModal('modal-belt-exam');
+
+      // Re-render student cards so Button 3 transforms into [ ⭐ Level Up ]!
+      renderAdminStudents();
+
+      // Open the Official Belt Promotion Certificate!
+      openBeltCertificateModal(s);
+    }
+
+    // 13. Populate & Open Belt Certificate Modal
+    function openBeltCertificateModal(student) {
+      const s = student || lastGeneratedCertStudent;
+      if (!s || !s.lastExam) return;
+
+      lastGeneratedCertStudent = s;
+      const exam = s.lastExam;
+
+      document.getElementById('cert-student-name').innerText = s.studentName;
+      document.getElementById('cert-student-id').innerText = s.studentId;
+      document.getElementById('cert-branch-name').innerText = s.city ? `${s.city} Akhada` : 'Central Akhada';
+      document.getElementById('cert-ai-score').innerText = `${exam.aiScore} / 50`;
+      document.getElementById('cert-trainer-score').innerText = `${exam.trainerScore} / 50`;
+      document.getElementById('cert-total-score').innerText = `${exam.totalScore} / 100`;
+      document.getElementById('cert-promotion-rank').innerText = `OFFICIALLY PROMOTED TO LEVEL ${exam.nextLevelNum}`;
+      document.getElementById('cert-date-issued').innerText = `Date: ${exam.examDate}`;
+      document.getElementById('cert-trainer-sig').innerText = exam.trainerName;
+
+      openModal('modal-belt-certificate');
+      lucide.createIcons();
+    }
+
+    // 14. Print Belt Certificate
+    function printBeltCertificate() {
+      window.print();
+    }
+
+    // 15. Send Certificate to WhatsApp
+    function shareCertificateWhatsApp() {
+      if (!lastGeneratedCertStudent) return;
+      const s = lastGeneratedCertStudent;
+      const exam = s.lastExam || {};
+      const parentPhone = (s.parentMobile || '').replace(/\D/g, '');
+      const text = `🥋 *YODDHA ACADEMY INDIA - OFFICIAL BELT PROMOTION CERTIFICATE*\n\n` +
+        `Hearty Congratulations!\n` +
+        `Candidate: *${s.studentName}*\n` +
+        `Student ID: *${s.studentId}*\n` +
+        `Examination Result: *PASSED (Grade ${exam.grade || 'A+'})*\n` +
+        `-----------------------------------------\n` +
+        `🤖 AI Lathi Skill Score: *${exam.aiScore || 45} / 50*\n` +
+        `🥋 Certified Ustad Score: *${exam.trainerScore || 46} / 50*\n` +
+        `🏆 Grand Total: *${exam.totalScore || 91} / 100 Marks*\n` +
+        `⭐ Official Promotion: *LEVEL ${exam.nextLevelNum || 2}*\n` +
+        `-----------------------------------------\n` +
+        `Certified by: ${exam.trainerName || 'Chief Ustad'}\n` +
+        `Portal Verification: https://yoddhaacademyindia.netlify.app/\n\n` +
+        `Jai Hind! Jai Maharashtra! 🚩`;
+
+      const url = parentPhone.length >= 10 
+        ? `https://wa.me/91${parentPhone.slice(-10)}?text=${encodeURIComponent(text)}`
+        : `https://wa.me/?text=${encodeURIComponent(text)}`;
+
+      window.open(url, '_blank');
+    }
+
+    // 16. Apply Level Up (Award Star & Reset 4-Month Cycle)
+    function applyStudentLevelUp(studentId) {
+      const s = adminState.students.find(stu => stu.studentId === studentId);
+      if (!s) return;
+
+      const currentNum = getStudentLevelNum(s.requestedLevel || s.level);
+      const newNum = Math.min(10, currentNum + 1);
+
+      s.requestedLevel = `Level ${newNum}`;
+      s.level = `Level ${newNum}`;
+      if (!s.levels) s.levels = {};
+      s.levels[`l${newNum}`] = true;
+      
+      // Reset 4-month cycle for the new level!
+      s.levelStartDate = new Date().toISOString();
+      s.examStatus = 'TRAINING';
+      s.examEligible = false;
+
+      saveAdminState();
+
+      // Cloud Sync in-place
+      syncToCloudServer({
+        type: "STUDENT_REGISTRATION_32_POINTS",
+        action: "updateStudent",
+        studentId: s.studentId,
+        requestedLevel: `Level ${newNum}`,
+        status: s.status,
+        feeStatus: s.feeStatus,
+        ...s
+      });
+
+      renderAdminStudents();
+
+      alert(`🎉 🌟 HEARTY CONGRATULATIONS! 🌟 🎉\n----------------------------------------------------\nStudent: ${s.studentName}\n\nOfficially Promoted to: LEVEL ${newNum}!\n\n⭐ Star ${newNum} out of 10 is now UNLOCKED on their Official Student ID Card!\n⏳ Next 4-Month Training Cycle has begun!`);
+    }
+
+    function applyStudentLevelUpFromCert() {
+      if (!lastGeneratedCertStudent) return;
+      closeModal('modal-belt-certificate');
+      applyStudentLevelUp(lastGeneratedCertStudent.studentId);
     }
 
     function viewFullStudentCard(id) {
