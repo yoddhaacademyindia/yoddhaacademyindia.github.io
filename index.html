@@ -1284,13 +1284,29 @@
               </select>
             </div>
 
-            <!-- 11. Password -->
+            <!-- 11. Strong Security Password (Gmail/Facebook style) -->
             <div class="sm:col-span-3">
-              <label class="block font-bold text-slate-700 mb-1">Trainer Login Password / 4-Digit PIN *</label>
-              <div class="relative">
-                <input type="text" id="adm-trn-pass" required value="1234" placeholder="Enter secure login PIN / password" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-mono font-bold focus:outline-none focus:border-orange-500">
-                <span class="absolute right-3 top-2 text-[10px] text-slate-400 font-semibold">Trainer will use this PIN to log into Trainer Panel</span>
+              <div class="flex justify-between items-center mb-1">
+                <label class="block font-bold text-slate-700">Trainer Login Password (High Security Policy) *</label>
+                <button type="button" onclick="generateTrainerStrongPassword('adm-trn-pass')" class="text-[10px] text-amber-900 bg-amber-100 hover:bg-amber-200 px-2 py-0.5 rounded font-bold transition flex items-center gap-1 shadow-xs">
+                  <i data-lucide="key" class="w-3 h-3 text-amber-600"></i> Generate Strong Password
+                </button>
               </div>
+              <div class="relative">
+                <input type="text" id="adm-trn-pass" required value="Yoddha@2026" oninput="validateTrainerPasswordStrength('adm-trn-pass', 'adm-pass-rules')" placeholder="Min 8 chars, 1 Capital, 1 Number, 1 Symbol (e.g. Yoddha@2026)" class="w-full bg-white border border-slate-300 rounded-xl pl-3 pr-28 py-2 text-slate-900 font-mono font-bold focus:outline-none focus:border-orange-500 text-xs sm:text-sm">
+                <span id="adm-pass-badge" class="absolute right-2.5 top-2 text-[10px] font-black px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">✓ Strong Password</span>
+              </div>
+              <!-- Real-time Password Rules Indicators -->
+              <div id="adm-pass-rules" class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mt-2 text-[10px] font-bold">
+                <div id="adm-rule-len" class="px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg flex items-center gap-1"><span>✓</span> 8+ Characters</div>
+                <div id="adm-rule-cap" class="px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg flex items-center gap-1"><span>✓</span> 1 Capital (A-Z)</div>
+                <div id="adm-rule-num" class="px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg flex items-center gap-1"><span>✓</span> 1 Number (0-9)</div>
+                <div id="adm-rule-sym" class="px-2 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg flex items-center gap-1"><span>✓</span> 1 Symbol (@#$...)</div>
+              </div>
+              <p class="text-[10px] text-slate-500 mt-1.5 font-medium flex items-center gap-1">
+                <i data-lucide="mail-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                <span>This password and Trainer ID will be automatically emailed to the trainer's official email address.</span>
+              </p>
             </div>
           </div>
         </div>
@@ -1463,10 +1479,25 @@
               </select>
             </div>
 
-            <!-- 11. Password -->
+            <!-- 11. Strong Security Password -->
             <div class="sm:col-span-3">
-              <label class="block font-bold text-slate-700 mb-1">Trainer Login Password / 4-Digit PIN *</label>
-              <input type="text" id="edit-trn-pass" required placeholder="4-digit PIN" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-mono font-bold focus:outline-none focus:border-orange-500">
+              <div class="flex justify-between items-center mb-1">
+                <label class="block font-bold text-slate-700">Trainer Login Password (High Security Policy) *</label>
+                <button type="button" onclick="generateTrainerStrongPassword('edit-trn-pass')" class="text-[10px] text-amber-900 bg-amber-100 hover:bg-amber-200 px-2 py-0.5 rounded font-bold transition flex items-center gap-1 shadow-xs">
+                  <i data-lucide="key" class="w-3 h-3 text-amber-600"></i> Generate Strong Password
+                </button>
+              </div>
+              <div class="relative">
+                <input type="text" id="edit-trn-pass" required oninput="validateTrainerPasswordStrength('edit-trn-pass', 'edit-pass-rules')" placeholder="Min 8 chars, 1 Capital, 1 Number, 1 Symbol (e.g. Yoddha@2026)" class="w-full bg-white border border-slate-300 rounded-xl pl-3 pr-28 py-2 text-slate-900 font-mono font-bold focus:outline-none focus:border-orange-500 text-xs sm:text-sm">
+                <span id="edit-pass-badge" class="absolute right-2.5 top-2 text-[10px] font-black px-2 py-0.5 rounded bg-slate-100 text-slate-500">Checking...</span>
+              </div>
+              <!-- Real-time Password Rules Indicators -->
+              <div id="edit-pass-rules" class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mt-2 text-[10px] font-bold">
+                <div id="edit-rule-len" class="px-2 py-1 bg-slate-100 text-slate-500 rounded-lg flex items-center gap-1"><span>○</span> 8+ Characters</div>
+                <div id="edit-rule-cap" class="px-2 py-1 bg-slate-100 text-slate-500 rounded-lg flex items-center gap-1"><span>○</span> 1 Capital (A-Z)</div>
+                <div id="edit-rule-num" class="px-2 py-1 bg-slate-100 text-slate-500 rounded-lg flex items-center gap-1"><span>○</span> 1 Number (0-9)</div>
+                <div id="edit-rule-sym" class="px-2 py-1 bg-slate-100 text-slate-500 rounded-lg flex items-center gap-1"><span>○</span> 1 Symbol (@#$...)</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1777,6 +1808,52 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: STUDENT ADMISSION CONFIRMED & 1-CLICK FREE WHATSAPP ================= -->
+  <div id="modal-student-success" class="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white border-2 border-emerald-300 rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl space-y-4 animate-modal-pop relative text-center">
+      
+      <!-- Top Success Icon -->
+      <div class="w-16 h-16 mx-auto rounded-3xl bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-md">
+        <i data-lucide="check-circle" class="w-9 h-9"></i>
+      </div>
+
+      <div>
+        <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 text-[11px] font-black rounded-full border border-emerald-300 uppercase tracking-wider mb-1">
+          Admission Confirmed • 100% Free Cloud Synced
+        </span>
+        <h3 class="text-xl font-black text-slate-900 font-rajdhani uppercase">Student Registered Successfully!</h3>
+        <p class="text-xs text-slate-500 font-medium">Official 32-point student record saved and synced to Central Cloud Server.</p>
+      </div>
+
+      <!-- Quick Summary Card -->
+      <div id="student-success-details" class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-left space-y-1.5 text-xs">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Free 1-Click Action Buttons -->
+      <div class="space-y-2 pt-2">
+        <!-- 1. Send WhatsApp Message to Parent (100% Free) -->
+        <button id="btn-success-whatsapp" onclick="sendParentWhatsAppNotification()" class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-xl shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 transition active:scale-95">
+          <i data-lucide="message-circle" class="w-5 h-5"></i>
+          <span>📲 Send Instant WhatsApp Confirmation to Parent</span>
+        </button>
+
+        <div class="grid grid-cols-2 gap-2">
+          <!-- 2. View / Print School ID Card -->
+          <button onclick="viewNewStudentIdCard()" class="py-2.5 px-3 bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition">
+            <i data-lucide="id-card" class="w-4 h-4 text-orange-600"></i>
+            <span>View Student ID Card</span>
+          </button>
+
+          <!-- 3. Close -->
+          <button onclick="closeModal('modal-student-success')" class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
+            Done / Close
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -3718,12 +3795,73 @@ function testSetup() {
         ...newStudent
       });
 
+      lastRegisteredStudent = newStudent;
+
+      // Populate Success Modal Details
+      const detailsBox = document.getElementById('student-success-details');
+      if (detailsBox) {
+        detailsBox.innerHTML = `
+          <div class="flex justify-between items-center pb-2 border-b border-slate-200">
+            <div>
+              <strong class="text-sm font-black text-slate-900 uppercase font-rajdhani">${newStudent.studentName}</strong>
+              <div class="text-[11px] font-mono font-bold text-orange-700">${newStudent.studentId}</div>
+            </div>
+            <span class="px-2.5 py-0.5 bg-orange-100 text-orange-900 font-black text-xs rounded-full border border-orange-300">
+              ${newStudent.requestedLevel}
+            </span>
+          </div>
+          <div class="grid grid-cols-2 gap-1.5 pt-1 text-[11px]">
+            <div><span class="text-slate-500 font-semibold">Trainer:</span> <strong>${newStudent.trainerName}</strong></div>
+            <div><span class="text-slate-500 font-semibold">Fee:</span> <strong class="text-emerald-700">₹${newStudent.feeAmount} (Paid)</strong></div>
+            <div><span class="text-slate-500 font-semibold">Parent:</span> <strong>${newStudent.parentName}</strong></div>
+            <div><span class="text-slate-500 font-semibold">Mobile:</span> <strong class="font-mono">${newStudent.parentMobile}</strong></div>
+          </div>
+        `;
+      }
+
       renderAdminStudents();
       e.target.reset();
       closeFormModal('student');
 
-      alert(`✅ Student Registration Successful!\n\nStudent Name: ${studentName}\nStudent ID: ${studentId}\nRequested Level: ${requestedLevel}\nTrainer: ${trainerName} (${trainerId})\nFee Paid: ₹${feeAmount} (UTR: ${utrNumber})\n\nAll 32 data points synchronized to Central Cloud Server!`);
+      const successModal = document.getElementById('modal-student-success');
+      if (successModal) {
+        successModal.classList.remove('hidden');
+        lucide.createIcons();
+      } else {
+        alert(`✅ Student Registration Successful!\n\nStudent Name: ${studentName}\nStudent ID: ${studentId}\nRequested Level: ${requestedLevel}\nTrainer: ${trainerName} (${trainerId})\nFee Paid: ₹${feeAmount} (UTR: ${utrNumber})\n\nAll 32 data points synchronized to Central Cloud Server!`);
+        navigateToPage('students');
+      }
+    }
+
+    // Store last registered student for 1-click WhatsApp & Print actions
+    let lastRegisteredStudent = null;
+
+    function sendParentWhatsAppNotification() {
+      if (!lastRegisteredStudent) return;
+      const s = lastRegisteredStudent;
+      const phone = (s.parentMobile || '').replace(/\D/g, '');
+      const text = `🥋 *YODDHA ACADEMY INDIA - OFFICIAL ADMISSION CONFIRMATION*\n\n`
+        + `सस्नेह नमस्कार ${s.parentName || 'पालक'},\n`
+        + `आपल्या पाल्याचे *${s.studentName}* चे योध्या अकॅडमी इंडियामध्ये अधिकृत ॲडमिशन यशस्वीरित्या झाले आहे! 🚩\n\n`
+        + `🆔 *Student ID:* ${s.studentId}\n`
+        + `⭐ *10-Star Level:* ${s.requestedLevel || 'Level 1'}\n`
+        + `🥋 *Certified Trainer:* ${s.trainerName || 'Central Coach'} (${s.trainerId || ''})\n`
+        + `💳 *Fee Status:* ${s.feeStatus || 'Paid'} (₹${s.feeAmount || 500})\n`
+        + `🏫 *School:* ${s.schoolName || 'N/A'} (${s.standard || ''})\n\n`
+        + `🌐 *डिजिटल ओळखपत्र व अधिकृत पोर्टल लिंक:* https://yoddhaacademyindia.netlify.app\n\n`
+        + `- योध्या अकॅडमी इंडिया, केंद्रीय मुख्यालय 🚩`;
+      const encoded = encodeURIComponent(text);
+      window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encoded}`, '_blank');
+    }
+
+    function viewNewStudentIdCard() {
+      closeModal('modal-student-success');
       navigateToPage('students');
+      if (lastRegisteredStudent) {
+        const searchInput = document.getElementById('admin-search-student');
+        if (searchInput) searchInput.value = lastRegisteredStudent.studentId;
+        renderAdminStudents();
+      }
     }
 
     // Current student directory view mode ('cards' is default)

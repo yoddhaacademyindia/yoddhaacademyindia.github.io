@@ -1,133 +1,117 @@
 /**
- * =========================================================================
  * 🥋 YODDHA ACADEMY INDIA - CENTRAL CLOUD SERVER & LIVE AUTH SCRIPT
- * =========================================================================
+ * -------------------------------------------------------------------------
  * Features:
- * 1. Live Trainer Authentication (doGet):
- *    - Verifies Trainer ID & Password directly against Central Records!
- *    - Validates active status before granting access.
+ * 1. Live Dual Authentication (Admin + Certified Trainers) via doGet:
+ *    - Admin: ADMIN-YODDHA-01 / yoddha2026
+ *    - Trainer: Trainer ID (Col 2) & PIN/Password (Col 13) in 'Trainers' sheet
  * 2. Multi-Tab In-Place Sync (doPost):
  *    - 'Trainers' (13 Columns - in-place update by Trainer ID)
  *    - 'Students' (22 Columns - in-place update by Student ID)
- *    - 'Courses' (7 Columns - in-place update by Course ID)
- *    - 'Fee Structure' (6 Columns - auto updates schedule)
- *    - 'Competitions' (8 Columns - in-place update by Comp ID)
- * 3. Prevents duplicate rows on edits & updates.
- * =========================================================================
+ *    - 'Courses' (5 Columns - in-place update by Course ID)
+ *    - 'Competitions' (6 Columns - in-place update by Comp ID)
+ *    - 'Fee Structure' (Key/Value in-place update)
+ * 3. 100% FREE Automated Email Notifications (MailApp.sendEmail):
+ *    - Automated Congratulations & Credentials Email to newly registered Trainers
+ *    - Automated Admission Confirmation Email to Students / Parents
+ * -------------------------------------------------------------------------
  */
 
-// -------------------------------------------------------------------------
-// 1. LIVE AUTHENTICATION & DATA RETRIEVAL (GET)
+// 1. LIVE AUTHENTICATION ENDPOINT (GET)
 // -------------------------------------------------------------------------
 function doGet(e) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : "verifyLogin";
-    var callback = (e && e.parameter && e.parameter.callback) ? e.parameter.callback : null;
-    var result = {};
+  var action = (e && e.parameter && e.parameter.action) || "";
+  var id = (e && e.parameter && e.parameter.id) ? e.parameter.id.trim() : "";
+  var pass = (e && e.parameter && e.parameter.pass) ? e.parameter.pass.trim() : "";
 
-    // Action A: Verify Trainer Login credentials
-    if (action === "verifyLogin") {
-      var id = String((e && e.parameter && (e.parameter.id || e.parameter.trainerId)) || "").trim().toUpperCase();
-      var pass = String((e && e.parameter && (e.parameter.pass || e.parameter.password)) || "").trim();
+  var result = {
+    status: "ready",
+    server: "Yoddha Academy India Central Cloud Server",
+    timestamp: new Date().toISOString()
+  };
 
+  // Dual Login Verification (Admin or Trainer)
+  if (action === "verifyLogin") {
+    // 1A. Check Admin Login
+    if (id === "ADMIN-YODDHA-01" && pass === "yoddha2026") {
+      result = {
+        status: "success",
+        authenticated: true,
+        role: "admin",
+        userId: "ADMIN-YODDHA-01",
+        userName: "Master Admin HQ",
+        message: "Admin authentication successful"
+      };
+    } else {
+      // 1B. Check Trainer Login against 'Trainers' sheet
+      var ss = SpreadsheetApp.getActiveSpreadsheet();
       var sheet = ss.getSheetByName("Trainers");
+
       if (!sheet) {
-        result = { status: "error", authenticated: false, message: "Trainers section not found in Central Cloud Records." };
+        result = { status: "error", authenticated: false, message: "Trainers section not found in Central Cloud Server" };
       } else {
         var data = sheet.getDataRange().getValues();
         var found = false;
 
-        // Row 0 is header. Rows 1..N are trainers.
-        // Col 1: Trainer ID, Col 2: Name, Col 3: Position, Col 4: Status, Col 5: Mobile, Col 6: WhatsApp, Col 7: Email, Col 8: State, Col 9: District, Col 10: Branch, Col 11: Address, Col 12: Password
+        // Row 0 is header. Col index: 1 = Trainer ID, 2 = Full Name, 4 = Status, 12 = Login PIN/Password
         for (var i = 1; i < data.length; i++) {
-          var rowId = String(data[i][1]).trim().toUpperCase();
-          var rowPass = String(data[i][12]).trim();
-          var rowStatus = String(data[i][4]).trim();
+          var row = data[i];
+          var trnId = String(row[1] || "").trim();
+          var trnPass = String(row[12] || "").trim();
+          var trnStatus = String(row[4] || "").trim();
+          var trnName = String(row[2] || "").trim();
+          var trnPosition = String(row[3] || "").trim();
+          var trnBranch = String(row[10] || "").trim();
 
-          if (rowId === id) {
-            found = true;
-            if (rowPass === pass) {
-              if (rowStatus.toLowerCase() === "inactive" || rowStatus.toLowerCase() === "suspended") {
-                result = {
-                  status: "error",
-                  authenticated: false,
-                  message: "Your Trainer account is marked Inactive/Suspended. Please contact Central HQ."
-                };
+          if (trnId.toLowerCase() === id.toLowerCase()) {
+            if (trnPass === pass) {
+              if (trnStatus.toLowerCase() === "inactive") {
+                result = { status: "error", authenticated: false, message: "Your Trainer Account is currently Inactive. Please contact Central HQ." };
               } else {
                 result = {
                   status: "success",
                   authenticated: true,
-                  trainer: {
-                    trainerId: String(data[i][1]).trim(),
-                    fullName: String(data[i][2]).trim(),
-                    position: String(data[i][3]).trim(),
-                    status: rowStatus,
-                    mobile: String(data[i][5]).trim(),
-                    whatsapp: String(data[i][6]).trim(),
-                    email: String(data[i][7]).trim(),
-                    state: String(data[i][8]).trim(),
-                    district: String(data[i][9]).trim(),
-                    branch: String(data[i][10]).trim(),
-                    address: String(data[i][11]).trim()
-                  }
+                  role: "trainer",
+                  userId: trnId,
+                  userName: trnName,
+                  position: trnPosition,
+                  branch: trnBranch,
+                  message: "Trainer authentication successful"
                 };
               }
             } else {
-              result = {
-                status: "error",
-                authenticated: false,
-                message: "Incorrect password for Trainer " + id + ". Please verify with Central HQ."
-              };
+              result = { status: "error", authenticated: false, message: "Incorrect Password! Please enter valid credentials." };
             }
+            found = true;
             break;
           }
         }
 
         if (!found) {
-          result = {
-            status: "error",
-            authenticated: false,
-            message: "Trainer ID " + id + " was not found in Official Central Records."
-          };
+          result = { status: "error", authenticated: false, message: "Unique ID not found in Central Cloud Server" };
         }
       }
-    } else {
-      // Action B: Fetch all trainers
-      var sheet = ss.getSheetByName("Trainers");
-      var list = [];
-      if (sheet) {
-        var data = sheet.getDataRange().getValues();
-        for (var i = 1; i < data.length; i++) {
-          list.push({
-            trainerId: String(data[i][1]).trim(),
-            fullName: String(data[i][2]).trim(),
-            status: String(data[i][4]).trim(),
-            branch: String(data[i][10]).trim(),
-            district: String(data[i][9]).trim(),
-            state: String(data[i][8]).trim(),
-            mobile: String(data[i][5]).trim(),
-            password: String(data[i][12]).trim()
-          });
-        }
-      }
-      result = { status: "success", trainers: list };
     }
-
-    var outputText = callback ? (callback + "(" + JSON.stringify(result) + ");") : JSON.stringify(result);
-    var mime = callback ? ContentService.MimeType.JAVASCRIPT : ContentService.MimeType.JSON;
-    return ContentService.createTextOutput(outputText).setMimeType(mime);
-
-  } catch (err) {
-    var errObj = { status: "error", authenticated: false, message: err.toString() };
-    var outputText = callback ? (callback + "(" + JSON.stringify(errObj) + ");") : JSON.stringify(errObj);
-    var mime = callback ? ContentService.MimeType.JAVASCRIPT : ContentService.MimeType.JSON;
-    return ContentService.createTextOutput(outputText).setMimeType(mime);
   }
+
+  // Read data action
+  if (action === "readSheet") {
+    var sheetName = (e && e.parameter && e.parameter.sheet) || "Trainers";
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(sheetName);
+    if (!sheet) {
+      result = { status: "error", message: "Section not found: " + sheetName };
+    } else {
+      var data = sheet.getDataRange().getValues();
+      result = { status: "success", sheet: sheetName, rows: data };
+    }
+  }
+
+  return ContentService.createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
-// -------------------------------------------------------------------------
-// 2. LIVE SYNC & IN-PLACE ROW UPDATES (POST)
+// 2. LIVE SYNC & IN-PLACE ROW UPDATES + AUTOMATED EMAILS (POST)
 // -------------------------------------------------------------------------
 function doPost(e) {
   var lock = LockService.getScriptLock();
@@ -136,9 +120,9 @@ function doPost(e) {
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var data = JSON.parse(e.postData.contents);
-    var type = (data.type || "").toUpperCase();
+    var type = (data.type || data.action || "").toUpperCase();
 
-    // 1. TRAINER REGISTRATION & IN-PLACE UPDATE (13 POINTS)
+    // 1. TRAINER REGISTRATION & IN-PLACE UPDATE (13 POINTS) + WELCOME EMAIL
     if (type.indexOf("TRAINER") !== -1) {
       var sheet = getOrCreateSheet(ss, "Trainers", [
         "Timestamp", "Trainer ID", "Full Name", "Position", "Status",
@@ -147,33 +131,49 @@ function doPost(e) {
       ]);
 
       var trainerId = data.trainerId || data.id || "";
+      var trainerPass = data.password || data.pin || "1234";
+      var trainerEmail = (data.email || "").trim();
+      var trainerName = data.fullName || data.name || "Certified Trainer";
+
       var rowData = [
         new Date(),
         trainerId,
-        data.fullName || data.name || "",
+        trainerName,
         data.position || "Branch Instructor",
         data.status || "Active",
         data.mobile || data.phone || "",
         data.whatsapp || data.mobile || data.phone || "",
-        data.email || "",
+        trainerEmail,
         data.state || "",
         data.district || "",
         data.branch || "",
         data.address || "",
-        data.password || data.pin || "1234"
+        trainerPass
       ];
 
       var updated = updateRowIfExists(sheet, 2, trainerId, rowData);
       if (!updated) sheet.appendRow(rowData);
 
+      // Send 100% FREE Welcome & Credentials Email to Trainer via MailApp
+      var emailSent = false;
+      if (trainerEmail && data.sendWelcomeEmail !== false) {
+        try {
+          sendTrainerWelcomeEmail(trainerEmail, trainerName, trainerId, trainerPass, data.position, data.branch || data.district);
+          emailSent = true;
+        } catch(mailErr) {
+          Logger.log("Trainer Mail send failed: " + mailErr.toString());
+        }
+      }
+
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        message: updated ? "Trainer updated in-place" : "Trainer registered",
-        trainerId: trainerId
+        message: updated ? "Trainer updated in-place" : "Trainer registered successfully",
+        trainerId: trainerId,
+        welcomeEmailSent: emailSent
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 2. STUDENT REGISTRATION & IN-PLACE UPDATE (32 POINTS)
+    // 2. STUDENT REGISTRATION & IN-PLACE UPDATE (32 POINTS) + ADMISSION EMAIL
     if (type.indexOf("STUDENT") !== -1) {
       var sheet = getOrCreateSheet(ss, "Students", [
         "Timestamp", "Student ID", "Student Name", "Date of Birth", "Age",
@@ -184,10 +184,13 @@ function doPost(e) {
       ]);
 
       var studentId = data.studentId || data.id || "";
+      var studentName = data.studentName || data.name || "Student";
+      var parentEmail = (data.parentEmail || data.email || "").trim();
+
       var rowData = [
         new Date(),
         studentId,
-        data.studentName || data.name || "",
+        studentName,
         data.dob || "",
         data.age || 0,
         data.requestedLevel || "Level 1",
@@ -212,28 +215,39 @@ function doPost(e) {
       var updated = updateRowIfExists(sheet, 2, studentId, rowData);
       if (!updated) sheet.appendRow(rowData);
 
+      // Send 100% FREE Admission Confirmation Email to Parent/Student if email is provided
+      var studentEmailSent = false;
+      if (parentEmail && data.sendAdmissionEmail !== false) {
+        try {
+          sendStudentAdmissionEmail(parentEmail, studentName, studentId, data.requestedLevel, data.trainerName, data.feeAmount, data.utrNumber);
+          studentEmailSent = true;
+        } catch(mailErr) {
+          Logger.log("Student Mail send failed: " + mailErr.toString());
+        }
+      }
+
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        message: updated ? "Student updated in-place" : "Student registered",
-        studentId: studentId
+        message: updated ? "Student updated in-place" : "Student registered successfully",
+        studentId: studentId,
+        admissionEmailSent: studentEmailSent
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 3. COURSE CREATION & UPDATE
+    // 3. COURSES IN-PLACE UPDATE
     if (type.indexOf("COURSE") !== -1) {
       var sheet = getOrCreateSheet(ss, "Courses", [
-        "Timestamp", "Course ID", "Course Name", "Duration", "Fee (INR)", "Levels", "Description"
+        "Timestamp", "Course ID", "Course Name", "Duration", "Fee Amount", "Description"
       ]);
 
       var courseId = data.id || data.courseId || "";
       var rowData = [
         new Date(),
         courseId,
-        data.name || "",
+        data.name || data.courseName || "",
         data.duration || "",
         data.fee || 0,
-        data.levels || "Level 1 to Senior 4",
-        data.desc || ""
+        data.desc || data.description || ""
       ];
 
       var updated = updateRowIfExists(sheet, 2, courseId, rowData);
@@ -241,43 +255,15 @@ function doPost(e) {
 
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        message: updated ? "Course updated in-place" : "Course created",
+        message: updated ? "Course updated in-place" : "Course registered",
         courseId: courseId
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 4. FEE STRUCTURE UPDATE
-    if (type.indexOf("FEE") !== -1) {
-      var sheet = getOrCreateSheet(ss, "Fee Structure", [
-        "Timestamp", "Admission Fee (INR)", "Monthly Training Fee (INR)",
-        "Belt Exam Fee (INR)", "Tournament Fee (INR)", "Official UPI ID"
-      ]);
-
-      var rowData = [
-        new Date(),
-        data.admission || 500,
-        data.monthly || 300,
-        data.exam || 350,
-        data.tournament || 400,
-        data.upi || "yoddhaacademy5@okicici"
-      ];
-
-      if (sheet.getLastRow() >= 2) {
-        sheet.getRange(2, 1, 1, rowData.length).setValues([rowData]);
-      } else {
-        sheet.appendRow(rowData);
-      }
-
-      return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: "Fee Structure updated"
-      })).setMimeType(ContentService.MimeType.JSON);
-    }
-
-    // 5. COMPETITION ANNOUNCEMENT & UPDATE
+    // 4. COMPETITIONS IN-PLACE UPDATE
     if (type.indexOf("COMPETITION") !== -1) {
       var sheet = getOrCreateSheet(ss, "Competitions", [
-        "Timestamp", "Competition ID", "Title", "Date", "Location", "Entry Fee (INR)", "Categories", "Status"
+        "Timestamp", "Competition ID", "Title", "Date", "Location", "Categories", "Status"
       ]);
 
       var compId = data.id || data.compId || "";
@@ -287,9 +273,8 @@ function doPost(e) {
         data.title || "",
         data.date || "",
         data.location || "",
-        data.fee || 0,
         data.categories || "",
-        data.status || "Registrations Open"
+        data.status || "Open"
       ];
 
       var updated = updateRowIfExists(sheet, 2, compId, rowData);
@@ -302,83 +287,178 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", type: type }))
-      .setMimeType(ContentService.MimeType.JSON);
+    // 5. FEE STRUCTURE IN-PLACE UPDATE
+    if (type.indexOf("FEE") !== -1) {
+      var sheet = getOrCreateSheet(ss, "Fee Structure", [
+        "Fee Type / Parameter", "Amount (₹)", "Last Updated"
+      ]);
 
-  } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: error.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
+      var feeItems = [
+        ["Admission Fee", data.admission || 500, new Date()],
+        ["Monthly Training Fee", data.monthly || 400, new Date()],
+        ["Belt Exam Fee", data.exam || 200, new Date()],
+        ["Tournament Entry Fee", data.tournament || 300, new Date()],
+        ["Official Academy UPI ID", data.upi || "yoddhaacademy@upi", new Date()]
+      ];
+
+      sheet.clearContents();
+      sheet.appendRow(["Fee Type / Parameter", "Amount (₹)", "Last Updated"]);
+      feeItems.forEach(function(item) {
+        sheet.appendRow(item);
+      });
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Fee structure updated in-place"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: "Unrecognized action type: " + type
+    })).setMimeType(ContentService.MimeType.JSON);
+
+  } catch(error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+
   } finally {
     lock.releaseLock();
   }
 }
 
 // -------------------------------------------------------------------------
-// 3. CENTRAL RECORD HELPERS
+// 3. AUTOMATED HTML EMAIL GENERATORS (100% FREE VIA MAILAPP)
 // -------------------------------------------------------------------------
-function getOrCreateSheet(ss, sheetName, headers) {
-  var sheet = ss.getSheetByName(sheetName);
-  if (!sheet) {
-    sheet = ss.insertSheet(sheetName);
-    sheet.appendRow(headers);
-    var headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground("#ea580c"); // Saffron / Kesari Header
-    headerRange.setFontColor("#ffffff");
-    headerRange.setFontWeight("bold");
-    sheet.setFrozenRows(1);
-  }
-  return sheet;
+
+/**
+ * Sends official congratulations and credentials email to newly registered Trainer
+ */
+function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, position, branch) {
+  var subject = "🥋 Congratulations & Welcome to Yoddha Academy India - Official Certified Trainer Credentials";
+  
+  var htmlBody = '<div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #ffffff; border: 2px solid #ea580c; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">'
+    + '<div style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 25px 20px; text-align: center;">'
+    + '<h1 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">YODDHA ACADEMY INDIA</h1>'
+    + '<p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;">ALL INDIA MARTIAL ARTS & SPORTS TRAINING ACADEMY</p>'
+    + '</div>'
+    + '<div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;">'
+    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🥋 हार्दिक अभिनंदन व सहर्ष स्वागत!</h2>'
+    + '<p style="font-size: 14px; margin-bottom: 12px;">सस्नेह नमस्कार <strong>' + trainerName + '</strong> सर,</p>'
+    + '<p style="font-size: 14px; margin-bottom: 15px;">योध्या अकॅडमी इंडिया परिवारात आपले अधिकृत <strong>' + (position || "Certified Trainer") + '</strong> म्हणून नियुक्ती झाल्याबद्दल आपले मनःपूर्वक अभिनंदन!</p>'
+    + '<div style="background: #fff7ed; padding: 14px 16px; border-left: 4px solid #ea580c; border-radius: 6px; font-size: 13px; color: #9a3412; margin-bottom: 20px;">'
+    + 'भारतीय पारंपरिक मार्शल आर्ट्स (लाठी-काठी, तलवारबाजी, कराटे व स्वसंरक्षण) या पवित्र विद्येचा प्रचार-प्रसार करण्यासाठी, तरुण पिढीला सुदृढ व शिस्तबद्ध बनवण्यासाठी आपल्या भावी वाटचालीस व कार्यासाठी <strong>योध्या अकॅडमी इंडिया</strong> कडून लाख लाख शुभेच्छा! 🚩'
+    + '</div>'
+    + '<div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;">'
+    + '<h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">🔐 आपले अधिकृत लॉगिन क्रेडेंशियल्स (Official Login Details):</h3>'
+    + '<table style="width: 100%; font-size: 14px;">'
+    + '<tr><td style="padding: 6px 0; color: #64748b; width: 140px;"><strong>Trainer ID:</strong></td><td style="padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;">' + trainerId + '</td></tr>'
+    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Password / PIN:</strong></td><td style="padding: 6px 0; color: #0f172a; font-weight: bold; font-family: monospace; font-size: 16px; background: #fed7aa; padding: 3px 8px; border-radius: 6px; display: inline-block;">' + trainerPass + '</td></tr>'
+    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Designation:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: 600;">' + (position || "Branch Instructor") + '</td></tr>'
+    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Akhada / Branch:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: 600;">' + (branch || "Central HQ") + '</td></tr>'
+    + '</table>'
+    + '</div>'
+    + '<div style="text-align: center; margin: 25px 0;">'
+    + '<a href="https://yoddhaacademyindia.netlify.app" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);">'
+    + '🚀 ओपन ट्रेनर लॉगिन पॅनेल (Open Trainer Panel)'
+    + '</a>'
+    + '</div>'
+    + '<p style="font-size: 12px; color: #64748b; margin-top: 15px;">⚠️ <em>सुरक्षितता सूचना: हा ईमेल आणि पासवर्ड गोपनीय ठेवा. लॉगिन पोर्टलवर जाऊन आपण आपला पासवर्ड कधीही बदलू शकता.</em></p>'
+    + '</div>'
+    + '<div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;">'
+    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">योध्या अकॅडमी इंडिया • केंद्रीय मुख्यालय</p>'
+    + '<p style="margin: 4px 0 0;">अधिकृत पोर्टल: <a href="https://yoddhaacademyindia.netlify.app" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.netlify.app</a></p>'
+    + '<p style="margin: 4px 0 0;">Traditional Martial Arts & Sports Training • All India Organization</p>'
+    + '</div>'
+    + '</div>';
+
+  MailApp.sendEmail({
+    to: toEmail,
+    subject: subject,
+    htmlBody: htmlBody
+  });
 }
 
-function updateRowIfExists(sheet, idColIndex, idValue, newRowData) {
-  if (!idValue) return false;
-  var lastRow = sheet.getLastRow();
-  if (lastRow <= 1) return false;
+/**
+ * Sends official admission confirmation email to Student / Parent
+ */
+function sendStudentAdmissionEmail(toEmail, studentName, studentId, level, trainerName, feeAmount, utrNumber) {
+  var subject = "🥋 Welcome to Yoddha Academy India - Student Admission Confirmed (" + studentId + ")";
+  
+  var htmlBody = '<div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #ffffff; border: 2px solid #ea580c; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">'
+    + '<div style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 25px 20px; text-align: center;">'
+    + '<h1 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">YODDHA ACADEMY INDIA</h1>'
+    + '<p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;">OFFICIAL STUDENT ADMISSION CONFIRMATION</p>'
+    + '</div>'
+    + '<div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;">'
+    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🎉 प्रवेश निश्चित झाला आहे! (Admission Confirmed)</h2>'
+    + '<p style="font-size: 14px;">प्रिय पालक व <strong>' + studentName + '</strong>,<br><br>योध्या अकॅडमी इंडियामध्ये आपले अधिकृत ॲडमिशन यशस्वीरित्या पूर्ण झाले आहे. पारंपरिक युद्धकला आणि क्रीडा कौशल्यांमध्ये आपले सहर्ष स्वागत!</p>'
+    + '<div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;">'
+    + '<table style="width: 100%; font-size: 14px;">'
+    + '<tr><td style="padding: 6px 0; color: #64748b; width: 140px;"><strong>Student Name:</strong></td><td style="padding: 6px 0; color: #0f172a; font-weight: bold;">' + studentName + '</td></tr>'
+    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Student ID:</strong></td><td style="padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;">' + studentId + '</td></tr>'
+    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>10-Star Belt Level:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: bold;">' + (level || "Level 1") + '</td></tr>'
+    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Assigned Trainer:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: 600;">' + (trainerName || "Central Certified Coach") + '</td></tr>'
+    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Fee Paid:</strong></td><td style="padding: 6px 0; color: #166534; font-weight: bold;">₹' + (feeAmount || 500) + ' (UTR: ' + (utrNumber || "Verified") + ')</td></tr>'
+    + '</table>'
+    + '</div>'
+    + '<div style="text-align: center; margin: 25px 0;">'
+    + '<a href="https://yoddhaacademyindia.netlify.app" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block;">'
+    + '🪪 व्ह्यू डिजिटल आयडी कार्ड (View Digital ID Card)'
+    + '</a>'
+    + '</div>'
+    + '</div>'
+    + '<div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;">'
+    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">योध्या अकॅडमी इंडिया • केंद्रीय मुख्यालय</p>'
+    + '<p style="margin: 4px 0 0;">अधिकृत पोर्टल: <a href="https://yoddhaacademyindia.netlify.app" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.netlify.app</a></p>'
+    + '</div>'
+    + '</div>';
 
-  var idRange = sheet.getRange(2, idColIndex, lastRow - 1, 1).getValues();
-  for (var i = 0; i < idRange.length; i++) {
-    if (String(idRange[i][0]).trim().toUpperCase() === String(idValue).trim().toUpperCase()) {
-      var rowNumber = i + 2;
-      sheet.getRange(rowNumber, 1, 1, newRowData.length).setValues([newRowData]);
+  MailApp.sendEmail({
+    to: toEmail,
+    subject: subject,
+    htmlBody: htmlBody
+  });
+}
+
+// -------------------------------------------------------------------------
+// 4. HELPER FUNCTIONS FOR IN-PLACE ROW UPDATES & AUTO SHEET CREATION
+// -------------------------------------------------------------------------
+
+/**
+ * Searches column (1-based index) for matchVal. If found, updates that entire row.
+ * Returns true if row was found and updated in-place; false otherwise.
+ */
+function updateRowIfExists(sheet, colIndex, matchVal, newRowData) {
+  if (!matchVal) return false;
+  var data = sheet.getDataRange().getValues();
+  var matchStr = String(matchVal).trim().toLowerCase();
+
+  for (var i = 1; i < data.length; i++) {
+    var cellStr = String(data[i][colIndex - 1] || "").trim().toLowerCase();
+    if (cellStr === matchStr) {
+      sheet.getRange(i + 1, 1, 1, newRowData.length).setValues([newRowData]);
       return true;
     }
   }
   return false;
 }
 
-// -------------------------------------------------------------------------
-// 4. INSTANT INITIALIZATION TEST FUNCTION
-// -------------------------------------------------------------------------
-function testSetup() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-
-  // 1. Create Trainers Record with test trainer
-  var trnSheet = getOrCreateSheet(ss, "Trainers", [
-    "Timestamp", "Trainer ID", "Full Name", "Position", "Status",
-    "Calling Mobile", "WhatsApp Mobile", "Official Email", "State",
-    "District", "Akhada / Branch", "Full Address", "Login PIN / Password"
-  ]);
-  trnSheet.appendRow([
-    new Date(), "YAI-TR-MH-KOP-001", "Ustad Sachin Patil", "Head Master & Founder", "Active",
-    "9822012345", "9822012345", "sachin@yoddha.org", "Maharashtra (MH)",
-    "Kolhapur", "Kolhapur Main Akhada", "Shivaji Stadium Chowk, Kolhapur", "1234"
-  ]);
-
-  // 2. Create Students Record with test student
-  var stuSheet = getOrCreateSheet(ss, "Students", [
-    "Timestamp", "Student ID", "Student Name", "Date of Birth", "Age",
-    "Requested Level", "School Name", "Standard", "School Contact", "School Address",
-    "Parent Name", "Parent Mobile", "City / Village", "District", "State",
-    "Admission Date", "Trainer ID", "Trainer Name", "Status", "Fee Status",
-    "Fee Amount", "UPI UTR Number"
-  ]);
-  stuSheet.appendRow([
-    new Date(), "YAI-STU-26-MH-KOP-000001", "Aarav Sachin Jadhav", "2012-05-14", 14,
-    "Level 1 (Praveshika)", "Chhatrapati Shahu Vidyalaya", "8th Std", "9823000000", "Bhavani Mandap, Kolhapur",
-    "Sachin Jadhav", "9822112233", "Kolhapur", "Kolhapur", "Maharashtra (MH)",
-    "2026-06-01", "YAI-TR-MH-KOP-001", "Ustad Sachin Patil", "Active", "Paid",
-    500, "UTR90823412998"
-  ]);
-
-  Logger.log("✅ Yoddha Academy India Cloud Records initialized successfully!");
+/**
+ * Gets an existing sheet tab by name, or creates it with the given header row.
+ */
+function getOrCreateSheet(ss, sheetName, headers) {
+  var sheet = ss.getSheetByName(sheetName);
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+    sheet.appendRow(headers);
+    sheet.getRange(1, 1, 1, headers.length)
+      .setFontWeight("bold")
+      .setBackground("#ea580c")
+      .setFontColor("#ffffff");
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
 }
