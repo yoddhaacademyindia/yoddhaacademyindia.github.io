@@ -209,6 +209,11 @@
               <span id="auto-logout-timer-display">10:00</span>
             </div>
 
+            <button id="btn-refresh-cloud" onclick="pullLiveCloudRecords(false)" class="px-2 py-1.5 sm:px-3 sm:py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl transition flex items-center gap-1 sm:gap-1.5 text-xs font-bold shadow-sm" title="Refresh Live Data from Central Server">
+              <i data-lucide="refresh-cw" id="icon-refresh-cloud" class="w-3.5 h-3.5 text-amber-600"></i>
+              <span class="hidden sm:inline">Refresh Sheet</span>
+            </button>
+
             <button id="btn-cloud-sync" onclick="openSyncModal()" class="px-2 py-1.5 sm:px-3.5 sm:py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl transition flex items-center gap-1 sm:gap-1.5 text-xs font-bold shadow-sm" title="Central Cloud Server Status">
               <i data-lucide="cloud" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600"></i>
               <span class="hidden sm:inline">Cloud Sync</span>
@@ -2147,7 +2152,11 @@
             </div>
 
             <!-- Action buttons for connected cloud server -->
-            <div class="flex items-center gap-2 w-full sm:w-auto flex-shrink-0">
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto flex-shrink-0">
+              <button onclick="pullLiveCloudRecords(false)" class="flex-1 sm:flex-none px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 text-white rounded-xl font-black text-xs flex items-center justify-center gap-1.5 shadow-md transition">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <span>Pull Fresh Records from Sheet</span>
+              </button>
               <button onclick="testWebhookConnection()" class="flex-1 sm:flex-none px-3.5 py-2 bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
                 <i data-lucide="send" class="w-3.5 h-3.5 text-emerald-600"></i>
                 <span>Test Server Sync</span>
@@ -4007,6 +4016,8 @@ function testSetup() {
       prepareNewStudentId();
       navigateToPage('dashboard');
       lucide.createIcons();
+      // Auto-pull fresh data from Google Sheet in background
+      pullLiveCloudRecords(true);
     }
 
     function updateTopMetrics() {
@@ -6375,11 +6386,11 @@ function testSetup() {
     }
 
     
-    // Backward compatibility alias
-    function syncToCloudServer(d) { return syncToCloudServer(d); }
+    // Central Cloud Live Two-Way Sync
     function updateSheetSyncUI() { return updateCloudSyncUI(); }
     function deleteConnectedSheet() { return deleteConnectedCloud(); }
     function syncAllDataToSheet() { return syncAllDataToCloud(); }
+
     async function syncToCloudServer(dataPayload) {
       const url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
       if (!url) {
@@ -6398,6 +6409,82 @@ function testSetup() {
         console.error("Cloud Sync error:", err);
         return false;
       }
+    }
+
+    async function pullLiveCloudRecords(silent = false) {
+      const url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
+      if (!url) return false;
+
+      const refreshIcon = document.getElementById('icon-refresh-cloud');
+      if (refreshIcon) refreshIcon.classList.add('animate-spin');
+
+      try {
+        const queryUrl = `${url}${url.includes('?') ? '&' : '?'}action=readAll&t=${Date.now()}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const resp = await fetch(queryUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        const data = await resp.json();
+        if (data && data.status === 'success') {
+          let updatedTrainers = 0;
+          let updatedStudents = 0;
+
+          // 1. Live Sync Trainers from Google Sheet
+          if (Array.isArray(data.trainers) && data.trainers.length > 0) {
+            data.trainers.forEach(trn => {
+              const trnId = (trn.trainerId || trn.id || '').toUpperCase();
+              if (!trnId) return;
+              const idx = adminState.trainers.findIndex(t => (t.trainerId || t.id || '').toUpperCase() === trnId);
+              if (idx !== -1) {
+                adminState.trainers[idx] = { ...adminState.trainers[idx], ...trn };
+              } else {
+                adminState.trainers.push(trn);
+              }
+
+              // If current logged-in user is this trainer, update their live profile immediately
+              if (adminState.currentUser && adminState.currentUser.role === 'Trainer' && (adminState.currentUser.id || '').toUpperCase() === trnId) {
+                adminState.currentUser.name = trn.fullName || trn.name || adminState.currentUser.name;
+                adminState.currentUser.branch = trn.branch || adminState.currentUser.branch;
+                adminState.currentUser.position = trn.position || adminState.currentUser.position;
+                localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
+              }
+              updatedTrainers++;
+            });
+          }
+
+          // 2. Live Sync Students from Google Sheet
+          if (Array.isArray(data.students) && data.students.length > 0) {
+            data.students.forEach(stu => {
+              const stuId = (stu.studentId || stu.id || '').toUpperCase();
+              if (!stuId) return;
+              const idx = adminState.students.findIndex(s => (s.studentId || s.id || '').toUpperCase() === stuId);
+              if (idx !== -1) {
+                adminState.students[idx] = { ...adminState.students[idx], ...stu };
+              } else {
+                adminState.students.push(stu);
+              }
+              updatedStudents++;
+            });
+          }
+
+          saveAdminState();
+          updatePortalRoleUI();
+          updateTopMetrics();
+          renderAdminStudents();
+          renderAdminTrainers();
+
+          if (!silent) {
+            alert(`✅ Central Cloud Server Synced!\n\nFresh data successfully fetched from Google Sheet:\n• Trainers updated: ${updatedTrainers}\n• Students updated: ${updatedStudents}`);
+          }
+          return true;
+        }
+      } catch (err) {
+        console.warn("Live pull from Central Cloud Server:", err);
+      } finally {
+        if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+      }
+      return false;
     }
 
     function updateCloudSyncUI() {

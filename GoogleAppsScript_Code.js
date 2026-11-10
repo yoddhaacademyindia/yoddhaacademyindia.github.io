@@ -94,6 +94,85 @@ function doGet(e) {
     }
   }
 
+  // Read All Sections for Live Dashboard Sync
+  if (action === "readAll" || action === "syncAll") {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var allData = {
+      status: "success",
+      server: "Yoddha Academy India Central Cloud Server",
+      timestamp: new Date().toISOString(),
+      trainers: [],
+      students: []
+    };
+
+    // 1. Read Trainers from Sheet
+    var trnSheet = ss.getSheetByName("Trainers");
+    if (trnSheet) {
+      var trnRows = trnSheet.getDataRange().getValues();
+      for (var i = 1; i < trnRows.length; i++) {
+        var tr = trnRows[i];
+        if (tr[1]) {
+          allData.trainers.push({
+            trainerId: String(tr[1]).trim(),
+            id: String(tr[1]).trim(),
+            fullName: String(tr[2] || "").trim(),
+            name: String(tr[2] || "").trim(),
+            position: String(tr[3] || "Instructor").trim(),
+            status: String(tr[4] || "Active").trim(),
+            mobile: String(tr[5] || "").trim(),
+            phone: String(tr[5] || "").trim(),
+            whatsapp: String(tr[6] || tr[5] || "").trim(),
+            email: String(tr[7] || "").trim(),
+            state: String(tr[8] || "Maharashtra").trim(),
+            district: String(tr[9] || "Kolhapur").trim(),
+            branch: String(tr[10] || "").trim(),
+            address: String(tr[11] || "").trim(),
+            password: String(tr[12] || "").trim(),
+            pin: String(tr[12] || "").trim()
+          });
+        }
+      }
+    }
+
+    // 2. Read Students from Sheet
+    var stuSheet = ss.getSheetByName("Students");
+    if (stuSheet) {
+      var stuRows = stuSheet.getDataRange().getValues();
+      for (var j = 1; j < stuRows.length; j++) {
+        var sr = stuRows[j];
+        if (sr[1]) {
+          allData.students.push({
+            studentId: String(sr[1]).trim(),
+            id: String(sr[1]).trim(),
+            studentName: String(sr[2] || "").trim(),
+            name: String(sr[2] || "").trim(),
+            dob: String(sr[3] || "").trim(),
+            age: Number(sr[4]) || 0,
+            requestedLevel: String(sr[5] || "Level 1").trim(),
+            schoolName: String(sr[6] || "").trim(),
+            standard: String(sr[7] || "").trim(),
+            schoolContact: String(sr[8] || "").trim(),
+            schoolAddress: String(sr[9] || "").trim(),
+            parentName: String(sr[10] || "").trim(),
+            parentMobile: String(sr[11] || "").trim(),
+            city: String(sr[12] || "").trim(),
+            district: String(sr[13] || "").trim(),
+            state: String(sr[14] || "").trim(),
+            admissionDate: String(sr[15] || "").trim(),
+            trainerId: String(sr[16] || "").trim(),
+            trainerName: String(sr[17] || "").trim(),
+            status: String(sr[18] || "Active").trim(),
+            feeStatus: String(sr[19] || "Paid").trim(),
+            feeAmount: Number(sr[20]) || 500
+          });
+        }
+      }
+    }
+
+    return ContentService.createTextOutput(JSON.stringify(allData))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   // Read data action
   if (action === "readSheet") {
     var sheetName = (e && e.parameter && e.parameter.sheet) || "Trainers";
