@@ -3567,7 +3567,7 @@ function testSetup() {
       courses: JSON.parse(localStorage.getItem('yoddha_admin_courses')) || INITIAL_COURSES,
       competitions: JSON.parse(localStorage.getItem('yoddha_admin_comps')) || INITIAL_COMPETITIONS,
       feeStructure: JSON.parse(localStorage.getItem('yoddha_admin_fee')) || { admission: 500, monthly: 400, exam: 200, tournament: 300, upi: 'yoddhaacademy@upi' },
-      webhookUrl: localStorage.getItem('yoddha_webhook_url') || '',
+      webhookUrl: localStorage.getItem('yoddha_webhook_url') || 'https://script.google.com/macros/s/AKfycbwcc_lq887ZFL8E5TxdKWqQDZcrEvSrApYLG3ex4Z0gNEECF0IYi18--yAwQjcqI1vd/exec',
       currentPage: 'dashboard'
     };
 
