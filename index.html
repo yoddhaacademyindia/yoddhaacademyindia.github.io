@@ -3833,6 +3833,62 @@ function testSetup() {
       }
     }
 
+    // Quick 1-click toggle for Student Fee Status (Paid / Unpaid) with Live Cloud Sync
+    function toggleStudentFeeStatus(studentId) {
+      const idx = adminState.students.findIndex(s => s.studentId === studentId);
+      if (idx === -1) return;
+      const current = adminState.students[idx].feeStatus || 'Paid';
+      const newStatus = (current === 'Paid') ? 'Unpaid' : 'Paid';
+      adminState.students[idx].feeStatus = newStatus;
+      saveAdminState();
+      
+      // In-place sync to Google Sheets!
+      syncToGoogleSheet({
+        type: "STUDENT_REGISTRATION_32_POINTS",
+        action: "updateStudent",
+        studentId: studentId,
+        feeStatus: newStatus,
+        status: adminState.students[idx].status,
+        studentName: adminState.students[idx].studentName,
+        requestedLevel: adminState.students[idx].requestedLevel,
+        schoolName: adminState.students[idx].schoolName,
+        trainerId: adminState.students[idx].trainerId,
+        trainerName: adminState.students[idx].trainerName,
+        feeAmount: adminState.students[idx].feeAmount,
+        utrNumber: adminState.students[idx].utrNumber
+      });
+      
+      renderAdminStudents();
+    }
+
+    // Quick 1-click toggle for Student Active Status (Active / Inactive) with Live Cloud Sync
+    function toggleStudentActiveStatus(studentId) {
+      const idx = adminState.students.findIndex(s => s.studentId === studentId);
+      if (idx === -1) return;
+      const current = adminState.students[idx].status || 'Active';
+      const newStatus = (current === 'Active') ? 'Inactive' : 'Active';
+      adminState.students[idx].status = newStatus;
+      saveAdminState();
+      
+      // In-place sync to Google Sheets!
+      syncToGoogleSheet({
+        type: "STUDENT_REGISTRATION_32_POINTS",
+        action: "updateStudent",
+        studentId: studentId,
+        status: newStatus,
+        feeStatus: adminState.students[idx].feeStatus,
+        studentName: adminState.students[idx].studentName,
+        requestedLevel: adminState.students[idx].requestedLevel,
+        schoolName: adminState.students[idx].schoolName,
+        trainerId: adminState.students[idx].trainerId,
+        trainerName: adminState.students[idx].trainerName,
+        feeAmount: adminState.students[idx].feeAmount,
+        utrNumber: adminState.students[idx].utrNumber
+      });
+      
+      renderAdminStudents();
+    }
+
     // Store last registered student for 1-click WhatsApp & Print actions
     let lastRegisteredStudent = null;
 
@@ -3978,15 +4034,14 @@ function testSetup() {
               <!-- ID Card Top Lanyard Slot Clip -->
               <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto my-1.5 opacity-80"></div>
 
-              <!-- Top Header: Yoddha Academy India Name & Logo -->
-              <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white py-1.5 px-3 shadow-sm border-b border-orange-500/30 flex items-center justify-between gap-2">
-                <img src="logo.png" alt="Logo" class="w-6 h-6 object-contain bg-white rounded-full p-0.5 flex-shrink-0 shadow-xs">
-                <div class="flex-1 text-center min-w-0">
-                  <div class="text-[8px] font-black uppercase tracking-widest text-orange-200">Official Student Identity Card</div>
-                  <div class="text-xs sm:text-sm font-black uppercase tracking-wider font-rajdhani text-white drop-shadow truncate">YODDHA ACADEMY INDIA</div>
+              <!-- Top Header: Yoddha Academy India Logo & Name Side-by-Side -->
+              <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white py-2 px-3 shadow-sm border-b border-orange-500/30 flex items-center justify-center gap-2.5">
+                <div class="w-8 h-8 rounded-full bg-white p-0.5 shadow-md flex-shrink-0 flex items-center justify-center overflow-hidden">
+                  <img src="logo.png" alt="Logo" class="w-full h-full object-contain">
                 </div>
-                <div class="w-6 h-6 flex-shrink-0 opacity-0 sm:opacity-100">
-                  <img src="logo.png" alt="Logo" class="w-6 h-6 object-contain bg-white rounded-full p-0.5 shadow-xs">
+                <div class="text-left min-w-0">
+                  <div class="text-[8px] font-black uppercase tracking-widest text-orange-200 leading-tight">OFFICIAL STUDENT IDENTITY CARD</div>
+                  <div class="text-xs sm:text-sm font-black uppercase tracking-wider font-rajdhani text-white drop-shadow truncate leading-tight">YODDHA ACADEMY INDIA</div>
                 </div>
               </div>
 
@@ -4038,28 +4093,32 @@ function testSetup() {
                   <span class="truncate">Trainer: <strong class="text-slate-800 font-mono font-bold">${s.trainerId || 'YAI-TR-001'}</strong></span>
                 </div>
 
-                <!-- 6. Fee Paid/Unpaid & Active/Inactive Side-by-Side -->
-                <div class="flex items-center justify-center gap-2 mt-2.5 w-full">
-                  <!-- Fee Status -->
+                <!-- 6. Fee Paid/Unpaid & Active/Inactive Side-by-Side (NO AMOUNT SHOWN) -->
+                <div class="flex items-center justify-center gap-2.5 mt-2.5 w-full">
+                  <!-- Fee Status: Paid or Unpaid (Instant Toggle with Cloud Sync) -->
                   ${isFeePaid ? `
-                    <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-[10px] sm:text-[11px] font-black rounded-lg border border-emerald-300 flex items-center gap-1 shadow-xs">
-                      <i data-lucide="check-circle-2" class="w-3 h-3 text-emerald-600"></i> Paid ₹${s.feeAmount || 500}
-                    </span>
+                    <button type="button" onclick="toggleStudentFeeStatus('${s.studentId}')" title="Click to toggle Paid/Unpaid status (syncs to Cloud)" class="px-3 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[11px] font-black rounded-xl border border-emerald-300 flex items-center gap-1.5 shadow-xs transition active:scale-95 cursor-pointer">
+                      <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-600"></i>
+                      <span>Paid</span>
+                    </button>
                   ` : `
-                    <span class="px-2.5 py-1 bg-rose-100 text-rose-800 text-[10px] sm:text-[11px] font-black rounded-lg border border-rose-300 flex items-center gap-1 shadow-xs">
-                      <i data-lucide="alert-circle" class="w-3 h-3 text-rose-600"></i> Unpaid
-                    </span>
+                    <button type="button" onclick="toggleStudentFeeStatus('${s.studentId}')" title="Click to toggle Paid/Unpaid status (syncs to Cloud)" class="px-3 py-1 bg-rose-100 hover:bg-rose-200 text-rose-800 text-[11px] font-black rounded-xl border border-rose-300 flex items-center gap-1.5 shadow-xs transition active:scale-95 cursor-pointer">
+                      <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-rose-600"></i>
+                      <span>Unpaid</span>
+                    </button>
                   `}
 
-                  <!-- Active / Inactive Status -->
+                  <!-- Active / Inactive Status (Instant Toggle with Cloud Sync) -->
                   ${isActive ? `
-                    <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] sm:text-[11px] font-black rounded-lg border border-emerald-200 flex items-center gap-1 shadow-xs">
-                      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Active
-                    </span>
+                    <button type="button" onclick="toggleStudentActiveStatus('${s.studentId}')" title="Click to toggle Active/Inactive status (syncs to Cloud)" class="px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-black rounded-xl border border-emerald-200 flex items-center gap-1.5 shadow-xs transition active:scale-95 cursor-pointer">
+                      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <span>Active</span>
+                    </button>
                   ` : `
-                    <span class="px-2.5 py-1 bg-slate-100 text-slate-600 text-[10px] sm:text-[11px] font-black rounded-lg border border-slate-300 flex items-center gap-1 shadow-xs">
-                      <span class="w-2 h-2 rounded-full bg-slate-400"></span> Inactive
-                    </span>
+                    <button type="button" onclick="toggleStudentActiveStatus('${s.studentId}')" title="Click to toggle Active/Inactive status (syncs to Cloud)" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-black rounded-xl border border-slate-300 flex items-center gap-1.5 shadow-xs transition active:scale-95 cursor-pointer">
+                      <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                      <span>Inactive</span>
+                    </button>
                   `}
                 </div>
 
