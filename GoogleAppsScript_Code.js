@@ -33,7 +33,7 @@ function doGet(e) {
   // Dual Login Verification (Admin or Trainer)
   if (action === "verifyLogin") {
     // 1A. Check Admin Login
-    if (id.toUpperCase() === "ADMIN-YODDHA-01" && (pass === "yoddha2026" || pass === "776688")) {
+    if (id.toUpperCase() === "ADMIN-YODDHA-01" && (pass === "@hupare25077" || pass === "yoddha2026")) {
       result = {
         status: "success",
         authenticated: true,

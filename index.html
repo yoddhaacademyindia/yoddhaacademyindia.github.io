@@ -159,7 +159,7 @@
 
         <div class="pt-2 text-center bg-orange-50/70 p-2.5 rounded-xl border border-orange-100">
           <p class="text-[11px] text-slate-600 font-medium">Authorized Login: <strong class="text-orange-700">Admin & Certified Trainers</strong></p>
-          <p class="text-[10px] text-slate-500 font-medium mt-0.5">Admin: <span class="font-mono text-orange-800 font-bold">ADMIN-YODDHA-01</span> (Pass: <span class="font-mono text-orange-800 font-bold">yoddha2026</span>) • Or your <span class="font-bold text-slate-700">Trainer ID</span></p>
+          <p class="text-[10px] text-slate-500 font-medium mt-0.5">Admin: <span class="font-mono text-orange-800 font-bold">ADMIN-YODDHA-01</span> (Pass: <span class="font-mono text-orange-800 font-bold">@hupare25077</span>) • Or your <span class="font-bold text-slate-700">Trainer ID</span></p>
         </div>
       </form>
     </div>
@@ -3539,7 +3539,7 @@ function testSetup() {
     let adminState = {
       isLoggedIn: localStorage.getItem('yoddha_admin_logged') === 'true',
       adminId: 'ADMIN-YODDHA-01',
-      adminPass: 'yoddha2026',
+      adminPass: '@hupare25077',
       students: JSON.parse(localStorage.getItem('yoddha_admin_students_v6')) || INITIAL_STUDENTS,
       trainers: (JSON.parse(localStorage.getItem('yoddha_admin_trainers_v5')) || INITIAL_TRAINERS).map(t => ({
         trainerId: t.trainerId || t.id,
@@ -3708,7 +3708,7 @@ function testSetup() {
       if (timeoutBanner) timeoutBanner.classList.add('hidden');
 
       // 1. Instant Admin Verification
-      const isAdmin = (id.toUpperCase() === adminState.adminId.toUpperCase() && (pass === adminState.adminPass || pass === '776688'));
+      const isAdmin = (id.toUpperCase() === adminState.adminId.toUpperCase() && (pass === adminState.adminPass || pass === '@hupare25077' || pass === 'yoddha2026'));
       if (isAdmin) {
         adminState.isLoggedIn = true;
         adminState.currentUser = {
