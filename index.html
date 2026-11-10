@@ -3752,23 +3752,42 @@ function testSetup() {
 
         // If Central Cloud Server responded:
         if (authResult) {
-          if (authResult.authenticated && authResult.trainer) {
-            const trn = authResult.trainer;
+          if (authResult.authenticated) {
+            if (authResult.role === 'admin') {
+              adminState.isLoggedIn = true;
+              adminState.currentUser = {
+                role: 'Admin',
+                name: authResult.userName || 'Central Headquarters',
+                id: authResult.userId || adminState.adminId
+              };
+              localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
+              localStorage.setItem('yoddha_admin_logged', 'true');
+              localStorage.setItem('yoddha_last_active_time', Date.now().toString());
+
+              checkAuth();
+              setPortalRole('Admin');
+              resetInactivityTimer();
+              startCountdownTicker();
+              return;
+            }
+
+            // Trainer Login Success
+            const trn = authResult.trainer || authResult;
             adminState.isLoggedIn = true;
             adminState.currentUser = {
               role: 'Trainer',
-              name: trn.fullName || trn.name,
-              id: trn.trainerId || trn.id,
-              branch: trn.branch || `${trn.district} Akhada`,
-              ...trn
+              name: trn.userName || trn.fullName || trn.name || 'Certified Trainer',
+              id: trn.userId || trn.trainerId || trn.id || id,
+              branch: trn.branch || `${trn.district || 'Kolhapur'} Akhada`,
+              position: trn.position || 'Head Trainer'
             };
 
             // Update local registry with fresh data from Central Cloud Server
-            const trnIdx = adminState.trainers.findIndex(t => (t.trainerId || t.id).toUpperCase() === (trn.trainerId || trn.id).toUpperCase());
+            const trnIdx = adminState.trainers.findIndex(t => (t.trainerId || t.id || '').toUpperCase() === (adminState.currentUser.id || '').toUpperCase());
             if (trnIdx !== -1) {
-              adminState.trainers[trnIdx] = { ...adminState.trainers[trnIdx], ...trn };
+              adminState.trainers[trnIdx] = { ...adminState.trainers[trnIdx], ...adminState.currentUser };
             } else {
-              adminState.trainers.push(trn);
+              adminState.trainers.push(adminState.currentUser);
             }
             saveAdminState();
 
