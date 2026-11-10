@@ -353,7 +353,36 @@
             </span>
           </div>
 
-          <!-- 5 Animated Action Cards Grid (2-col on Mobile, 5-col on Desktop) -->
+          <!-- A. Big Rectangular Action Banner for Trainer (Full-width across dashboard) -->
+          <div id="trainer-student-reg-banner" onclick="openFormModal('student')" class="hidden w-full bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 rounded-3xl p-5 sm:p-7 shadow-xl shadow-orange-500/20 text-white cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all duration-300 transform active:scale-95 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-2 border-white/40 group relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-56 h-56 bg-white/10 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
+            <div class="flex items-center gap-4 sm:gap-6 relative z-10">
+              <div class="w-14 h-14 sm:w-18 sm:h-18 rounded-2xl bg-white text-orange-600 flex items-center justify-center flex-shrink-0 shadow-lg group-hover:rotate-6 transition-transform">
+                <i data-lucide="user-plus" class="w-8 h-8 sm:w-10 sm:h-10 text-orange-600"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] sm:text-xs font-black uppercase tracking-widest bg-white/20 px-2.5 py-0.5 rounded-full border border-white/30 text-amber-100">Official Portal Action</span>
+                  <span class="text-[10px] sm:text-xs font-bold text-amber-200">32-Points Comprehensive Form</span>
+                </div>
+                <h3 class="text-lg sm:text-2xl font-black font-rajdhani uppercase tracking-wide text-white drop-shadow mt-1">
+                  NEW STUDENT ADMISSION & REGISTRATION
+                </h3>
+                <p class="text-xs sm:text-sm text-orange-100 font-medium max-w-xl leading-relaxed mt-0.5">
+                  Admit a new warrior with complete 32-point academic record, 10-star martial arts level, photo upload, and instant parent WhatsApp confirmation.
+                </p>
+              </div>
+            </div>
+            <div class="relative z-10 w-full md:w-auto flex-shrink-0">
+              <button type="button" class="w-full md:w-auto px-6 py-3.5 bg-white hover:bg-orange-50 text-orange-700 font-black text-xs sm:text-sm rounded-2xl shadow-lg flex items-center justify-center gap-2.5 transition group-hover:bg-slate-900 group-hover:text-white pointer-events-none">
+                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                <span>Open Registration Form</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- B. 5 Animated Action Cards Grid for Master Admin (2-col on Mobile, 5-col on Desktop) -->
           <div id="data-forms-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4">
             
             <!-- Box 1: Student Registration -->
@@ -3904,27 +3933,23 @@ function testSetup() {
         if (navBadge) navBadge.innerText = "6 Dedicated Pages";
       }
 
-      // Toggle Data Entry Forms for Trainer (keep only Student Registration, remove the other 4)
-      const formTrainer = document.getElementById('data-form-trainer');
-      const formCourse = document.getElementById('data-form-course');
-      const formFee = document.getElementById('data-form-fee');
-      const formComp = document.getElementById('data-form-competition');
+      // Toggle Data Entry Forms: Full-width Rectangular Banner for Trainer, 5-grid for Admin
+      const trainerBanner = document.getElementById('trainer-student-reg-banner');
       const formsGrid = document.getElementById('data-forms-grid');
       const formsBadge = document.getElementById('data-forms-badge');
 
       if (isTrainer) {
-        if (formTrainer) formTrainer.classList.add('hidden');
-        if (formCourse) formCourse.classList.add('hidden');
-        if (formFee) formFee.classList.add('hidden');
-        if (formComp) formComp.classList.add('hidden');
-        if (formsGrid) formsGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 max-w-xl";
-        if (formsBadge) formsBadge.innerText = "1 Official Form";
+        // Show Big Rectangular Banner across dashboard, hide the small grid
+        if (trainerBanner) trainerBanner.classList.remove('hidden');
+        if (formsGrid) formsGrid.classList.add('hidden');
+        if (formsBadge) formsBadge.innerText = "1 Official Action";
       } else {
-        if (formTrainer) formTrainer.classList.remove('hidden');
-        if (formCourse) formCourse.classList.remove('hidden');
-        if (formFee) formFee.classList.remove('hidden');
-        if (formComp) formComp.classList.remove('hidden');
-        if (formsGrid) formsGrid.className = "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4";
+        // Master Admin sees all 5 forms in the 5-box grid
+        if (trainerBanner) trainerBanner.classList.add('hidden');
+        if (formsGrid) {
+          formsGrid.classList.remove('hidden');
+          formsGrid.className = "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4";
+        }
         if (formsBadge) formsBadge.innerText = "5 Forms";
       }
 
