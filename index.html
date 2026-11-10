@@ -209,7 +209,7 @@
               <span id="auto-logout-timer-display">10:00</span>
             </div>
 
-            <button onclick="openSyncModal()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl transition flex items-center gap-1 sm:gap-1.5 text-xs font-bold shadow-sm" title="Central Cloud Server Status">
+            <button id="btn-cloud-sync" onclick="openSyncModal()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl transition flex items-center gap-1 sm:gap-1.5 text-xs font-bold shadow-sm" title="Central Cloud Server Status">
               <i data-lucide="cloud" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600"></i>
               <span class="hidden sm:inline">Cloud Sync</span>
             </button>
@@ -3933,6 +3933,14 @@ function testSetup() {
         if (navBadge) navBadge.innerText = "6 Dedicated Pages";
       }
 
+      // Toggle Cloud Sync button in Header (Master Admin Only)
+      const btnCloudSync = document.getElementById('btn-cloud-sync');
+      if (isTrainer) {
+        if (btnCloudSync) btnCloudSync.classList.add('hidden');
+      } else {
+        if (btnCloudSync) btnCloudSync.classList.remove('hidden');
+      }
+
       // Toggle Data Entry Forms: Full-width Rectangular Banner for Trainer, 5-grid for Admin
       const trainerBanner = document.getElementById('trainer-student-reg-banner');
       const formsGrid = document.getElementById('data-forms-grid');
@@ -6588,6 +6596,12 @@ function testSetup() {
 
     function openSyncModal() {
       if (!adminState.isLoggedIn) return;
+      const user = adminState.currentUser || { role: 'Admin' };
+      const isTrainer = (user.role === 'Trainer');
+      if (isTrainer) {
+        alert("🔒 Access Restricted: Central Cloud Server configuration is authorized for Master Admin only.");
+        return;
+      }
       updateCloudSyncUI();
       document.getElementById('modal-sync').classList.remove('hidden');
       lucide.createIcons();
