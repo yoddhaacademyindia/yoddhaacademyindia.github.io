@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yoddha Academy India</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="shortcut icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+  <meta property="og:image" content="https://yoddhaacademyindia.netlify.app/logo.png">
+  <meta property="twitter:image" content="https://yoddhaacademyindia.netlify.app/logo.png">
   <meta name="title" content="Yoddha Academy India">
   <meta name="description" content="Yoddha Academy India - Official Traditional Martial Arts & Sports Training Academy">
   <meta property="og:type" content="website">
@@ -79,8 +84,9 @@
   <!-- ================= TOP STATUS BAR (KESARI & WHITE) ================= -->
   <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white text-[11px] sm:text-xs py-1.5 sm:py-2 px-3 sm:px-4 font-medium flex justify-between items-center shadow-md">
     <div class="flex items-center space-x-1.5 sm:space-x-2">
-      <span class="bg-black/25 px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wider uppercase flex items-center gap-1 text-amber-200">
-        <i data-lucide="shield-check" class="w-3 sm:w-3.5 h-3 sm:h-3.5"></i> OFFICIAL PORTAL
+      <span class="bg-black/25 px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5 text-amber-200">
+        <img src="logo.png" alt="Logo" class="w-3.5 h-3.5 object-contain bg-white/20 rounded-full">
+        <span>OFFICIAL PORTAL</span>
       </span>
       <span class="font-semibold hidden sm:inline">Yoddha Academy India Management • Central Headquarters</span>
       <span class="font-semibold sm:hidden text-[10px]">Central HQ</span>
@@ -101,9 +107,9 @@
       <div class="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600"></div>
 
       <div class="text-center mb-6 sm:mb-7">
-        <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-3xl bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-600 p-1 shadow-lg shadow-orange-500/25 flex items-center justify-center mb-3">
-          <div class="w-full h-full bg-white rounded-[20px] flex items-center justify-center">
-            <i data-lucide="crown" class="w-8 h-8 sm:w-10 sm:h-10 text-orange-600"></i>
+        <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-3xl bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-600 p-1 shadow-xl shadow-orange-500/30 flex items-center justify-center mb-3 group">
+          <div class="w-full h-full bg-white rounded-[20px] flex items-center justify-center overflow-hidden p-1.5">
+            <img src="logo.png" alt="Yoddha Academy Logo" class="w-full h-full object-contain filter drop-shadow transition-transform duration-300 group-hover:scale-105">
           </div>
         </div>
         <h2 class="text-2xl sm:text-3xl font-black text-slate-900 font-rajdhani uppercase tracking-wider">
@@ -168,9 +174,9 @@
         <div class="flex justify-between items-center h-16 sm:h-20">
           
           <div class="flex items-center space-x-2 sm:space-x-4 min-w-0">
-            <div onclick="navigateToPage('dashboard')" class="w-10 h-10 sm:w-12 sm:h-12 p-0.5 rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-600 shadow-md flex-shrink-0 cursor-pointer flex items-center justify-center">
-              <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
-                <i data-lucide="swords" class="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 transform -rotate-12"></i>
+            <div onclick="navigateToPage('dashboard')" class="w-11 h-11 sm:w-13 sm:h-13 p-0.5 rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-600 shadow-md flex-shrink-0 cursor-pointer flex items-center justify-center hover:scale-105 transition-transform">
+              <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center overflow-hidden p-1">
+                <img src="logo.png" alt="Yoddha Academy Logo" class="w-full h-full object-contain">
               </div>
             </div>
             <div class="min-w-0">
@@ -3834,10 +3840,16 @@ function testSetup() {
               <!-- ID Card Top Lanyard Slot Clip -->
               <div class="w-10 h-1.5 bg-slate-200 rounded-full mx-auto my-1.5 opacity-80"></div>
 
-              <!-- Top Header: Yoddha Academy India Name -->
-              <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white text-center py-2 px-3 shadow-sm border-b border-orange-500/30">
-                <div class="text-[9px] font-black uppercase tracking-widest text-orange-200">Official Student Identity Card</div>
-                <div class="text-xs sm:text-sm font-black uppercase tracking-wider font-rajdhani text-white drop-shadow">YODDHA ACADEMY INDIA</div>
+              <!-- Top Header: Yoddha Academy India Name & Logo -->
+              <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-600 text-white py-1.5 px-3 shadow-sm border-b border-orange-500/30 flex items-center justify-between gap-2">
+                <img src="logo.png" alt="Logo" class="w-6 h-6 object-contain bg-white rounded-full p-0.5 flex-shrink-0 shadow-xs">
+                <div class="flex-1 text-center min-w-0">
+                  <div class="text-[8px] font-black uppercase tracking-widest text-orange-200">Official Student Identity Card</div>
+                  <div class="text-xs sm:text-sm font-black uppercase tracking-wider font-rajdhani text-white drop-shadow truncate">YODDHA ACADEMY INDIA</div>
+                </div>
+                <div class="w-6 h-6 flex-shrink-0 opacity-0 sm:opacity-100">
+                  <img src="logo.png" alt="Logo" class="w-6 h-6 object-contain bg-white rounded-full p-0.5 shadow-xs">
+                </div>
               </div>
 
               <!-- Card Body Content -->
