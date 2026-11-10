@@ -1196,7 +1196,7 @@
         <!-- Form Footer Actions -->
         <div class="pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1">
-            <i data-lucide="sheet" class="w-4 h-4 text-emerald-600"></i>
+            <i data-lucide="cloud" class="w-4 h-4 text-emerald-600"></i>
             <span>All 32 fields will be synchronized directly to Central Cloud Server upon submission.</span>
           </p>
           <div class="flex gap-2.5 w-full sm:w-auto">
@@ -1391,7 +1391,7 @@
         <!-- Form Footer Actions -->
         <div class="pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p class="text-[11px] text-slate-500 font-semibold flex items-center gap-1">
-            <i data-lucide="sheet" class="w-4 h-4 text-emerald-600"></i>
+            <i data-lucide="cloud" class="w-4 h-4 text-emerald-600"></i>
             <span>All 13 fields will synchronize directly to Central Cloud Server upon submission.</span>
           </p>
           <div class="flex gap-2.5 w-full sm:w-auto">
@@ -2038,7 +2038,7 @@
       <div class="flex justify-between items-center border-b border-orange-100 pb-3">
         <div class="flex items-center gap-3">
           <div class="p-2.5 bg-emerald-100 text-emerald-800 rounded-2xl">
-            <i data-lucide="sheet" class="w-6 h-6"></i>
+            <i data-lucide="cloud" class="w-6 h-6"></i>
           </div>
           <div>
             <h3 class="text-lg font-black text-slate-900">Central Cloud Server Live Integration</h3>
@@ -2058,7 +2058,7 @@
             <span>Quick Cloud Server Setup Guide (2 Minutes):</span>
           </h4>
           <ol class="list-decimal pl-5 space-y-1.5 font-medium text-slate-800">
-            <li>Open <strong><a href="https://sheets.new" target="_blank" class="text-orange-700 underline font-bold">sheets.new</a></strong> in your browser and title your spreadsheet: <strong class="text-slate-900 font-bold">"Yoddha Academy India Records"</strong></li>
+            <li>Open your Central Cloud Console and title your cloud database: <strong class="text-slate-900 font-bold">"Yoddha Academy India Central Cloud Records"</strong></li>
             <li>In the top menu, click <strong>Extensions ➡️ Apps Script</strong>.</li>
             <li>Copy the backend code below, clear all existing code in the Apps Script editor, and <strong>Paste</strong> it.</li>
             <li>In the top-right, click the blue <strong>Deploy ➡️ New deployment</strong> button.</li>
@@ -2067,11 +2067,11 @@
           </ol>
         </div>
 
-        <!-- STATE 1: CONNECT NEW GOOGLE SHEET (Shown if no sheet saved) -->
-        <div id="sheet-connect-form" class="space-y-1.5">
+        <!-- STATE 1: CONNECT CENTRAL CLOUD SERVER -->
+        <div id="cloud-connect-form" class="space-y-1.5">
           <label class="block font-bold text-slate-800 text-xs">Central Cloud Server Webhook URL:</label>
           <div class="flex flex-col sm:flex-row gap-2">
-            <input type="url" id="sheet-webhook-url" placeholder="Paste your Web App URL here (https://script.google.com/.../exec)" class="flex-1 bg-slate-50 border-2 border-orange-200 focus:border-orange-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono focus:outline-none focus:bg-white shadow-inner">
+            <input type="url" id="cloud-webhook-url" placeholder="Paste your Web App URL here (https://script.google.com/.../exec)" class="flex-1 bg-slate-50 border-2 border-orange-200 focus:border-orange-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono focus:outline-none focus:bg-white shadow-inner">
             <div class="flex gap-2">
               <button onclick="saveWebhookUrl()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 text-white rounded-xl font-black text-xs shadow-md shadow-emerald-600/20 flex items-center justify-center gap-1.5 whitespace-nowrap transform active:scale-95 transition">
                 <i data-lucide="save" class="w-3.5 h-3.5"></i>
@@ -2089,7 +2089,7 @@
         </div>
 
         <!-- STATE 2: ALREADY CONNECTED CARD (Permanent Saved State with Delete Button) -->
-        <div id="sheet-connected-card" class="hidden bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border-2 border-emerald-400 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
+        <div id="cloud-connected-card" class="hidden bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border-2 border-emerald-400 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div class="flex items-center gap-3 min-w-0">
               <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-md flex-shrink-0">
@@ -2100,19 +2100,19 @@
                   <h4 class="text-sm sm:text-base font-black text-slate-900">Central Cloud Server Active & Connected</h4>
                   <span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-emerald-300">Permanently Connected</span>
                 </div>
-                <p class="text-[11px] font-mono text-emerald-900 truncate max-w-xs sm:max-w-md mt-0.5 font-bold" id="connected-sheet-url-display">
+                <p class="text-[11px] font-mono text-emerald-900 truncate max-w-xs sm:max-w-md mt-0.5 font-bold" id="connected-cloud-url-display">
                   https://script.google.com/macros/s/...
                 </p>
               </div>
             </div>
 
-            <!-- Action buttons for connected sheet -->
+            <!-- Action buttons for connected cloud server -->
             <div class="flex items-center gap-2 w-full sm:w-auto flex-shrink-0">
               <button onclick="testWebhookConnection()" class="flex-1 sm:flex-none px-3.5 py-2 bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
                 <i data-lucide="send" class="w-3.5 h-3.5 text-emerald-600"></i>
                 <span>Test Server Sync</span>
               </button>
-              <button onclick="deleteConnectedSheet()" class="flex-1 sm:flex-none px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition" title="Disconnect Central Cloud Server">
+              <button onclick="deleteConnectedCloud()" class="flex-1 sm:flex-none px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition" title="Disconnect Central Cloud Server">
                 <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
                 <span>Disconnect Server</span>
               </button>
@@ -2120,7 +2120,7 @@
           </div>
         </div>
 
-        <!-- Direct Push All Existing Records to Google Sheet -->
+        <!-- Direct Push All Existing Records to Central Cloud Server -->
         <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
           <div>
             <h5 class="font-black text-emerald-950 text-xs flex items-center gap-1.5">
@@ -2131,7 +2131,7 @@
               Instantly push all registered trainers and students to Central Cloud Server records.
             </p>
           </div>
-          <button onclick="syncAllDataToSheet()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-600/25 flex items-center gap-1.5 whitespace-nowrap transform active:scale-95 transition">
+          <button onclick="syncAllDataToCloud()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-600/25 flex items-center gap-1.5 whitespace-nowrap transform active:scale-95 transition">
             <i data-lucide="cloud-upload" class="w-4 h-4"></i>
             <span>Push All Records Now</span>
           </button>
@@ -3237,7 +3237,7 @@ function testSetup() {
         startCountdownTicker();
       }
       checkAuth();
-      updateSheetSyncUI();
+      updateCloudSyncUI();
     });
 
     function checkAuth() {
@@ -3304,11 +3304,11 @@ function testSetup() {
             clearTimeout(timeoutId);
             authResult = await resp.json();
           } catch (netErr) {
-            console.warn("Live sheet verification unreachable, falling back to local registry:", netErr);
+            console.warn("Live cloud verification unreachable, falling back to local registry:", netErr);
           }
         }
 
-        // If Google Sheet responded:
+        // If Central Cloud Server responded:
         if (authResult) {
           if (authResult.authenticated && authResult.trainer) {
             const trn = authResult.trainer;
@@ -3321,7 +3321,7 @@ function testSetup() {
               ...trn
             };
 
-            // Update local registry with fresh data from Google Sheet
+            // Update local registry with fresh data from Central Cloud Server
             const trnIdx = adminState.trainers.findIndex(t => (t.trainerId || t.id).toUpperCase() === (trn.trainerId || trn.id).toUpperCase());
             if (trnIdx !== -1) {
               adminState.trainers[trnIdx] = { ...adminState.trainers[trnIdx], ...trn };
@@ -3340,7 +3340,7 @@ function testSetup() {
             startCountdownTicker();
             return;
           } else {
-            // Sheet rejected the credentials
+            // Central Cloud Server rejected the credentials
             if (errorMsg) {
               errorMsg.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>${authResult.message || 'Invalid Unique ID or Password! Please verify and re-enter.'}</span>`;
               errorMsg.classList.remove('hidden');
@@ -3350,7 +3350,7 @@ function testSetup() {
           }
         }
 
-        // Fallback: If no sheet connected or network offline, check local trainers cache
+        // Fallback: If cloud offline, check local trainers cache
         const localTrainer = adminState.trainers.find(t => 
           (t.trainerId || t.id || '').trim().toUpperCase() === id.toUpperCase() && 
           (t.password || t.pin || '1234') === pass
@@ -3789,8 +3789,8 @@ function testSetup() {
       adminState.students.unshift(newStudent);
       saveAdminState();
 
-      // Sync complete 32-point object to Google Sheets!
-      syncToGoogleSheet({
+      // Sync complete 32-point object to Central Cloud Server!
+      syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
         ...newStudent
       });
@@ -3842,8 +3842,8 @@ function testSetup() {
       adminState.students[idx].feeStatus = newStatus;
       saveAdminState();
       
-      // In-place sync to Google Sheets!
-      syncToGoogleSheet({
+      // In-place sync to Central Cloud Server!
+      syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
         action: "updateStudent",
         studentId: studentId,
@@ -3870,8 +3870,8 @@ function testSetup() {
       adminState.students[idx].status = newStatus;
       saveAdminState();
       
-      // In-place sync to Google Sheets!
-      syncToGoogleSheet({
+      // In-place sync to Central Cloud Server!
+      syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
         action: "updateStudent",
         studentId: studentId,
@@ -4465,8 +4465,8 @@ function testSetup() {
 
       saveAdminState();
 
-      // In-place sync to Google Sheets
-      syncToGoogleSheet({
+      // In-place sync to Central Cloud Server
+      syncToCloudServer({
         action: 'updateStudent',
         studentId: editingStudentId,
         studentName: adminState.students[idx].studentName,
@@ -4591,7 +4591,7 @@ function testSetup() {
       student.feeStatus = 'Paid';
       saveAdminState();
 
-      syncToGoogleSheet({
+      syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
         ...student,
         status: "Active",
@@ -4973,8 +4973,8 @@ function testSetup() {
       adminState.trainers[trnIndex] = updatedTrainer;
       saveAdminState();
 
-      // Send In-Place Update to Google Sheets
-      syncToGoogleSheet({
+      // Send In-Place Update to Central Cloud Server
+      syncToCloudServer({
         type: "TRAINER_UPDATE_IN_PLACE",
         trainerId: trainerId,
         id: trainerId,
@@ -5110,8 +5110,8 @@ function testSetup() {
       adminState.trainers.push(trainerObj);
       saveAdminState();
       
-      // Live Sync all 13 points to Google Sheets
-      syncToGoogleSheet({ 
+      // Live Sync all 13 points to Central Cloud Server
+      syncToCloudServer({ 
         type: "TRAINER_REGISTRATION_13_POINTS", 
         ...trainerObj 
       });
@@ -5144,7 +5144,7 @@ function testSetup() {
 
       adminState.courses.push(courseObj);
       saveAdminState();
-      syncToGoogleSheet({ type: "COURSE_CREATED", ...courseObj });
+      syncToCloudServer({ type: "COURSE_CREATED", ...courseObj });
       renderAdminCourses();
       e.target.reset();
       closeFormModal('course');
@@ -5163,7 +5163,7 @@ function testSetup() {
 
       adminState.feeStructure = { admission, monthly, exam, tournament, upi };
       saveAdminState();
-      syncToGoogleSheet({ type: "FEE_STRUCTURE_UPDATED", ...adminState.feeStructure });
+      syncToCloudServer({ type: "FEE_STRUCTURE_UPDATED", ...adminState.feeStructure });
       closeFormModal('fee');
       alert("Academy fee schedule updated and synchronized to Central Cloud Server successfully!");
     }
@@ -5191,7 +5191,7 @@ function testSetup() {
 
       adminState.competitions.unshift(compObj);
       saveAdminState();
-      syncToGoogleSheet({ type: "COMPETITION_CREATED", ...compObj });
+      syncToCloudServer({ type: "COMPETITION_CREATED", ...compObj });
       renderAdminCompetitions();
       e.target.reset();
       closeFormModal('competition');
@@ -5199,7 +5199,13 @@ function testSetup() {
       navigateToPage('competition');
     }
 
-    async function syncToGoogleSheet(dataPayload) {
+    
+    // Backward compatibility alias
+    function syncToCloudServer(d) { return syncToCloudServer(d); }
+    function updateSheetSyncUI() { return updateCloudSyncUI(); }
+    function deleteConnectedSheet() { return deleteConnectedCloud(); }
+    function syncAllDataToSheet() { return syncAllDataToCloud(); }
+    async function syncToCloudServer(dataPayload) {
       const url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
       if (!url) {
         console.warn("No webhook URL configured.");
@@ -5214,17 +5220,17 @@ function testSetup() {
         });
         return true;
       } catch (err) {
-        console.error("Sheet Sync error:", err);
+        console.error("Cloud Sync error:", err);
         return false;
       }
     }
 
-    function updateSheetSyncUI() {
+    function updateCloudSyncUI() {
       const url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url') || '';
-      const connectForm = document.getElementById('sheet-connect-form');
-      const connectedCard = document.getElementById('sheet-connected-card');
-      const displayUrl = document.getElementById('connected-sheet-url-display');
-      const topIndicator = document.getElementById('top-sheet-status-indicator');
+      const connectForm = document.getElementById('cloud-connect-form');
+      const connectedCard = document.getElementById('cloud-connected-card');
+      const displayUrl = document.getElementById('connected-cloud-url-display');
+      const topIndicator = document.getElementById('top-cloud-status-indicator');
 
       if (url) {
         if (connectForm) connectForm.classList.add('hidden');
@@ -5237,7 +5243,7 @@ function testSetup() {
       } else {
         if (connectForm) connectForm.classList.remove('hidden');
         if (connectedCard) connectedCard.classList.add('hidden');
-        const input = document.getElementById('sheet-webhook-url');
+        const input = document.getElementById('cloud-webhook-url');
         if (input) input.value = '';
         if (topIndicator) {
           topIndicator.innerHTML = '<i data-lucide="cloud-off" class="w-3 sm:w-3.5 h-3 sm:h-3.5 text-rose-300"></i> Server Disconnected';
@@ -5248,7 +5254,7 @@ function testSetup() {
     }
 
     function saveWebhookUrl() {
-      const input = document.getElementById('sheet-webhook-url');
+      const input = document.getElementById('cloud-webhook-url');
       const url = input ? input.value.trim() : '';
       if (!url) {
         alert("⚠️ Please paste your Central Cloud Web App URL first!");
@@ -5256,30 +5262,30 @@ function testSetup() {
       }
       adminState.webhookUrl = url;
       localStorage.setItem('yoddha_webhook_url', url);
-      updateSheetSyncUI();
+      updateCloudSyncUI();
       alert("✅ Central Cloud Server Connected Permanently!\n\nYou do not need to paste the link again. If you ever need to switch connections, simply click 'Disconnect Server'.");
     }
 
-    function deleteConnectedSheet() {
+    function deleteConnectedCloud() {
       if (!confirm("Are you sure you want to disconnect from this Central Cloud Server?\n\nThe current connection will be removed, allowing you to connect a new server.")) {
         return;
       }
       adminState.webhookUrl = '';
       localStorage.removeItem('yoddha_webhook_url');
-      updateSheetSyncUI();
+      updateCloudSyncUI();
       alert("🗑️ Central Cloud Server Disconnected Successfully!\n\nYou can now enter and save a new Webhook URL below.");
     }
 
     async function testWebhookConnection() {
       let url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
-      const inputVal = (document.getElementById('sheet-webhook-url')?.value || '').trim();
+      const inputVal = (document.getElementById('cloud-webhook-url')?.value || '').trim();
       
       // Auto-save if typed into input
       if (!url && inputVal) {
         url = inputVal;
         adminState.webhookUrl = url;
         localStorage.setItem('yoddha_webhook_url', url);
-        updateSheetSyncUI();
+        updateCloudSyncUI();
       }
 
       if (!url) {
@@ -5287,7 +5293,7 @@ function testSetup() {
         return;
       }
 
-      await syncToGoogleSheet({
+      await syncToCloudServer({
         type: "TRAINER_REGISTRATION_13_POINTS",
         trainerId: "YAI-TR-MH-KOP-001",
         fullName: "Ustad Sachin Patil",
@@ -5306,16 +5312,16 @@ function testSetup() {
       alert("🚀 Test request sent directly to Central Cloud Server!\n\nPlease check your records to verify:\n1. 'Trainers' records created with saffron/orange headers.\n2. Ustad Sachin Patil (YAI-TR-MH-KOP-001) test entry verified successfully!");
     }
 
-    async function syncAllDataToSheet() {
+    async function syncAllDataToCloud() {
       let url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
-      const inputVal = (document.getElementById('sheet-webhook-url')?.value || '').trim();
+      const inputVal = (document.getElementById('cloud-webhook-url')?.value || '').trim();
       
       // Auto-save if typed into input
       if (!url && inputVal) {
         url = inputVal;
         adminState.webhookUrl = url;
         localStorage.setItem('yoddha_webhook_url', url);
-        updateSheetSyncUI();
+        updateCloudSyncUI();
       }
 
       if (!url) {
@@ -5329,7 +5335,7 @@ function testSetup() {
       try {
         // 1. Sync All Trainers
         for (const t of adminState.trainers) {
-          await syncToGoogleSheet({
+          await syncToCloudServer({
             type: "TRAINER_REGISTRATION_13_POINTS",
             trainerId: t.trainerId || t.id,
             fullName: t.fullName || t.name,
@@ -5348,7 +5354,7 @@ function testSetup() {
 
         // 2. Sync All Students
         for (const s of adminState.students) {
-          await syncToGoogleSheet({
+          await syncToCloudServer({
             type: "STUDENT_REGISTRATION_32_POINTS",
             studentId: s.studentId,
             studentName: s.studentName,
@@ -5435,7 +5441,7 @@ function testSetup() {
 
     function openSyncModal() {
       if (!adminState.isLoggedIn) return;
-      updateSheetSyncUI();
+      updateCloudSyncUI();
       document.getElementById('modal-sync').classList.remove('hidden');
       lucide.createIcons();
     }
