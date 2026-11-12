@@ -2210,74 +2210,131 @@
   </div>
 
   <!-- ================= ANIMATED MODAL 5: CREATE COMPETITION FORM ================= -->
-  <div id="modal-form-competition" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white border-2 border-orange-200 rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto animate-modal-pop relative">
+  <div id="modal-form-competition" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white border-2 border-orange-200 rounded-3xl max-w-xl w-full p-5 sm:p-7 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto animate-modal-pop relative">
       <div class="flex justify-between items-center border-b border-orange-100 pb-3">
         <div class="flex items-center gap-3">
           <div class="p-2.5 bg-orange-100 text-orange-700 rounded-2xl">
-            <i data-lucide="trophy" class="w-5 h-5"></i>
+            <i data-lucide="trophy" class="w-5 h-5 text-orange-600"></i>
           </div>
           <div>
             <h3 class="text-lg font-black text-slate-900">5. Create Competition</h3>
-            <p class="text-xs text-slate-500">Announce an official tournament, dates, venue & entries</p>
+            <p class="text-xs text-slate-500">Announce tournament & select eligible Districts, States or National scope</p>
           </div>
         </div>
-        <button onclick="closeFormModal('competition')" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg">
+        <button type="button" onclick="closeFormModal('competition')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <form onsubmit="handleAdminCreateCompetition(event)" class="space-y-3.5 text-xs">
+      <form onsubmit="handleAdminCreateCompetition(event)" class="space-y-4 text-xs">
+        
+        <!-- 1. TOURNAMENT TITLE (वर पहिला टायटल) -->
+        <div>
+          <label class="block font-black text-slate-800 text-xs mb-1">Tournament Title *</label>
+          <input type="text" id="adm-comp-title" required placeholder="e.g. Shivaji Maharaj Jayanti District Warrior Championship 2026" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 font-bold text-xs transition">
+        </div>
+
+        <!-- 2. CHAMPIONSHIP LEVEL DROPDOWN (त्याच्या खाली District आहे की State आहे की National ते ड्रॉपडाऊन) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block font-bold text-slate-700 mb-1">Championship Level *</label>
-            <select id="adm-comp-level" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
-              <option value="District Level">District Level Match</option>
-              <option value="State Level">State Level Championship</option>
-              <option value="National Championship">All India National Championship</option>
+            <label class="block font-black text-slate-800 text-xs mb-1">Championship Level / Scope *</label>
+            <select id="adm-comp-level" required onchange="handleCompetitionLevelChange(this.value)" class="w-full bg-slate-50 border border-orange-300 rounded-xl px-3 py-2 text-orange-950 font-black focus:outline-none focus:border-orange-500 focus:bg-white text-xs">
+              <option value="District Level">District Level Match (जिल्हास्तरीय स्पर्धा)</option>
+              <option value="State Level">State Level Championship (राज्यस्तरीय स्पर्धा)</option>
+              <option value="National Level">National Level Championship (राष्ट्रीय स्पर्धा)</option>
             </select>
           </div>
           <div>
-            <label class="block font-bold text-slate-700 mb-1">Championship Status *</label>
-            <select id="adm-comp-status" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
-              <option value="Registrations Open">Registrations Open</option>
-              <option value="Preparations Active">Preparations Active</option>
-              <option value="Upcoming Championship">Upcoming Championship</option>
+            <label class="block font-black text-slate-800 text-xs mb-1">Championship Status *</label>
+            <select id="adm-comp-status" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold text-xs">
+              <option value="Registrations Open">Registrations Open (प्रवेश सुरू)</option>
+              <option value="Preparations Active">Preparations Active (तयारी सुरू)</option>
+              <option value="Upcoming Championship">Upcoming Championship (आगामी स्पर्धा)</option>
             </select>
           </div>
         </div>
 
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">Tournament Title *</label>
-          <input type="text" id="adm-comp-title" required placeholder="e.g. All India National Warrior Cup 2026" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 font-semibold text-sm transition">
+        <!-- 3A. DYNAMIC DISTRICT SELECTION (जर District निवडले तर शाखा असणाऱ्या जिल्ह्यांची यादी) -->
+        <div id="comp-scope-district-box" class="bg-blue-50/70 border border-blue-200 rounded-2xl p-3.5 space-y-2">
+          <div class="flex items-center justify-between border-b border-blue-200/80 pb-2">
+            <span class="font-black text-blue-900 text-xs flex items-center gap-1.5">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-600"></i>
+              <span>Select Allowed Districts (कोणत्या जिल्ह्यांतील मुले भाग घेतील?) *</span>
+            </span>
+            <label class="flex items-center gap-1.5 text-[10.5px] font-black text-blue-800 cursor-pointer select-none">
+              <input type="checkbox" id="comp-select-all-districts" onchange="toggleSelectAllScopeDistricts(this.checked)" class="w-3.5 h-3.5 text-blue-600 rounded border-blue-400">
+              <span>Select All</span>
+            </label>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-1" id="comp-districts-list">
+            <!-- Dynamically populated district checkboxes -->
+          </div>
+          <p class="text-[10px] text-blue-800/85 font-medium leading-relaxed">
+            💡 तुम्ही ज्या जिल्ह्यांवर टिक कराल (उदा. ४ जिल्हे), <strong>फक्त त्याच जिल्ह्यांतील विद्यार्थ्यांनाच</strong> फॉर्म भरता येईल; बाकीच्यांना परवानगी नसेल.
+          </p>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <!-- 3B. DYNAMIC STATE SELECTION (जर State निवडले तर शाखा असणाऱ्या राज्यांची यादी) -->
+        <div id="comp-scope-state-box" class="hidden bg-amber-50/70 border border-amber-200 rounded-2xl p-3.5 space-y-2">
+          <div class="flex items-center justify-between border-b border-amber-200/80 pb-2">
+            <span class="font-black text-amber-900 text-xs flex items-center gap-1.5">
+              <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-600"></i>
+              <span>Select Allowed States (कोणत्या राज्यांतील शाखा भाग घेतील?) *</span>
+            </span>
+            <label class="flex items-center gap-1.5 text-[10.5px] font-black text-amber-800 cursor-pointer select-none">
+              <input type="checkbox" id="comp-select-all-states" onchange="toggleSelectAllScopeStates(this.checked)" class="w-3.5 h-3.5 text-amber-600 rounded border-amber-400">
+              <span>Select All</span>
+            </label>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-1" id="comp-states-list">
+            <!-- Dynamically populated state checkboxes -->
+          </div>
+          <p class="text-[10px] text-amber-800/85 font-medium leading-relaxed">
+            💡 निवडलेल्या राज्यांतील शाखांनाच या राज्यस्तरीय स्पर्धेत भाग घेता येईल.
+          </p>
+        </div>
+
+        <!-- 3C. NATIONAL SELECTION (जर National निवडले तर All India) -->
+        <div id="comp-scope-national-box" class="hidden bg-purple-50/80 border border-purple-200 rounded-2xl p-3.5 space-y-1.5">
+          <div class="flex items-center gap-2">
+            <i data-lucide="crown" class="w-5 h-5 text-purple-700"></i>
+            <h4 class="font-black text-purple-950 text-xs uppercase tracking-wide">All India National Championship 🇮🇳</h4>
+          </div>
+          <p class="text-[11px] text-purple-900 font-semibold leading-relaxed">
+            संपूर्ण भारतातील सर्व शाखा, सर्व राज्ये आणि सर्व जिल्ह्यांतील विद्यार्थ्यांना या राष्ट्रीय स्पर्धेत सहभागी होता येईल.
+          </p>
+        </div>
+
+        <!-- 4. DATES & ENTRY FEE -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block font-bold text-slate-700 mb-1">Tournament Date(s) *</label>
-            <input type="text" id="adm-comp-date" required placeholder="e.g. 25-26 Dec 2026" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
+            <input type="text" id="adm-comp-date" required placeholder="e.g. 25-26 Dec 2026" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold text-xs">
           </div>
           <div>
             <label class="block font-bold text-slate-700 mb-1">Entry Fee per Athlete (₹) *</label>
-            <input type="number" id="adm-comp-fee" required value="300" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
+            <input type="number" id="adm-comp-fee" required value="300" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold text-xs">
           </div>
         </div>
 
+        <!-- 5. VENUE & LOCATION -->
         <div>
           <label class="block font-bold text-slate-700 mb-1">Venue / Location *</label>
-          <input type="text" id="adm-comp-location" required placeholder="e.g. Balewadi Sports Stadium, Pune, Maharashtra" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
+          <input type="text" id="adm-comp-location" required placeholder="e.g. Balewadi Sports Stadium, Pune, Maharashtra" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold text-xs">
         </div>
 
+        <!-- 6. CATEGORIES -->
         <div>
           <label class="block font-bold text-slate-700 mb-1">Categories (Age / Belt Levels) *</label>
-          <input type="text" id="adm-comp-categories" required placeholder="e.g. Sub-Junior (8-12), Junior (13-16), Senior (17+)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
+          <input type="text" id="adm-comp-categories" required placeholder="e.g. Sub-Junior (8-12), Junior (13-16), Senior (17+)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold text-xs">
         </div>
 
         <div class="pt-2 flex justify-end gap-3 border-t border-slate-100">
           <button type="button" onclick="closeFormModal('competition')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">
             Cancel
           </button>
-          <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white font-extrabold rounded-xl shadow-md shadow-orange-500/25 transition flex items-center gap-1.5">
+          <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white font-extrabold rounded-xl shadow-md shadow-orange-500/25 transition flex items-center gap-1.5 cursor-pointer">
             <i data-lucide="trophy" class="w-4 h-4"></i>
             <span>Publish Tournament</span>
           </button>
@@ -4488,6 +4545,8 @@ function testSetup() {
         } else if (formType === 'course') {
           populateCourseTrainerChecklist();
           resetCourseThumbnailPreview();
+        } else if (formType === 'competition') {
+          handleCompetitionLevelChange(document.getElementById('adm-comp-level')?.value || 'District Level');
         } else if (formType === 'trainer') {
           prepareNewTrainerId();
         } else if (formType === 'fee') {
@@ -7014,6 +7073,11 @@ Student has been verified, removed from Verification Queue, and moved to the off
       const container = document.getElementById('admin-competition-cards');
       if (!container) return;
 
+      const user = adminState.currentUser || { role: 'Admin' };
+      const isTrainer = (user.role === 'Trainer');
+      const trnDist = (user.branch || user.district || '').toLowerCase();
+      const trnState = (user.state || '').toLowerCase();
+
       container.innerHTML = '';
       adminState.competitions.forEach(comp => {
         const div = document.createElement('div');
@@ -7030,6 +7094,38 @@ Student has been verified, removed from Verification Queue, and moved to the off
           levelIcon = "map-pin";
         }
 
+        // Scope description badge
+        let scopeBadgeHtml = '';
+        let isTrainerEligible = true;
+
+        if (level === 'District Level' && comp.allowedDistricts && comp.allowedDistricts.length > 0) {
+          scopeBadgeHtml = `
+            <div class="mt-2.5 bg-blue-50/80 border border-blue-200 rounded-xl p-2 text-[11px] text-blue-900">
+              <span class="font-black flex items-center gap-1 mb-0.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-600"></i> Eligible Districts (${comp.allowedDistricts.length}):</span>
+              <span class="font-bold text-blue-800">${comp.allowedDistricts.join(', ')}</span>
+            </div>
+          `;
+          if (isTrainer && trnDist) {
+            isTrainerEligible = comp.allowedDistricts.some(d => trnDist.includes(d.toLowerCase()) || d.toLowerCase().includes(trnDist));
+          }
+        } else if (level === 'State Level' && comp.allowedStates && comp.allowedStates.length > 0) {
+          scopeBadgeHtml = `
+            <div class="mt-2.5 bg-amber-50/80 border border-amber-200 rounded-xl p-2 text-[11px] text-amber-900">
+              <span class="font-black flex items-center gap-1 mb-0.5"><i data-lucide="shield" class="w-3.5 h-3.5 text-amber-600"></i> Eligible States (${comp.allowedStates.length}):</span>
+              <span class="font-bold text-amber-800">${comp.allowedStates.join(', ')}</span>
+            </div>
+          `;
+          if (isTrainer && trnState) {
+            isTrainerEligible = comp.allowedStates.some(st => trnState.includes(st.toLowerCase()) || st.toLowerCase().includes(trnState));
+          }
+        } else if (level.includes('National')) {
+          scopeBadgeHtml = `
+            <div class="mt-2.5 bg-purple-50/80 border border-purple-200 rounded-xl p-2 text-[11px] text-purple-900">
+              <span class="font-black flex items-center gap-1"><i data-lucide="crown" class="w-3.5 h-3.5 text-purple-600"></i> All India Open Championship (All Branches)</span>
+            </div>
+          `;
+        }
+
         div.innerHTML = `
           <div>
             <div class="flex justify-between items-start gap-2">
@@ -7044,7 +7140,10 @@ Student has been verified, removed from Verification Queue, and moved to the off
             </div>
 
             <h4 class="text-lg font-black text-slate-900 mt-2.5">${comp.title}</h4>
-            <div class="mt-3.5 space-y-1.5 text-xs text-slate-700 font-medium">
+            
+            ${scopeBadgeHtml}
+
+            <div class="mt-3 space-y-1.5 text-xs text-slate-700 font-medium">
               <p>Date: <strong class="text-slate-900">${comp.date}</strong></p>
               <p>Venue: <strong class="text-slate-900">${comp.location}</strong></p>
               ${comp.categories ? `<p class="text-slate-500">Categories: ${comp.categories}</p>` : ''}
@@ -7058,10 +7157,17 @@ Student has been verified, removed from Verification Queue, and moved to the off
               <span class="text-orange-600 font-bold">Official HQ Championship</span>
             </div>
 
-            <button onclick="openTournamentEntryModal('${comp.id}')" class="w-full py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white rounded-xl font-black text-xs shadow-md shadow-orange-500/20 flex items-center justify-center gap-2 transition transform active:scale-95">
-              <i data-lucide="user-plus" class="w-4 h-4"></i>
-              <span>Register Student For This Match</span>
-            </button>
+            ${(!isTrainer || isTrainerEligible) ? `
+              <button onclick="openTournamentEntryModal('${comp.id}')" class="w-full py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white rounded-xl font-black text-xs shadow-md shadow-orange-500/20 flex items-center justify-center gap-2 transition transform active:scale-95 cursor-pointer">
+                <i data-lucide="user-plus" class="w-4 h-4"></i>
+                <span>Register Student For This Match</span>
+              </button>
+            ` : `
+              <button type="button" onclick="alert('🔒 Branch Restricted: This competition is exclusively for athletes from [${(comp.allowedDistricts||[]).join(', ')}]. Your branch is registered in [${user.branch || user.district}].')" class="w-full py-2.5 px-4 bg-slate-100 text-slate-500 rounded-xl font-bold text-xs border border-slate-200 flex items-center justify-center gap-2 cursor-not-allowed">
+                <i data-lucide="lock" class="w-4 h-4 text-slate-400"></i>
+                <span>Restricted to ${(comp.allowedDistricts || comp.allowedStates || []).slice(0,3).join(', ')} Branches</span>
+              </button>
+            `}
           </div>
         `;
         container.appendChild(div);
@@ -7080,10 +7186,18 @@ Student has been verified, removed from Verification Queue, and moved to the off
       document.getElementById('tourn-comp-title').innerText = comp.title;
       document.getElementById('tourn-entry-id').innerText = comp.id;
       document.getElementById('tourn-level-badge').innerText = comp.level || 'Tournament';
-      document.getElementById('tourn-comp-meta').innerText = `Date: ${comp.date} | Venue: ${comp.location}`;
+      
+      let scopeInfo = '';
+      if (comp.level === 'District Level' && comp.allowedDistricts && comp.allowedDistricts.length > 0) {
+        scopeInfo = ` • Eligible Districts: ${comp.allowedDistricts.join(', ')}`;
+      } else if (comp.level === 'State Level' && comp.allowedStates && comp.allowedStates.length > 0) {
+        scopeInfo = ` • Eligible States: ${comp.allowedStates.join(', ')}`;
+      }
+
+      document.getElementById('tourn-comp-meta').innerText = `Date: ${comp.date} | Venue: ${comp.location}${scopeInfo}`;
       document.getElementById('tourn-fee-amount').value = comp.fee || 300;
 
-      // Populate student select dropdown with active verified students
+      // Populate student select dropdown with ONLY ELIGIBLE active verified students
       const select = document.getElementById('tourn-student-select');
       if (select) {
         select.innerHTML = '<option value="">-- Choose Warrior Athlete --</option>';
@@ -7098,13 +7212,36 @@ Student has been verified, removed from Verification Queue, and moved to the off
           );
         }
 
+        // STRICT JURISDICTION FILTER (District or State)
+        if (comp.level === 'District Level' && comp.allowedDistricts && comp.allowedDistricts.length > 0) {
+          activeStudents = activeStudents.filter(s => {
+            const sDist = (s.district || s.city || '').toLowerCase();
+            const trn = adminState.trainers.find(t => t.trainerId === s.trainerId);
+            const trnDist = (trn?.district || trn?.branch || '').toLowerCase();
+            return comp.allowedDistricts.some(d => {
+              const dl = d.toLowerCase();
+              return sDist.includes(dl) || dl.includes(sDist) || trnDist.includes(dl) || dl.includes(trnDist);
+            });
+          });
+        } else if (comp.level === 'State Level' && comp.allowedStates && comp.allowedStates.length > 0) {
+          activeStudents = activeStudents.filter(s => {
+            const sState = (s.state || '').toLowerCase();
+            const trn = adminState.trainers.find(t => t.trainerId === s.trainerId);
+            const trnState = (trn?.state || '').toLowerCase();
+            return comp.allowedStates.some(st => {
+              const stl = st.toLowerCase();
+              return sState.includes(stl) || stl.includes(sState) || trnState.includes(stl) || stl.includes(trnState);
+            });
+          });
+        }
+
         if (activeStudents.length === 0) {
-          select.innerHTML += '<option value="" disabled>No active verified students available in your branch. Please ensure admissions are verified by Admin.</option>';
+          select.innerHTML += `<option value="" disabled>🔒 No eligible athletes found for this championship scope (${comp.level === 'District Level' ? comp.allowedDistricts.join(', ') : (comp.level === 'State Level' ? comp.allowedStates.join(', ') : 'All India')}).</option>`;
         } else {
           activeStudents.forEach(s => {
             const opt = document.createElement('option');
             opt.value = s.studentId;
-            opt.textContent = `${s.studentName} (${s.studentId}) • ${s.requestedLevel || 'Level 1'} • Trainer: ${s.trainerName || 'N/A'}`;
+            opt.textContent = `${s.studentName} (${s.studentId}) • District: ${s.district || s.city || 'N/A'} • Trainer: ${s.trainerName || 'N/A'}`;
             select.appendChild(opt);
           });
         }
@@ -7419,7 +7556,127 @@ Synchronized to Central Cloud Server.`);
     }
 
     // FORM 5: Create Competition Submit
-    function handleAdminCreateCompetition(e) {
+        // =========================================================================
+    // 🏆 COMPETITION JURISDICTION & SCOPE CONTROLLERS (DISTRICT / STATE / NATIONAL)
+    // =========================================================================
+    const MASTER_ACADEMY_DISTRICTS = [
+      'Kolhapur', 'Pune', 'Nashik', 'Sangli', 'Satara', 'Solapur', 
+      'Belagavi', 'Mumbai', 'Thane', 'Nagpur', 'Aurangabad (Chhatrapati Sambhajinagar)',
+      'Ahmednagar', 'Ratnagiri', 'Sindhudurg', 'Jalgaon', 'Amravati'
+    ];
+
+    const MASTER_ACADEMY_STATES = [
+      'Maharashtra', 'Karnataka', 'Goa', 'Gujarat', 'Madhya Pradesh', 'Delhi NCR', 'Rajasthan'
+    ];
+
+    function getAllAcademyDistricts() {
+      const distSet = new Set(MASTER_ACADEMY_DISTRICTS);
+      (adminState.trainers || []).forEach(t => {
+        if (t.district) distSet.add(t.district.trim());
+        if (t.branch) distSet.add(t.branch.trim());
+      });
+      (adminState.students || []).forEach(s => {
+        if (s.district) distSet.add(s.district.trim());
+        if (s.city) distSet.add(s.city.trim());
+      });
+      return Array.from(distSet);
+    }
+
+    function getAllAcademyStates() {
+      const stateSet = new Set(MASTER_ACADEMY_STATES);
+      (adminState.trainers || []).forEach(t => {
+        if (t.state) stateSet.add(t.state.replace(/\(.*?\)/g, '').trim());
+      });
+      (adminState.students || []).forEach(s => {
+        if (s.state) stateSet.add(s.state.replace(/\(.*?\)/g, '').trim());
+      });
+      return Array.from(stateSet);
+    }
+
+    function handleCompetitionLevelChange(lvl) {
+      const distBox = document.getElementById('comp-scope-district-box');
+      const stateBox = document.getElementById('comp-scope-state-box');
+      const natBox = document.getElementById('comp-scope-national-box');
+
+      if (distBox) distBox.classList.add('hidden');
+      if (stateBox) stateBox.classList.add('hidden');
+      if (natBox) natBox.classList.add('hidden');
+
+      if (lvl === 'District Level') {
+        if (distBox) distBox.classList.remove('hidden');
+        populateScopeDistrictsList();
+      } else if (lvl === 'State Level') {
+        if (stateBox) stateBox.classList.remove('hidden');
+        populateScopeStatesList();
+      } else {
+        if (natBox) natBox.classList.remove('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    function populateScopeDistrictsList() {
+      const container = document.getElementById('comp-districts-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const districts = getAllAcademyDistricts();
+      districts.forEach((dist, idx) => {
+        const label = document.createElement('label');
+        label.className = "flex items-center gap-2 p-1.5 rounded-lg bg-white border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 cursor-pointer transition select-none text-[11px] text-slate-800 font-semibold";
+        // Default check Kolhapur & Pune as primary branches
+        const isDefaultChecked = (dist === 'Kolhapur' || dist === 'Pune' || idx < 4);
+        label.innerHTML = `
+          <input type="checkbox" name="comp-scope-district" value="${dist}" ${isDefaultChecked ? 'checked' : ''} onchange="handleScopeDistrictCheckboxChange()" class="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer">
+          <span class="truncate">${dist}</span>
+        `;
+        container.appendChild(label);
+      });
+      handleScopeDistrictCheckboxChange();
+    }
+
+    function toggleSelectAllScopeDistricts(isChecked) {
+      const boxes = document.querySelectorAll('input[name="comp-scope-district"]');
+      boxes.forEach(b => b.checked = isChecked);
+    }
+
+    function handleScopeDistrictCheckboxChange() {
+      const boxes = document.querySelectorAll('input[name="comp-scope-district"]');
+      const allChecked = Array.from(boxes).length > 0 && Array.from(boxes).every(b => b.checked);
+      const master = document.getElementById('comp-select-all-districts');
+      if (master) master.checked = allChecked;
+    }
+
+    function populateScopeStatesList() {
+      const container = document.getElementById('comp-states-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const states = getAllAcademyStates();
+      states.forEach(st => {
+        const label = document.createElement('label');
+        label.className = "flex items-center gap-2 p-1.5 rounded-lg bg-white border border-slate-200 hover:border-amber-400 hover:bg-amber-50/50 cursor-pointer transition select-none text-[11px] text-slate-800 font-semibold";
+        label.innerHTML = `
+          <input type="checkbox" name="comp-scope-state" value="${st}" checked onchange="handleScopeStateCheckboxChange()" class="w-3.5 h-3.5 text-amber-600 rounded border-slate-300 focus:ring-amber-500 cursor-pointer">
+          <span class="truncate">${st}</span>
+        `;
+        container.appendChild(label);
+      });
+      handleScopeStateCheckboxChange();
+    }
+
+    function toggleSelectAllScopeStates(isChecked) {
+      const boxes = document.querySelectorAll('input[name="comp-scope-state"]');
+      boxes.forEach(b => b.checked = isChecked);
+    }
+
+    function handleScopeStateCheckboxChange() {
+      const boxes = document.querySelectorAll('input[name="comp-scope-state"]');
+      const allChecked = Array.from(boxes).length > 0 && Array.from(boxes).every(b => b.checked);
+      const master = document.getElementById('comp-select-all-states');
+      if (master) master.checked = allChecked;
+    }
+
+function handleAdminCreateCompetition(e) {
       e.preventDefault();
       const title = document.getElementById('adm-comp-title').value.trim();
       const date = document.getElementById('adm-comp-date').value.trim();
@@ -7427,8 +7684,21 @@ Synchronized to Central Cloud Server.`);
       const location = document.getElementById('adm-comp-location').value.trim();
       const categories = document.getElementById('adm-comp-categories').value.trim();
 
-      const level = document.getElementById('adm-comp-level')?.value || "State Level";
+      const level = document.getElementById('adm-comp-level')?.value || "District Level";
       const status = document.getElementById('adm-comp-status')?.value || "Registrations Open";
+
+      // Collect Allowed Districts or States
+      let allowedDistricts = [];
+      let allowedStates = [];
+
+      if (level === 'District Level') {
+        const checkedDists = Array.from(document.querySelectorAll('input[name="comp-scope-district"]:checked')).map(cb => cb.value);
+        allowedDistricts = checkedDists.length > 0 ? checkedDists : ['Kolhapur', 'Pune'];
+      } else if (level === 'State Level') {
+        const checkedStates = Array.from(document.querySelectorAll('input[name="comp-scope-state"]:checked')).map(cb => cb.value);
+        allowedStates = checkedStates.length > 0 ? checkedStates : ['Maharashtra'];
+      }
+
       const compId = `COMP-2026-0${adminState.competitions.length + 1}`;
       const compObj = {
         id: compId,
@@ -7438,17 +7708,33 @@ Synchronized to Central Cloud Server.`);
         location,
         fee,
         categories,
+        allowedDistricts,
+        allowedStates,
         entries: 0,
         status
       };
 
       adminState.competitions.unshift(compObj);
       saveAdminState();
-      syncToCloudServer({ type: "COMPETITION_CREATED", ...compObj });
+
+      let scopeSummary = "All India (National)";
+      if (level === 'District Level') {
+        scopeSummary = `Districts: ${allowedDistricts.join(', ')}`;
+      } else if (level === 'State Level') {
+        scopeSummary = `States: ${allowedStates.join(', ')}`;
+      }
+
+      syncToCloudServer({
+        type: "COMPETITION_CREATED",
+        ...compObj,
+        scopeSummary
+      });
+
       renderAdminCompetitions();
       e.target.reset();
       closeFormModal('competition');
-      alert(`Tournament "${title}" announced successfully!\nID: ${compId}\nSynchronized to Central Cloud Server.`);
+
+      alert(`🏆 CHAMPIONSHIP ANNOUNCED!\n----------------------------------------------------\nTitle: ${title}\nLevel: ${level}\nScope: ${scopeSummary}\nDate: ${date}\nFee: ₹${fee}\n\nEligible branches have been granted exclusive entry permissions. Synchronized to Central Cloud Server!`);
       navigateToPage('competition');
     }
 
@@ -7553,6 +7839,21 @@ Synchronized to Central Cloud Server.`);
                 adminState.courses.push(crs);
               }
             });
+          }
+
+          // 5. Live Sync Competitions from Google Sheet
+          if (Array.isArray(data.competitions) && data.competitions.length > 0) {
+            data.competitions.forEach(cmp => {
+              const cmpId = (cmp.id || '').toUpperCase();
+              if (!cmpId) return;
+              const idx = adminState.competitions.findIndex(c => (c.id || '').toUpperCase() === cmpId);
+              if (idx !== -1) {
+                adminState.competitions[idx] = { ...adminState.competitions[idx], ...cmp };
+              } else {
+                adminState.competitions.push(cmp);
+              }
+            });
+            renderAdminCompetitions();
           }
 
           saveAdminState();
