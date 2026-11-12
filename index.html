@@ -5143,7 +5143,15 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
 
 
-      lucide.createIcons();
+            // Hide Master Live Belt Exam Controller Banner completely from Trainer Panel
+      const masterExamBanner = document.getElementById("master-exam-controller-banner");
+      if (isTrainer) {
+        if (masterExamBanner) masterExamBanner.classList.add("hidden");
+      } else {
+        if (masterExamBanner) masterExamBanner.classList.remove("hidden");
+      }
+
+lucide.createIcons();
     }
 
     function initAdminPortal() {
@@ -6897,7 +6905,16 @@ function getOrCreateSheet(ss, sheetName, headers) {
       const user = adminState.currentUser || { role: 'Admin' };
       const isTrainer = (user.role === 'Trainer');
 
-      const iconBox = document.getElementById('exam-banner-icon-box');
+            // Hide Master Exam Window Banner completely on Trainer Panel
+      const masterExamBanner = document.getElementById("master-exam-controller-banner");
+      if (isTrainer) {
+        if (masterExamBanner) masterExamBanner.classList.add("hidden");
+        return;
+      } else {
+        if (masterExamBanner) masterExamBanner.classList.remove("hidden");
+      }
+
+const iconBox = document.getElementById('exam-banner-icon-box');
       const badge = document.getElementById('exam-banner-status-badge');
       const desc = document.getElementById('exam-banner-description');
       const btn = document.getElementById('btn-master-exam-switch');
