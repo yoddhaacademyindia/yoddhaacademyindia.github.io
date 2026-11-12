@@ -1021,16 +1021,16 @@
             <div>
               <label class="block font-bold text-slate-700 mb-1">Requested Level (Enrolling into) *</label>
               <select id="p-stu-requested-level" required onchange="syncLevelPills(this.value)" class="w-full bg-white border border-orange-300 rounded-xl px-3 py-2 text-orange-900 font-extrabold focus:outline-none focus:border-orange-500">
-                <option value="Level 1">Level 1 (Basic Stances & Grips)</option>
-                <option value="Level 2">Level 2 (Single-Hand Spins)</option>
-                <option value="Level 3">Level 3 (Double-Hand Combat)</option>
-                <option value="Level 4">Level 4 (Footwork & Pettebaji)</option>
-                <option value="Level 5">Level 5 (Combat Sparring)</option>
-                <option value="Level 6">Level 6 (Shield-Stick Defense)</option>
-                <option value="Senior 1">Senior 1 (Speed Drills & Group Demonstration)</option>
-                <option value="Senior 2">Senior 2 (Historical Maratha Combat Secrets)</option>
-                <option value="Senior 3">Senior 3 (Assistant Trainer & Referee Grade)</option>
-                <option value="Senior 4">Senior 4 (Master Grandmaster Yoddha)</option>
+                <option value="Level 1">Level 1</option>
+                <option value="Level 2">Level 2</option>
+                <option value="Level 3">Level 3</option>
+                <option value="Level 4">Level 4</option>
+                <option value="Level 5">Level 5</option>
+                <option value="Level 6">Level 6</option>
+                <option value="Senior 1">Senior 1</option>
+                <option value="Senior 2">Senior 2</option>
+                <option value="Senior 3">Senior 3</option>
+                <option value="Senior 4">Senior 4</option>
               </select>
             </div>
 
@@ -1107,26 +1107,13 @@
               <input type="tel" id="p-stu-parent-mobile" required pattern="[0-9]{10}" placeholder="10-digit mobile" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500">
             </div>
 
-            <!-- 22. State (All India) -->
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">State (All India) *</label>
-              <select id="p-stu-state" required onchange="handleStudentStateChange(this.value)" class="w-full bg-white border border-orange-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500">
-                <!-- Populated via JS -->
-              </select>
-            </div>
-
-            <!-- District (Dependent Dropdown) -->
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">District *</label>
-              <select id="p-stu-district" required onchange="handleStudentDistrictChange(this.value)" class="w-full bg-white border border-orange-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500">
-                <!-- Populated via JS -->
-              </select>
-            </div>
-
-            <!-- 21. City / Village -->
-            <div class="sm:col-span-2">
-              <label class="block font-bold text-slate-700 mb-1">City / Village / Taluka *</label>
-              <input type="text" id="p-stu-city" required placeholder="e.g. Kolhapur City / Karveer / Panhala" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold focus:outline-none focus:border-orange-500">
+            <!-- Auto Location Banner (Inherited from Trainer) -->
+            <div class="sm:col-span-4 bg-orange-100/70 border border-orange-200 rounded-xl p-2.5 flex items-center justify-between gap-2 shadow-2xs">
+              <div class="flex items-center gap-2 min-w-0">
+                <i data-lucide="map-pin" class="w-4 h-4 text-orange-600 flex-shrink-0"></i>
+                <span class="text-xs text-orange-950 font-bold truncate">State & District: <strong id="stu-reg-auto-loc" class="text-orange-900 font-black">Auto-linked to Assigned Trainer Branch</strong></span>
+              </div>
+              <span class="text-[9.5px] font-bold text-orange-800 bg-white px-2 py-0.5 rounded-md border border-orange-300 flex-shrink-0">Official Branch Link</span>
             </div>
           </div>
         </div>
@@ -1728,16 +1715,16 @@
             <div>
               <label class="block font-bold text-slate-700 mb-1">10-Star Belt Level *</label>
               <select id="edit-stu-level" required class="w-full bg-white border border-orange-300 rounded-xl px-3 py-2 text-orange-900 font-extrabold focus:outline-none focus:border-orange-500">
-                <option value="Level 1">Level 1 (⭐ 1 Star - Yellow Belt)</option>
-                <option value="Level 2">Level 2 (⭐⭐ 2 Stars - Orange Belt)</option>
-                <option value="Level 3">Level 3 (⭐⭐⭐ 3 Stars - Green Belt)</option>
-                <option value="Level 4">Level 4 (⭐⭐⭐⭐ 4 Stars - Blue Belt)</option>
-                <option value="Level 5">Level 5 (⭐⭐⭐⭐⭐ 5 Stars - Purple Belt)</option>
-                <option value="Level 6">Level 6 (⭐⭐⭐⭐⭐⭐ 6 Stars - Brown Belt)</option>
-                <option value="Senior 1 (Level 7)">Senior 1 (⭐⭐⭐⭐⭐⭐⭐ 7 Stars - Red Belt)</option>
-                <option value="Senior 2 (Level 8)">Senior 2 (⭐⭐⭐⭐⭐⭐⭐⭐ 8 Stars - Red-Black)</option>
-                <option value="Senior 3 (Level 9)">Senior 3 (⭐⭐⭐⭐⭐⭐⭐⭐⭐ 9 Stars - Black 1st Dan)</option>
-                <option value="Senior 4 (Level 10)">Senior 4 (⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ 10 Stars - Master Black)</option>
+                <option value="Level 1">Level 1</option>
+                <option value="Level 2">Level 2</option>
+                <option value="Level 3">Level 3</option>
+                <option value="Level 4">Level 4</option>
+                <option value="Level 5">Level 5</option>
+                <option value="Level 6">Level 6</option>
+                <option value="Senior 1">Senior 1</option>
+                <option value="Senior 2">Senior 2</option>
+                <option value="Senior 3">Senior 3</option>
+                <option value="Senior 4">Senior 4</option>
               </select>
             </div>
             <div>
@@ -4666,10 +4653,48 @@ function testSetup() {
 
     // Auto-generate next Student ID & Setup State-District
     function prepareNewStudentId() {
-      populateStateSelect('p-stu-state', 'MH');
-      populateDistrictSelect('p-stu-district', 'MH', 'KOP');
+      const user = adminState.currentUser || { role: 'Admin' };
+      const isTrainer = (user.role === 'Trainer');
+      let stCode = 'MH';
+      let distCode = 'KOP';
+      let trnDisplay = 'Maharashtra - Kolhapur';
+
+      if (isTrainer) {
+        const trn = adminState.trainers.find(t => (t.trainerId || t.id) === user.id) || user;
+        stCode = trn.stateCode || 'MH';
+        distCode = trn.districtCode || 'KOP';
+        trnDisplay = `${trn.state || 'Maharashtra'} - ${trn.district || trn.branch || 'Kolhapur'}`;
+      } else {
+        const trnSelect = document.getElementById('p-stu-trainer-select');
+        const selectedId = trnSelect?.value;
+        const trn = adminState.trainers.find(t => (t.trainerId || t.id) === selectedId) || adminState.trainers[0];
+        if (trn) {
+          stCode = trn.stateCode || 'MH';
+          distCode = trn.districtCode || 'KOP';
+          trnDisplay = `${trn.state || 'Maharashtra'} - ${trn.district || trn.branch || 'Kolhapur'}`;
+        }
+      }
+
       const input = document.getElementById('p-stu-id');
-      if (input) input.value = generateStudentId('MH', 'KOP');
+      if (input) input.value = generateStudentId(stCode, distCode);
+
+      const locEl = document.getElementById('stu-reg-auto-loc');
+      if (locEl) locEl.innerText = trnDisplay;
+    }
+
+    function handleTrainerSelectionChange() {
+      const selectedVal = document.getElementById('p-stu-trainer-select')?.value || '';
+      const selectedId = selectedVal.split('|')[0] || selectedVal;
+      const trn = adminState.trainers.find(t => (t.trainerId || t.id) === selectedId);
+      if (trn) {
+        const stCode = trn.stateCode || 'MH';
+        const distCode = trn.districtCode || 'KOP';
+        const input = document.getElementById('p-stu-id');
+        if (input) input.value = generateStudentId(stCode, distCode);
+
+        const locEl = document.getElementById('stu-reg-auto-loc');
+        if (locEl) locEl.innerText = `${trn.state || 'Maharashtra'} - ${trn.district || trn.branch || 'Kolhapur'}`;
+      }
     }
 
     // Auto-generate next Trainer ID & Setup State-District
@@ -4785,25 +4810,26 @@ function testSetup() {
       const parentName = document.getElementById('p-stu-parent-name').value.trim();
       const parentMobile = document.getElementById('p-stu-parent-mobile').value.trim();
 
-      const stCode = document.getElementById('p-stu-state').value;
-      const stateName = (INDIA_LOCATIONS[stCode] || {}).name || stCode;
-      const distCode = document.getElementById('p-stu-district').value;
-      const distObj = ((INDIA_LOCATIONS[stCode] || {}).districts || []).find(d => d.code === distCode);
-      const districtName = distObj ? distObj.name : distCode;
-      const city = document.getElementById('p-stu-city').value.trim() || districtName;
-
       const user = adminState.currentUser || { role: 'Admin' };
       const isTrainer = (user.role === 'Trainer');
-      let trainerId, trainerName;
+      let trainerId = '', trainerName = '';
       if (isTrainer) {
         trainerId = user.id;
         trainerName = user.name;
       } else {
-        const trainerVal = document.getElementById('p-stu-trainer-select').value;
+        const trainerVal = document.getElementById('p-stu-trainer-select')?.value || '';
         const parts = trainerVal.split('|');
-        trainerId = parts[0] || '';
-        trainerName = parts[1] || '';
+        trainerId = parts[0] || 'YAI-TR-MH-KOP-001';
+        trainerName = parts[1] || 'Ustad Rahul Shinde';
       }
+
+      // Student automatically inherits State and District from the assigned trainer's official branch
+      const trainerObj = adminState.trainers.find(t => (t.trainerId || t.id) === trainerId) || (isTrainer ? user : null);
+      const stateName = trainerObj?.state || 'Maharashtra';
+      const districtName = trainerObj?.district || trainerObj?.branch || 'Kolhapur';
+      const city = districtName;
+      const stCode = trainerObj?.stateCode || 'MH';
+      const distCode = trainerObj?.districtCode || 'KOP';
 
       const admissionDate = document.getElementById('p-stu-admission-date').value;
       const status = document.getElementById('p-stu-status').value;
@@ -7684,21 +7710,8 @@ function handleAdminCreateCompetition(e) {
       const location = document.getElementById('adm-comp-location').value.trim();
       const categories = document.getElementById('adm-comp-categories').value.trim();
 
-      const level = document.getElementById('adm-comp-level')?.value || "District Level";
+      const level = document.getElementById('adm-comp-level')?.value || "State Level";
       const status = document.getElementById('adm-comp-status')?.value || "Registrations Open";
-
-      // Collect Allowed Districts or States
-      let allowedDistricts = [];
-      let allowedStates = [];
-
-      if (level === 'District Level') {
-        const checkedDists = Array.from(document.querySelectorAll('input[name="comp-scope-district"]:checked')).map(cb => cb.value);
-        allowedDistricts = checkedDists.length > 0 ? checkedDists : ['Kolhapur', 'Pune'];
-      } else if (level === 'State Level') {
-        const checkedStates = Array.from(document.querySelectorAll('input[name="comp-scope-state"]:checked')).map(cb => cb.value);
-        allowedStates = checkedStates.length > 0 ? checkedStates : ['Maharashtra'];
-      }
-
       const compId = `COMP-2026-0${adminState.competitions.length + 1}`;
       const compObj = {
         id: compId,
@@ -7708,33 +7721,17 @@ function handleAdminCreateCompetition(e) {
         location,
         fee,
         categories,
-        allowedDistricts,
-        allowedStates,
         entries: 0,
         status
       };
 
       adminState.competitions.unshift(compObj);
       saveAdminState();
-
-      let scopeSummary = "All India (National)";
-      if (level === 'District Level') {
-        scopeSummary = `Districts: ${allowedDistricts.join(', ')}`;
-      } else if (level === 'State Level') {
-        scopeSummary = `States: ${allowedStates.join(', ')}`;
-      }
-
-      syncToCloudServer({
-        type: "COMPETITION_CREATED",
-        ...compObj,
-        scopeSummary
-      });
-
+      syncToCloudServer({ type: "COMPETITION_CREATED", ...compObj });
       renderAdminCompetitions();
       e.target.reset();
       closeFormModal('competition');
-
-      alert(`🏆 CHAMPIONSHIP ANNOUNCED!\n----------------------------------------------------\nTitle: ${title}\nLevel: ${level}\nScope: ${scopeSummary}\nDate: ${date}\nFee: ₹${fee}\n\nEligible branches have been granted exclusive entry permissions. Synchronized to Central Cloud Server!`);
+      alert(`Tournament "${title}" announced successfully!\nID: ${compId}\nSynchronized to Central Cloud Server.`);
       navigateToPage('competition');
     }
 
@@ -7839,21 +7836,6 @@ function handleAdminCreateCompetition(e) {
                 adminState.courses.push(crs);
               }
             });
-          }
-
-          // 5. Live Sync Competitions from Google Sheet
-          if (Array.isArray(data.competitions) && data.competitions.length > 0) {
-            data.competitions.forEach(cmp => {
-              const cmpId = (cmp.id || '').toUpperCase();
-              if (!cmpId) return;
-              const idx = adminState.competitions.findIndex(c => (c.id || '').toUpperCase() === cmpId);
-              if (idx !== -1) {
-                adminState.competitions[idx] = { ...adminState.competitions[idx], ...cmp };
-              } else {
-                adminState.competitions.push(cmp);
-              }
-            });
-            renderAdminCompetitions();
           }
 
           saveAdminState();

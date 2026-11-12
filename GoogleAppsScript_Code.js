@@ -218,39 +218,6 @@ function doGet(e) {
       }
     }
 
-    // 5. Read Competitions from Sheet
-    var compSheet = ss.getSheetByName("Competitions");
-    if (compSheet) {
-      var compRows = compSheet.getDataRange().getValues();
-      allData.competitions = [];
-      for (var n = 1; n < compRows.length; n++) {
-        var cRow = compRows[n];
-        if (cRow[1]) {
-          var scStr = String(cRow[9] || "").trim();
-          var distArr = [];
-          var stateArr = [];
-          if (scStr.indexOf("Districts:") !== -1) {
-            distArr = scStr.replace("Districts:", "").split(",").map(function(s){ return s.trim(); }).filter(Boolean);
-          } else if (scStr.indexOf("States:") !== -1) {
-            stateArr = scStr.replace("States:", "").split(",").map(function(s){ return s.trim(); }).filter(Boolean);
-          }
-          allData.competitions.push({
-            id: String(cRow[1]).trim(),
-            level: String(cRow[2] || "District Level").trim(),
-            title: String(cRow[3] || "").trim(),
-            date: String(cRow[4] || "").trim(),
-            location: String(cRow[5] || "").trim(),
-            categories: String(cRow[6] || "").trim(),
-            fee: Number(cRow[7]) || 300,
-            status: String(cRow[8] || "Registrations Open").trim(),
-            allowedDistricts: distArr,
-            allowedStates: stateArr,
-            entries: 0
-          });
-        }
-      }
-    }
-
     return ContentService.createTextOutput(JSON.stringify(allData))
       .setMimeType(ContentService.MimeType.JSON);
   }
@@ -423,25 +390,23 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 4. COMPETITIONS IN-PLACE UPDATE (TITLE, LEVEL, SCOPE JURISDICTIONS)
+    // 4. COMPETITIONS IN-PLACE UPDATE
     if (type.indexOf("COMPETITION") !== -1) {
       var sheet = getOrCreateSheet(ss, "Competitions", [
-        "Timestamp", "Competition ID", "Championship Level", "Title", "Date", "Location", "Categories", "Entry Fee", "Status", "Eligible Jurisdictions"
+        "Timestamp", "Competition ID", "Championship Level", "Title", "Date", "Location", "Categories", "Entry Fee", "Status"
       ]);
 
       var compId = data.id || data.compId || "";
-      var scopeStr = data.scopeSummary || (Array.isArray(data.allowedDistricts) ? data.allowedDistricts.join(", ") : (data.level || "All India"));
       var rowData = [
         new Date(),
         compId,
-        data.level || "District Level",
+        data.level || "State Level",
         data.title || "",
         data.date || "",
         data.location || "",
         data.categories || "",
         data.fee || 300,
-        data.status || "Registrations Open",
-        scopeStr
+        data.status || "Registrations Open"
       ];
 
       var updated = updateRowIfExists(sheet, 2, compId, rowData);
