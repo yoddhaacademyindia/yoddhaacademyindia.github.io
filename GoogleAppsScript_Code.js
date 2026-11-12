@@ -1,23 +1,28 @@
 /**
- * 🥋 YODDHA ACADEMY INDIA - CENTRAL CLOUD SERVER & LIVE AUTH SCRIPT
- * -------------------------------------------------------------------------
- * Features:
- * 1. Live Dual Authentication (Admin + Certified Trainers) via doGet:
- *    - Admin: ADMIN-YODDHA-01 / yoddha2026
- *    - Trainer: Trainer ID (Col 2) & PIN/Password (Col 13) in 'Trainers' sheet
- * 2. Multi-Tab In-Place Sync (doPost):
- *    - 'Trainers' (13 Columns - in-place update by Trainer ID)
- *    - 'Students' (22 Columns - in-place update by Student ID)
- *    - 'Courses' (5 Columns - in-place update by Course ID)
- *    - 'Competitions' (6 Columns - in-place update by Comp ID)
- *    - 'Fee Structure' (Key/Value in-place update)
- * 3. 100% FREE Automated Email Notifications (MailApp.sendEmail):
- *    - Automated Congratulations & Credentials Email to newly registered Trainers
- *    - Automated Admission Confirmation Email to Students / Parents
- * -------------------------------------------------------------------------
+ * =========================================================================
+ * 🥋 YODDHA ACADEMY INDIA - CENTRAL CLOUD SERVER & LIVE AUTH SCRIPT (v3.0)
+ * =========================================================================
+ * Complete A-to-Z Central Cloud Storage & Real-Time Sync Engine for Martial Arts
+ * 
+ * 10 AUTOMATICALLY MANAGED CLOUD SHEETS:
+ * 1. 'Students'             - 30-Point Complete Profile, Belt Ranks, Exam Marks & Level History
+ * 2. 'ExamResults'          - Permanent Audit Log of all Live Belt Exams & Marks (AI + Trainer)
+ * 3. 'LevelUpApplications'  - Log of all Belt Level-Up Applications, Fees, UTR & Approvals
+ * 4. 'Trainers'             - 13-Point Certified Trainer Profiles & Secure Credentials
+ * 5. 'Courses'              - Martial Arts Training Video Courses & Assigned Trainers
+ * 6. 'Competitions'         - District, State & National Tournament Announcements
+ * 7. 'TournamentEntries'    - Student Registrations for Tournaments & Entry Fees
+ * 8. 'StudentSportsRecords' - Medals (Gold/Silver/Bronze) & Official Achievements Track Record
+ * 9. 'Fee Structure'        - Level 1-6 & Senior 1-4 Official Belt Pricing + Academy UPI ID
+ * 10. 'AcademySettings'     - Master Exam Live Camera Switch (ON/OFF) & System Settings
+ * 
+ * 100% FREE AUTOMATED EMAIL NOTIFICATIONS (MailApp):
+ * - Welcome & Credentials Email to newly registered Trainers
+ * - Admission Confirmation Email to Parents & Students with Student ID & Details
+ * =========================================================================
  */
 
-// 1. LIVE AUTHENTICATION ENDPOINT (GET)
+// 1. LIVE AUTHENTICATION & DATA RETRIEVAL ENDPOINT (GET)
 // -------------------------------------------------------------------------
 function doGet(e) {
   var action = (e && e.parameter && e.parameter.action) || "";
@@ -27,12 +32,13 @@ function doGet(e) {
   var result = {
     status: "ready",
     server: "Yoddha Academy India Central Cloud Server",
+    version: "3.0",
     timestamp: new Date().toISOString()
   };
 
-  // Dual Login Verification (Admin or Trainer)
+  // 1A. Dual Login Verification (Admin or Certified Trainer)
   if (action === "verifyLogin") {
-    // 1A. Check Admin Login
+    // Check Admin Login
     if (id.toUpperCase() === "ADMIN-YODDHA-01" && (pass === "@hupare25077" || pass === "yoddha2026")) {
       result = {
         status: "success",
@@ -43,7 +49,7 @@ function doGet(e) {
         message: "Admin authentication successful"
       };
     } else {
-      // 1B. Check Trainer Login against 'Trainers' sheet
+      // Check Trainer Login against 'Trainers' sheet
       var ss = SpreadsheetApp.getActiveSpreadsheet();
       var sheet = ss.getSheetByName("Trainers");
 
@@ -94,7 +100,7 @@ function doGet(e) {
     }
   }
 
-  // Read All Sections for Live Dashboard Sync
+  // 1B. Read All A-to-Z Academy Sections for Live Synchronization
   if (action === "readAll" || action === "syncAll") {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var allData = {
@@ -102,7 +108,12 @@ function doGet(e) {
       server: "Yoddha Academy India Central Cloud Server",
       timestamp: new Date().toISOString(),
       trainers: [],
-      students: []
+      students: [],
+      courses: [],
+      competitions: [],
+      studentCompetitions: {},
+      feeStructure: {},
+      examSessionActive: true
     };
 
     // 1. Read Trainers from Sheet
@@ -134,14 +145,14 @@ function doGet(e) {
       }
     }
 
-    // 2. Read Students from Sheet
+    // 2. Read Students from Sheet (with complete 30-point columns)
     var stuSheet = ss.getSheetByName("Students");
     if (stuSheet) {
       var stuRows = stuSheet.getDataRange().getValues();
       for (var j = 1; j < stuRows.length; j++) {
         var sr = stuRows[j];
         if (sr[1]) {
-          allData.students.push({
+          var stuObj = {
             studentId: String(sr[1]).trim(),
             id: String(sr[1]).trim(),
             studentName: String(sr[2] || "").trim(),
@@ -163,8 +174,28 @@ function doGet(e) {
             trainerName: String(sr[17] || "").trim(),
             status: String(sr[18] || "Active").trim(),
             feeStatus: String(sr[19] || "Paid").trim(),
-            feeAmount: Number(sr[20]) || 500
-          });
+            feeAmount: Number(sr[20]) || 500,
+            utrNumber: String(sr[21] || "").trim(),
+            examStatus: String(sr[22] || "TRAINING").trim(),
+            aiScore: Number(sr[23]) || null,
+            trainerScore: Number(sr[24]) || null,
+            totalScore: Number(sr[25]) || null,
+            examDate: String(sr[26] || "").trim(),
+            levelUpPending: String(sr[27] || "").toUpperCase() === "YES" || sr[27] === true,
+            pendingNextLevel: String(sr[28] || "").trim(),
+            levelHistoryStr: String(sr[29] || "").trim()
+          };
+
+          if (stuObj.aiScore || stuObj.totalScore) {
+            stuObj.lastExam = {
+              aiScore: stuObj.aiScore,
+              trainerScore: stuObj.trainerScore,
+              totalScore: stuObj.totalScore,
+              examDate: stuObj.examDate
+            };
+          }
+
+          allData.students.push(stuObj);
         }
       }
     }
@@ -218,11 +249,67 @@ function doGet(e) {
       }
     }
 
+    // 5. Read Competitions from Sheet
+    var compSheet = ss.getSheetByName("Competitions");
+    if (compSheet) {
+      var compRows = compSheet.getDataRange().getValues();
+      allData.competitions = [];
+      for (var c = 1; c < compRows.length; c++) {
+        var cm = compRows[c];
+        if (cm[1]) {
+          allData.competitions.push({
+            id: String(cm[1]).trim(),
+            level: String(cm[2] || "State Level").trim(),
+            title: String(cm[3] || "").trim(),
+            date: String(cm[4] || "").trim(),
+            location: String(cm[5] || "").trim(),
+            categories: String(cm[6] || "").trim(),
+            fee: Number(cm[7]) || 300,
+            status: String(cm[8] || "Registrations Open").trim(),
+            scope: String(cm[9] || "All").trim()
+          });
+        }
+      }
+    }
+
+    // 6. Read Student Sports Records & Medals from Sheet
+    var recSheet = ss.getSheetByName("StudentSportsRecords");
+    if (recSheet) {
+      var recRows = recSheet.getDataRange().getValues();
+      for (var r = 1; r < recRows.length; r++) {
+        var row = recRows[r];
+        var sId = String(row[1] || "").trim();
+        if (sId) {
+          if (!allData.studentCompetitions[sId]) allData.studentCompetitions[sId] = [];
+          allData.studentCompetitions[sId].push({
+            title: String(row[3] || "").trim(),
+            date: String(row[4] || "").trim(),
+            category: String(row[5] || "").trim(),
+            achievement: String(row[6] || "").trim(),
+            certificate: String(row[7] || "").trim()
+          });
+        }
+      }
+    }
+
+    // 7. Read Master Exam Switch from AcademySettings Sheet
+    var setSheet = ss.getSheetByName("AcademySettings");
+    if (setSheet) {
+      var setRows = setSheet.getDataRange().getValues();
+      for (var s = 1; s < setRows.length; s++) {
+        var sk = String(setRows[s][0] || "").toUpperCase().trim();
+        var sv = String(setRows[s][1] || "").toUpperCase().trim();
+        if (sk === "EXAM_MASTER_SWITCH") {
+          allData.examSessionActive = (sv === "ON" || sv === "TRUE");
+        }
+      }
+    }
+
     return ContentService.createTextOutput(JSON.stringify(allData))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
-  // Read data action
+  // 1C. Read Single Sheet (Fallback)
   if (action === "readSheet") {
     var sheetName = (e && e.parameter && e.parameter.sheet) || "Trainers";
     var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -250,7 +337,9 @@ function doPost(e) {
     var data = JSON.parse(e.postData.contents);
     var type = (data.type || data.action || "").toUpperCase();
 
+    // -----------------------------------------------------------------------
     // 1. TRAINER REGISTRATION & IN-PLACE UPDATE (13 POINTS) + WELCOME EMAIL
+    // -----------------------------------------------------------------------
     if (type.indexOf("TRAINER") !== -1) {
       var sheet = getOrCreateSheet(ss, "Trainers", [
         "Timestamp", "Trainer ID", "Full Name", "Position", "Status",
@@ -279,7 +368,7 @@ function doPost(e) {
         trainerPass
       ];
 
-      var updated = updateRowIfExists(sheet, 2, trainerId, rowData);
+      var updated = updateRowIfExistsOrMerge(sheet, 2, trainerId, rowData);
       if (!updated) sheet.appendRow(rowData);
 
       // Send 100% FREE Welcome & Credentials Email to Trainer via MailApp
@@ -301,19 +390,30 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 2. STUDENT REGISTRATION & IN-PLACE UPDATE (32 POINTS) + ADMISSION EMAIL
+    // -----------------------------------------------------------------------
+    // 2. STUDENT REGISTRATION, EXAM MARKS & LEVEL PROGRESSION (30 POINTS)
+    // -----------------------------------------------------------------------
     if (type.indexOf("STUDENT") !== -1) {
       var sheet = getOrCreateSheet(ss, "Students", [
         "Timestamp", "Student ID", "Student Name", "Date of Birth", "Age",
         "Requested Level", "School Name", "Standard", "School Contact", "School Address",
         "Parent Name", "Parent Mobile", "City / Village", "District", "State",
         "Admission Date", "Trainer ID", "Trainer Name", "Status", "Fee Status",
-        "Fee Amount", "UPI UTR Number"
+        "Fee Amount", "UPI UTR Number", "Live Exam Status", "Live AI Camera Score (/50)",
+        "Trainer Exam Score (/50)", "Grand Total Score (/100)", "Exam Passed Date",
+        "Level Up Pending", "Pending Next Level", "10-Level History & Passed Marks"
       ]);
 
       var studentId = data.studentId || data.id || "";
       var studentName = data.studentName || data.name || "Student";
       var parentEmail = (data.parentEmail || data.email || "").trim();
+
+      // Extract exam scores if present
+      var aiScore = (data.lastExam && data.lastExam.aiScore) ? data.lastExam.aiScore : (data.aiScore || "");
+      var trScore = (data.lastExam && data.lastExam.trainerScore) ? data.lastExam.trainerScore : (data.trainerScore || "");
+      var totScore = (data.lastExam && data.lastExam.totalScore) ? data.lastExam.totalScore : (data.totalScore || "");
+      var exDate = (data.lastExam && data.lastExam.examDate) ? data.lastExam.examDate : (data.examDate || "");
+      var lvlHistStr = data.levelHistory ? JSON.stringify(data.levelHistory) : (data.levelHistoryStr || "");
 
       var rowData = [
         new Date(),
@@ -337,15 +437,77 @@ function doPost(e) {
         data.status || "Active",
         data.feeStatus || "Paid",
         data.feeAmount || 500,
-        data.utrNumber || ""
+        data.utrNumber || "",
+        data.examStatus || "TRAINING",
+        aiScore,
+        trScore,
+        totScore,
+        exDate,
+        data.levelUpPending ? "YES" : "NO",
+        data.pendingNextLevel || "",
+        lvlHistStr
       ];
 
-      var updated = updateRowIfExists(sheet, 2, studentId, rowData);
+      var updated = updateRowIfExistsOrMerge(sheet, 2, studentId, rowData);
       if (!updated) sheet.appendRow(rowData);
 
-      // Send 100% FREE Admission Confirmation Email to Parent/Student if email is provided
+      // Log Belt Exam Result to dedicated 'ExamResults' sheet
+      if (data.action === "updateExamResults" || (data.lastExam && data.lastExam.totalScore)) {
+        try {
+          var examSheet = getOrCreateSheet(ss, "ExamResults", [
+            "Timestamp", "Exam Reference ID", "Student ID", "Student Name", "Akhada / Branch",
+            "District", "State", "Belt Level", "AI Camera Score (/50)", "Trainer Score (/50)",
+            "Grand Total (/100)", "Grade", "Exam Date", "Trainer / Ustad Name", "Status"
+          ]);
+          var examRefId = "EXAM-" + studentId.replace(/[^A-Za-z0-9]/g, "") + "-L" + (data.lastExam?.levelNum || 1);
+          examSheet.appendRow([
+            new Date(),
+            examRefId,
+            studentId,
+            studentName,
+            data.city ? data.city + " Akhada" : "Central Akhada",
+            data.district || "",
+            data.state || "Maharashtra",
+            data.lastExam?.levelName || data.requestedLevel || "Level 1",
+            aiScore,
+            trScore,
+            totScore,
+            totScore >= 90 ? "A+" : (totScore >= 80 ? "A" : "B+"),
+            exDate || new Date().toLocaleDateString("en-IN"),
+            data.lastExam?.trainerName || data.trainerName || "Certified Ustad",
+            "PASSED & CERTIFIED"
+          ]);
+        } catch(examErr) {
+          Logger.log("ExamResults log error: " + examErr.toString());
+        }
+      }
+
+      // Log Level-Up Application to dedicated 'LevelUpApplications' sheet
+      if (data.action === "submitLevelUp" || data.action === "approveLevelUp") {
+        try {
+          var lvlAppSheet = getOrCreateSheet(ss, "LevelUpApplications", [
+            "Timestamp", "Student ID", "Student Name", "Promoted From Level", "Promoted To Level",
+            "Fee Amount (₹)", "UPI UTR Number", "Application Status", "Approval Date"
+          ]);
+          lvlAppSheet.appendRow([
+            new Date(),
+            studentId,
+            studentName,
+            data.oldLevel || data.requestedLevel || "",
+            data.pendingNextLevel || data.nextLvlName || "",
+            data.feeAmount || 600,
+            data.utrNumber || "",
+            data.action === "approveLevelUp" ? "APPROVED & PAID" : "PENDING VERIFICATION",
+            data.action === "approveLevelUp" ? new Date().toLocaleDateString("en-IN") : "-"
+          ]);
+        } catch(lvlErr) {
+          Logger.log("LevelUpApplications log error: " + lvlErr.toString());
+        }
+      }
+
+      // Send Admission Confirmation Email if parent email is provided
       var studentEmailSent = false;
-      if (parentEmail && data.sendAdmissionEmail !== false) {
+      if (parentEmail && data.sendAdmissionEmail !== false && !data.action) {
         try {
           sendStudentAdmissionEmail(parentEmail, studentName, studentId, data.requestedLevel, data.trainerName, data.feeAmount, data.utrNumber);
           studentEmailSent = true;
@@ -362,7 +524,36 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 3. COURSES IN-PLACE UPDATE (TITLE, DESC, VIDEO LINK, THUMBNAIL, ASSIGNED TRAINERS)
+    // -----------------------------------------------------------------------
+    // 3. STUDENT SPORTS RECORDS & MEDALS (Gold/Silver/Bronze Track Record)
+    // -----------------------------------------------------------------------
+    if (type.indexOf("STUDENT_COMPETITION_RECORD") !== -1 || type.indexOf("SPORTS_RECORD") !== -1) {
+      var sheet = getOrCreateSheet(ss, "StudentSportsRecords", [
+        "Timestamp", "Student ID", "Student Name", "Tournament Title", "Event Date",
+        "Discipline / Category", "Medal / Achievement", "Certificate Number"
+      ]);
+
+      sheet.appendRow([
+        new Date(),
+        data.studentId || "",
+        data.studentName || "",
+        data.title || "",
+        data.date || new Date().toISOString().split("T")[0],
+        data.category || "Martial Arts Sparring",
+        data.achievement || "🥇 Gold Medal",
+        data.certificate || ("YAI-COMP-" + Date.now().toString().slice(-6))
+      ]);
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Student competition medal record saved permanently",
+        studentId: data.studentId
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // -----------------------------------------------------------------------
+    // 4. COURSES IN-PLACE UPDATE (TITLE, DESC, VIDEO LINK, THUMBNAIL, ASSIGNED)
+    // -----------------------------------------------------------------------
     if (type.indexOf("COURSE") !== -1) {
       var sheet = getOrCreateSheet(ss, "Courses", [
         "Timestamp", "Course ID", "Course Title", "Description", "Video Link", "Thumbnail URL", "Assigned Trainers"
@@ -380,7 +571,7 @@ function doPost(e) {
         trainersStr
       ];
 
-      var updated = updateRowIfExists(sheet, 2, courseId, rowData);
+      var updated = updateRowIfExistsOrMerge(sheet, 2, courseId, rowData);
       if (!updated) sheet.appendRow(rowData);
 
       return ContentService.createTextOutput(JSON.stringify({
@@ -390,10 +581,12 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 4. COMPETITIONS IN-PLACE UPDATE
-    if (type.indexOf("COMPETITION") !== -1) {
+    // -----------------------------------------------------------------------
+    // 5. COMPETITIONS IN-PLACE UPDATE
+    // -----------------------------------------------------------------------
+    if (type.indexOf("COMPETITION") !== -1 && type.indexOf("RECORD") === -1) {
       var sheet = getOrCreateSheet(ss, "Competitions", [
-        "Timestamp", "Competition ID", "Championship Level", "Title", "Date", "Location", "Categories", "Entry Fee", "Status"
+        "Timestamp", "Competition ID", "Championship Level", "Title", "Date", "Location", "Categories", "Entry Fee", "Status", "Eligible Scope"
       ]);
 
       var compId = data.id || data.compId || "";
@@ -406,10 +599,11 @@ function doPost(e) {
         data.location || "",
         data.categories || "",
         data.fee || 300,
-        data.status || "Registrations Open"
+        data.status || "Registrations Open",
+        data.scope || "All Branches"
       ];
 
-      var updated = updateRowIfExists(sheet, 2, compId, rowData);
+      var updated = updateRowIfExistsOrMerge(sheet, 2, compId, rowData);
       if (!updated) sheet.appendRow(rowData);
 
       return ContentService.createTextOutput(JSON.stringify({
@@ -419,7 +613,9 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 4B. TOURNAMENT STUDENT REGISTRATIONS
+    // -----------------------------------------------------------------------
+    // 6. TOURNAMENT STUDENT REGISTRATIONS
+    // -----------------------------------------------------------------------
     if (type.indexOf("TOURNAMENT") !== -1) {
       var sheet = getOrCreateSheet(ss, "TournamentEntries", [
         "Timestamp", "Competition ID", "Tournament Title", "Championship Level",
@@ -427,7 +623,7 @@ function doPost(e) {
         "Fee Status", "Fee Amount (Rs)", "Trainer Name"
       ]);
 
-      var rowData = [
+      sheet.appendRow([
         new Date(),
         data.compId || "",
         data.compTitle || "",
@@ -439,9 +635,7 @@ function doPost(e) {
         data.feeStatus || "Paid",
         data.feeAmount || 300,
         data.trainerName || ""
-      ];
-
-      sheet.appendRow(rowData);
+      ]);
 
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
@@ -451,7 +645,9 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 5. FEE STRUCTURE IN-PLACE UPDATE (LEVEL 1-6 & SENIOR 1-4 + UPI)
+    // -----------------------------------------------------------------------
+    // 7. LEVEL-WISE FEE STRUCTURE IN-PLACE UPDATE (LEVEL 1-6 & SENIOR 1-4 + UPI)
+    // -----------------------------------------------------------------------
     if (type.indexOf("FEE") !== -1) {
       var sheet = getOrCreateSheet(ss, "Fee Structure", [
         "Level / Parameter", "Fee Amount (₹)", "Last Updated"
@@ -480,6 +676,25 @@ function doPost(e) {
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
         message: "Level-wise Fee structure updated in-place"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // -----------------------------------------------------------------------
+    // 8. MASTER EXAM SWITCH & ACADEMY SETTINGS
+    // -----------------------------------------------------------------------
+    if (type.indexOf("EXAM_SESSION_TOGGLED") !== -1 || type.indexOf("SETTING") !== -1) {
+      var sheet = getOrCreateSheet(ss, "AcademySettings", [
+        "Setting Key", "Setting Value", "Updated By", "Last Updated"
+      ]);
+
+      var settingVal = data.examSessionActive ? "ON" : "OFF";
+      var rowData = ["EXAM_MASTER_SWITCH", settingVal, data.toggledBy || "Admin", new Date()];
+      var updated = updateRowIfExistsOrMerge(sheet, 1, "EXAM_MASTER_SWITCH", rowData);
+      if (!updated) sheet.appendRow(rowData);
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Master exam switch updated to " + settingVal
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -531,7 +746,7 @@ function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, p
     + '</table>'
     + '</div>'
     + '<div style="text-align: center; margin: 25px 0;">'
-    + '<a href="https://yoddhaacademyindia.netlify.app" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);">'
+    + '<a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);">'
     + '🚀 ओपन ट्रेनर लॉगिन पॅनेल (Open Trainer Panel)'
     + '</a>'
     + '</div>'
@@ -539,7 +754,7 @@ function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, p
     + '</div>'
     + '<div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;">'
     + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">योध्या अकॅडमी इंडिया • केंद्रीय मुख्यालय</p>'
-    + '<p style="margin: 4px 0 0;">अधिकृत पोर्टल: <a href="https://yoddhaacademyindia.netlify.app" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.netlify.app</a></p>'
+    + '<p style="margin: 4px 0 0;">अधिकृत पोर्टल: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
     + '<p style="margin: 4px 0 0;">Traditional Martial Arts & Sports Training • All India Organization</p>'
     + '</div>'
     + '</div>';
@@ -575,14 +790,14 @@ function sendStudentAdmissionEmail(toEmail, studentName, studentId, level, train
     + '</table>'
     + '</div>'
     + '<div style="text-align: center; margin: 25px 0;">'
-    + '<a href="https://yoddhaacademyindia.netlify.app" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block;">'
+    + '<a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block;">'
     + '🪪 व्ह्यू डिजिटल आयडी कार्ड (View Digital ID Card)'
     + '</a>'
     + '</div>'
     + '</div>'
     + '<div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;">'
     + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">योध्या अकॅडमी इंडिया • केंद्रीय मुख्यालय</p>'
-    + '<p style="margin: 4px 0 0;">अधिकृत पोर्टल: <a href="https://yoddhaacademyindia.netlify.app" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.netlify.app</a></p>'
+    + '<p style="margin: 4px 0 0;">अधिकृत पोर्टल: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
     + '</div>'
     + '</div>';
 
@@ -598,10 +813,10 @@ function sendStudentAdmissionEmail(toEmail, studentName, studentId, level, train
 // -------------------------------------------------------------------------
 
 /**
- * Searches column (1-based index) for matchVal. If found, updates that entire row.
- * Returns true if row was found and updated in-place; false otherwise.
+ * Searches column (1-based index) for matchVal. If found, updates that entire row,
+ * intelligently merging non-empty new values without overwriting existing data.
  */
-function updateRowIfExists(sheet, colIndex, matchVal, newRowData) {
+function updateRowIfExistsOrMerge(sheet, colIndex, matchVal, newRowData) {
   if (!matchVal) return false;
   var data = sheet.getDataRange().getValues();
   var matchStr = String(matchVal).trim().toLowerCase();
@@ -609,7 +824,18 @@ function updateRowIfExists(sheet, colIndex, matchVal, newRowData) {
   for (var i = 1; i < data.length; i++) {
     var cellStr = String(data[i][colIndex - 1] || "").trim().toLowerCase();
     if (cellStr === matchStr) {
-      sheet.getRange(i + 1, 1, 1, newRowData.length).setValues([newRowData]);
+      var existingRow = data[i];
+      var mergedRow = [];
+      for (var c = 0; c < newRowData.length; c++) {
+        var newVal = newRowData[c];
+        // If newVal is undefined, null, or empty string, keep existing value
+        if ((newVal === undefined || newVal === null || newVal === "") && existingRow[c] !== undefined && existingRow[c] !== "") {
+          mergedRow.push(existingRow[c]);
+        } else {
+          mergedRow.push(newVal !== undefined && newVal !== null ? newVal : "");
+        }
+      }
+      sheet.getRange(i + 1, 1, 1, mergedRow.length).setValues([mergedRow]);
       return true;
     }
   }
@@ -618,6 +844,7 @@ function updateRowIfExists(sheet, colIndex, matchVal, newRowData) {
 
 /**
  * Gets an existing sheet tab by name, or creates it with the given header row.
+ * If sheet already exists but has fewer columns than headers, automatically expands headers.
  */
 function getOrCreateSheet(ss, sheetName, headers) {
   var sheet = ss.getSheetByName(sheetName);
@@ -629,6 +856,15 @@ function getOrCreateSheet(ss, sheetName, headers) {
       .setBackground("#ea580c")
       .setFontColor("#ffffff");
     sheet.setFrozenRows(1);
+  } else {
+    var currentCols = sheet.getLastColumn();
+    if (currentCols < headers.length) {
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+      sheet.getRange(1, 1, 1, headers.length)
+        .setFontWeight("bold")
+        .setBackground("#ea580c")
+        .setFontColor("#ffffff");
+    }
   }
   return sheet;
 }
