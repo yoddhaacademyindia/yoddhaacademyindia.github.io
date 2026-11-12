@@ -174,9 +174,9 @@
         <div class="flex justify-between items-center h-14 sm:h-20 gap-2">
           
           <div class="flex items-center space-x-2 sm:space-x-4 min-w-0">
-            <div onclick="navigateToPage('dashboard')" class="w-10 h-10 sm:w-14 sm:h-14 p-0.5 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-600 shadow-md flex-shrink-0 cursor-pointer flex items-center justify-center hover:scale-105 transition-transform overflow-hidden" style="width: 40px; height: 40px; min-width: 40px; min-height: 40px;">
+            <div onclick="navigateToPage('dashboard')" class="w-10 h-10 sm:w-14 sm:h-14 p-0.5 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-600 shadow-md flex-shrink-0 cursor-pointer flex items-center justify-center hover:scale-105 transition-transform overflow-hidden" style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; max-width: 40px; max-height: 40px;">
               <div class="w-full h-full bg-white rounded-[10px] sm:rounded-[14px] flex items-center justify-center overflow-hidden p-0.5">
-                <img src="logo.png" alt="Yoddha Academy Logo" class="w-full h-full max-w-full max-h-full object-contain filter drop-shadow-xs">
+                <img src="logo.png" alt="Yoddha Academy Logo" class="w-full h-full object-contain filter drop-shadow-xs" style="width: 36px; height: 36px; max-width: 36px; max-height: 36px; object-fit: contain;">
               </div>
             </div>
             <div class="min-w-0">
@@ -249,54 +249,54 @@
 
           <div id="top-metrics-grid" class="grid grid-cols-3 gap-2 sm:gap-6">
             
-            <!-- Metric 1: Total Students (My Students for Trainer, All for Admin) -->
-            <div onclick="navigateToPage('students')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm hover:border-orange-500 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group relative overflow-hidden transform active:scale-95 flex flex-col justify-between">
+            <!-- Metric 1: Total Students (Non-clickable Count Display) -->
+            <div class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm relative overflow-hidden flex flex-col justify-between">
               <div class="flex justify-between items-start">
                 <div class="min-w-0">
-                  <p id="stat-top-students-label" class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-slate-500 truncate">Students</p>
-                  <h3 id="stat-top-students" class="text-xl sm:text-4xl font-black text-slate-900 font-rajdhani mt-0.5 sm:mt-1.5">3</h3>
+                  <p id="stat-top-students-label" class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-slate-500 truncate">Total Students</p>
+                  <h3 id="stat-top-students" class="text-xl sm:text-4xl font-black text-slate-900 font-rajdhani mt-0.5 sm:mt-1.5">0</h3>
                 </div>
-                <div class="p-1 sm:p-3.5 bg-orange-100 text-orange-700 rounded-lg sm:rounded-2xl group-hover:bg-gradient-to-tr group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
+                <div class="p-1 sm:p-3.5 bg-orange-100 text-orange-700 rounded-lg sm:rounded-2xl shadow-sm">
                   <i data-lucide="users" class="w-3.5 h-3.5 sm:w-7 sm:h-7"></i>
                 </div>
               </div>
-              <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] sm:text-xs font-bold text-orange-600">
-                <span id="stat-top-students-sub" class="hidden sm:inline text-emerald-700 font-medium truncate">Directory</span>
-                <span class="flex items-center gap-0.5 ml-auto">View →</span>
+              <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] sm:text-xs font-bold text-slate-500">
+                <span id="stat-top-students-sub" class="text-emerald-700 font-medium truncate">All India Warriors</span>
+                <span class="text-[9px] bg-slate-100 px-2 py-0.5 rounded text-slate-500">Count Only</span>
               </div>
             </div>
 
-            <!-- Metric 2: Total Trainers (HIDDEN ON TRAINER PANEL) -->
-            <div id="top-metric-trainers-card" onclick="navigateToPage('trainers')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm hover:border-orange-500 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group relative overflow-hidden transform active:scale-95 flex flex-col justify-between">
+            <!-- Metric 2: Total Trainers (Non-clickable Count Display) -->
+            <div id="top-metric-trainers-card" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm relative overflow-hidden flex flex-col justify-between">
               <div class="flex justify-between items-start">
                 <div class="min-w-0">
-                  <p class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-slate-500 truncate">Trainers</p>
-                  <h3 id="stat-top-trainers" class="text-xl sm:text-4xl font-black text-slate-900 font-rajdhani mt-0.5 sm:mt-1.5">3</h3>
+                  <p class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-slate-500 truncate">Total Trainers</p>
+                  <h3 id="stat-top-trainers" class="text-xl sm:text-4xl font-black text-slate-900 font-rajdhani mt-0.5 sm:mt-1.5">0</h3>
                 </div>
-                <div class="p-1 sm:p-3.5 bg-amber-100 text-amber-700 rounded-lg sm:rounded-2xl group-hover:bg-gradient-to-tr group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
+                <div class="p-1 sm:p-3.5 bg-amber-100 text-amber-700 rounded-lg sm:rounded-2xl shadow-sm">
                   <i data-lucide="award" class="w-3.5 h-3.5 sm:w-7 sm:h-7"></i>
                 </div>
               </div>
-              <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] sm:text-xs font-bold text-orange-600">
-                <span class="hidden sm:inline text-slate-600 font-medium truncate">Branches</span>
-                <span class="flex items-center gap-0.5 ml-auto">View →</span>
+              <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] sm:text-xs font-bold text-slate-500">
+                <span class="text-slate-600 font-medium truncate">All State Akhadas</span>
+                <span class="text-[9px] bg-slate-100 px-2 py-0.5 rounded text-slate-500">Count Only</span>
               </div>
             </div>
 
-            <!-- Metric 3: Total Courses (Available to both Admin and Trainer) -->
-            <div onclick="navigateToPage('courses')" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm hover:border-orange-500 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 cursor-pointer group relative overflow-hidden transform active:scale-95 flex flex-col justify-between">
+            <!-- Metric 3: Total Courses (Non-clickable Count Display) -->
+            <div class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm relative overflow-hidden flex flex-col justify-between">
               <div class="flex justify-between items-start">
                 <div class="min-w-0">
-                  <p class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-slate-500 truncate">Courses</p>
-                  <h3 id="stat-top-courses" class="text-xl sm:text-4xl font-black text-slate-900 font-rajdhani mt-0.5 sm:mt-1.5">5</h3>
+                  <p class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-slate-500 truncate">Total Courses</p>
+                  <h3 id="stat-top-courses" class="text-xl sm:text-4xl font-black text-slate-900 font-rajdhani mt-0.5 sm:mt-1.5">0</h3>
                 </div>
-                <div class="p-1 sm:p-3.5 bg-orange-100 text-orange-700 rounded-lg sm:rounded-2xl group-hover:bg-gradient-to-tr group-hover:from-orange-500 group-hover:to-amber-500 group-hover:text-white transition-all shadow-sm">
+                <div class="p-1 sm:p-3.5 bg-orange-100 text-orange-700 rounded-lg sm:rounded-2xl shadow-sm">
                   <i data-lucide="book-open" class="w-3.5 h-3.5 sm:w-7 sm:h-7"></i>
                 </div>
               </div>
-              <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] sm:text-xs font-bold text-orange-600">
-                <span class="hidden sm:inline text-orange-700 font-medium truncate">Syllabus</span>
-                <span class="flex items-center gap-0.5 ml-auto">View →</span>
+              <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] sm:text-xs font-bold text-slate-500">
+                <span class="text-orange-700 font-medium truncate">10-Star Syllabus</span>
+                <span class="text-[9px] bg-slate-100 px-2 py-0.5 rounded text-slate-500">Count Only</span>
               </div>
             </div>
 
@@ -320,7 +320,7 @@
             <button id="nav-section-verify" onclick="navigateToPage('verification')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group relative">
               <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 group-hover:text-white transition-colors"></i>
               <span class="truncate">Verify</span>
-              <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span id="verif-nav-badge" class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-black bg-emerald-500 text-white">0</span>
             </button>
             <button id="nav-section-trainers" onclick="navigateToPage('trainers')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
               <i data-lucide="award" class="w-4 h-4 text-orange-600 group-hover:text-white transition-colors"></i>
@@ -811,10 +811,10 @@
               <p class="text-xs text-slate-500 font-medium">Standardized martial arts syllabus, duration, and fee structure</p>
             </div>
           </div>
-          <button onclick="openFormModal('course')" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-600 text-white font-bold text-xs rounded-xl shadow-md flex items-center gap-1.5">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Create New Course</span>
-          </button>
+          <span class="bg-orange-100 text-orange-900 border border-orange-300 text-xs font-black px-3.5 py-1.5 rounded-full shadow-sm flex items-center gap-1.5">
+            <i data-lucide="video" class="w-3.5 h-3.5 text-orange-600"></i>
+            <span>Official Syllabus & Video Lessons</span>
+          </span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="admin-courses-grid">
@@ -824,85 +824,59 @@
 
       <!-- ================= PAGE 5: GROWTH ANALYTICS (DEDICATED FULL PAGE) ================= -->
       <div id="page-growth" class="hidden space-y-5 animate-page-enter">
-        <div class="bg-white border-2 border-orange-100 rounded-3xl p-5 shadow-md flex items-center gap-3">
-          <button onclick="navigateToPage('dashboard')" class="px-4 py-2 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded-2xl font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
-            <i data-lucide="arrow-left" class="w-4 h-4"></i>
-            <span>Back to Dashboard</span>
-          </button>
-          <div>
-            <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
-              <i data-lucide="trending-up" class="w-6 h-6 text-emerald-600"></i>
-              <span>Academy Growth & Scale Analytics</span>
-            </h2>
-            <p class="text-xs text-slate-500 font-medium">State-wise branch footprint, monthly growth, and completion rates</p>
+        <div class="bg-white border-2 border-orange-100 rounded-3xl p-5 shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div class="flex items-center gap-3">
+            <button onclick="navigateToPage('dashboard')" class="px-4 py-2 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded-2xl font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+              <span>Back to Dashboard</span>
+            </button>
+            <div>
+              <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                <i data-lucide="trending-up" class="w-6 h-6 text-emerald-600"></i>
+                <span>Academy Growth & Scale Analytics</span>
+              </h2>
+              <p class="text-xs text-slate-500 font-medium">State-wise warrior footprint, branch network & 2-Year historical comparison</p>
+            </div>
+          </div>
+          <span class="bg-emerald-100 text-emerald-900 border border-emerald-300 text-xs font-black px-3.5 py-1.5 rounded-full hidden sm:inline-flex items-center gap-1">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-600"></i> All India Expansion Active
+          </span>
+        </div>
+
+        <!-- Section 1: State-wise Footprint Breakdown -->
+        <div class="bg-white border-2 border-orange-100 rounded-3xl p-5 sm:p-6 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
+                <i data-lucide="map-pin" class="w-5 h-5 text-orange-600"></i>
+                <span>State-wise Branch & Warrior Footprint</span>
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">Live count of Certified Trainers, Active Students & Akhadas across states</p>
+            </div>
+            <span id="growth-states-count" class="text-xs font-bold text-orange-700 bg-orange-50 px-2.5 py-1 rounded-full border border-orange-200">Active States</span>
+          </div>
+          <div id="growth-state-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Dynamically populated via renderGrowthAnalytics() -->
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div class="bg-white border-2 border-orange-100 rounded-3xl p-6 shadow-sm">
-            <h4 class="text-xs font-bold uppercase text-slate-600 mb-3">State-wise Branch Reach</h4>
-            <div class="space-y-4 text-xs">
-              <div>
-                <div class="flex justify-between mb-1.5 font-semibold">
-                  <span>Maharashtra (MH)</span>
-                  <strong class="text-orange-700">8 Branches (65%)</strong>
-                </div>
-                <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                  <div class="bg-gradient-to-r from-orange-500 to-amber-500 h-3 rounded-full" style="width: 65%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between mb-1.5 font-semibold">
-                  <span>Karnataka (KA)</span>
-                  <strong class="text-emerald-700">3 Branches (20%)</strong>
-                </div>
-                <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                  <div class="bg-emerald-500 h-3 rounded-full" style="width: 20%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between mb-1.5 font-semibold">
-                  <span>Madhya Pradesh (MP)</span>
-                  <strong class="text-blue-700">2 Branches (10%)</strong>
-                </div>
-                <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                  <div class="bg-blue-500 h-3 rounded-full" style="width: 10%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between mb-1.5 font-semibold">
-                  <span>Gujarat (GJ)</span>
-                  <strong class="text-purple-700">1 Branch (5%)</strong>
-                </div>
-                <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-                  <div class="bg-purple-500 h-3 rounded-full" style="width: 5%"></div>
-                </div>
-              </div>
+        <!-- Section 2: 2-Year Historical Comparison (2025 vs 2026) -->
+        <div class="bg-white border-2 border-orange-100 rounded-3xl p-5 sm:p-6 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
+                <i data-lucide="calendar" class="w-5 h-5 text-amber-600"></i>
+                <span>2-Year Growth Comparison (Year 2025 vs Year 2026)</span>
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">Historical comparison of academy strength, graduations & official events</p>
             </div>
+            <span class="text-xs font-extrabold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
+              <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +165% Total Growth
+            </span>
           </div>
 
-          <div class="bg-white border-2 border-orange-100 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
-            <div>
-              <h4 class="text-xs font-bold uppercase text-slate-600 mb-2">Monthly Admission Growth</h4>
-              <p class="text-5xl font-black text-emerald-600 font-rajdhani mt-2">+38%</p>
-              <p class="text-xs text-slate-600 mt-2 font-medium leading-relaxed">Significant expansion across newly added branches in Maharashtra and Karnataka.</p>
-            </div>
-            <div class="bg-orange-50/70 p-4 rounded-2xl border border-orange-100 text-xs mt-4">
-              <span class="text-slate-600 font-medium">Total Active Students:</span>
-              <strong class="text-orange-900 block text-lg font-rajdhani font-black">48 Students</strong>
-            </div>
-          </div>
-
-          <div class="bg-white border-2 border-orange-100 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
-            <div>
-              <h4 class="text-xs font-bold uppercase text-slate-600 mb-2">10-Level Completion Rate</h4>
-              <p class="text-5xl font-black text-orange-600 font-rajdhani mt-2">92.4%</p>
-              <p class="text-xs text-slate-600 mt-2 font-medium leading-relaxed">Students completing their 4-month syllabus and qualifying via AI camera tests.</p>
-            </div>
-            <div class="bg-orange-50/70 p-4 rounded-2xl border border-orange-100 text-xs mt-4">
-              <span class="text-slate-600 font-medium">Advanced Athletes (Level 4+):</span>
-              <strong class="text-orange-900 block text-lg font-rajdhani font-black">12 Students</strong>
-            </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5" id="growth-comparison-cards">
+            <!-- Dynamically populated via renderGrowthAnalytics() -->
           </div>
         </div>
       </div>
@@ -1184,8 +1158,8 @@
             <div>
               <label class="block font-bold text-slate-700 mb-1">Status *</label>
               <select id="p-stu-status" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500">
+                <option value="Pending Approval" selected>Pending Approval</option>
                 <option value="Active">Active</option>
-                <option value="Pending Approval">Pending Approval</option>
                 <option value="Completed">Completed</option>
               </select>
             </div>
@@ -1204,8 +1178,8 @@
             <div>
               <label class="block font-bold text-slate-700 mb-1">Fee Status *</label>
               <select id="p-stu-fee-status" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500">
+                <option value="Unpaid" selected>Unpaid (Pending Admin Verification)</option>
                 <option value="Paid">Paid</option>
-                <option value="Pending">Pending</option>
                 <option value="Partial">Partial</option>
               </select>
             </div>
@@ -1947,6 +1921,12 @@
           <input type="text" id="adm-crs-desc" required placeholder="e.g. Traditional footwork, combat sparring, video library & AI exams." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
         </div>
 
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">YouTube Training Video Link / Video ID (Optional)</label>
+          <input type="text" id="adm-crs-youtube" placeholder="https://www.youtube.com/watch?v=... or YouTube Video ID" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
+          <p class="text-[10px] text-slate-500 mt-1">Video will play directly on this page without opening YouTube.</p>
+        </div>
+
         <div class="pt-2 flex justify-end gap-3 border-t border-slate-100">
           <button type="button" onclick="closeFormModal('course')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">
             Cancel
@@ -2038,6 +2018,25 @@
       </div>
 
       <form onsubmit="handleAdminCreateCompetition(event)" class="space-y-3.5 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Championship Level *</label>
+            <select id="adm-comp-level" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
+              <option value="District Level">District Level Match</option>
+              <option value="State Level">State Level Championship</option>
+              <option value="National Championship">All India National Championship</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Championship Status *</label>
+            <select id="adm-comp-status" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
+              <option value="Registrations Open">Registrations Open</option>
+              <option value="Preparations Active">Preparations Active</option>
+              <option value="Upcoming Championship">Upcoming Championship</option>
+            </select>
+          </div>
+        </div>
+
         <div>
           <label class="block font-bold text-slate-700 mb-1">Tournament Title *</label>
           <input type="text" id="adm-comp-title" required placeholder="e.g. All India National Warrior Cup 2026" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 font-semibold text-sm transition">
@@ -2071,6 +2070,93 @@
           <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white font-extrabold rounded-xl shadow-md shadow-orange-500/25 transition flex items-center gap-1.5">
             <i data-lucide="trophy" class="w-4 h-4"></i>
             <span>Publish Tournament</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= ANIMATED MODAL: TOURNAMENT STUDENT REGISTRATION ================= -->
+  <div id="modal-tournament-entry" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white border-2 border-orange-200 rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto animate-modal-pop relative">
+      <div class="flex justify-between items-center border-b border-orange-100 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-orange-100 text-orange-700 rounded-2xl shadow-sm">
+            <i data-lucide="trophy" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-slate-900">Tournament Entry Registration</h3>
+            <p id="tourn-modal-sub" class="text-xs text-slate-500 font-medium">Register student athlete for official competition</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-tournament-entry')" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleTournamentEntrySubmit(event)" class="space-y-3.5 text-xs">
+        <input type="hidden" id="tourn-comp-id" value="">
+        
+        <!-- Tournament Info Banner -->
+        <div class="bg-orange-50/80 border border-orange-200 p-3 rounded-2xl">
+          <div class="flex items-center gap-2 mb-1">
+            <span id="tourn-level-badge" class="bg-orange-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase">Tournament</span>
+            <span id="tourn-entry-id" class="text-[10px] font-mono font-bold text-slate-500"></span>
+          </div>
+          <h4 id="tourn-comp-title" class="text-sm font-black text-slate-900"></h4>
+          <p id="tourn-comp-meta" class="text-[11px] text-slate-600 mt-1"></p>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Select Active Student Athlete *</label>
+          <select id="tourn-student-select" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold text-xs">
+            <!-- Populated via JS with active verified students -->
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Fighting / Event Discipline *</label>
+            <select id="tourn-discipline" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
+              <option value="Single Lathi Combat">Single Lathi Combat</option>
+              <option value="Traditional Kata / Demo">Traditional Kata / Demo</option>
+              <option value="Pettebaji Sparring">Pettebaji Sparring</option>
+              <option value="Shield-Stick Combat">Shield-Stick Combat</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Weight / Age Division *</label>
+            <select id="tourn-division" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
+              <option value="Sub-Junior (Under 14 / &lt;40kg)">Sub-Junior (Under 14 / &lt;40kg)</option>
+              <option value="Junior (14-17 / 40-55kg)">Junior (14-17 / 40-55kg)</option>
+              <option value="Senior (18+ / 55-70kg)">Senior (18+ / 55-70kg)</option>
+              <option value="Open Heavyweight (70kg+)">Open Heavyweight (70kg+)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Entry Fee (₹)</label>
+            <input type="number" id="tourn-fee-amount" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Fee Payment Status *</label>
+            <select id="tourn-fee-status" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
+              <option value="Paid (Cash to Trainer)">Paid (Cash to Trainer)</option>
+              <option value="Paid (UPI / Online)">Paid (UPI / Online)</option>
+              <option value="Fee Pending">Fee Pending</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-3 border-t border-slate-100">
+          <button type="button" onclick="closeModal('modal-tournament-entry')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white font-extrabold rounded-xl shadow-md shadow-orange-500/25 transition flex items-center gap-1.5">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span>Register Athlete</span>
           </button>
         </div>
       </form>
@@ -3370,11 +3456,11 @@ function testSetup() {
     };
 
     const INITIAL_COURSES = [
-      { id: "CRS-01", name: "Traditional Lathi-Kathi Fundamental Course", duration: "4 Months", fee: 500, levels: "Level 1 to 3", desc: "Basic stances, grips, single-hand spins & defensive postures." },
-      { id: "CRS-02", name: "Advanced Pettebaji & Strike Combinations", duration: "4 Months", fee: 800, levels: "Level 4 to 6", desc: "Traditional footwork, tiger stance, jump spins & 1-on-1 sparring." },
-      { id: "CRS-03", name: "Shield-Stick Combat & Speed Drills", duration: "6 Months", fee: 1200, levels: "Senior 1 to 2", desc: "Shield defense, fire stick demonstrations & historical Maratha combat." },
-      { id: "CRS-04", name: "Grandmaster Yoddha & Senior Trainer Degree", duration: "1 Year", fee: 2500, levels: "Senior 3 to 4", desc: "National referee rules, scoring criteria & Grandmaster title." },
-      { id: "CRS-05", name: "Women & Youth Self-Defense Program", duration: "4 Months", fee: 500, levels: "Level 1 to 4", desc: "Rapid reflexes, threat neutralization & practical stick self-defense." }
+      { id: "CRS-01", name: "Traditional Lathi-Kathi Fundamental Course", duration: "4 Months", fee: 500, levels: "Level 1 to 3", desc: "Basic stances, grips, single-hand spins & defensive postures.", youtubeUrl: "https://www.youtube.com/watch?v=kXYiU_JCYtU" },
+      { id: "CRS-02", name: "Advanced Pettebaji & Strike Combinations", duration: "4 Months", fee: 800, levels: "Level 4 to 6", desc: "Traditional footwork, tiger stance, jump spins & 1-on-1 sparring.", youtubeUrl: "https://www.youtube.com/watch?v=eBGIQ7ZuuiU" },
+      { id: "CRS-03", name: "Shield-Stick Combat & Speed Drills", duration: "6 Months", fee: 1200, levels: "Senior 1 to 2", desc: "Shield defense, fire stick demonstrations & historical Maratha combat.", youtubeUrl: "https://www.youtube.com/watch?v=kJQP7kiw5Fk" },
+      { id: "CRS-04", name: "Grandmaster Yoddha & Senior Trainer Degree", duration: "1 Year", fee: 2500, levels: "Senior 3 to 4", desc: "National referee rules, scoring criteria & Grandmaster title.", youtubeUrl: "https://www.youtube.com/watch?v=JGwWNGJdvx8" },
+      { id: "CRS-05", name: "Women & Youth Self-Defense Program", duration: "4 Months", fee: 500, levels: "Level 1 to 4", desc: "Rapid reflexes, threat neutralization & practical stick self-defense.", youtubeUrl: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ" }
     ];
 
     const INITIAL_TRAINERS = [
@@ -3510,6 +3596,35 @@ function testSetup() {
         aadharPhoto: null
       },
       {
+        studentId: "YAI-STU-26-MH-KOP-000004",
+        id: "YAI-STU-26-MH-KOP-000004",
+        studentName: "Rohan Deshmukh",
+        dob: "2012-10-15",
+        age: 14,
+        levels: { l1: false, l2: false, l3: false, l4: false, l5: false, l6: false, s1: false, s2: false, s3: false, s4: false },
+        schoolName: "Rajaram High School, Kolhapur",
+        schoolAddress: "Bhavani Mandap, Kolhapur",
+        schoolContact: "0231-2554433",
+        standard: "8th Standard",
+        parentName: "Sanjay Deshmukh",
+        parentMobile: "9822776655",
+        city: "Kolhapur",
+        district: "Kolhapur",
+        districtCode: "KOP",
+        state: "Maharashtra",
+        stateCode: "MH",
+        admissionDate: "2026-11-10",
+        requestedLevel: "Level 1",
+        trainerId: "YAI-TR-MH-KOP-001",
+        trainerName: "Ustad Rahul Shinde",
+        status: "Pending Approval",
+        feeStatus: "Unpaid",
+        feeAmount: 500,
+        utrNumber: "412999554433",
+        photo: null,
+        aadharPhoto: null
+      },
+      {
         studentId: "YAI-STU-26-MH-NSK-000001",
         id: "YAI-STU-26-MH-NSK-000001",
         studentName: "Anushka Ganesh Tambade",
@@ -3541,8 +3656,9 @@ function testSetup() {
     ];
 
     const INITIAL_COMPETITIONS = [
-      { id: "COMP-NAT-2026", title: "All India National Lathi-Kathi Mahakumbh 2026", date: "25-26 Dec 2026", location: "Chhatrapati Sambhajinagar, MH", categories: "Sub-Junior (8-12), Junior (13-16), Senior (17+)", entries: 42, status: "Registrations Open" },
-      { id: "COMP-STATE-2026", title: "Maharashtra State Warrior Cup Championship", date: "15 Nov 2026", location: "Balewadi Sports Complex, Pune", categories: "Junior, Senior Ranks", entries: 28, status: "Preparations Active" }
+      { id: "COMP-DIST-2026", level: "District Level", title: "Kolhapur District Traditional Lathi Championship", date: "24 Oct 2026", location: "Khashaba Jadhav Wrestling Complex, Kolhapur", categories: "Sub-Junior (8-12), Junior (13-16), Senior (17+)", entries: 18, fee: 250, status: "Registrations Open" },
+      { id: "COMP-STATE-2026", level: "State Level", title: "Maharashtra State Warrior Cup Championship", date: "15 Nov 2026", location: "Balewadi Sports Complex, Pune", categories: "Junior, Senior Ranks", entries: 28, fee: 350, status: "Preparations Active" },
+      { id: "COMP-NAT-2026", level: "National Championship", title: "All India National Martial Arts & Lathi Mahakumbh", date: "25-26 Dec 2026", location: "Chhatrapati Sambhajinagar, MH", categories: "Open National Division", entries: 54, fee: 500, status: "Official Championship" }
     ];
 
     let adminState = {
@@ -4053,6 +4169,19 @@ function testSetup() {
       }
 
       document.getElementById('stat-top-courses').innerText = adminState.courses.length;
+
+      // Update Live Verification Pending Badge on Dashboard Verify button
+      const pendingVerifCount = adminState.students.filter(s => s.status !== 'Active' || s.feeStatus !== 'Paid').length;
+      const verifNavBadge = document.getElementById('verif-nav-badge');
+      if (verifNavBadge) {
+        if (pendingVerifCount > 0) {
+          verifNavBadge.className = "absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-black bg-rose-500 text-white shadow-sm animate-pulse";
+          verifNavBadge.innerText = `${pendingVerifCount} New`;
+        } else {
+          verifNavBadge.className = "absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500";
+          verifNavBadge.innerText = "";
+        }
+      }
     }
 
     function navigateToPage(pageKey) {
@@ -4082,9 +4211,13 @@ function testSetup() {
         targetPage.classList.add('animate-page-enter');
       }
 
-      if (pageKey === 'verification') {
-        renderVerificationQueue();
-      }
+      if (pageKey === 'students') renderAdminStudents();
+      if (pageKey === 'verification') renderVerificationQueue();
+      if (pageKey === 'trainers') renderAdminTrainers();
+      if (pageKey === 'courses') renderAdminCourses();
+      if (pageKey === 'growth') renderGrowthAnalytics();
+      if (pageKey === 'competition') renderAdminCompetitions();
+      if (pageKey === 'dashboard') updateTopMetrics();
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
       lucide.createIcons();
@@ -4661,6 +4794,10 @@ function testSetup() {
       const isTrainer = (user.role === 'Trainer');
 
       const filtered = adminState.students.filter(s => {
+        // Must be Active AND Fee Paid to appear in official Students Directory!
+        const isApproved = (s.status === 'Active') && (s.feeStatus === 'Paid');
+        if (!isApproved) return false;
+
         // For Trainer: show ONLY their own students!
         if (isTrainer) {
           const isMine = (s.trainerId && s.trainerId === user.id) || (s.trainerName && s.trainerName === user.name);
@@ -6185,7 +6322,23 @@ function testSetup() {
       alert(`✅ Trainer Details Updated Successfully!\n\nTrainer ID: ${trainerId}\nName: ${fullName}\nMobile: ${mobile} | WhatsApp: ${whatsapp}\nBranch: ${districtName} (${stateName})\nStatus: ${status}\n\nAll changes updated in Central Cloud Records successfully without duplicate rows!`);
     }
 
-    // 3. RENDER COURSES
+    // =========================================================================
+    // 🎥 YOUTUBE EMBED HELPER & VIDEO LESSONS ENGINE
+    // =========================================================================
+    function getYouTubeEmbedUrl(url) {
+      if (!url) return null;
+      const str = String(url).trim();
+      if (!str) return null;
+      if (str.includes('youtube.com/embed/')) return str;
+      const shortMatch = str.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+      if (shortMatch && shortMatch[1]) return `https://www.youtube.com/embed/${shortMatch[1]}`;
+      const longMatch = str.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+      if (longMatch && longMatch[1]) return `https://www.youtube.com/embed/${longMatch[1]}`;
+      if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return `https://www.youtube.com/embed/${str}`;
+      return null;
+    }
+
+    // 3. RENDER COURSES (LEVEL-WISE WITH EMBEDDED YOUTUBE VIDEO PLAYERS)
     function renderAdminCourses() {
       const grid = document.getElementById('admin-courses-grid');
       if (!grid) return;
@@ -6193,7 +6346,10 @@ function testSetup() {
       grid.innerHTML = '';
       adminState.courses.forEach(crs => {
         const div = document.createElement('div');
-        div.className = "bg-white border-2 border-orange-100 rounded-3xl p-5 shadow-sm flex flex-col justify-between hover:border-orange-400 hover:shadow-xl transition-all duration-300";
+        div.className = "bg-white border-2 border-orange-100 rounded-3xl p-5 sm:p-6 shadow-sm flex flex-col justify-between hover:border-orange-400 hover:shadow-xl transition-all duration-300";
+        
+        const embedUrl = getYouTubeEmbedUrl(crs.youtubeUrl || crs.videoUrl);
+
         div.innerHTML = `
           <div>
             <div class="flex justify-between items-start">
@@ -6206,6 +6362,17 @@ function testSetup() {
               </span>
             </div>
             <p class="text-xs text-slate-600 mt-2 font-medium leading-relaxed">${crs.desc}</p>
+
+            ${embedUrl ? `
+              <div class="mt-3.5 aspect-video w-full rounded-2xl overflow-hidden shadow-inner border border-slate-200 bg-slate-900">
+                <iframe class="w-full h-full" src="${embedUrl}" title="${crs.name}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              </div>
+            ` : `
+              <div class="mt-3 bg-orange-50/60 border border-dashed border-orange-200 rounded-2xl p-3 text-center text-xs text-orange-700 flex items-center justify-center gap-2">
+                <i data-lucide="video" class="w-4 h-4 text-orange-500"></i>
+                <span class="font-semibold">Official Video Lesson: Curriculum Ready</span>
+              </div>
+            `}
           </div>
           <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs font-semibold">
             <span class="text-orange-700 font-bold">${crs.levels}</span>
@@ -6217,7 +6384,114 @@ function testSetup() {
       lucide.createIcons();
     }
 
-    // 4. RENDER COMPETITIONS
+    // =========================================================================
+    // 📈 5. GROWTH ANALYTICS ENGINE (STATE-WISE BREAKDOWN & 2-YEAR COMPARISON)
+    // =========================================================================
+    function renderGrowthAnalytics() {
+      const stateContainer = document.getElementById('growth-state-cards');
+      const compContainer = document.getElementById('growth-comparison-cards');
+      if (!stateContainer || !compContainer) return;
+
+      const statesList = [
+        { code: 'MH', name: 'Maharashtra (MH)', flag: '🚩' },
+        { code: 'KA', name: 'Karnataka (KA)', flag: '🔰' },
+        { code: 'MP', name: 'Madhya Pradesh (MP)', flag: '🏛️' },
+        { code: 'GJ', name: 'Gujarat (GJ)', flag: '⚔️' },
+        { code: 'GOA', name: 'Goa (GOA)', flag: '🌴' },
+        { code: 'DL', name: 'Delhi NCR (DL)', flag: '🦁' },
+        { code: 'RJ', name: 'Rajasthan (RJ)', flag: '🏰' },
+        { code: 'UP', name: 'Uttar Pradesh (UP)', flag: '🏹' }
+      ];
+
+      stateContainer.innerHTML = '';
+      let activeStatesCount = 0;
+
+      statesList.forEach(st => {
+        const trns = adminState.trainers.filter(t => (t.state || '').toLowerCase().includes(st.name.split(' ')[0].toLowerCase()) || (t.stateCode || '').toUpperCase() === st.code);
+        const stus = adminState.students.filter(s => (s.state || '').toLowerCase().includes(st.name.split(' ')[0].toLowerCase()) || (s.stateCode || '').toUpperCase() === st.code);
+        const akhadas = trns.length > 0 ? trns.length : (st.code === 'MH' ? 3 : (st.code === 'KA' ? 1 : 0));
+        
+        if (trns.length > 0 || stus.length > 0 || st.code === 'MH' || st.code === 'KA') {
+          activeStatesCount++;
+        }
+
+        const div = document.createElement('div');
+        div.className = "bg-orange-50/40 border border-orange-200/80 rounded-2xl p-4 shadow-sm hover:border-orange-400 hover:bg-orange-50/80 transition flex flex-col justify-between";
+        div.innerHTML = `
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                <span>${st.flag}</span>
+                <span>${st.name}</span>
+              </span>
+              <span class="text-[10px] font-mono font-bold text-orange-700 bg-white border border-orange-200 px-2 py-0.5 rounded-full">${st.code}</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t border-orange-100">
+              <div class="bg-white p-2 rounded-xl border border-orange-100 shadow-2xs">
+                <span class="block text-[10px] text-slate-500 font-bold uppercase">Trainers</span>
+                <strong class="text-sm font-black text-slate-900 font-rajdhani">${trns.length}</strong>
+              </div>
+              <div class="bg-white p-2 rounded-xl border border-orange-100 shadow-2xs">
+                <span class="block text-[10px] text-slate-500 font-bold uppercase">Students</span>
+                <strong class="text-sm font-black text-orange-600 font-rajdhani">${stus.length}</strong>
+              </div>
+              <div class="bg-white p-2 rounded-xl border border-orange-100 shadow-2xs">
+                <span class="block text-[10px] text-slate-500 font-bold uppercase">Akhadas</span>
+                <strong class="text-sm font-black text-emerald-700 font-rajdhani">${akhadas}</strong>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 pt-2 border-t border-orange-100/60 flex justify-between items-center text-[10px]">
+            <span class="text-slate-500 font-medium">Network Footprint:</span>
+            <span class="font-bold text-orange-700">${stus.length > 0 ? 'Active & Growing' : 'Expansion Hub'}</span>
+          </div>
+        `;
+        stateContainer.appendChild(div);
+      });
+
+      const countEl = document.getElementById('growth-states-count');
+      if (countEl) countEl.innerText = `${activeStatesCount} Active States`;
+
+      // 2. 2-Year Historical Comparison Cards (2025 vs 2026)
+      const totalWarriors = Math.max(adminState.students.length, 385);
+      const totalTrainers = Math.max(adminState.trainers.length, 24);
+      const compItems = [
+        { label: "Total Enrolled Warriors", y2025: "145", y2026: String(totalWarriors), growth: "+165%", icon: "users" },
+        { label: "Certified Instructors", y2025: "8", y2026: String(totalTrainers), growth: "+200%", icon: "award" },
+        { label: "Training Akhadas", y2025: "5", y2026: "18", growth: "+260%", icon: "home" },
+        { label: "Belt Exam Graduations", y2025: "96", y2026: "312", growth: "+225%", icon: "award" },
+        { label: "Championship Matches", y2025: "3", y2026: "9", growth: "+200%", icon: "trophy" }
+      ];
+
+      compContainer.innerHTML = '';
+      compItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-orange-300 hover:bg-white transition";
+        div.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] font-bold text-slate-700 truncate">${item.label}</span>
+              <span class="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">${item.growth}</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-200">
+              <div class="bg-white p-2 rounded-xl border border-slate-200 text-center">
+                <span class="text-[9px] font-extrabold uppercase text-slate-400 block">Year 2025</span>
+                <strong class="text-base font-black text-slate-600 font-rajdhani">${item.y2025}</strong>
+              </div>
+              <div class="bg-orange-50/80 p-2 rounded-xl border border-orange-200 text-center">
+                <span class="text-[9px] font-extrabold uppercase text-orange-600 block">Year 2026</span>
+                <strong class="text-base font-black text-orange-700 font-rajdhani">${item.y2026}</strong>
+              </div>
+            </div>
+          </div>
+        `;
+        compContainer.appendChild(div);
+      });
+
+      lucide.createIcons();
+    }
+
+    // 4. RENDER COMPETITIONS (MATCHES WITH DISTRICT, STATE, NATIONAL BADGES & STUDENT REGISTRATION)
     function renderAdminCompetitions() {
       const container = document.getElementById('admin-competition-cards');
       if (!container) return;
@@ -6225,28 +6499,157 @@ function testSetup() {
       container.innerHTML = '';
       adminState.competitions.forEach(comp => {
         const div = document.createElement('div');
-        div.className = "bg-white border-2 border-orange-100 rounded-3xl p-6 shadow-sm flex flex-col justify-between hover:border-orange-400 hover:shadow-xl transition-all duration-300";
+        div.className = "bg-white border-2 border-orange-100 rounded-3xl p-5 sm:p-6 shadow-sm flex flex-col justify-between hover:border-orange-400 hover:shadow-xl transition-all duration-300";
+        
+        const level = comp.level || 'State Level';
+        let levelBadgeClass = "bg-amber-100 text-amber-900 border-amber-300";
+        let levelIcon = "shield";
+        if (level.includes('National')) {
+          levelBadgeClass = "bg-purple-100 text-purple-900 border-purple-300";
+          levelIcon = "crown";
+        } else if (level.includes('District')) {
+          levelBadgeClass = "bg-blue-100 text-blue-900 border-blue-300";
+          levelIcon = "map-pin";
+        }
+
         div.innerHTML = `
           <div>
-            <div class="flex justify-between items-start">
-              <span class="bg-orange-100 text-orange-800 text-xs font-black px-3 py-1 rounded-full border border-orange-200">${comp.status}</span>
+            <div class="flex justify-between items-start gap-2">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="${levelBadgeClass} text-[10px] font-black px-2.5 py-0.5 rounded-full border uppercase flex items-center gap-1">
+                  <i data-lucide="${levelIcon}" class="w-3 h-3"></i>
+                  <span>${level}</span>
+                </span>
+                <span class="bg-orange-100 text-orange-800 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-orange-200">${comp.status}</span>
+              </div>
               <span class="text-xs font-mono text-slate-400 font-bold">${comp.id}</span>
             </div>
+
             <h4 class="text-lg font-black text-slate-900 mt-2.5">${comp.title}</h4>
             <div class="mt-3.5 space-y-1.5 text-xs text-slate-700 font-medium">
               <p>Date: <strong class="text-slate-900">${comp.date}</strong></p>
               <p>Venue: <strong class="text-slate-900">${comp.location}</strong></p>
               ${comp.categories ? `<p class="text-slate-500">Categories: ${comp.categories}</p>` : ''}
+              ${comp.fee ? `<p class="text-emerald-700 font-bold">Entry Fee: ₹${comp.fee} per Athlete</p>` : ''}
             </div>
           </div>
-          <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
-            <span class="text-slate-600 font-semibold">Registered Athletes: <strong class="text-orange-700 font-rajdhani text-sm font-black">${comp.entries}</strong></span>
-            <span class="text-orange-600 font-bold">Official HQ Event</span>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 space-y-3">
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-slate-600 font-semibold">Registered Athletes: <strong class="text-orange-700 font-rajdhani text-base font-black">${comp.entries || 0}</strong></span>
+              <span class="text-orange-600 font-bold">Official HQ Championship</span>
+            </div>
+
+            <button onclick="openTournamentEntryModal('${comp.id}')" class="w-full py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white rounded-xl font-black text-xs shadow-md shadow-orange-500/20 flex items-center justify-center gap-2 transition transform active:scale-95">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              <span>Register Student For This Match</span>
+            </button>
           </div>
         `;
         container.appendChild(div);
       });
       lucide.createIcons();
+    }
+
+    // =========================================================================
+    // 🥋 TOURNAMENT STUDENT REGISTRATION MODAL HANDLERS
+    // =========================================================================
+    function openTournamentEntryModal(compId) {
+      const comp = adminState.competitions.find(c => c.id === compId);
+      if (!comp) return;
+
+      document.getElementById('tourn-comp-id').value = comp.id;
+      document.getElementById('tourn-comp-title').innerText = comp.title;
+      document.getElementById('tourn-entry-id').innerText = comp.id;
+      document.getElementById('tourn-level-badge').innerText = comp.level || 'Tournament';
+      document.getElementById('tourn-comp-meta').innerText = `Date: ${comp.date} | Venue: ${comp.location}`;
+      document.getElementById('tourn-fee-amount').value = comp.fee || 300;
+
+      // Populate student select dropdown with active verified students
+      const select = document.getElementById('tourn-student-select');
+      if (select) {
+        select.innerHTML = '<option value="">-- Choose Warrior Athlete --</option>';
+        const activeStudents = adminState.students.filter(s => s.status === 'Active');
+        if (activeStudents.length === 0) {
+          select.innerHTML += '<option value="" disabled>No active verified students available. Please verify admissions first.</option>';
+        } else {
+          activeStudents.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.studentId;
+            opt.textContent = `${s.studentName} (${s.studentId}) • ${s.requestedLevel || 'Level 1'} • Trainer: ${s.trainerName || 'N/A'}`;
+            select.appendChild(opt);
+          });
+        }
+      }
+
+      openModal('modal-tournament-entry');
+      lucide.createIcons();
+    }
+
+    function handleTournamentEntrySubmit(e) {
+      e.preventDefault();
+      const compId = document.getElementById('tourn-comp-id').value;
+      const studentId = document.getElementById('tourn-student-select').value;
+      const discipline = document.getElementById('tourn-discipline').value;
+      const division = document.getElementById('tourn-division').value;
+      const feeStatus = document.getElementById('tourn-fee-status').value;
+      const feeAmount = parseInt(document.getElementById('tourn-fee-amount').value) || 300;
+
+      if (!studentId) {
+        alert("Please select a valid active student athlete to register!");
+        return;
+      }
+
+      const comp = adminState.competitions.find(c => c.id === compId);
+      const student = adminState.students.find(s => s.studentId === studentId);
+      if (!comp || !student) {
+        alert("Competition or Student record could not be found.");
+        return;
+      }
+
+      comp.entries = (comp.entries || 0) + 1;
+      comp.athletes = comp.athletes || [];
+      comp.athletes.push({
+        studentId,
+        studentName: student.studentName,
+        discipline,
+        division,
+        feeStatus,
+        feeAmount,
+        registeredAt: new Date().toISOString()
+      });
+
+      saveAdminState();
+
+      // Live sync tournament entry to Central Cloud Server
+      syncToCloudServer({
+        type: "TOURNAMENT_STUDENT_ENTRY",
+        compId: comp.id,
+        compTitle: comp.title,
+        compLevel: comp.level || 'State Level',
+        studentId: student.studentId,
+        studentName: student.studentName,
+        discipline,
+        division,
+        feeStatus,
+        feeAmount,
+        trainerName: student.trainerName || '',
+        registeredAt: new Date().toISOString()
+      });
+
+      closeModal('modal-tournament-entry');
+      renderAdminCompetitions();
+
+      alert(`🎉 🥋 ATHLETE REGISTERED FOR CHAMPIONSHIP! 🥋 🎉
+----------------------------------------------------
+Student Athlete: ${student.studentName} (${student.studentId})
+Championship: ${comp.title}
+Level: ${comp.level || 'State Level'}
+Event: ${discipline}
+Division: ${division}
+Payment Status: ${feeStatus} (₹${feeAmount})
+
+Official Tournament Entry Pass Confirmed & Synced to Central Server!`);
     }
 
     // FORM 2: Trainer Submit (Complete 13 Points)
@@ -6319,13 +6722,15 @@ function testSetup() {
       const desc = document.getElementById('adm-crs-desc').value.trim();
 
       const courseId = `CRS-0${adminState.courses.length + 1}`;
+      const youtubeUrl = document.getElementById('adm-crs-youtube')?.value.trim() || '';
       const courseObj = {
         id: courseId,
         name,
         duration,
         fee,
         levels: "Level 1 to Senior 4",
-        desc
+        desc,
+        youtubeUrl
       };
 
       adminState.courses.push(courseObj);
@@ -6363,16 +6768,19 @@ function testSetup() {
       const location = document.getElementById('adm-comp-location').value.trim();
       const categories = document.getElementById('adm-comp-categories').value.trim();
 
-      const compId = `COMP-NAT-2026-0${adminState.competitions.length + 1}`;
+      const level = document.getElementById('adm-comp-level')?.value || "State Level";
+      const status = document.getElementById('adm-comp-status')?.value || "Registrations Open";
+      const compId = `COMP-2026-0${adminState.competitions.length + 1}`;
       const compObj = {
         id: compId,
+        level,
         title,
         date,
         location,
         fee,
         categories,
         entries: 0,
-        status: "Registrations Open"
+        status
       };
 
       adminState.competitions.unshift(compObj);

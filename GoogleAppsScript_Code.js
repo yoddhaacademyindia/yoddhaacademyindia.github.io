@@ -316,7 +316,7 @@ function doPost(e) {
     // 3. COURSES IN-PLACE UPDATE
     if (type.indexOf("COURSE") !== -1) {
       var sheet = getOrCreateSheet(ss, "Courses", [
-        "Timestamp", "Course ID", "Course Name", "Duration", "Fee Amount", "Description"
+        "Timestamp", "Course ID", "Course Name", "Duration", "Fee Amount", "Description", "YouTube Video Link"
       ]);
 
       var courseId = data.id || data.courseId || "";
@@ -326,7 +326,8 @@ function doPost(e) {
         data.name || data.courseName || "",
         data.duration || "",
         data.fee || 0,
-        data.desc || data.description || ""
+        data.desc || data.description || "",
+        data.youtubeUrl || data.videoUrl || ""
       ];
 
       var updated = updateRowIfExists(sheet, 2, courseId, rowData);
@@ -342,18 +343,20 @@ function doPost(e) {
     // 4. COMPETITIONS IN-PLACE UPDATE
     if (type.indexOf("COMPETITION") !== -1) {
       var sheet = getOrCreateSheet(ss, "Competitions", [
-        "Timestamp", "Competition ID", "Title", "Date", "Location", "Categories", "Status"
+        "Timestamp", "Competition ID", "Championship Level", "Title", "Date", "Location", "Categories", "Entry Fee", "Status"
       ]);
 
       var compId = data.id || data.compId || "";
       var rowData = [
         new Date(),
         compId,
+        data.level || "State Level",
         data.title || "",
         data.date || "",
         data.location || "",
         data.categories || "",
-        data.status || "Open"
+        data.fee || 300,
+        data.status || "Registrations Open"
       ];
 
       var updated = updateRowIfExists(sheet, 2, compId, rowData);
@@ -363,6 +366,38 @@ function doPost(e) {
         status: "success",
         message: updated ? "Competition updated in-place" : "Competition created",
         compId: compId
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 4B. TOURNAMENT STUDENT REGISTRATIONS
+    if (type.indexOf("TOURNAMENT") !== -1) {
+      var sheet = getOrCreateSheet(ss, "TournamentEntries", [
+        "Timestamp", "Competition ID", "Tournament Title", "Championship Level",
+        "Student ID", "Student Name", "Event Discipline", "Age / Weight Division",
+        "Fee Status", "Fee Amount (Rs)", "Trainer Name"
+      ]);
+
+      var rowData = [
+        new Date(),
+        data.compId || "",
+        data.compTitle || "",
+        data.compLevel || "State Level",
+        data.studentId || "",
+        data.studentName || "",
+        data.discipline || "",
+        data.division || "",
+        data.feeStatus || "Paid",
+        data.feeAmount || 300,
+        data.trainerName || ""
+      ];
+
+      sheet.appendRow(rowData);
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Tournament athlete entry recorded",
+        studentId: data.studentId,
+        compId: data.compId
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
