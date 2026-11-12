@@ -557,6 +557,34 @@
         </div>
 
         <!-- 1. PRIMARY VIEW: STUDENT ID CARDS GRID -->
+        <!-- MASTER LIVE BELT EXAM CONTROLLER BANNER -->
+        <div id="master-exam-controller-banner" class="bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 border-2 border-orange-200 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6 transition-all">
+          <div class="flex items-center gap-3">
+            <div id="exam-banner-icon-box" class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-slate-200 text-slate-700 flex items-center justify-center flex-shrink-0 shadow-sm transition">
+              <i data-lucide="camera" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 class="text-xs sm:text-sm font-black text-slate-900 uppercase tracking-wide">Live Belt Exam Window</h4>
+                <span id="exam-banner-status-badge" class="text-[9px] sm:text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 border border-slate-300">
+                  Exam Coming Soon
+                </span>
+              </div>
+              <p class="text-[10.5px] sm:text-xs text-slate-600 font-medium mt-0.5" id="exam-banner-description">
+                When turned ON, all candidates can start 2-min live camera exams. When OFF, student cards display "Exam Coming Soon".
+              </p>
+            </div>
+          </div>
+
+          <!-- Admin Control Button / Trainer View Badge -->
+          <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-orange-200/60">
+            <button type="button" id="btn-master-exam-switch" onclick="toggleMasterExamSession()" class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs font-black shadow-md transition-all active:scale-95 flex items-center gap-2 cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-800 border border-slate-300">
+              <span id="exam-switch-indicator-dot" class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+              <span id="btn-master-exam-text">Turn ON Exam Window</span>
+            </button>
+          </div>
+        </div>
+
         <div id="admin-students-cards-container">
           <div id="admin-students-cards" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-6">
             <!-- Rendered dynamically as School ID Cards -->
@@ -3917,6 +3945,7 @@ function testSetup() {
 
     let adminState = {
       isLoggedIn: localStorage.getItem('yoddha_admin_logged') === 'true',
+      examSessionActive: localStorage.getItem('yoddha_exam_session_active') === 'true',
       adminId: 'ADMIN-YODDHA-01',
       adminPass: '@hupare25077',
       students: JSON.parse(localStorage.getItem('yoddha_admin_students_v6')) || INITIAL_STUDENTS,
@@ -4299,6 +4328,7 @@ function testSetup() {
 
     function updatePortalRoleUI() {
       updateTopMetrics();
+      updateMasterExamUI();
       renderAdminStudents();
       const user = adminState.currentUser || { role: 'Admin', name: 'Central Headquarters', id: 'ADMIN-YODDHA-01' };
       const roleBadgeEl = document.getElementById('portal-role-badge');
@@ -5742,8 +5772,6 @@ function testSetup() {
 
     // 2. Render Dynamic Action 3 Button on Student ID Card
     function renderStudentAction3Button(s) {
-      const prog = getStudentTrainingProgress(s);
-      
       // STATE 3: Exam Passed -> Ready for Level Up!
       if (s.examStatus === 'PASSED_PENDING_LEVELUP') {
         return `
@@ -5754,38 +5782,117 @@ function testSetup() {
         `;
       }
 
-      // STATE 2: 4 Months Completed -> Belt Exam Button!
-      if (prog.isEligible || s.examEligible) {
+      // STATE 2: Exam Window is ON (Master Switch active or individual eligible) -> Belt Exam Camera Button!
+      const isExamActive = (adminState.examSessionActive === true) || s.examEligible;
+      if (isExamActive) {
         return `
-          <button type="button" onclick="openBeltExamModal('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border sm:border-2 border-amber-300 rounded-lg sm:rounded-xl text-[8px] sm:text-[11px] font-black shadow-xs flex flex-col items-center justify-center gap-0.5 transition active:scale-95 animate-pulse" title="4 Months Training Completed! Click to Start 2-Min Live AI Lathi Exam">
+          <button type="button" onclick="openBeltExamModal('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border sm:border-2 border-amber-300 rounded-lg sm:rounded-xl text-[8px] sm:text-[11px] font-black shadow-md shadow-orange-500/30 flex flex-col items-center justify-center gap-0.5 transition active:scale-95 animate-pulse" title="Live Belt Exam is OPEN! Click to Start 2-Min Live AI Camera Exam">
             <i data-lucide="camera" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white"></i>
             <span>Belt Exam</span>
           </button>
         `;
       }
 
-      // STATE 1: Training Ongoing (< 4 Months)
-      const label = prog.remainingMonths > 0 
-        ? `${prog.remainingMonths}m ${prog.remainingDaysInMonth}d` 
-        : `${prog.remainingDays}d`;
-
+      // STATE 1: Exam Window is OFF -> "Exam Coming Soon"
       return `
-        <button type="button" onclick="openExamTimelineModal('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-white hover:bg-orange-50 text-slate-700 hover:text-orange-900 border border-slate-200 hover:border-orange-300 rounded-lg sm:rounded-xl text-[8px] sm:text-[11px] font-bold shadow-2xs flex flex-col items-center justify-center gap-0.5 transition active:scale-95" title="4-Month Training in progress (${prog.remainingDays} days left). Click to inspect timeline or fast-forward.">
+        <button type="button" onclick="handleExamComingSoonClick('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-white hover:bg-orange-50 text-slate-700 hover:text-orange-900 border border-slate-200 hover:border-orange-300 rounded-lg sm:rounded-xl text-[7.5px] sm:text-[10px] font-bold shadow-2xs flex flex-col items-center justify-center gap-0.5 transition active:scale-95" title="Belt Exam will be announced soon by Central HQ. Click to check status.">
           <i data-lucide="clock" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-600"></i>
-          <span class="truncate">⏳ ${label}</span>
+          <span class="truncate">⏳ Coming Soon</span>
         </button>
       `;
     }
 
-    // 3. Global Exam State & Variables
-    let activeTimelineStudentId = null;
-    let activeExamStudentId = null;
-    let examMediaStream = null;
-    let examTimerInterval = null;
-    let examSecondsRemaining = 120; // 2 minutes = 120s
-    let examIsRunning = false;
-    let aiSimInterval = null;
-    let lastGeneratedCertStudent = null;
+    // Toggle Master Exam Session (Admin switch)
+    function toggleMasterExamSession() {
+      const user = adminState.currentUser || { role: 'Admin' };
+      if (user.role === 'Trainer') {
+        alert("🔒 Access Restricted: The Master Belt Exam Window can only be opened/closed by Master Admin Central HQ.");
+        return;
+      }
+
+      adminState.examSessionActive = !adminState.examSessionActive;
+      localStorage.setItem('yoddha_exam_session_active', adminState.examSessionActive ? 'true' : 'false');
+      
+      syncToCloudServer({
+        type: "EXAM_SESSION_TOGGLED",
+        examSessionActive: adminState.examSessionActive,
+        toggledBy: user.name || 'Master Admin',
+        timestamp: new Date().toISOString()
+      });
+
+      updateMasterExamUI();
+      renderAdminStudents();
+
+      if (adminState.examSessionActive) {
+        alert("🟢 LIVE BELT EXAM WINDOW OPENED!\\n\\nAll student cards across all India branches now show the active [ 📷 Belt Exam ] camera button! Students can now take their live AI examination.");
+      } else {
+        alert("⚪ LIVE BELT EXAM WINDOW CLOSED.\\n\\nStudent cards will now display '⏳ Exam Coming Soon'.");
+      }
+    }
+
+    function updateMasterExamUI() {
+      const isLive = (adminState.examSessionActive === true);
+      const user = adminState.currentUser || { role: 'Admin' };
+      const isTrainer = (user.role === 'Trainer');
+
+      const iconBox = document.getElementById('exam-banner-icon-box');
+      const badge = document.getElementById('exam-banner-status-badge');
+      const desc = document.getElementById('exam-banner-description');
+      const btn = document.getElementById('btn-master-exam-switch');
+      const dot = document.getElementById('exam-switch-indicator-dot');
+      const btnText = document.getElementById('btn-master-exam-text');
+
+      if (isLive) {
+        if (iconBox) iconBox.className = "w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center flex-shrink-0 shadow-md animate-pulse";
+        if (badge) {
+          badge.className = "text-[9px] sm:text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300";
+          badge.innerText = "🟢 Live Exam Active";
+        }
+        if (desc) desc.innerText = "Exam session is LIVE! Students can now perform practical lathi moves in front of the camera.";
+        if (btn) {
+          if (isTrainer) {
+            btn.className = "px-4 py-2 rounded-xl text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300 cursor-default";
+            if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping";
+            if (btnText) btnText.innerText = "Exam Window is Open";
+          } else {
+            btn.className = "px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs font-black shadow-md transition-all active:scale-95 flex items-center gap-2 cursor-pointer bg-gradient-to-r from-emerald-600 to-teal-600 text-white border border-emerald-500";
+            if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-white animate-ping";
+            if (btnText) btnText.innerText = "Turn OFF Exam Window";
+          }
+        }
+      } else {
+        if (iconBox) iconBox.className = "w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-slate-200 text-slate-700 flex items-center justify-center flex-shrink-0 shadow-sm";
+        if (badge) {
+          badge.className = "text-[9px] sm:text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700 border border-slate-300";
+          badge.innerText = "Exam Coming Soon";
+        }
+        if (desc) desc.innerText = "Exam session is currently closed. Student cards display 'Exam Coming Soon'.";
+        if (btn) {
+          if (isTrainer) {
+            btn.className = "px-4 py-2 rounded-xl text-xs font-black bg-slate-100 text-slate-600 border border-slate-200 cursor-default";
+            if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-slate-400";
+            if (btnText) btnText.innerText = "Exam Session Coming Soon";
+          } else {
+            btn.className = "px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs font-black shadow-md transition-all active:scale-95 flex items-center gap-2 cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-800 border border-slate-300";
+            if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-slate-400";
+            if (btnText) btnText.innerText = "Turn ON Exam Window";
+          }
+        }
+      }
+      lucide.createIcons();
+    }
+
+    function handleExamComingSoonClick(studentId) {
+      const user = adminState.currentUser || { role: 'Admin' };
+      if (user.role === 'Admin') {
+        const confirmOpen = confirm("⏳ Belt Exam is currently OFF for students ('Exam Coming Soon').\\n\\nWould you like to turn ON the Master Live Exam Window now so students can take the exam?");
+        if (confirmOpen) {
+          toggleMasterExamSession();
+        }
+      } else {
+        alert("⏳ Belt Exam Coming Soon!\\n\\nThe Live AI Belt Exam Window will be opened by Master Admin Central HQ. As soon as HQ switches it ON, the [ 📷 Belt Exam ] camera button will appear here automatically!");
+      }
+    }
 
     // 4. Open 4-Month Training Timeline Modal
     function openExamTimelineModal(studentId) {
