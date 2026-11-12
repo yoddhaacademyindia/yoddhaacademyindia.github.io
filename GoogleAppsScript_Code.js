@@ -169,6 +169,30 @@ function doGet(e) {
       }
     }
 
+    // 3. Read Level-wise Fee Structure from Sheet
+    var feeSheet = ss.getSheetByName("Fee Structure");
+    if (feeSheet) {
+      var feeRows = feeSheet.getDataRange().getValues();
+      var feeMap = {};
+      for (var k = 1; k < feeRows.length; k++) {
+        var fr = feeRows[k];
+        var param = String(fr[0] || "").toLowerCase().trim();
+        var val = fr[1];
+        if (param === "level 1") feeMap.level1 = Number(val) || 500;
+        else if (param === "level 2") feeMap.level2 = Number(val) || 600;
+        else if (param === "level 3") feeMap.level3 = Number(val) || 700;
+        else if (param === "level 4") feeMap.level4 = Number(val) || 800;
+        else if (param === "level 5") feeMap.level5 = Number(val) || 900;
+        else if (param === "level 6") feeMap.level6 = Number(val) || 1000;
+        else if (param === "senior 1") feeMap.senior1 = Number(val) || 1200;
+        else if (param === "senior 2") feeMap.senior2 = Number(val) || 1400;
+        else if (param === "senior 3") feeMap.senior3 = Number(val) || 1600;
+        else if (param === "senior 4") feeMap.senior4 = Number(val) || 1800;
+        else if (param.indexOf("upi") !== -1) feeMap.upi = String(val).trim();
+      }
+      allData.feeStructure = feeMap;
+    }
+
     return ContentService.createTextOutput(JSON.stringify(allData))
       .setMimeType(ContentService.MimeType.JSON);
   }
@@ -401,29 +425,35 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 5. FEE STRUCTURE IN-PLACE UPDATE
+    // 5. FEE STRUCTURE IN-PLACE UPDATE (LEVEL 1-6 & SENIOR 1-4 + UPI)
     if (type.indexOf("FEE") !== -1) {
       var sheet = getOrCreateSheet(ss, "Fee Structure", [
-        "Fee Type / Parameter", "Amount (₹)", "Last Updated"
+        "Level / Parameter", "Fee Amount (₹)", "Last Updated"
       ]);
 
       var feeItems = [
-        ["Admission Fee", data.admission || 500, new Date()],
-        ["Monthly Training Fee", data.monthly || 400, new Date()],
-        ["Belt Exam Fee", data.exam || 200, new Date()],
-        ["Tournament Entry Fee", data.tournament || 300, new Date()],
-        ["Official Academy UPI ID", data.upi || "yoddhaacademy@upi", new Date()]
+        ["Level 1", Number(data.level1) || 500, new Date()],
+        ["Level 2", Number(data.level2) || 600, new Date()],
+        ["Level 3", Number(data.level3) || 700, new Date()],
+        ["Level 4", Number(data.level4) || 800, new Date()],
+        ["Level 5", Number(data.level5) || 900, new Date()],
+        ["Level 6", Number(data.level6) || 1000, new Date()],
+        ["Senior 1", Number(data.senior1) || 1200, new Date()],
+        ["Senior 2", Number(data.senior2) || 1400, new Date()],
+        ["Senior 3", Number(data.senior3) || 1600, new Date()],
+        ["Senior 4", Number(data.senior4) || 1800, new Date()],
+        ["Official Academy UPI ID / Number", String(data.upi || "yoddhaacademy@upi"), new Date()]
       ];
 
       sheet.clearContents();
-      sheet.appendRow(["Fee Type / Parameter", "Amount (₹)", "Last Updated"]);
+      sheet.appendRow(["Level / Parameter", "Fee Amount (₹)", "Last Updated"]);
       feeItems.forEach(function(item) {
         sheet.appendRow(item);
       });
 
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        message: "Fee structure updated in-place"
+        message: "Level-wise Fee structure updated in-place"
       })).setMimeType(ContentService.MimeType.JSON);
     }
 

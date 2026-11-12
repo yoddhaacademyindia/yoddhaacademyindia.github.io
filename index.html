@@ -1183,6 +1183,15 @@
               </select>
             </div>
 
+            <!-- UPI Payment Info Banner -->
+            <div class="sm:col-span-2 bg-emerald-50 border border-emerald-300 rounded-xl p-2.5 flex items-center justify-between gap-2 shadow-2xs">
+              <div class="flex items-center gap-2 min-w-0">
+                <i data-lucide="smartphone" class="w-4 h-4 text-emerald-600 flex-shrink-0"></i>
+                <span class="text-xs text-slate-700 font-medium truncate">Official Academy UPI: <strong id="stu-reg-upi-val" class="text-emerald-900 font-mono font-bold">yoddhaacademy@upi</strong></span>
+              </div>
+              <span class="text-[9.5px] font-bold text-emerald-800 bg-white px-2 py-0.5 rounded-md border border-emerald-300 flex-shrink-0">GPay / PhonePe / Paytm</span>
+            </div>
+
             <!-- 29. Fee Amount -->
             <div>
               <label class="block font-bold text-slate-700 mb-1">Fee Amount (₹) *</label>
@@ -1940,58 +1949,205 @@
   </div>
 
   <!-- ================= ANIMATED MODAL 4: FEE STRUCTURE FORM ================= -->
-  <div id="modal-form-fee" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white border-2 border-orange-200 rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto animate-modal-pop relative">
+  <div id="modal-form-fee" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white border-2 border-orange-200 rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto animate-modal-pop relative">
       <div class="flex justify-between items-center border-b border-orange-100 pb-3">
         <div class="flex items-center gap-3">
           <div class="p-2.5 bg-emerald-100 text-emerald-800 rounded-2xl">
             <i data-lucide="badge-percent" class="w-5 h-5 text-emerald-700"></i>
           </div>
           <div>
-            <h3 class="text-lg font-black text-slate-900">4. Fee Structure</h3>
-            <p class="text-xs text-slate-500">Update standardized pricing across all India branches</p>
+            <h3 class="text-lg font-black text-slate-900">4. Official Level Fee Structure</h3>
+            <p class="text-xs text-slate-500">Set standardized fee for Level 1 to 6 & Senior 1 to 4 with Academy UPI</p>
           </div>
         </div>
-        <button onclick="closeFormModal('fee')" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg">
+        <button type="button" onclick="closeFormModal('fee')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <form onsubmit="handleAdminUpdateFee(event)" class="space-y-3.5 text-xs">
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Student Admission Fee (₹) *</label>
-            <input type="number" id="fee-admission" required value="500" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-bold">
+      <form onsubmit="handleAdminUpdateFee(event)" class="space-y-4 text-xs">
+        
+        <!-- TWO COLUMNS: LEVEL 1 TO 6 AND SENIOR 1 TO 4 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          
+          <!-- COLUMN 1: LEVEL 1 TO 6 -->
+          <div class="bg-orange-50/60 border border-orange-200 rounded-2xl p-3.5 space-y-2">
+            <div class="flex items-center justify-between border-b border-orange-200/80 pb-2">
+              <span class="font-black text-orange-900 uppercase text-[11px] tracking-wider flex items-center gap-1.5">
+                <i data-lucide="award" class="w-3.5 h-3.5 text-orange-600"></i> Level 1 to 6 Fees (₹)
+              </span>
+              <span class="text-[9px] font-bold text-orange-700 bg-orange-100 px-2 py-0.5 rounded-full">Foundation</span>
+            </div>
+
+            <!-- Level 1 -->
+            <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-orange-100 shadow-2xs">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-md bg-orange-100 text-orange-800 text-[10px] font-black flex items-center justify-center">1</span>
+                <span class="font-bold text-slate-800 text-xs">Level 1</span>
+              </div>
+              <div class="flex items-center gap-1 w-28">
+                <span class="text-slate-400 font-bold text-xs">₹</span>
+                <input type="number" id="fee-level-1" required min="0" step="50" value="500" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-slate-900 font-black text-xs text-right focus:outline-none focus:border-orange-500 focus:bg-white">
+              </div>
+            </div>
+
+            <!-- Level 2 -->
+            <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-orange-100 shadow-2xs">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-md bg-orange-100 text-orange-800 text-[10px] font-black flex items-center justify-center">2</span>
+                <span class="font-bold text-slate-800 text-xs">Level 2</span>
+              </div>
+              <div class="flex items-center gap-1 w-28">
+                <span class="text-slate-400 font-bold text-xs">₹</span>
+                <input type="number" id="fee-level-2" required min="0" step="50" value="600" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-slate-900 font-black text-xs text-right focus:outline-none focus:border-orange-500 focus:bg-white">
+              </div>
+            </div>
+
+            <!-- Level 3 -->
+            <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-orange-100 shadow-2xs">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-md bg-orange-100 text-orange-800 text-[10px] font-black flex items-center justify-center">3</span>
+                <span class="font-bold text-slate-800 text-xs">Level 3</span>
+              </div>
+              <div class="flex items-center gap-1 w-28">
+                <span class="text-slate-400 font-bold text-xs">₹</span>
+                <input type="number" id="fee-level-3" required min="0" step="50" value="700" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-slate-900 font-black text-xs text-right focus:outline-none focus:border-orange-500 focus:bg-white">
+              </div>
+            </div>
+
+            <!-- Level 4 -->
+            <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-orange-100 shadow-2xs">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-md bg-orange-100 text-orange-800 text-[10px] font-black flex items-center justify-center">4</span>
+                <span class="font-bold text-slate-800 text-xs">Level 4</span>
+              </div>
+              <div class="flex items-center gap-1 w-28">
+                <span class="text-slate-400 font-bold text-xs">₹</span>
+                <input type="number" id="fee-level-4" required min="0" step="50" value="800" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-slate-900 font-black text-xs text-right focus:outline-none focus:border-orange-500 focus:bg-white">
+              </div>
+            </div>
+
+            <!-- Level 5 -->
+            <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-orange-100 shadow-2xs">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-md bg-orange-100 text-orange-800 text-[10px] font-black flex items-center justify-center">5</span>
+                <span class="font-bold text-slate-800 text-xs">Level 5</span>
+              </div>
+              <div class="flex items-center gap-1 w-28">
+                <span class="text-slate-400 font-bold text-xs">₹</span>
+                <input type="number" id="fee-level-5" required min="0" step="50" value="900" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-slate-900 font-black text-xs text-right focus:outline-none focus:border-orange-500 focus:bg-white">
+              </div>
+            </div>
+
+            <!-- Level 6 -->
+            <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-orange-100 shadow-2xs">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-md bg-orange-100 text-orange-800 text-[10px] font-black flex items-center justify-center">6</span>
+                <span class="font-bold text-slate-800 text-xs">Level 6</span>
+              </div>
+              <div class="flex items-center gap-1 w-28">
+                <span class="text-slate-400 font-bold text-xs">₹</span>
+                <input type="number" id="fee-level-6" required min="0" step="50" value="1000" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-slate-900 font-black text-xs text-right focus:outline-none focus:border-orange-500 focus:bg-white">
+              </div>
+            </div>
           </div>
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Monthly Training Fee (₹) *</label>
-            <input type="number" id="fee-monthly" required value="400" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-bold">
+
+          <!-- COLUMN 2: SENIOR 1 TO 4 -->
+          <div class="bg-amber-50/60 border border-amber-200 rounded-2xl p-3.5 space-y-2 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between border-b border-amber-200/80 pb-2">
+                <span class="font-black text-amber-900 uppercase text-[11px] tracking-wider flex items-center gap-1.5">
+                  <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-600"></i> Senior 1 to 4 Fees (₹)
+                </span>
+                <span class="text-[9px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">Advanced</span>
+              </div>
+
+              <!-- Senior 1 -->
+              <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-amber-100 shadow-2xs">
+                <div class="flex items-center gap-2">
+                  <span class="w-7 h-5 rounded-md bg-amber-100 text-amber-900 text-[10px] font-black flex items-center justify-center">S1</span>
+                  <span class="font-bold text-slate-800 text-xs">Senior 1</span>
+                </div>
+                <div class="flex items-center gap-1 w-28">
+                  <span class="text-slate-400 font-bold text-xs">₹</span>
+                  <input type="number" id="fee-senior-1" required min="0" step="50" value="1200" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-slate-900 font-black text-xs text-right focus:outline-none focus:border-amber-500 focus:bg-white">
+                </div>
+              </div>
+
+              <!-- Senior 2 -->
+              <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-amber-100 shadow-2xs">
+                <div class="flex items-center gap-2">
+                  <span class="w-7 h-5 rounded-md bg-amber-100 text-amber-900 text-[10px] font-black flex items-center justify-center">S2</span>
+                  <span class="font-bold text-slate-800 text-xs">Senior 2</span>
+                </div>
+                <div class="flex items-center gap-1 w-28">
+                  <span class="text-slate-400 font-bold text-xs">₹</span>
+                  <input type="number" id="fee-senior-2" required min="0" step="50" value="1400" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-slate-900 font-black text-xs text-right focus:outline-none focus:border-amber-500 focus:bg-white">
+                </div>
+              </div>
+
+              <!-- Senior 3 -->
+              <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-amber-100 shadow-2xs">
+                <div class="flex items-center gap-2">
+                  <span class="w-7 h-5 rounded-md bg-amber-100 text-amber-900 text-[10px] font-black flex items-center justify-center">S3</span>
+                  <span class="font-bold text-slate-800 text-xs">Senior 3</span>
+                </div>
+                <div class="flex items-center gap-1 w-28">
+                  <span class="text-slate-400 font-bold text-xs">₹</span>
+                  <input type="number" id="fee-senior-3" required min="0" step="50" value="1600" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-slate-900 font-black text-xs text-right focus:outline-none focus:border-amber-500 focus:bg-white">
+                </div>
+              </div>
+
+              <!-- Senior 4 -->
+              <div class="flex items-center justify-between gap-2 bg-white px-3 py-1.5 rounded-xl border border-amber-100 shadow-2xs">
+                <div class="flex items-center gap-2">
+                  <span class="w-7 h-5 rounded-md bg-amber-100 text-amber-900 text-[10px] font-black flex items-center justify-center">S4</span>
+                  <span class="font-bold text-slate-800 text-xs">Senior 4</span>
+                </div>
+                <div class="flex items-center gap-1 w-28">
+                  <span class="text-slate-400 font-bold text-xs">₹</span>
+                  <input type="number" id="fee-senior-4" required min="0" step="50" value="1800" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-slate-900 font-black text-xs text-right focus:outline-none focus:border-amber-500 focus:bg-white">
+                </div>
+              </div>
+            </div>
+
+            <!-- Info Tip -->
+            <div class="bg-amber-100/60 p-2.5 rounded-xl border border-amber-200 text-[10px] text-amber-900 leading-relaxed">
+              🥋 <strong>Automated Sync:</strong> Changing fees here updates the student admission form fee calculation automatically across all India branches.
+            </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">AI Camera Exam Fee (₹) *</label>
-            <input type="number" id="fee-exam" required value="200" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-bold">
+        <!-- ACADEMY UPI NUMBER / ID SECTION (BELOW COLUMNS) -->
+        <div class="bg-emerald-50/70 border border-emerald-300 rounded-2xl p-3.5 sm:p-4 space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="block font-black text-emerald-950 text-xs flex items-center gap-1.5">
+              <i data-lucide="smartphone" class="w-4 h-4 text-emerald-700"></i>
+              <span>Official Academy UPI Number / UPI ID *</span>
+            </label>
+            <span class="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">
+              GPay / PhonePe / Paytm
+            </span>
           </div>
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Tournament Entry Fee (₹) *</label>
-            <input type="number" id="fee-tournament" required value="300" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-bold">
+
+          <div class="relative">
+            <i data-lucide="credit-card" class="w-4 h-4 text-emerald-600 absolute left-3 top-2.5"></i>
+            <input type="text" id="fee-upi-id" required placeholder="e.g. 9822001122 or 9822001122@ybl or yoddhaacademy@upi" value="yoddhaacademy@upi" class="w-full bg-white border border-emerald-300 rounded-xl pl-9 pr-3 py-2 text-xs text-emerald-900 font-mono font-black focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-200">
           </div>
+          <p class="text-[10px] text-slate-500 font-medium">
+            Enter the Academy's UPI Mobile Number (PhonePe, Google Pay, Paytm) or UPI ID. Students and Trainers will see this number/ID to transfer admission fees.
+          </p>
         </div>
 
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">Official Academy UPI ID</label>
-          <input type="text" id="fee-upi-id" required value="yoddhaacademy@upi" class="w-full bg-slate-50 border border-emerald-400 rounded-xl px-3 py-2 text-xs text-emerald-800 font-mono font-bold">
-        </div>
-
+        <!-- MODAL FOOTER BUTTONS -->
         <div class="pt-2 flex justify-end gap-3 border-t border-slate-100">
           <button type="button" onclick="closeFormModal('fee')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">
             Cancel
           </button>
-          <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 text-white font-extrabold rounded-xl shadow-md shadow-emerald-600/20 transition flex items-center gap-1.5">
-            <i data-lucide="check" class="w-4 h-4"></i>
-            <span>Update Pricing</span>
+          <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 text-white font-extrabold rounded-xl shadow-md shadow-emerald-600/20 transition flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>Save Fee Structure & UPI</span>
           </button>
         </div>
       </form>
@@ -3690,7 +3846,22 @@ function testSetup() {
       })),
       courses: JSON.parse(localStorage.getItem('yoddha_admin_courses')) || INITIAL_COURSES,
       competitions: JSON.parse(localStorage.getItem('yoddha_admin_comps')) || INITIAL_COMPETITIONS,
-      feeStructure: JSON.parse(localStorage.getItem('yoddha_admin_fee')) || { admission: 500, monthly: 400, exam: 200, tournament: 300, upi: 'yoddhaacademy@upi' },
+      DEFAULT_LEVEL_FEES: {
+      level1: 500, level2: 600, level3: 700, level4: 800, level5: 900, level6: 1000,
+      senior1: 1200, senior2: 1400, senior3: 1600, senior4: 1800,
+      upi: 'yoddhaacademy@upi'
+    },
+    get feeStructure() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('yoddha_admin_fee') || '{}');
+        return Object.assign({}, this.DEFAULT_LEVEL_FEES, saved);
+      } catch(e) {
+        return Object.assign({}, this.DEFAULT_LEVEL_FEES);
+      }
+    },
+    set feeStructure(val) {
+      localStorage.setItem('yoddha_admin_fee', JSON.stringify(val));
+    },
       webhookUrl: localStorage.getItem('yoddha_webhook_url') || 'https://script.google.com/macros/s/AKfycbwcc_lq887ZFL8E5TxdKWqQDZcrEvSrApYLG3ex4Z0gNEECF0IYi18--yAwQjcqI1vd/exec',
       currentPage: 'dashboard'
     };
@@ -4247,8 +4418,17 @@ function testSetup() {
         if (formType === 'student') {
           prepareNewStudentId();
           document.getElementById('p-stu-admission-date').valueAsDate = new Date();
+          const reqLvl = document.getElementById('p-stu-requested-level')?.value || 'Level 1';
+          if (document.getElementById('p-stu-fee-amount')) {
+            document.getElementById('p-stu-fee-amount').value = getFeeForLevel(reqLvl);
+          }
+          if (document.getElementById('stu-reg-upi-val')) {
+            document.getElementById('stu-reg-upi-val').innerText = adminState.feeStructure?.upi || 'yoddhaacademy@upi';
+          }
         } else if (formType === 'trainer') {
           prepareNewTrainerId();
+        } else if (formType === 'fee') {
+          populateFeeModalInputs();
         }
         modal.classList.remove('hidden');
         lucide.createIcons();
@@ -4387,6 +4567,27 @@ function testSetup() {
     }
 
     // Visual Pill Active Sync
+    // Helper to calculate fee based on 10 Official Progression Levels
+    function getFeeForLevel(levelName) {
+      const fees = adminState.feeStructure || {
+        level1: 500, level2: 600, level3: 700, level4: 800, level5: 900, level6: 1000,
+        senior1: 1200, senior2: 1400, senior3: 1600, senior4: 1800,
+        upi: 'yoddhaacademy@upi'
+      };
+      const lvl = String(levelName || 'Level 1').toLowerCase().trim();
+      if (lvl.includes('senior 1')) return fees.senior1 || 1200;
+      if (lvl.includes('senior 2')) return fees.senior2 || 1400;
+      if (lvl.includes('senior 3')) return fees.senior3 || 1600;
+      if (lvl.includes('senior 4')) return fees.senior4 || 1800;
+      if (lvl.includes('level 1') || lvl === '1') return fees.level1 || 500;
+      if (lvl.includes('level 2') || lvl === '2') return fees.level2 || 600;
+      if (lvl.includes('level 3') || lvl === '3') return fees.level3 || 700;
+      if (lvl.includes('level 4') || lvl === '4') return fees.level4 || 800;
+      if (lvl.includes('level 5') || lvl === '5') return fees.level5 || 900;
+      if (lvl.includes('level 6') || lvl === '6') return fees.level6 || 1000;
+      return fees.level1 || 500;
+    }
+
     function syncLevelPills(selectedLevel) {
       const badges = document.querySelectorAll('.lvl-badge');
       badges.forEach(b => {
@@ -4397,6 +4598,27 @@ function testSetup() {
           b.className = "lvl-badge px-2 py-1 rounded-lg text-[10px] font-bold bg-white text-slate-600 border border-slate-200 transition-all";
         }
       });
+
+      // Auto-update fee amount in registration form based on level pricing
+      const feeInput = document.getElementById('p-stu-fee-amount');
+      if (feeInput) {
+        feeInput.value = getFeeForLevel(selectedLevel);
+      }
+    }
+
+    function populateFeeModalInputs() {
+      const fees = adminState.feeStructure;
+      if (document.getElementById('fee-level-1')) document.getElementById('fee-level-1').value = fees.level1 || 500;
+      if (document.getElementById('fee-level-2')) document.getElementById('fee-level-2').value = fees.level2 || 600;
+      if (document.getElementById('fee-level-3')) document.getElementById('fee-level-3').value = fees.level3 || 700;
+      if (document.getElementById('fee-level-4')) document.getElementById('fee-level-4').value = fees.level4 || 800;
+      if (document.getElementById('fee-level-5')) document.getElementById('fee-level-5').value = fees.level5 || 900;
+      if (document.getElementById('fee-level-6')) document.getElementById('fee-level-6').value = fees.level6 || 1000;
+      if (document.getElementById('fee-senior-1')) document.getElementById('fee-senior-1').value = fees.senior1 || 1200;
+      if (document.getElementById('fee-senior-2')) document.getElementById('fee-senior-2').value = fees.senior2 || 1400;
+      if (document.getElementById('fee-senior-3')) document.getElementById('fee-senior-3').value = fees.senior3 || 1600;
+      if (document.getElementById('fee-senior-4')) document.getElementById('fee-senior-4').value = fees.senior4 || 1800;
+      if (document.getElementById('fee-upi-id')) document.getElementById('fee-upi-id').value = fees.upi || 'yoddhaacademy@upi';
     }
 
     // Populate Dynamic Dropdowns (Branches, Trainers)
@@ -6952,17 +7174,35 @@ Official Tournament Entry Pass Confirmed & Synced to Central Server!`);
     // FORM 4: Fee Structure Submit
     function handleAdminUpdateFee(e) {
       e.preventDefault();
-      const admission = parseInt(document.getElementById('fee-admission').value);
-      const monthly = parseInt(document.getElementById('fee-monthly').value);
-      const exam = parseInt(document.getElementById('fee-exam').value);
-      const tournament = parseInt(document.getElementById('fee-tournament').value);
-      const upi = document.getElementById('fee-upi-id').value.trim();
+      const newFees = {
+        level1: parseInt(document.getElementById('fee-level-1')?.value) || 500,
+        level2: parseInt(document.getElementById('fee-level-2')?.value) || 600,
+        level3: parseInt(document.getElementById('fee-level-3')?.value) || 700,
+        level4: parseInt(document.getElementById('fee-level-4')?.value) || 800,
+        level5: parseInt(document.getElementById('fee-level-5')?.value) || 900,
+        level6: parseInt(document.getElementById('fee-level-6')?.value) || 1000,
+        senior1: parseInt(document.getElementById('fee-senior-1')?.value) || 1200,
+        senior2: parseInt(document.getElementById('fee-senior-2')?.value) || 1400,
+        senior3: parseInt(document.getElementById('fee-senior-3')?.value) || 1600,
+        senior4: parseInt(document.getElementById('fee-senior-4')?.value) || 1800,
+        upi: document.getElementById('fee-upi-id')?.value.trim() || 'yoddhaacademy@upi'
+      };
 
-      adminState.feeStructure = { admission, monthly, exam, tournament, upi };
-      saveAdminState();
-      syncToCloudServer({ type: "FEE_STRUCTURE_UPDATED", ...adminState.feeStructure });
+      adminState.feeStructure = newFees;
+      localStorage.setItem('yoddha_admin_fee', JSON.stringify(newFees));
+      
+      // Sync to Central Cloud Server
+      syncToCloudServer({
+        type: "FEE_STRUCTURE_UPDATED",
+        ...newFees
+      });
+
+      if (document.getElementById('stu-reg-upi-val')) {
+        document.getElementById('stu-reg-upi-val').innerText = newFees.upi;
+      }
+
       closeFormModal('fee');
-      alert("Academy fee schedule updated and synchronized to Central Cloud Server successfully!");
+      alert("✅ Level-wise Fee Structure (Level 1-6 & Senior 1-4) and Official UPI saved and synchronized to Central Cloud Server successfully!");
     }
 
     // FORM 5: Create Competition Submit
@@ -7080,6 +7320,12 @@ Official Tournament Entry Pass Confirmed & Synced to Central Server!`);
               }
               updatedStudents++;
             });
+          }
+
+          // 3. Live Sync Level Fee Structure from Google Sheet
+          if (data.feeStructure && typeof data.feeStructure === 'object' && Object.keys(data.feeStructure).length > 0) {
+            adminState.feeStructure = Object.assign({}, adminState.feeStructure, data.feeStructure);
+            localStorage.setItem('yoddha_admin_fee', JSON.stringify(adminState.feeStructure));
           }
 
           saveAdminState();
