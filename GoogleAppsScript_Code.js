@@ -193,6 +193,31 @@ function doGet(e) {
       allData.feeStructure = feeMap;
     }
 
+    // 4. Read Courses from Sheet
+    var crsSheet = ss.getSheetByName("Courses");
+    if (crsSheet) {
+      var crsRows = crsSheet.getDataRange().getValues();
+      allData.courses = [];
+      for (var m = 1; m < crsRows.length; m++) {
+        var cr = crsRows[m];
+        if (cr[1]) {
+          var tStr = String(cr[6] || "ALL").trim();
+          var tArr = tStr.split(",").map(function(s){ return s.trim(); }).filter(Boolean);
+          allData.courses.push({
+            id: String(cr[1]).trim(),
+            name: String(cr[2] || "").trim(),
+            title: String(cr[2] || "").trim(),
+            desc: String(cr[3] || "").trim(),
+            description: String(cr[3] || "").trim(),
+            youtubeUrl: String(cr[4] || "").trim(),
+            videoUrl: String(cr[4] || "").trim(),
+            thumbnail: String(cr[5] || "").trim(),
+            assignedTrainers: tArr.length > 0 ? tArr : ["ALL"]
+          });
+        }
+      }
+    }
+
     return ContentService.createTextOutput(JSON.stringify(allData))
       .setMimeType(ContentService.MimeType.JSON);
   }
@@ -337,21 +362,22 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 3. COURSES IN-PLACE UPDATE
+    // 3. COURSES IN-PLACE UPDATE (TITLE, DESC, VIDEO LINK, THUMBNAIL, ASSIGNED TRAINERS)
     if (type.indexOf("COURSE") !== -1) {
       var sheet = getOrCreateSheet(ss, "Courses", [
-        "Timestamp", "Course ID", "Course Name", "Duration", "Fee Amount", "Description", "YouTube Video Link"
+        "Timestamp", "Course ID", "Course Title", "Description", "Video Link", "Thumbnail URL", "Assigned Trainers"
       ]);
 
       var courseId = data.id || data.courseId || "";
+      var trainersStr = Array.isArray(data.assignedTrainers) ? data.assignedTrainers.join(", ") : (data.assignedTrainers || "ALL");
       var rowData = [
         new Date(),
         courseId,
-        data.name || data.courseName || "",
-        data.duration || "",
-        data.fee || 0,
-        data.desc || data.description || "",
-        data.youtubeUrl || data.videoUrl || ""
+        data.title || data.name || "",
+        data.description || data.desc || "",
+        data.youtubeUrl || data.videoUrl || "",
+        data.thumbnail || "",
+        trainersStr
       ];
 
       var updated = updateRowIfExists(sheet, 2, courseId, rowData);
