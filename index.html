@@ -5447,20 +5447,88 @@ lucide.createIcons();
       return `YAI-TR-${st}-${dist}-${seq}`;
     }
 
-    // Helper to generate dynamic Student ID
+    // Helper to resolve District Code
+    function resolveDistrictCode(districtCode, stateCode) {
+      if (!districtCode) return 'KOP';
+      const clean = districtCode.trim().toUpperCase();
+      if (clean.length === 3) return clean;
+
+      const st = (stateCode || 'MH').trim().toUpperCase();
+      const stateObj = (typeof INDIA_LOCATIONS !== 'undefined') ? INDIA_LOCATIONS[st] : null;
+      if (stateObj && Array.isArray(stateObj.districts)) {
+        const found = stateObj.districts.find(d => 
+          d.name.toLowerCase() === districtCode.trim().toLowerCase() ||
+          d.code.toLowerCase() === districtCode.trim().toLowerCase()
+        );
+        if (found) return found.code.toUpperCase();
+      }
+
+      if (typeof INDIA_LOCATIONS !== 'undefined') {
+        for (const k in INDIA_LOCATIONS) {
+          const sObj = INDIA_LOCATIONS[k];
+          if (sObj && Array.isArray(sObj.districts)) {
+            const found = sObj.districts.find(d => 
+              d.name.toLowerCase() === districtCode.trim().toLowerCase() ||
+              d.code.toLowerCase() === districtCode.trim().toLowerCase()
+            );
+            if (found) return found.code.toUpperCase();
+          }
+        }
+      }
+
+      return clean.substring(0, 3);
+    }
+
+    // Helper to generate dynamic, non-duplicating sequential Student ID
     // Format: YAI-STU-26-[STATE]-[DIST]-[000001]
+    // Scans all students, finds the absolute highest sequence number used in that district,
+    // and produces the next sequential 6-digit number. Guaranteed unique across all trainers!
     function generateStudentId(stateCode, districtCode) {
-      const st = (stateCode || 'MH').toUpperCase();
-      const dist = (districtCode || 'KOP').toUpperCase();
-      
-      const count = adminState.students.filter(s => {
-        return (s.stateCode === st && s.districtCode === dist) ||
-               (s.studentId && s.studentId.includes(`YAI-STU-26-${st}-${dist}`)) ||
-               (s.id && s.id.includes(`YAI-STU-26-${st}-${dist}`));
-      }).length;
-      
-      const seq = String(count + 1).padStart(6, '0');
-      return `YAI-STU-26-${st}-${dist}-${seq}`;
+      const st = (stateCode || 'MH').trim().toUpperCase();
+      const dist = resolveDistrictCode(districtCode, st);
+      const prefix = `YAI-STU-26-${st}-${dist}-`;
+
+      // 1. Gather all students from all sources (adminState.students & localStorage)
+      const allStudents = Array.isArray(adminState.students) ? [...adminState.students] : [];
+      try {
+        const stored = JSON.parse(localStorage.getItem('yoddha_admin_students') || '[]');
+        if (Array.isArray(stored)) {
+          stored.forEach(s => {
+            const sid = (s.studentId || s.id || '').toUpperCase();
+            if (sid && !allStudents.some(item => (item.studentId || item.id || '').toUpperCase() === sid)) {
+              allStudents.push(s);
+            }
+          });
+        }
+      } catch (err) {}
+
+      // 2. Find MAXIMUM existing sequence number for this state & district prefix
+      let maxSeq = 0;
+      allStudents.forEach(s => {
+        const sid = String(s.studentId || s.id || '').trim().toUpperCase();
+        if (sid.startsWith(prefix)) {
+          const numPart = sid.substring(prefix.length);
+          const n = parseInt(numPart, 10);
+          if (!isNaN(n) && n > maxSeq) {
+            maxSeq = n;
+          }
+        }
+      });
+
+      // 3. Next sequential number starts strictly from maxSeq + 1 (e.g. if 5 exists, next is 6)
+      let nextSeq = maxSeq + 1;
+
+      // 4. Double check that candidate ID never duplicates any student in directory
+      let candidateId = `${prefix}${String(nextSeq).padStart(6, '0')}`;
+      while (allStudents.some(s => {
+        const sid = String(s.studentId || s.id || '').trim().toUpperCase();
+        return sid === candidateId;
+      })) {
+        nextSeq++;
+        candidateId = `${prefix}${String(nextSeq).padStart(6, '0')}`;
+      }
+
+      return candidateId;
     }
 
     // Populate State Select Dropdown
@@ -5535,7 +5603,8 @@ lucide.createIcons();
         trnDisplay = `${trn.state || 'Maharashtra'} - ${trn.district || trn.branch || 'Kolhapur'}`;
       } else {
         const trnSelect = document.getElementById('p-stu-trainer-select');
-        const selectedId = trnSelect?.value;
+        const rawVal = trnSelect?.value || '';
+        const selectedId = rawVal.split('|')[0] || rawVal;
         const trn = adminState.trainers.find(t => (t.trainerId || t.id) === selectedId) || adminState.trainers[0];
         if (trn) {
           stCode = trn.stateCode || 'MH';
@@ -5665,7 +5734,15 @@ lucide.createIcons();
     function handleFullStudentSubmit(e) {
       e.preventDefault();
 
-      const studentId = document.getElementById('p-stu-id').value;
+      let studentId = (document.getElementById('p-stu-id')?.value || '').trim();
+      // Anti-collision safeguard: ensure this ID is 100% unique across all students and trainers
+      const isIdTaken = adminState.students.some(s => (s.studentId || s.id || '').trim().toUpperCase() === studentId.toUpperCase());
+      if (!studentId || isIdTaken) {
+        studentId = generateStudentId(stCode, distCode);
+        if (document.getElementById('p-stu-id')) {
+          document.getElementById('p-stu-id').value = studentId;
+        }
+      }
       const studentName = document.getElementById('p-stu-name').value.trim();
       const dob = document.getElementById('p-stu-dob').value;
       const age = parseInt(document.getElementById('p-stu-age').value) || 0;
