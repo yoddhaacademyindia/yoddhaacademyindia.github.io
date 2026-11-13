@@ -6968,9 +6968,281 @@ lucide.createIcons();
       lucide.createIcons();
     }
 
-    // Trigger Print for Student Identity Card
+    // =====================================================================
+    // DOWNLOAD STUDENT IDENTITY CARD AS PNG IMAGE (HTML5 Canvas)
+    // =====================================================================
     function printStudentIdCardDirect() {
-      window.print();
+      downloadStudentIdCardPNG();
+    }
+
+    function downloadStudentIdCardPNG() {
+      if (!activeDownloadStudentId) { alert('No student selected!'); return; }
+      const s = adminState.students.find(stu => stu.studentId === activeDownloadStudentId);
+      if (!s) { alert('Student not found!'); return; }
+
+      const btn = document.querySelector('[onclick="printStudentIdCardDirect()"]');
+      if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳ Generating ID Card...</span>'; }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 680;
+      canvas.height = 1050;
+      const ctx = canvas.getContext('2d');
+
+      const W = canvas.width, H = canvas.height;
+      const levelNum = getStudentLevelNum(s.requestedLevel || s.level);
+      const levelName = s.requestedLevel || ('Level ' + levelNum);
+      const initials = (s.studentName || 'YA').trim().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+
+      // --- BACKGROUND ---
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+      bgGrad.addColorStop(0, '#fff7ed');
+      bgGrad.addColorStop(1, '#fff');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Card border
+      ctx.strokeStyle = '#f97316';
+      ctx.lineWidth = 6;
+      roundRect(ctx, 3, 3, W - 6, H - 6, 28, false, true);
+
+      // --- ORANGE HEADER BAND ---
+      const hGrad = ctx.createLinearGradient(0, 0, W, 130);
+      hGrad.addColorStop(0, '#ea580c');
+      hGrad.addColorStop(0.5, '#d97706');
+      hGrad.addColorStop(1, '#ea580c');
+      ctx.fillStyle = hGrad;
+      roundRect(ctx, 3, 3, W - 6, 130, 24, true, false, true, true, false, false);
+
+      // Academy Name
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 13px Arial';
+      ctx.letterSpacing = '3px';
+      ctx.textAlign = 'center';
+      ctx.fillText('OFFICIAL STUDENT IDENTITY CARD', W / 2, 38);
+      ctx.font = 'bold 30px Arial';
+      ctx.letterSpacing = '0px';
+      ctx.fillText('YODDHA ACADEMY INDIA', W / 2, 76);
+      ctx.font = '13px Arial';
+      ctx.fillStyle = '#fde68a';
+      ctx.fillText('Govt. Regd. | Defence Training Academy | Est. 2024', W / 2, 100);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 11px Arial';
+      ctx.fillText('YAI Certified | 10-Level Progression System', W / 2, 118);
+
+      // --- PHOTO CIRCLE ---
+      const cx = W / 2, cy = 210, r = 70;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, r + 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+      ctx.strokeStyle = '#f97316';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.restore();
+
+      function drawPhotoAndRest(photoImg) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.clip();
+        if (photoImg) {
+          ctx.drawImage(photoImg, cx - r, cy - r, r * 2, r * 2);
+        } else {
+          const pGrad = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
+          pGrad.addColorStop(0, '#fed7aa');
+          pGrad.addColorStop(1, '#fdba74');
+          ctx.fillStyle = pGrad;
+          ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+          ctx.fillStyle = '#9a3412';
+          ctx.font = 'bold 42px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(initials, cx, cy);
+        }
+        ctx.restore();
+        ctx.textBaseline = 'alphabetic';
+
+        // STUDENT NAME
+        ctx.fillStyle = '#1e293b';
+        ctx.font = 'bold 26px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText((s.studentName || '').toUpperCase(), W / 2, 310);
+
+        // ID Badge
+        const idText = s.studentId || '';
+        ctx.font = 'bold 15px monospace';
+        const idW = ctx.measureText(idText).width + 32;
+        const idX = (W - idW) / 2;
+        roundRect(ctx, idX, 322, idW, 28, 14, true, false);
+        ctx.fillStyle = '#7c2d12';
+        ctx.font = 'bold 15px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#431407';
+        ctx.fillStyle = '#92400e';
+        const bgIdGrad = ctx.createLinearGradient(idX, 0, idX + idW, 0);
+        bgIdGrad.addColorStop(0, '#fef3c7');
+        bgIdGrad.addColorStop(1, '#fde68a');
+        roundRect(ctx, idX, 322, idW, 28, 14, true, false, false, false, false, false, bgIdGrad);
+        ctx.fillStyle = '#92400e';
+        ctx.font = 'bold 14px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(idText, W / 2, 341);
+
+        // STARS ROW
+        const starY = 388;
+        const starSize = 22, starGap = 8;
+        const totalStars = 10;
+        const starsRow = (W - (totalStars * (starSize + starGap))) / 2;
+        for (let i = 0; i < totalStars; i++) {
+          drawStar(ctx, starsRow + i * (starSize + starGap) + starSize / 2, starY, starSize / 2, i < levelNum ? '#f59e0b' : '#e2e8f0');
+        }
+
+        // LEVEL PILL
+        const lvlPillW = 260, lvlPillH = 34;
+        const lvlPillX = (W - lvlPillW) / 2;
+        const lvlGrad = ctx.createLinearGradient(lvlPillX, 0, lvlPillX + lvlPillW, 0);
+        lvlGrad.addColorStop(0, '#10b981');
+        lvlGrad.addColorStop(1, '#059669');
+        roundRect(ctx, lvlPillX, 404, lvlPillW, lvlPillH, 17, true, false, false, false, false, false, lvlGrad);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 15px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('● ' + levelName.toUpperCase() + ': RUNNING  (' + levelNum + '/10)', W / 2, 427);
+
+        // PROGRESS TEXT
+        ctx.fillStyle = '#64748b';
+        ctx.font = '12px Arial';
+        ctx.fillText('Level ' + levelNum + ' Running  •  Levels ' + (levelNum + 1) + '-10 Pending 🔒', W / 2, 455);
+
+        // INFO BOX
+        const boxX = 36, boxY = 472, boxW = W - 72, boxH = 198;
+        ctx.fillStyle = '#f8fafc';
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1.5;
+        roundRect(ctx, boxX, boxY, boxW, boxH, 16, true, true);
+
+        ctx.fillStyle = '#374151';
+        ctx.font = '13px Arial';
+        ctx.textAlign = 'left';
+
+        const rows = [
+          ['🏅 Trainer / Ustad', s.trainerName || s.trainerId || 'YAI Certified Ustad'],
+          ['📍 Branch / Akhada', (s.city || 'Central') + ' Akhada, ' + (s.state || 'Maharashtra')],
+          ['📅 Admission Date', s.admissionDate || '2026-11-13'],
+          ['📞 Parent Contact', s.parentMobile ? ('Ph: ' + s.parentMobile) : 'Ph: Registered'],
+          ['✅ Status', (s.status || 'Active') + '  |  Fee: ' + (s.feeStatus || 'Paid')],
+        ];
+        rows.forEach((row, i) => {
+          const rowY = boxY + 28 + i * 34;
+          ctx.fillStyle = '#6b7280';
+          ctx.font = 'bold 11px Arial';
+          ctx.fillText(row[0], boxX + 16, rowY);
+          ctx.fillStyle = '#1e293b';
+          ctx.font = '13px Arial';
+          ctx.fillText(String(row[1]).substring(0, 46), boxX + 16, rowY + 16);
+        });
+
+        // QR placeholder
+        const qrX = boxX + boxW - 80, qrY = boxY + 14, qrS = 64;
+        ctx.fillStyle = '#f1f5f9';
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 1;
+        ctx.fillRect(qrX, qrY, qrS, qrS);
+        ctx.strokeRect(qrX, qrY, qrS, qrS);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'bold 8px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('QR VERIFY', qrX + qrS / 2, qrY + qrS / 2 - 4);
+        ctx.fillText('yoddhaacademyindia', qrX + qrS / 2, qrY + qrS / 2 + 8);
+        ctx.fillText('.github.io', qrX + qrS / 2, qrY + qrS / 2 + 20);
+
+        // SEAL / BOTTOM
+        const sealGrad = ctx.createLinearGradient(0, 690, 0, 740);
+        sealGrad.addColorStop(0, '#7c3aed');
+        sealGrad.addColorStop(1, '#6d28d9');
+        ctx.fillStyle = sealGrad;
+        roundRect(ctx, 36, 686, W - 72, 54, 14, true, false);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('🛡️ YODDHA ACADEMY INDIA — CENTRAL HEADQUARTERS SEAL', W / 2, 710);
+        ctx.font = '10px Arial';
+        ctx.fillStyle = '#ddd6fe';
+        ctx.fillText('Issued under authority of Yoddha Academy India | Valid Academic Year 2026', W / 2, 727);
+
+        // FOOTER
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('yoddhaacademyindia.github.io  •  Official Govt. Regd. Martial Arts Academy', W / 2, 760);
+        ctx.fillText('Generated: ' + new Date().toLocaleDateString('en-IN'), W / 2, 776);
+
+        // --- DOWNLOAD ---
+        try {
+          const link = document.createElement('a');
+          link.download = 'YAI_Student_ID_' + (s.studentId || 'card').replace(/[^A-Za-z0-9\-]/g, '_') + '.png';
+          link.href = canvas.toDataURL('image/png', 1.0);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          if (btn) { btn.disabled = false; btn.innerHTML = '<span>📥 Download Official ID Card (PNG) — Downloaded!</span>'; setTimeout(() => { if(btn) btn.innerHTML = '<i data-lucide=\"download\" class=\"w-4 h-4\"></i><span>📥 Download Official ID Card (PNG Image)</span>'; lucide.createIcons(); }, 2500); }
+        } catch(e) {
+          alert('Download error: ' + e.message);
+          if (btn) { btn.disabled = false; btn.innerHTML = '<span>📥 Download Official ID Card (PNG Image)</span>'; }
+        }
+      }
+
+      // Load photo if available, else draw immediately
+      if (s.photo) {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => drawPhotoAndRest(img);
+        img.onerror = () => drawPhotoAndRest(null);
+        img.src = s.photo;
+      } else {
+        drawPhotoAndRest(null);
+      }
+    }
+
+    // Helper: draw rounded rectangle
+    function roundRect(ctx, x, y, w, h, r, fill, stroke, tlr, trr, brr, blr, fillStyle) {
+      const tl = (tlr !== false) ? r : 0;
+      const tr = (trr !== false) ? r : 0;
+      const br = (brr !== false) ? r : 0;
+      const bl = (blr !== false) ? r : 0;
+      ctx.beginPath();
+      ctx.moveTo(x + tl, y);
+      ctx.lineTo(x + w - tr, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + tr);
+      ctx.lineTo(x + w, y + h - br);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - br, y + h);
+      ctx.lineTo(x + bl, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - bl);
+      ctx.lineTo(x, y + tl);
+      ctx.quadraticCurveTo(x, y, x + tl, y);
+      ctx.closePath();
+      if (fillStyle) { ctx.fillStyle = fillStyle; }
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
+    }
+
+    // Helper: draw a star
+    function drawStar(ctx, cx, cy, r, color) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      for (let i = 0; i < 5; i++) {
+        const angle = (Math.PI / 2) + (i * 4 * Math.PI / 5);
+        const x = cx + r * Math.cos(angle);
+        const y = cy - r * Math.sin(angle);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        const innerAngle = angle + (2 * Math.PI / 5);
+        ctx.lineTo(cx + (r * 0.4) * Math.cos(innerAngle), cy - (r * 0.4) * Math.sin(innerAngle));
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
     }
 
     // Download E-Pramanpatra from download modal
@@ -10983,10 +11255,10 @@ function handleAdminCreateCompetition(e) {
 
       <!-- Action Buttons -->
       <div class="space-y-2 pt-2">
-        <!-- 1. Print / Download ID Card -->
-        <button type="button" onclick="printStudentIdCardDirect()" class="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs sm:text-sm rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-          <i data-lucide="printer" class="w-4 h-4"></i>
-          <span>🖨️ Print / Save Official ID Card (PDF)</span>
+        <!-- 1. Download ID Card PNG -->
+        <button type="button" onclick="printStudentIdCardDirect()" class="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-xs sm:text-sm rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+          <i data-lucide="download" class="w-4 h-4 text-white"></i>
+          <span>📥 Download Official ID Card (PNG Image)</span>
         </button>
 
         <!-- 2. Download Belt E-Pramanpatra -->
