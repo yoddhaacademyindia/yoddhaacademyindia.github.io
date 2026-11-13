@@ -575,6 +575,27 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     // 4. COURSES IN-PLACE UPDATE (TITLE, DESC, VIDEO LINK, THUMBNAIL, ASSIGNED)
     // -----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
+    // 4B. COURSE DELETION
+    // -----------------------------------------------------------------------
+    if (type === "COURSE_DELETE" || type === "DELETE_COURSE") {
+      var sheet = ss.getSheetByName("Courses");
+      if (sheet) {
+        var targetId = String(data.id || data.courseId || "").trim().toLowerCase();
+        var rows = sheet.getDataRange().getValues();
+        for (var r = 1; r < rows.length; r++) {
+          if (String(rows[r][1]).trim().toLowerCase() === targetId) {
+            sheet.deleteRow(r + 1);
+            break;
+          }
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Course deleted from cloud"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
     if (type.indexOf("COURSE") !== -1) {
       var sheet = getOrCreateSheet(ss, "Courses", [
         "Timestamp", "Course ID", "Course Title", "Description", "Video Link", "Thumbnail URL", "Assigned Trainers"
