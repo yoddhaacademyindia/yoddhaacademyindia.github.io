@@ -38,8 +38,25 @@ function doGet(e) {
 
   // 1A. Dual Login Verification (Admin or Certified Trainer)
   if (action === "verifyLogin") {
-    // Check Admin Login
-    if (id.toUpperCase() === "ADMIN-YODDHA-01" && (pass === "@hupare25077" || pass === "yoddha2026")) {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var customAdminPass = null;
+    var setSheet = ss.getSheetByName("AcademySettings");
+    if (setSheet) {
+      var setRows = setSheet.getDataRange().getValues();
+      for (var s = 1; s < setRows.length; s++) {
+        var sk = String(setRows[s][0] || "").toUpperCase().trim();
+        var sv = String(setRows[s][1] || "").trim();
+        if (sk === "ADMIN_PASSWORD" || sk === "ADMIN_PIN" || sk === "MASTER_PASSWORD") {
+          customAdminPass = sv;
+        }
+      }
+    }
+
+    // Check Admin Login (Default HQ Passwords or Custom Password from AcademySettings Sheet)
+    var isAdminValid = (id.toUpperCase() === "ADMIN-YODDHA-01") && 
+      (pass === "@hupare25077" || pass === "yoddha2026" || (customAdminPass && pass === customAdminPass));
+
+    if (isAdminValid) {
       result = {
         status: "success",
         authenticated: true,
@@ -292,15 +309,19 @@ function doGet(e) {
       }
     }
 
-    // 7. Read Master Exam Switch from AcademySettings Sheet
+    // 7. Read Master Exam Switch & Custom Admin Password from AcademySettings Sheet
     var setSheet = ss.getSheetByName("AcademySettings");
     if (setSheet) {
       var setRows = setSheet.getDataRange().getValues();
       for (var s = 1; s < setRows.length; s++) {
         var sk = String(setRows[s][0] || "").toUpperCase().trim();
-        var sv = String(setRows[s][1] || "").toUpperCase().trim();
+        var rawVal = String(setRows[s][1] || "").trim();
+        var sv = rawVal.toUpperCase();
         if (sk === "EXAM_MASTER_SWITCH") {
           allData.examSessionActive = (sv === "ON" || sv === "TRUE");
+        }
+        if (sk === "ADMIN_PASSWORD" || sk === "ADMIN_PIN" || sk === "MASTER_PASSWORD") {
+          allData.adminPass = rawVal;
         }
       }
     }

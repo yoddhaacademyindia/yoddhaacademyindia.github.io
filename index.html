@@ -4674,7 +4674,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
       isLoggedIn: localStorage.getItem('yoddha_admin_logged') === 'true',
       examSessionActive: localStorage.getItem('yoddha_exam_session_active') === 'true',
       adminId: 'ADMIN-YODDHA-01',
-      adminPass: '@hupare25077',
+      adminPass: localStorage.getItem('yoddha_admin_pass') || '@hupare25077',
       students: JSON.parse(localStorage.getItem('yoddha_admin_students_v6')) || INITIAL_STUDENTS,
       trainers: (JSON.parse(localStorage.getItem('yoddha_admin_trainers_v5')) || INITIAL_TRAINERS).map(t => ({
         trainerId: t.trainerId || t.id,
@@ -4832,6 +4832,30 @@ function getOrCreateSheet(ss, sheetName, headers) {
       updateCloudSyncUI();
     });
 
+    // =========================================================================
+    // 🔄 REAL-TIME GOOGLE SHEET TWO-WAY SYNC (AUTO-POLL & TAB FOCUS)
+    // =========================================================================
+    // 1. Instant re-fetch when user switches back to this browser tab (Focus / Visibility)
+    window.addEventListener('focus', () => {
+      if (adminState.isLoggedIn) {
+        pullLiveCloudRecords(true);
+      }
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && adminState.isLoggedIn) {
+        pullLiveCloudRecords(true);
+      }
+    });
+
+    // 2. Continuous background polling every 15 seconds silently
+    setInterval(() => {
+      if (adminState.isLoggedIn) {
+        pullLiveCloudRecords(true);
+      }
+    }, 15000);
+
+
     function checkAuth() {
       const loginScreen = document.getElementById('admin-login-screen');
       const portalScreen = document.getElementById('admin-portal-screen');
@@ -4889,7 +4913,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
         if (webhookUrl) {
           try {
-            const verifyUrl = `${webhookUrl}${webhookUrl.includes('?') ? '&' : '?'}action=verifyLogin&id=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}`;
+            const verifyUrl = `${webhookUrl}${webhookUrl.includes('?') ? '&' : '?'}action=verifyLogin&id=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&t=${Date.now()}`;
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 7000);
             const resp = await fetch(verifyUrl, { signal: controller.signal });
@@ -9321,7 +9345,7 @@ function handleAdminCreateCompetition(e) {
       try {
         const queryUrl = `${url}${url.includes('?') ? '&' : '?'}action=readAll&t=${Date.now()}`;
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const timeoutId = setTimeout(() => controller.abort(), 9000);
         const resp = await fetch(queryUrl, { signal: controller.signal });
         clearTimeout(timeoutId);
 
@@ -9330,30 +9354,49 @@ function handleAdminCreateCompetition(e) {
           let updatedTrainers = 0;
           let updatedStudents = 0;
 
-          // 1. Live Sync Trainers from Google Sheet
+          // 1. Live Sync Trainers from Google Sheet (Authoritative Single Source of Truth)
           if (Array.isArray(data.trainers) && data.trainers.length > 0) {
             data.trainers.forEach(trn => {
               const trnId = (trn.trainerId || trn.id || '').toUpperCase();
               if (!trnId) return;
               const idx = adminState.trainers.findIndex(t => (t.trainerId || t.id || '').toUpperCase() === trnId);
+              const existing = idx !== -1 ? adminState.trainers[idx] : {};
+              const freshTrn = {
+                ...existing,
+                ...trn,
+                fullName: trn.fullName || trn.name || existing.fullName || '',
+                name: trn.fullName || trn.name || existing.name || '',
+                password: trn.password || trn.pin || existing.password || '',
+                pin: trn.password || trn.pin || existing.pin || '',
+                position: trn.position || existing.position || 'Instructor',
+                status: trn.status || existing.status || 'Active',
+                mobile: trn.mobile || trn.phone || existing.mobile || '',
+                phone: trn.phone || trn.mobile || existing.phone || '',
+                whatsapp: trn.whatsapp || trn.mobile || existing.whatsapp || '',
+                state: trn.state || existing.state || 'Maharashtra',
+                district: trn.district || existing.district || 'Kolhapur',
+                branch: trn.branch || existing.branch || '',
+                address: trn.address || existing.address || ''
+              };
+
               if (idx !== -1) {
-                adminState.trainers[idx] = { ...adminState.trainers[idx], ...trn };
+                adminState.trainers[idx] = freshTrn;
               } else {
-                adminState.trainers.push(trn);
+                adminState.trainers.push(freshTrn);
               }
 
-              // If current logged-in user is this trainer, update their live profile immediately
+              // If current logged-in user is this trainer, update their active profile immediately!
               if (adminState.currentUser && adminState.currentUser.role === 'Trainer' && (adminState.currentUser.id || '').toUpperCase() === trnId) {
-                adminState.currentUser.name = trn.fullName || trn.name || adminState.currentUser.name;
-                adminState.currentUser.branch = trn.branch || adminState.currentUser.branch;
-                adminState.currentUser.position = trn.position || adminState.currentUser.position;
+                adminState.currentUser.name = freshTrn.fullName || freshTrn.name;
+                adminState.currentUser.branch = freshTrn.branch || adminState.currentUser.branch;
+                adminState.currentUser.position = freshTrn.position || adminState.currentUser.position;
                 localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
               }
               updatedTrainers++;
             });
           }
 
-          // 2. Live Sync Students from Google Sheet
+          // 2. Live Sync Students from Google Sheet (Authoritative Single Source of Truth)
           if (Array.isArray(data.students) && data.students.length > 0) {
             data.students.forEach(stu => {
               const stuId = (stu.studentId || stu.id || '').toUpperCase();
@@ -9362,22 +9405,58 @@ function handleAdminCreateCompetition(e) {
                 try { stu.levelHistory = JSON.parse(stu.levelHistoryStr); } catch(e) {}
               }
               const idx = adminState.students.findIndex(s => (s.studentId || s.id || '').toUpperCase() === stuId);
+              const existing = idx !== -1 ? adminState.students[idx] : {};
+              const freshStu = {
+                ...existing,
+                ...stu,
+                studentName: stu.studentName || stu.name || existing.studentName || '',
+                name: stu.studentName || stu.name || existing.name || '',
+                requestedLevel: stu.requestedLevel || stu.level || existing.requestedLevel || 'Level 1',
+                feeStatus: stu.feeStatus || existing.feeStatus || 'Paid',
+                status: stu.status || existing.status || 'Active',
+                trainerId: stu.trainerId || existing.trainerId || '',
+                trainerName: stu.trainerName || existing.trainerName || '',
+                dob: stu.dob || existing.dob || '',
+                age: (stu.age !== undefined && stu.age !== null && stu.age !== '') ? Number(stu.age) : (existing.age || 0),
+                schoolName: stu.schoolName || existing.schoolName || '',
+                standard: stu.standard || existing.standard || '',
+                schoolContact: stu.schoolContact || existing.schoolContact || '',
+                schoolAddress: stu.schoolAddress || existing.schoolAddress || '',
+                parentName: stu.parentName || existing.parentName || '',
+                parentMobile: stu.parentMobile || existing.parentMobile || '',
+                city: stu.city || existing.city || '',
+                district: stu.district || existing.district || '',
+                state: stu.state || existing.state || '',
+                feeAmount: stu.feeAmount !== undefined ? Number(stu.feeAmount) : (existing.feeAmount || 500),
+                utrNumber: stu.utrNumber || existing.utrNumber || '',
+                examStatus: stu.examStatus || existing.examStatus || 'TRAINING',
+                levelUpPending: stu.levelUpPending !== undefined ? stu.levelUpPending : (existing.levelUpPending || false),
+                pendingNextLevel: stu.pendingNextLevel || existing.pendingNextLevel || '',
+                photo: (stu.photo && !stu.photo.startsWith('data:image/svg')) ? stu.photo : (existing.photo || stu.photo || '')
+              };
+
               if (idx !== -1) {
-                adminState.students[idx] = { ...adminState.students[idx], ...stu };
+                adminState.students[idx] = freshStu;
               } else {
-                adminState.students.push(stu);
+                adminState.students.push(freshStu);
               }
               updatedStudents++;
             });
           }
 
-          // 3. Live Sync Level Fee Structure from Google Sheet
+          // 3. Live Sync Admin Password from Google Sheet (if configured in AcademySettings)
+          if (data.adminPass) {
+            adminState.adminPass = String(data.adminPass).trim();
+            localStorage.setItem('yoddha_admin_pass', adminState.adminPass);
+          }
+
+          // 4. Live Sync Level Fee Structure from Google Sheet
           if (data.feeStructure && typeof data.feeStructure === 'object' && Object.keys(data.feeStructure).length > 0) {
             adminState.feeStructure = Object.assign({}, adminState.feeStructure, data.feeStructure);
             localStorage.setItem('yoddha_admin_fee', JSON.stringify(adminState.feeStructure));
           }
 
-          // 4. Live Sync Courses from Google Sheet
+          // 5. Live Sync Courses from Google Sheet
           if (Array.isArray(data.courses) && data.courses.length > 0) {
             data.courses.forEach(crs => {
               const crsId = (crs.id || '').toUpperCase();
@@ -9391,7 +9470,7 @@ function handleAdminCreateCompetition(e) {
             });
           }
 
-          // 5. Live Sync Competitions from Google Sheet
+          // 6. Live Sync Competitions from Google Sheet
           if (Array.isArray(data.competitions) && data.competitions.length > 0) {
             data.competitions.forEach(cmp => {
               const cmpId = (cmp.id || '').toUpperCase();
@@ -9405,7 +9484,7 @@ function handleAdminCreateCompetition(e) {
             });
           }
 
-          // 6. Live Sync Student Medals & Sports Records from Google Sheet
+          // 7. Live Sync Student Medals & Sports Records from Google Sheet
           if (data.studentCompetitions && typeof data.studentCompetitions === 'object') {
             Object.keys(data.studentCompetitions).forEach(sId => {
               if (Array.isArray(data.studentCompetitions[sId]) && data.studentCompetitions[sId].length > 0) {
@@ -9414,7 +9493,7 @@ function handleAdminCreateCompetition(e) {
             });
           }
 
-          // 7. Live Sync Master Exam Switch from Google Sheet
+          // 8. Live Sync Master Exam Switch from Google Sheet
           if (data.examSessionActive !== undefined) {
             adminState.examSessionActive = (data.examSessionActive === true || data.examSessionActive === 'true');
             localStorage.setItem('yoddha_admin_exam_active', adminState.examSessionActive ? 'true' : 'false');
@@ -9422,11 +9501,15 @@ function handleAdminCreateCompetition(e) {
             if (examSwitch) examSwitch.checked = adminState.examSessionActive;
           }
 
+          // Save and Refresh All UI Views Instantly!
           saveAdminState();
           updatePortalRoleUI();
           updateTopMetrics();
+          populateDropdowns();
           renderAdminStudents();
           renderAdminTrainers();
+          renderAdminCourses();
+          renderAdminCompetitions();
           renderVerificationQueue();
 
           if (!silent) {
