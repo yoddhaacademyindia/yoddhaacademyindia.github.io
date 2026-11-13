@@ -1083,10 +1083,18 @@
             <span class="text-[11px] font-bold text-orange-700">10 Official Progression Ranks</span>
           </div>
 
-          <!-- 24. Requested Level Selector -->
+          <!-- 24. Requested Level Selector (Locked to Level 1 for Trainer; Selectable for Admin) -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Requested Level (Enrolling into) *</label>
+              <label class="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                <span>Requested Level (Enrolling into) *</span>
+                <span id="stu-level-admin-badge" class="text-[9px] font-bold text-amber-900 bg-amber-100 border border-amber-300 px-1.5 py-0.5 rounded-md hidden">
+                  👑 Admin Level Access
+                </span>
+                <span id="stu-level-trainer-badge" class="text-[9px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-1.5 py-0.5 rounded-md hidden">
+                  🔒 Level 1 Locked
+                </span>
+              </label>
               <select id="p-stu-requested-level" required onchange="syncLevelPills(this.value)" class="w-full bg-white border border-orange-300 rounded-xl px-3 py-2 text-orange-900 font-extrabold focus:outline-none focus:border-orange-500">
                 <option value="Level 1">Level 1</option>
                 <option value="Level 2">Level 2</option>
@@ -1099,6 +1107,9 @@
                 <option value="Senior 3">Senior 3</option>
                 <option value="Senior 4">Senior 4</option>
               </select>
+              <p id="stu-level-trainer-note" class="text-[10px] text-emerald-700 font-medium mt-1 hidden">
+                💡 नव्या विद्यार्थ्यांची नोंदणी लेव्हल १ नेच सुरू होते; परीक्षा उत्तीर्ण झाल्यावर पुढील लेव्हल सुरू होईल.
+              </p>
             </div>
 
             <!-- 5-14: Level 1 to 6 & Senior 1 to 4 Tracking Status Badges -->
@@ -4201,47 +4212,88 @@ function getOrCreateSheet(ss, sheetName, headers) {
           </div>
         </div>
 
-        <!-- Promotion Fee & Official UPI Details -->
+        <!-- Promotion Fee & Payment Mode (Cash vs Online UPI) -->
         <div class="bg-amber-50/50 border border-amber-200 rounded-2xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between border-b border-amber-200 pb-2">
             <div>
-              <span class="text-xs font-bold text-slate-700">Official Promotion Fee</span>
-              <span class="block text-[11px] text-slate-400">Standard rate for next belt level</span>
+              <span class="text-xs font-bold text-slate-800">Official Promotion Fee</span>
+              <span class="block text-[10.5px] text-slate-500 font-medium">Standard rate set by Admin for next belt level</span>
             </div>
             <div class="text-right">
               <div class="flex items-center gap-1">
-                <span class="text-xs font-black text-slate-500">₹</span>
-                <input type="number" id="levelup-fee-amount" required readonly class="w-24 bg-white border border-amber-300 rounded-xl px-2.5 py-1 text-sm font-black text-amber-950 text-right focus:outline-none">
+                <span class="text-xs font-black text-emerald-800">₹</span>
+                <input type="number" id="levelup-fee-amount" required readonly class="w-24 bg-white border-2 border-emerald-300 rounded-xl px-2.5 py-1 text-sm font-black text-emerald-950 text-right focus:outline-none cursor-not-allowed shadow-inner">
               </div>
             </div>
           </div>
 
-          <!-- Official Academy UPI ID with Copy Button -->
-          <div class="bg-white border border-amber-200 rounded-xl p-3 flex items-center justify-between gap-2 shadow-2xs">
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center font-black text-xs">UPI</div>
-              <div>
-                <span class="text-[10px] text-slate-400 block font-bold uppercase">Academy Official UPI ID</span>
-                <span id="levelup-upi-id-val" class="text-xs font-mono font-bold text-slate-900 select-all">yoddhaacademy@upi</span>
+          <!-- Payment Mode Selection: Cash vs Online -->
+          <div>
+            <label class="block font-black text-slate-800 text-xs mb-1.5">Payment Mode (पेमेंट पद्धत निवडा) *</label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center justify-center gap-2 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-emerald-400 has-checked:border-emerald-600 has-checked:bg-emerald-50 text-slate-800 font-black text-xs transition shadow-2xs select-none">
+                <input type="radio" name="p-lvl-pay-mode" value="Cash" checked onchange="handleLevelUpPaymentModeChange('Cash')" class="w-4 h-4 text-emerald-600">
+                <span>💵 Cash (रोख)</span>
+              </label>
+              <label class="flex items-center justify-center gap-2 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-orange-400 has-checked:border-orange-600 has-checked:bg-orange-50 text-slate-800 font-black text-xs transition shadow-2xs select-none">
+                <input type="radio" name="p-lvl-pay-mode" value="Online" onchange="handleLevelUpPaymentModeChange('Online')" class="w-4 h-4 text-orange-600">
+                <span>📱 Online UPI</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Level-Up Cash Notice -->
+          <div id="lvl-cash-info-box" class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-xs text-emerald-950 flex items-start gap-2">
+            <i data-lucide="banknote" class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5"></i>
+            <div>
+              <strong class="font-black text-emerald-900 block text-[11px]">रोख फी आखाड्यात जमा होईल</strong>
+              <p class="text-[10.5px] text-emerald-800 font-medium">खालील बटणावर क्लिक करून अर्ज सबमिट करा. ॲडमिन मंजुरी दिल्यावर पुढील लेव्हल सुरू होईल.</p>
+            </div>
+          </div>
+
+          <!-- Level-Up Online UPI Container -->
+          <div id="lvl-online-pay-box" class="hidden space-y-3 pt-1">
+            <div class="bg-white border border-amber-200 rounded-xl p-2.5 flex items-center justify-between gap-2 shadow-2xs">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center font-black text-xs">UPI</div>
+                <div>
+                  <span class="text-[9.5px] text-slate-400 block font-bold uppercase">Academy Official UPI ID</span>
+                  <span id="levelup-upi-id-val" class="text-xs font-mono font-bold text-slate-900 select-all">yoddhaacademy5@okicici</span>
+                </div>
+              </div>
+              <button type="button" onclick="copyLevelUpUpi()" class="px-2 py-1 bg-orange-50 hover:bg-orange-100 text-orange-800 text-[10.5px] font-bold rounded-lg border border-orange-200 transition active:scale-95 flex items-center gap-1">
+                <i data-lucide="copy" class="w-3 h-3 text-orange-600"></i>
+                <span>Copy</span>
+              </button>
+            </div>
+
+            <!-- UPI Quick App Buttons -->
+            <div class="grid grid-cols-4 gap-1.5">
+              <button type="button" onclick="triggerLevelUpUpi('gpay')" class="p-1.5 bg-white hover:bg-blue-50 border border-blue-200 rounded-lg text-center transition flex flex-col items-center justify-center">
+                <span class="font-black text-blue-600 text-[10px]">Google Pay</span>
+              </button>
+              <button type="button" onclick="triggerLevelUpUpi('phonepe')" class="p-1.5 bg-white hover:bg-purple-50 border border-purple-200 rounded-lg text-center transition flex flex-col items-center justify-center">
+                <span class="font-black text-purple-600 text-[10px]">PhonePe</span>
+              </button>
+              <button type="button" onclick="triggerLevelUpUpi('paytm')" class="p-1.5 bg-white hover:bg-sky-50 border border-sky-200 rounded-lg text-center transition flex flex-col items-center justify-center">
+                <span class="font-black text-sky-600 text-[10px]">Paytm</span>
+              </button>
+              <button type="button" onclick="triggerLevelUpUpi('generic')" class="p-1.5 bg-white hover:bg-emerald-50 border border-emerald-200 rounded-lg text-center transition flex flex-col items-center justify-center">
+                <span class="font-black text-emerald-700 text-[10px]">Other UPI</span>
+              </button>
+            </div>
+
+            <!-- 12-Digit UTR Input -->
+            <div>
+              <label class="block font-bold text-slate-800 text-xs mb-1">
+                12-Digit UPI UTR / Transaction No. <span class="text-rose-500">*</span>
+              </label>
+              <div class="relative">
+                <i data-lucide="hash" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                <input type="text" id="levelup-utr-input" placeholder="उदा. 412988771122" maxlength="22" class="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition">
               </div>
             </div>
-            <button type="button" onclick="copyLevelUpUpi()" class="px-2.5 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-800 text-[11px] font-bold rounded-lg border border-orange-200 transition active:scale-95 flex items-center gap-1">
-              <i data-lucide="copy" class="w-3 h-3 text-orange-600"></i>
-              <span>Copy</span>
-            </button>
           </div>
-        </div>
-
-        <!-- 12-Digit UTR / Transaction ID (Mandatory) -->
-        <div>
-          <label class="block font-bold text-slate-700 text-xs mb-1">
-            Payment UTR / Transaction ID (12 Digits) <span class="text-rose-500">*</span>
-          </label>
-          <div class="relative">
-            <i data-lucide="hash" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
-            <input type="text" id="levelup-utr-input" required placeholder="e.g. 412988771122" maxlength="22" class="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition">
-          </div>
-          <p class="text-[10px] text-slate-400 mt-1">Please transfer the promotion fee via Google Pay, PhonePe or Paytm to the UPI ID above and enter the 12-digit UTR receipt number.</p>
         </div>
 
         <!-- Optional Remarks -->
@@ -5537,10 +5589,36 @@ lucide.createIcons();
         if (formType === 'student') {
           prepareNewStudentId();
           document.getElementById('p-stu-admission-date').valueAsDate = new Date();
-          const reqLvl = document.getElementById('p-stu-requested-level')?.value || 'Level 1';
-          if (document.getElementById('p-stu-fee-amount')) {
-            document.getElementById('p-stu-fee-amount').value = getFeeForLevel(reqLvl);
+
+          const levelSelect = document.getElementById('p-stu-requested-level');
+          const adminBadge = document.getElementById('stu-level-admin-badge');
+          const trainerBadge = document.getElementById('stu-level-trainer-badge');
+          const trainerNote = document.getElementById('stu-level-trainer-note');
+
+          if (isTrainer) {
+            // TRAINER PANEL: Strictly locked to Level 1
+            if (levelSelect) {
+              levelSelect.value = 'Level 1';
+              levelSelect.disabled = true;
+              levelSelect.classList.add('bg-slate-100', 'cursor-not-allowed', 'opacity-90');
+            }
+            if (adminBadge) adminBadge.classList.add('hidden');
+            if (trainerBadge) trainerBadge.classList.remove('hidden');
+            if (trainerNote) trainerNote.classList.remove('hidden');
+            syncLevelPills('Level 1');
+          } else {
+            // ADMIN PANEL: Full access to select any level
+            if (levelSelect) {
+              levelSelect.disabled = false;
+              levelSelect.classList.remove('bg-slate-100', 'cursor-not-allowed', 'opacity-90');
+            }
+            if (adminBadge) adminBadge.classList.remove('hidden');
+            if (trainerBadge) trainerBadge.classList.add('hidden');
+            if (trainerNote) trainerNote.classList.add('hidden');
+            const reqLvl = levelSelect?.value || 'Level 1';
+            syncLevelPills(reqLvl);
           }
+
           if (document.getElementById('stu-reg-upi-val')) {
             document.getElementById('stu-reg-upi-val').innerText = adminState.feeStructure?.upi || 'yoddhaacademy@upi';
           }
@@ -5967,7 +6045,7 @@ lucide.createIcons();
       const studentName = document.getElementById('p-stu-name').value.trim();
       const dob = document.getElementById('p-stu-dob').value;
       const age = parseInt(document.getElementById('p-stu-age').value) || 0;
-      const requestedLevel = document.getElementById('p-stu-requested-level').value;
+      const requestedLevel = isTrainer ? 'Level 1' : (document.getElementById('p-stu-requested-level')?.value || 'Level 1');
 
       const schoolName = document.getElementById('p-stu-school-name').value.trim();
       const schoolAddress = document.getElementById('p-stu-school-address').value.trim();
@@ -6623,17 +6701,29 @@ lucide.createIcons();
 
               <!-- 7. Bottom 5 Action Buttons (Top 2: Record & Level Exam; Bottom 3: Edit, Download, Delete) -->
               <div class="p-1.5 sm:p-2.5 border-t border-orange-100 bg-orange-50/40 space-y-1.5">
-                <!-- TOP ROW: 2 BUTTONS (Record & Level Exam) -->
+                <!-- TOP ROW: 2 BUTTONS (Record & Dynamic: Level Exam / Level Up / In Verif) -->
                 <div class="grid grid-cols-2 gap-1.5">
                   <button type="button" onclick="openStudentCompetitionRecord('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-950 border border-amber-300 hover:border-amber-400 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-2xs flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 cursor-pointer" title="View Competition & Tournament Records">
                     <i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
                     <span>Record</span>
                   </button>
 
-                  <button type="button" onclick="handleStudentLevelExamClick('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border border-amber-400 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-2xs flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 cursor-pointer" title="Start Live Belt Examination / Level Up">
-                    <i data-lucide="camera" class="w-3.5 h-3.5 text-white flex-shrink-0"></i>
-                    <span>Level Exam</span>
-                  </button>
+                  ${isExamPassed ? `
+                    <button type="button" onclick="openLevelUpFormModal('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white border sm:border-2 border-emerald-300 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-md flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 animate-bounce cursor-pointer" title="Belt Exam Passed! Click to enroll into Level ${Math.min(10, levelNum + 1)}">
+                      <i data-lucide="arrow-up-circle" class="w-3.5 h-3.5 text-white flex-shrink-0"></i>
+                      <span>⭐ Level Up</span>
+                    </button>
+                  ` : (isLevelUpPending ? `
+                    <button type="button" onclick="openStudentLevelProgressModal('${s.studentId}')" class="py-1.5 px-1 bg-purple-100 hover:bg-purple-200 text-purple-950 border border-purple-300 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-2xs flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 cursor-pointer" title="Level Up submitted. Waiting for Admin verification.">
+                      <i data-lucide="clock" class="w-3.5 h-3.5 text-purple-700 flex-shrink-0 animate-pulse"></i>
+                      <span>⏳ In Verif</span>
+                    </button>
+                  ` : `
+                    <button type="button" onclick="handleStudentLevelExamClick('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border border-amber-400 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-2xs flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 cursor-pointer" title="Start Live Belt Examination">
+                      <i data-lucide="camera" class="w-3.5 h-3.5 text-white flex-shrink-0"></i>
+                      <span>Level Exam</span>
+                    </button>
+                  `)}
                 </div>
 
                 <!-- BOTTOM ROW: 3 BUTTONS (Edit, Download, Delete) -->
@@ -8198,6 +8288,49 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       alert(`🎉 🚀 LEVEL UP APPLICATION SUBMITTED!\n----------------------------------------------------\nCandidate: ${s.studentName} (${s.studentId})\nCleared Level: ${currName} (Score: ${s.lastExam?.totalScore || 91}/100)\nNext Level: ${nextName}\nPromotion Fee: ₹${feeAmount} (UTR: ${utr})\n\nApplication moved to Admin Verification Desk! Level ${nextNum} will become Running once Admin verifies the payment.`);
     }
+
+    
+    function handleLevelUpPaymentModeChange(mode) {
+      const cashBox = document.getElementById('lvl-cash-info-box');
+      const onlineBox = document.getElementById('lvl-online-pay-box');
+      const utrInput = document.getElementById('levelup-utr-input');
+
+      if (mode === 'Cash') {
+        if (cashBox) cashBox.classList.remove('hidden');
+        if (onlineBox) onlineBox.classList.add('hidden');
+        if (utrInput) {
+          utrInput.required = false;
+          utrInput.value = '';
+        }
+      } else {
+        if (cashBox) cashBox.classList.add('hidden');
+        if (onlineBox) onlineBox.classList.remove('hidden');
+        if (utrInput) utrInput.required = true;
+      }
+      lucide.createIcons();
+    }
+
+    function triggerLevelUpUpi(app) {
+      const upiId = adminState.feeStructure?.upi || 'yoddhaacademy5@okicici';
+      const feeAmount = document.getElementById('levelup-fee-amount')?.value || '600';
+      const stuName = (document.getElementById('levelup-candidate-name')?.innerText || 'Student').trim();
+      const note = encodeURIComponent('YAI LevelUp - ' + stuName);
+      const payee = encodeURIComponent('Yoddha Academy India');
+
+      const genericUri = 'upi://pay?pa=' + upiId + '&pn=' + payee + '&am=' + feeAmount + '&cu=INR&tn=' + note;
+      let appUri = genericUri;
+
+      if (app === 'phonepe') {
+        appUri = 'phonepe://pay?pa=' + upiId + '&pn=' + payee + '&am=' + feeAmount + '&cu=INR&tn=' + note;
+      } else if (app === 'paytm') {
+        appUri = 'paytmmp://pay?pa=' + upiId + '&pn=' + payee + '&am=' + feeAmount + '&cu=INR&tn=' + note;
+      } else if (app === 'gpay') {
+        appUri = 'tez://upi/pay?pa=' + upiId + '&pn=' + payee + '&am=' + feeAmount + '&cu=INR&tn=' + note;
+      }
+
+      window.location.href = appUri;
+    }
+
 
     function copyLevelUpUpi() {
       const upi = adminState.feeStructure?.upi || 'yoddhaacademy@upi';
