@@ -4853,8 +4853,8 @@ function getOrCreateSheet(ss, sheetName, headers) {
         stateCode: "MH",
         admissionDate: "2026-11-08",
         requestedLevel: "Level 1",
-        trainerId: "YAI-TR-MH-KOP-001",
-        trainerName: "Ustad Rahul Shinde",
+        trainerId: "YAI-TR-MH-NSK-001",
+        trainerName: "Ustad Sachin Patil",
         status: "Active",
         feeStatus: "Paid",
         feeAmount: 500,
@@ -5498,10 +5498,13 @@ lucide.createIcons();
         if (metricsGrid) metricsGrid.className = "grid grid-cols-2 gap-3 sm:gap-6";
 
         // Filter only this trainer's students
-        const myStudents = adminState.students.filter(s => 
-          (s.trainerId && s.trainerId === user.id) || 
-          (s.trainerName && s.trainerName === user.name)
-        );
+        const myTId = (user.id || '').trim().toUpperCase();
+        const myTName = (user.name || '').trim().toLowerCase();
+        const myStudents = adminState.students.filter(s => {
+          const sTId = (s.trainerId || '').trim().toUpperCase();
+          const sTName = (s.trainerName || '').trim().toLowerCase();
+          return (sTId && sTId === myTId) || (sTName && sTName === myTName && myTName.length > 2);
+        });
         document.getElementById('stat-top-students').innerText = myStudents.length;
         if (studentsLabel) studentsLabel.innerText = "My Students";
         if (studentsSub) studentsSub.innerText = "My Akhada";
@@ -6538,8 +6541,12 @@ lucide.createIcons();
 
       const filtered = adminState.students.filter(s => {
         if (isTrainer) {
-          // For Trainer: show ALL of this trainer's students!
-          const isMine = (s.trainerId && s.trainerId === user.id) || (s.trainerName && s.trainerName === user.name);
+          // For Trainer: STRICTLY show ONLY students registered by THIS trainer
+          const myId = (user.id || '').trim().toUpperCase();
+          const myName = (user.name || '').trim().toLowerCase();
+          const stuTrainerId = (s.trainerId || '').trim().toUpperCase();
+          const stuTrainerName = (s.trainerName || '').trim().toLowerCase();
+          const isMine = (stuTrainerId && stuTrainerId === myId) || (stuTrainerName && stuTrainerName === myName && myName.length > 2);
           if (!isMine) return false;
         } else {
           // For Admin: main Students directory shows ONLY Active and Paid!
@@ -9314,10 +9321,13 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         // =========================================================================
         // 🥋 TRAINER VIEW: BRANCH-SPECIFIC 2-YEAR & LEVEL-WISE PROGRESSION
         // =========================================================================
-        const myStudents = adminState.students.filter(s => 
-          (s.trainerId && s.trainerId === user.id) || 
-          (s.trainerName && s.trainerName === user.name)
-        );
+        const myTId = (user.id || '').trim().toUpperCase();
+        const myTName = (user.name || '').trim().toLowerCase();
+        const myStudents = adminState.students.filter(s => {
+          const sTId = (s.trainerId || '').trim().toUpperCase();
+          const sTName = (s.trainerName || '').trim().toLowerCase();
+          return (sTId && sTId === myTId) || (sTName && sTName === myTName && myTName.length > 2);
+        });
 
         if (titleEl) titleEl.innerText = `${user.name} - Branch Growth Analytics`;
         if (subEl) subEl.innerText = `${user.branch || 'Branch Akhada'} • 2-Year Level-Wise Student Progression (2025 vs 2026)`;
