@@ -1705,7 +1705,7 @@
       <div id="stu-record-tab-tournaments" class="hidden space-y-4">
         <!-- Medals / Achievements Stats -->
         <div id="stu-record-medals-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 text-center">
-          <!-- Gold, Silver, Bronze, Matches count -->
+          <!-- Gold, Silver, Bronze, Matches count rendered via JS -->
         </div>
 
         <!-- Tournament Participation List -->
@@ -1715,48 +1715,109 @@
               <i data-lucide="swords" class="w-4 h-4 text-orange-600"></i>
               <span>Tournament & Match Participation Records</span>
             </h4>
-            <button onclick="toggleAddCompetitionRecordForm()" class="px-3 py-1 bg-orange-100 hover:bg-orange-200 text-orange-900 text-xs font-bold rounded-xl transition flex items-center gap-1 shadow-xs">
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add New Record
+            <!-- Add New Record Button (Visible to Admin only) -->
+            <button id="btn-add-tourn-top" onclick="toggleAddCompetitionRecordForm()" class="px-3.5 py-1.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white text-xs font-black rounded-xl transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>+ Add Record</span>
             </button>
           </div>
 
           <!-- Add Competition Record Form (Collapsible) -->
-          <div id="add-comp-record-form" class="hidden bg-orange-50/70 border border-orange-200 rounded-2xl p-4 space-y-3 text-xs">
-            <h5 class="font-black text-orange-900 flex items-center gap-1.5">
-              <i data-lucide="award" class="w-4 h-4 text-orange-600"></i>
-              <span>Record New Tournament / Competition Result</span>
-            </h5>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Tournament Name *</label>
-                <input type="text" id="cr-title" placeholder="e.g. State Warrior Cup 2026" class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:border-orange-500">
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Event Date *</label>
-                <input type="date" id="cr-date" class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:border-orange-500">
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Discipline / Category *</label>
-                <input type="text" id="cr-category" placeholder="e.g. Lathi Sparring / Kata" class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:border-orange-500">
-              </div>
-              <div>
-                <label class="block font-bold text-slate-700 mb-1">Medal / Rank *</label>
-                <select id="cr-achievement" class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs font-extrabold focus:outline-none focus:border-orange-500">
-                  <option value="🥇 Gold Medal (1st Place)">🥇 Gold Medal (1st Place)</option>
-                  <option value="🥈 Silver Medal (2nd Place)">🥈 Silver Medal (2nd Place)</option>
-                  <option value="🥉 Bronze Medal (3rd Place)">🥉 Bronze Medal (3rd Place)</option>
-                  <option value="🎖️ 4th Place (Semi-Finalist)">🎖️ 4th Place (Semi-Finalist)</option>
-                  <option value="📜 Official Participant">📜 Official Participant</option>
-                </select>
+          <div id="add-comp-record-form" class="hidden bg-orange-50/80 border-2 border-orange-200 rounded-3xl p-4 sm:p-5 space-y-4 text-xs shadow-sm">
+            <div class="flex items-center justify-between border-b border-orange-200/80 pb-2">
+              <h5 class="font-black text-orange-950 text-sm flex items-center gap-1.5">
+                <i data-lucide="trophy" class="w-4 h-4 text-orange-600"></i>
+                <span>Add Tournament & Medal Record (स्पर्धा व पदक नोंदवा)</span>
+              </h5>
+              <button type="button" onclick="toggleAddCompetitionRecordForm(false)" class="text-slate-400 hover:text-slate-700 p-1">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <!-- 1. Championship Level Selection (District, State, National) -->
+            <div>
+              <label class="block font-black text-slate-800 mb-1.5">1. Championship Level (कोणती स्पर्धा खेळले?) *</label>
+              <div class="grid grid-cols-3 gap-2">
+                <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-orange-400 has-checked:border-orange-600 has-checked:bg-orange-50 font-black text-xs text-slate-800 transition select-none">
+                  <input type="radio" name="cr-scope" value="District Level (जिल्हा स्तर)" checked class="text-orange-600">
+                  <span>District (जिल्हा)</span>
+                </label>
+                <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-orange-400 has-checked:border-orange-600 has-checked:bg-orange-50 font-black text-xs text-slate-800 transition select-none">
+                  <input type="radio" name="cr-scope" value="State Level (राज्य स्तर)" class="text-orange-600">
+                  <span>State (राज्य)</span>
+                </label>
+                <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-orange-400 has-checked:border-orange-600 has-checked:bg-orange-50 font-black text-xs text-slate-800 transition select-none">
+                  <input type="radio" name="cr-scope" value="National Level (राष्ट्रीय स्तर)" class="text-orange-600">
+                  <span>National 🇮🇳</span>
+                </label>
               </div>
             </div>
-            <div class="flex justify-end gap-2 pt-1">
-              <button type="button" onclick="toggleAddCompetitionRecordForm()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold">Cancel</button>
-              <button type="button" onclick="saveStudentCompetitionRecord()" class="px-4 py-1.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white rounded-xl font-black shadow-sm">Save Record</button>
+
+            <!-- Tournament Title -->
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Tournament Title / Name (स्पर्धेचे नाव) *</label>
+              <input type="text" id="cr-title" placeholder="e.g. All India National Warrior Cup / District Lathi Championship" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-orange-500">
+            </div>
+
+            <!-- 2. Medal Won (Gold, Silver, Bronze, Participant) -->
+            <div>
+              <label class="block font-black text-slate-800 mb-1.5">2. Medal Won (कोणते पदक मिळाले?) *</label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-400 has-checked:border-amber-500 has-checked:bg-amber-50 font-black text-xs text-amber-900 transition select-none">
+                  <input type="radio" name="cr-achievement" value="🥇 Gold Medal (सुवर्ण पदक)" checked class="text-amber-600">
+                  <span>🥇 Gold</span>
+                </label>
+                <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-slate-400 has-checked:border-slate-500 has-checked:bg-slate-100 font-black text-xs text-slate-800 transition select-none">
+                  <input type="radio" name="cr-achievement" value="🥈 Silver Medal (रौप्य पदक)" class="text-slate-600">
+                  <span>🥈 Silver</span>
+                </label>
+                <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-600 has-checked:border-amber-700 has-checked:bg-amber-100 font-black text-xs text-amber-950 transition select-none">
+                  <input type="radio" name="cr-achievement" value="🥉 Bronze Medal (कांस्य पदक)" class="text-amber-700">
+                  <span>🥉 Bronze</span>
+                </label>
+                <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 has-checked:border-blue-500 has-checked:bg-blue-50 font-black text-xs text-blue-900 transition select-none">
+                  <input type="radio" name="cr-achievement" value="📜 Participant (सहभाग)" class="text-blue-600">
+                  <span>📜 Participant</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 3. Year & Discipline -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">3. Year of Achievement (कोणत्या वर्षी मिळाले?) *</label>
+                <select id="cr-year" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-extrabold text-slate-900 focus:outline-none focus:border-orange-500">
+                  <option value="2026">2026</option>
+                  <option value="2025">2025</option>
+                  <option value="2024">2024</option>
+                  <option value="2023">2023</option>
+                  <option value="2022">2022</option>
+                  <option value="2021">2021</option>
+                  <option value="2020">2020</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-700 mb-1">Discipline / Style (खेळ प्रकार)</label>
+                <input type="text" id="cr-category" placeholder="e.g. Lathi Sparring / Traditional Kata / Pettebaji" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-orange-500">
+              </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2 border-t border-orange-200/60">
+              <button type="button" onclick="toggleAddCompetitionRecordForm(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold cursor-pointer transition">Cancel</button>
+              <button type="button" onclick="saveStudentCompetitionRecord()" class="px-5 py-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white rounded-xl font-black shadow-md cursor-pointer transition flex items-center gap-1.5">
+                <i data-lucide="check" class="w-4 h-4"></i>
+                <span>Save Tournament Record</span>
+              </button>
             </div>
           </div>
 
+          <!-- Tournament Records List Container -->
           <div id="stu-record-history-list" class="space-y-2">
+            <!-- Rendered via JS -->
+          </div>
+
+          <!-- Bottom Button: Add Another Tournament (Visible to Admin only) -->
+          <div id="btn-add-another-tourn-box">
             <!-- Rendered via JS -->
           </div>
         </div>
@@ -6419,14 +6480,28 @@ lucide.createIcons();
       const s = adminState.students.find(stu => stu.studentId === studentId);
       if (!s) return;
 
+      const user = adminState.currentUser || { role: 'Admin' };
+      const isAdmin = (user.role === 'Admin');
+
       const banner = document.getElementById('stu-record-summary-banner');
       const stats = document.getElementById('stu-record-medals-stats');
       const list = document.getElementById('stu-record-history-list');
+      const topAddBtn = document.getElementById('btn-add-tourn-top');
+      const bottomBtnBox = document.getElementById('btn-add-another-tourn-box');
       const levelNum = getStudentLevelNum(s.requestedLevel || s.level);
       const records = getStudentCompetitions(studentId);
 
       // Default to 10-Level Marksheet Tab
       switchStudentRecordTab('levels');
+
+      // Top Add Button visibility: Admin only, hidden for Trainer
+      if (topAddBtn) {
+        if (isAdmin) {
+          topAddBtn.classList.remove('hidden');
+        } else {
+          topAddBtn.classList.add('hidden');
+        }
+      }
 
       // Render summary banner
       if (banner) {
@@ -6500,7 +6575,7 @@ lucide.createIcons();
               </div>
             `;
             actionHtml = `
-              <button type="button" onclick="openBeltCertificateModalByLevel('${s.studentId}', ${lvl.num})" class="px-3.5 sm:px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5 whitespace-nowrap" title="Download & View Official Belt Promotion E-Pramanpatra">
+              <button type="button" onclick="openBeltCertificateModalByLevel('${s.studentId}', ${lvl.num})" class="px-3.5 sm:px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5 whitespace-nowrap cursor-pointer" title="Download & View Official Belt Promotion E-Pramanpatra">
                 <i data-lucide="award" class="w-4 h-4 text-yellow-200"></i>
                 <span>📜 E-Pramanpatra</span>
                 <i data-lucide="download" class="w-3.5 h-3.5 text-white"></i>
@@ -6519,7 +6594,7 @@ lucide.createIcons();
             `;
             if (s.examStatus === 'PASSED_PENDING_LEVELUP') {
               actionHtml = `
-                <button type="button" onclick="closeModal('modal-student-record'); openLevelUpFormModal('${s.studentId}')" class="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 text-white font-black text-xs rounded-xl shadow-xs animate-bounce flex items-center gap-1 whitespace-nowrap">
+                <button type="button" onclick="closeModal('modal-student-record'); openLevelUpFormModal('${s.studentId}')" class="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 text-white font-black text-xs rounded-xl shadow-xs animate-bounce flex items-center gap-1 whitespace-nowrap cursor-pointer">
                   <i data-lucide="arrow-up-circle" class="w-3.5 h-3.5"></i>
                   <span>⭐ Level Up Form</span>
                 </button>
@@ -6577,7 +6652,6 @@ lucide.createIcons();
                   <span class="text-[10px] font-mono text-slate-400 font-bold">Star ${lvl.num}/10</span>
                   ${lvl.status === 'PASSED' ? '<span class="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">✅ Passed</span>' : ''}
                 </div>
-                <p class="text-[11px] text-slate-500 font-medium">${lvl.technique}</p>
                 <div class="pt-1">${marksHtml}</div>
               </div>
             </div>
@@ -6619,24 +6693,52 @@ lucide.createIcons();
       if (list) {
         list.innerHTML = '';
         if (records.length === 0) {
-          list.innerHTML = `<div class="p-6 text-center text-slate-400 font-medium bg-slate-50 rounded-2xl border border-dashed border-slate-200">No competition records recorded for this student yet. Click '+ Add New Record' above to record tournament participation!</div>`;
+          list.innerHTML = `<div class="p-6 text-center text-slate-400 font-medium bg-slate-50 rounded-2xl border border-dashed border-slate-200">No competition records recorded for this student yet. ${isAdmin ? "Click '+ Add Record' above to record tournament participation!" : "(Records can be added by Admin HQ)"}</div>`;
         } else {
-          records.forEach(r => {
+          records.forEach((r, idx) => {
             const item = document.createElement('div');
-            item.className = "bg-white border border-slate-200 rounded-2xl p-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 hover:border-amber-400 hover:shadow-sm transition";
+            item.className = "bg-white border-2 border-slate-100 rounded-2xl p-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 hover:border-amber-300 hover:shadow-xs transition";
+
+            const isGold = (r.achievement || '').includes('Gold');
+            const isSilver = (r.achievement || '').includes('Silver');
+            const isBronze = (r.achievement || '').includes('Bronze');
+            const medalBadgeClass = isGold 
+              ? 'bg-amber-100 text-amber-900 border-amber-300 font-black'
+              : (isSilver 
+                ? 'bg-slate-100 text-slate-800 border-slate-300 font-black'
+                : (isBronze 
+                  ? 'bg-amber-50 text-amber-950 border-amber-400 font-black' 
+                  : 'bg-blue-50 text-blue-900 border-blue-200 font-bold'));
+
+            const scopeBadge = r.scope ? `
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${
+                r.scope.includes('National') ? 'bg-purple-100 text-purple-900 border border-purple-200' :
+                (r.scope.includes('State') ? 'bg-amber-100 text-amber-900 border border-amber-300' :
+                'bg-orange-100 text-orange-900 border border-orange-200')
+              }">${r.scope}</span>` : '';
+
+            const deleteBtnHtml = isAdmin ? `
+              <button type="button" onclick="deleteStudentCompetitionRecord(${idx})" class="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition cursor-pointer" title="Delete this tournament record">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            ` : '';
+
             item.innerHTML = `
-              <div class="space-y-0.5">
-                <div class="flex items-center gap-2">
-                  <strong class="text-slate-900 font-bold text-xs sm:text-sm">${r.title}</strong>
-                  <span class="text-[10px] font-mono text-slate-400 font-semibold">${r.date || ''}</span>
+              <div class="space-y-1 min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <strong class="text-slate-900 font-black text-xs sm:text-sm truncate">${r.title}</strong>
+                  ${scopeBadge}
+                  <span class="text-[10px] font-mono text-slate-500 font-bold bg-slate-100 px-2 py-0.5 rounded-md">${r.year || r.date || ''}</span>
                 </div>
-                <p class="text-xs text-slate-500 font-medium">Category: <span class="text-slate-800 font-semibold">${r.category || 'N/A'}</span></p>
+                <p class="text-xs text-slate-600 font-medium">
+                  Discipline: <span class="text-slate-900 font-bold">${r.category || 'Martial Arts Sparring'}</span>
+                </p>
               </div>
-              <div class="flex items-center gap-2">
-                <span class="px-3 py-1 bg-amber-50 text-amber-900 border border-amber-300 font-extrabold text-xs rounded-xl shadow-xs">
+              <div class="flex items-center gap-2 flex-shrink-0 self-end sm:self-center">
+                <span class="px-3 py-1.5 rounded-xl border text-xs shadow-2xs ${medalBadgeClass}">
                   ${r.achievement}
                 </span>
-                ${r.certificate ? `<span class="text-[10px] font-mono text-slate-400 font-bold hidden sm:inline">${r.certificate}</span>` : ''}
+                ${deleteBtnHtml}
               </div>
             `;
             list.appendChild(item);
@@ -6644,7 +6746,20 @@ lucide.createIcons();
         }
       }
 
-      // Hide add record sub-form initially
+      // Bottom Add Another Tournament button (Admin only)
+      if (bottomBtnBox) {
+        bottomBtnBox.innerHTML = '';
+        if (isAdmin) {
+          bottomBtnBox.innerHTML = `
+            <button type="button" onclick="toggleAddCompetitionRecordForm(true)" class="w-full py-2.5 bg-orange-50 hover:bg-orange-100 border-2 border-dashed border-orange-300 rounded-2xl text-orange-900 font-extrabold text-xs transition flex items-center justify-center gap-2 cursor-pointer mt-2 shadow-2xs">
+              <i data-lucide="plus-circle" class="w-4 h-4 text-orange-600"></i>
+              <span>+ Add Another Tournament / Medal (आणखी स्पर्धा जोडा)</span>
+            </button>
+          `;
+        }
+      }
+
+      // Hide add record sub-form initially unless requested
       const addForm = document.getElementById('add-comp-record-form');
       if (addForm) addForm.classList.add('hidden');
 
@@ -6655,31 +6770,53 @@ lucide.createIcons();
       }
     }
 
-    function toggleAddCompetitionRecordForm() {
+    function toggleAddCompetitionRecordForm(show) {
+      if (adminState.currentUser?.role === 'Trainer') {
+        alert("🔒 Unauthorized: Only Admin can add or edit tournament records.");
+        return;
+      }
       const form = document.getElementById('add-comp-record-form');
       if (form) {
-        form.classList.toggle('hidden');
+        if (show === true) {
+          form.classList.remove('hidden');
+          form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else if (show === false) {
+          form.classList.add('hidden');
+        } else {
+          form.classList.toggle('hidden');
+        }
         lucide.createIcons();
       }
     }
 
     function saveStudentCompetitionRecord() {
       if (!activeRecordStudentId) return;
+      if (adminState.currentUser?.role === 'Trainer') {
+        alert("🔒 Unauthorized: Only Admin can add or edit tournament records.");
+        return;
+      }
+
+      const scopeEl = document.querySelector('input[name="cr-scope"]:checked');
+      const scope = scopeEl ? scopeEl.value : 'District Level (जिल्हा स्तर)';
+
       const title = (document.getElementById('cr-title')?.value || '').trim();
-      const date = document.getElementById('cr-date')?.value || new Date().toISOString().split('T')[0];
-      const category = (document.getElementById('cr-category')?.value || '').trim();
-      const achievement = document.getElementById('cr-achievement')?.value;
+      const achievementEl = document.querySelector('input[name="cr-achievement"]:checked');
+      const achievement = achievementEl ? achievementEl.value : (document.getElementById('cr-achievement')?.value || '🥇 Gold Medal (सुवर्ण पदक)');
+      const year = document.getElementById('cr-year')?.value || '2026';
+      const category = (document.getElementById('cr-category')?.value || '').trim() || 'Martial Arts Sparring';
 
       if (!title) {
-        alert('Please enter Tournament Name!');
+        alert('Please enter Tournament Name (स्पर्धेचे नाव टाका)!');
         return;
       }
 
       const records = getStudentCompetitions(activeRecordStudentId);
       const newRec = {
         title,
-        date,
-        category: category || 'Martial Arts Competition',
+        scope,
+        year,
+        date: year,
+        category,
         achievement,
         certificate: 'YAI-COMP-' + Date.now().toString().slice(-6)
       };
@@ -6692,10 +6829,10 @@ lucide.createIcons();
       syncToCloudServer({
         type: "STUDENT_COMPETITION_RECORD",
         studentId: activeRecordStudentId,
-        studentName: stuObj ? stuObj.studentName : 'Student',
+        studentName: stuObj ? (stuObj.studentName || stuObj.name) : 'Student',
         title: newRec.title,
-        date: newRec.date,
-        category: newRec.category,
+        date: newRec.year || newRec.date,
+        category: `${newRec.scope} - ${newRec.category}`,
         achievement: newRec.achievement,
         certificate: newRec.certificate
       });
@@ -6704,13 +6841,29 @@ lucide.createIcons();
       if (document.getElementById('cr-title')) document.getElementById('cr-title').value = '';
       if (document.getElementById('cr-category')) document.getElementById('cr-category').value = '';
 
-      // Re-render modal
+      // Re-render modal in tournaments tab
       openStudentCompetitionRecord(activeRecordStudentId);
-      alert('✅ Competition Record & Medal saved successfully and synced to Central Cloud Server!');
+      switchStudentRecordTab('tournaments');
+      alert('✅ Tournament Record & Medal saved successfully and synced to Central Cloud!');
     }
 
-    // Open Student Edit Modal
-    let editingStudentId = null;
+    function deleteStudentCompetitionRecord(idx) {
+      if (adminState.currentUser?.role === 'Trainer') {
+        alert("🔒 Unauthorized: Only Admin can remove tournament records.");
+        return;
+      }
+
+      if (!confirm("Are you sure you want to delete this tournament record? (ही स्पर्धा नोंद काढून टाकायची आहे का?)")) {
+        return;
+      }
+
+      const records = getStudentCompetitions(activeRecordStudentId);
+      records.splice(idx, 1);
+      localStorage.setItem('yoddha_student_records_' + activeRecordStudentId, JSON.stringify(records));
+
+      openStudentCompetitionRecord(activeRecordStudentId);
+      switchStudentRecordTab('tournaments');
+    }
 
     function openEditStudentModal(studentId) {
       editingStudentId = studentId;
