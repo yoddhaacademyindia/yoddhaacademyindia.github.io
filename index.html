@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Yoddha Academy India</title>
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="shortcut icon" type="image/png" href="logo.png">
@@ -5618,6 +5621,11 @@ lucide.createIcons();
             const reqLvl = levelSelect?.value || 'Level 1';
             syncLevelPills(reqLvl);
           }
+
+          // Explicitly reset payment mode to Cash and update UI
+          const cashRadio = document.querySelector('input[name="p-stu-pay-mode"][value="Cash"]');
+          if (cashRadio) cashRadio.checked = true;
+          handleStudentPaymentModeChange('Cash');
 
           if (document.getElementById('stu-reg-upi-val')) {
             document.getElementById('stu-reg-upi-val').innerText = adminState.feeStructure?.upi || 'yoddhaacademy@upi';
