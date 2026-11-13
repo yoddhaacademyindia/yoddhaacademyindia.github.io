@@ -243,9 +243,9 @@
             </div>
 
             <!-- Inactivity Timer Display Pill -->
-            <div class="hidden md:flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-xl" title="Auto-logout after 10 mins inactivity">
-              <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-600"></i>
-              <span id="auto-logout-timer-display">10:00</span>
+            <div class="hidden md:flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-xl" title="Session stays active indefinitely while working (Auto-logout paused)">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span id="auto-logout-timer-display">Active 🟢</span>
             </div>
 
             <button id="btn-refresh-cloud" onclick="pullLiveCloudRecords(false)" class="px-2 py-1.5 sm:px-3 sm:py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl transition flex items-center gap-1 sm:gap-1.5 text-xs font-bold shadow-sm" title="Refresh Live Data from Central Server">
@@ -4733,19 +4733,24 @@ function getOrCreateSheet(ss, sheetName, headers) {
     }
 
     // =========================================================================
-    // ⏱️ 10-MINUTE INACTIVITY AUTO-LOGOUT SYSTEM
+    // ⏱️ AUTO-LOGOUT SYSTEM (PAUSED DURING WORK / DEVELOPMENT AS REQUESTED)
     // =========================================================================
-    const INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes (600,000 ms)
+    const AUTO_LOGOUT_ENABLED = false; // 🛑 Set to true when you want to re-enable auto-logout
+    const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
     let autoLogoutTimer = null;
     let timerCountdownInterval = null;
-    let secondsRemaining = 600;
+    let secondsRemaining = 1800;
 
     function resetInactivityTimer() {
       if (!adminState.isLoggedIn) return;
+      if (!AUTO_LOGOUT_ENABLED) {
+        updateTimerDisplay();
+        return;
+      }
 
       const now = Date.now();
       localStorage.setItem('yoddha_last_active_time', now.toString());
-      secondsRemaining = 600;
+      secondsRemaining = Math.floor(INACTIVITY_TIMEOUT_MS / 1000);
       updateTimerDisplay();
 
       if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
@@ -4755,12 +4760,20 @@ function getOrCreateSheet(ss, sheetName, headers) {
     function updateTimerDisplay() {
       const display = document.getElementById('auto-logout-timer-display');
       if (!display) return;
+      if (!AUTO_LOGOUT_ENABLED) {
+        display.textContent = 'Active 🟢';
+        return;
+      }
       const mins = Math.floor(secondsRemaining / 60);
       const secs = secondsRemaining % 60;
       display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
     function startCountdownTicker() {
+      if (!AUTO_LOGOUT_ENABLED) {
+        updateTimerDisplay();
+        return;
+      }
       if (timerCountdownInterval) clearInterval(timerCountdownInterval);
       timerCountdownInterval = setInterval(() => {
         if (!adminState.isLoggedIn) {
@@ -4780,6 +4793,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
     }
 
     function setupActivityListeners() {
+      if (!AUTO_LOGOUT_ENABLED) return;
       const events = ['mousedown', 'mousemove', 'keypress', 'keydown', 'scroll', 'touchstart', 'click'];
       events.forEach(evt => {
         window.addEventListener(evt, resetInactivityTimer, { passive: true });
@@ -4787,6 +4801,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
     }
 
     function triggerAutoLogout() {
+      if (!AUTO_LOGOUT_ENABLED) return;
       if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
       if (timerCountdownInterval) clearInterval(timerCountdownInterval);
 
@@ -4811,22 +4826,26 @@ function getOrCreateSheet(ss, sheetName, headers) {
       const banner = document.getElementById('session-timeout-banner');
       if (banner) banner.classList.remove('hidden');
 
-      alert("⚠️ Security Notice (Session Expired):\n\nYou were logged out automatically due to 10 minutes of inactivity.\n\nPlease sign in with your ID and Password to resume.");
+      alert("⚠️ Security Notice (Session Expired):\n\nYou were logged out automatically due to inactivity.\n\nPlease sign in with your ID and Password to resume.");
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setupActivityListeners();
 
-      // Check session validity against 10-minute timeout
+      // Check session validity (Auto-logout paused during active work)
       if (adminState.isLoggedIn) {
-        const lastActive = parseInt(localStorage.getItem('yoddha_last_active_time') || '0');
-        if (lastActive && (Date.now() - lastActive > INACTIVITY_TIMEOUT_MS)) {
-          triggerAutoLogout();
-          return;
+        if (typeof AUTO_LOGOUT_ENABLED !== 'undefined' && AUTO_LOGOUT_ENABLED) {
+          const lastActive = parseInt(localStorage.getItem('yoddha_last_active_time') || '0');
+          if (lastActive && (Date.now() - lastActive > INACTIVITY_TIMEOUT_MS)) {
+            triggerAutoLogout();
+            return;
+          }
+          resetInactivityTimer();
+          startCountdownTicker();
+        } else {
+          updateTimerDisplay();
         }
-        resetInactivityTimer();
-        startCountdownTicker();
       }
       checkAuth();
       updateCloudSyncUI();
