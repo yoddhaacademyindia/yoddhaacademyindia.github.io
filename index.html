@@ -1095,7 +1095,7 @@
                   👑 Admin Level Access
                 </span>
                 <span id="stu-level-trainer-badge" class="text-[9px] font-bold text-emerald-800 bg-emerald-100 border border-emerald-300 px-1.5 py-0.5 rounded-md hidden">
-                  🔒 Level 1 Locked
+                  🔒 Level 1 (Mandatory for New Enrollees)
                 </span>
               </label>
               <select id="p-stu-requested-level" required onchange="syncLevelPills(this.value)" class="w-full bg-white border border-orange-300 rounded-xl px-3 py-2 text-orange-900 font-extrabold focus:outline-none focus:border-orange-500">
@@ -1111,7 +1111,7 @@
                 <option value="Senior 4">Senior 4</option>
               </select>
               <p id="stu-level-trainer-note" class="text-[10px] text-emerald-700 font-medium mt-1 hidden">
-                💡 नव्या विद्यार्थ्यांची नोंदणी लेव्हल १ नेच सुरू होते; परीक्षा उत्तीर्ण झाल्यावर पुढील लेव्हल सुरू होईल.
+                💡 New student enrollment starts at Level 1; subsequent levels unlock sequentially after passing belt examinations.
               </p>
             </div>
 
@@ -1238,7 +1238,7 @@
           <div class="flex items-center justify-between border-b border-orange-200 pb-2.5">
             <h4 class="text-xs font-black uppercase tracking-wider text-orange-950 flex items-center gap-1.5 font-rajdhani">
               <i data-lucide="badge-percent" class="w-4 h-4 text-orange-600"></i>
-              <span>6. Fee Structure & Payment Mode (फी व पेमेंट पर्याय)</span>
+              <span>6. Fee Structure & Payment Mode</span>
             </h4>
             <span class="text-[10px] font-bold text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full">
               Pending Admin Verification
@@ -1248,11 +1248,11 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <!-- 1. PAYMENT MODE SELECTOR (Cash vs Online) -->
             <div>
-              <label class="block font-black text-slate-800 text-xs mb-1.5">1. Payment Mode (पेमेंट पद्धत निवडा) *</label>
+              <label class="block font-black text-slate-800 text-xs mb-1.5">1. Payment Mode *</label>
               <div class="grid grid-cols-2 gap-2">
                 <label class="flex items-center justify-center gap-2 p-2.5 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-emerald-400 has-checked:border-emerald-600 has-checked:bg-emerald-50 text-slate-800 font-black text-xs transition shadow-2xs select-none">
                   <input type="radio" name="p-stu-pay-mode" value="Cash" checked onchange="handleStudentPaymentModeChange('Cash')" class="w-4 h-4 text-emerald-600">
-                  <span>💵 Cash (रोख)</span>
+                  <span>💵 Cash</span>
                 </label>
                 <label class="flex items-center justify-center gap-2 p-2.5 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-orange-400 has-checked:border-orange-600 has-checked:bg-orange-50 text-slate-800 font-black text-xs transition shadow-2xs select-none">
                   <input type="radio" name="p-stu-pay-mode" value="Online" onchange="handleStudentPaymentModeChange('Online')" class="w-4 h-4 text-orange-600">
@@ -1274,7 +1274,7 @@
                 <input type="number" id="p-stu-fee-amount" required readonly value="500" class="w-full bg-slate-100 border-2 border-slate-300 rounded-xl pl-8 pr-3 py-2 text-emerald-950 font-black text-base focus:outline-none cursor-not-allowed select-none shadow-inner" title="Admission fee is set by Admin in Fee Structure according to curriculum level and cannot be modified.">
               </div>
               <p class="text-[10px] text-slate-500 font-medium mt-1">
-                💡 ही रक्कम ॲडमिनने ठरवलेल्या लेव्हलनुसार आपोआप येते; ट्रेनर ती बदलू शकत नाहीत.
+                💡 This fee amount is set by Admin in Fee Structure according to curriculum level and cannot be modified.
               </p>
             </div>
           </div>
@@ -1283,9 +1283,9 @@
           <div id="stu-cash-info-box" class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex items-start gap-2.5 text-xs text-emerald-950">
             <i data-lucide="banknote" class="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5"></i>
             <div>
-              <strong class="font-black text-emerald-900 block">💵 Cash Payment at Akhada (रोख फी नोंदणी)</strong>
+              <strong class="font-black text-emerald-900 block">💵 Cash Payment at Akhada</strong>
               <p class="text-[11px] text-emerald-800 font-medium leading-relaxed">
-                विद्यार्थ्याची रोख फी आखाड्यात जमा होईल. खालील <strong>"Save & Register Student"</strong> बटनावर क्लिक करून फॉर्म सबमिट करा. हा अर्ज Admin Verification डेस्कवर पडताळणीसाठी जाईल व ॲडमिनने मंजुरी दिल्यावर विद्यार्थी Active होईल.
+                Student admission fee will be collected in cash at the Akhada. Click <strong>"Save & Register Student"</strong> below to submit. Application will be routed to Admin Verification Desk for approval, after which the student will be marked Active.
               </p>
             </div>
           </div>
@@ -1298,8 +1298,8 @@
                   <i data-lucide="smartphone" class="w-4 h-4"></i>
                 </div>
                 <div>
-                  <h5 class="font-black text-xs text-slate-900">Online UPI Payment (अधिकृत ॲकॅडमी पेमेंट)</h5>
-                  <p class="text-[10.5px] text-slate-500 font-medium">खालील ॲपवर क्लिक करा, रक्कम आपोआप येईल, पिन टाकून पेमेंट करा</p>
+                  <h5 class="font-black text-xs text-slate-900">Online UPI Payment (Official Academy Account)</h5>
+                  <p class="text-[10.5px] text-slate-500 font-medium">Click any app below to auto-fill the fee amount and complete payment with your secure UPI PIN.</p>
                 </div>
               </div>
               <div class="bg-emerald-50 border border-emerald-300 rounded-xl px-2.5 py-1 flex items-center gap-1.5 self-stretch sm:self-auto justify-between sm:justify-start">
@@ -1312,7 +1312,7 @@
 
             <!-- Clickable Payment Apps: GPay, PhonePe, Paytm, Other UPI -->
             <div>
-              <label class="block font-black text-slate-800 text-[11px] mb-1.5">Select UPI App to Pay (पेमेंट करण्यासाठी ॲप निवडा):</label>
+              <label class="block font-black text-slate-800 text-[11px] mb-1.5">Select UPI App to Pay:</label>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <!-- GPay -->
                 <button type="button" onclick="triggerUpiPayment('gpay')" class="p-2.5 bg-gradient-to-b from-white to-blue-50/50 hover:to-blue-100/80 border-2 border-blue-200 hover:border-blue-500 rounded-xl text-center transition cursor-pointer flex flex-col items-center justify-center gap-1 shadow-2xs group active:scale-95">
@@ -1326,7 +1326,7 @@
                 <!-- PhonePe -->
                 <button type="button" onclick="triggerUpiPayment('phonepe')" class="p-2.5 bg-gradient-to-b from-white to-purple-50/50 hover:to-purple-100/80 border-2 border-purple-200 hover:border-purple-500 rounded-xl text-center transition cursor-pointer flex flex-col items-center justify-center gap-1 shadow-2xs group active:scale-95">
                   <div class="w-7 h-7 rounded-lg bg-white border border-purple-100 flex items-center justify-center shadow-xs">
-                    <span class="font-black text-purple-600 text-xs">पे</span>
+                    <span class="font-black text-purple-600 text-xs">Pe</span>
                   </div>
                   <span class="font-black text-xs text-purple-900 group-hover:text-purple-700">PhonePe</span>
                   <span class="text-[9px] text-purple-600 font-bold">Auto-opens app</span>
@@ -1359,11 +1359,11 @@
               </div>
               <div class="text-center sm:text-left space-y-1">
                 <div class="flex items-center justify-center sm:justify-start gap-1.5">
-                  <span class="text-xs font-black text-slate-900 font-rajdhani">SCAN TO PAY (किंवा ॲपवर क्लिक करा)</span>
+                  <span class="text-xs font-black text-slate-900 font-rajdhani">SCAN TO PAY (OR TAP AN APP ABOVE)</span>
                   <span id="stu-qr-amount-text" class="px-2 py-0.5 bg-emerald-100 text-emerald-900 font-black text-xs rounded-md">₹500</span>
                 </div>
                 <p class="text-[11px] text-slate-600 font-medium">
-                  कॅमेरा किंवा कोणत्याही UPI ॲपने हा QR कोड स्कॅन करा. रक्कम आपोआप येईल. पेमेंट यशस्वी झाल्यावर मिळालेला १२-अंकी UTR खालील बॉक्समध्ये टाका.
+                  Scan this official QR code with any UPI app. Fee amount is pre-filled. After successful payment, enter the 12-digit UTR/Transaction ID in the box below.
                 </p>
               </div>
             </div>
@@ -1371,12 +1371,12 @@
             <!-- Transaction UTR Number Input -->
             <div>
               <label class="block font-black text-slate-800 text-xs mb-1 flex items-center justify-between">
-                <span>12-Digit UPI UTR / Transaction No. (ट्रान्झॅक्शन आयडी) *</span>
+                <span>12-Digit UPI UTR / Transaction No. *</span>
                 <span class="text-[9.5px] font-bold text-orange-700 bg-orange-100 px-2 py-0.5 rounded-md">From payment receipt</span>
               </label>
               <div class="relative">
                 <i data-lucide="hash" class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5"></i>
-                <input type="text" id="p-stu-utr-number" placeholder="उदा. 412984712093 (पेमेंट केल्यावर मिळालेला नंबर)" class="w-full bg-slate-50 border-2 border-slate-300 rounded-xl pl-9 pr-3 py-2 text-slate-900 font-mono font-bold text-xs focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200">
+                <input type="text" id="p-stu-utr-number" placeholder="e.g. 412984712093 (from payment receipt)" class="w-full bg-slate-50 border-2 border-slate-300 rounded-xl pl-9 pr-3 py-2 text-slate-900 font-mono font-bold text-xs focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200">
               </div>
             </div>
           </div>
@@ -1849,7 +1849,7 @@
             <div class="flex items-center justify-between border-b border-orange-200/80 pb-2">
               <h5 class="font-black text-orange-950 text-sm flex items-center gap-1.5">
                 <i data-lucide="trophy" class="w-4 h-4 text-orange-600"></i>
-                <span>Add Tournament & Medal Record (स्पर्धा व पदक नोंदवा)</span>
+                <span>Add Tournament & Medal Record</span>
               </h5>
               <button type="button" onclick="toggleAddCompetitionRecordForm(false)" class="text-slate-400 hover:text-slate-700 p-1">
                 <i data-lucide="x" class="w-4 h-4"></i>
@@ -1858,18 +1858,18 @@
 
             <!-- 1. Championship Level Selection (District, State, National) -->
             <div>
-              <label class="block font-black text-slate-800 mb-1.5">1. Championship Level (कोणती स्पर्धा खेळले?) *</label>
+              <label class="block font-black text-slate-800 mb-1.5">1. Championship Level *</label>
               <div class="grid grid-cols-3 gap-2">
                 <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-orange-400 has-checked:border-orange-600 has-checked:bg-orange-50 font-black text-xs text-slate-800 transition select-none">
-                  <input type="radio" name="cr-scope" value="District Level (जिल्हा स्तर)" checked class="text-orange-600">
-                  <span>District (जिल्हा)</span>
+                  <input type="radio" name="cr-scope" value="District Level" checked class="text-orange-600">
+                  <span>District Level</span>
                 </label>
                 <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-orange-400 has-checked:border-orange-600 has-checked:bg-orange-50 font-black text-xs text-slate-800 transition select-none">
-                  <input type="radio" name="cr-scope" value="State Level (राज्य स्तर)" class="text-orange-600">
-                  <span>State (राज्य)</span>
+                  <input type="radio" name="cr-scope" value="State Level" class="text-orange-600">
+                  <span>State Level</span>
                 </label>
                 <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-orange-400 has-checked:border-orange-600 has-checked:bg-orange-50 font-black text-xs text-slate-800 transition select-none">
-                  <input type="radio" name="cr-scope" value="National Level (राष्ट्रीय स्तर)" class="text-orange-600">
+                  <input type="radio" name="cr-scope" value="National Level" class="text-orange-600">
                   <span>National 🇮🇳</span>
                 </label>
               </div>
@@ -1877,28 +1877,28 @@
 
             <!-- Tournament Title -->
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Tournament Title / Name (स्पर्धेचे नाव) *</label>
+              <label class="block font-bold text-slate-700 mb-1">Tournament Title / Name *</label>
               <input type="text" id="cr-title" placeholder="e.g. All India National Warrior Cup / District Lathi Championship" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-orange-500">
             </div>
 
             <!-- 2. Medal Won (Gold, Silver, Bronze, Participant) -->
             <div>
-              <label class="block font-black text-slate-800 mb-1.5">2. Medal Won (कोणते पदक मिळाले?) *</label>
+              <label class="block font-black text-slate-800 mb-1.5">2. Medal Won *</label>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-400 has-checked:border-amber-500 has-checked:bg-amber-50 font-black text-xs text-amber-900 transition select-none">
-                  <input type="radio" name="cr-achievement" value="🥇 Gold Medal (सुवर्ण पदक)" checked class="text-amber-600">
+                  <input type="radio" name="cr-achievement" value="🥇 Gold Medal" checked class="text-amber-600">
                   <span>🥇 Gold</span>
                 </label>
                 <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-slate-400 has-checked:border-slate-500 has-checked:bg-slate-100 font-black text-xs text-slate-800 transition select-none">
-                  <input type="radio" name="cr-achievement" value="🥈 Silver Medal (रौप्य पदक)" class="text-slate-600">
+                  <input type="radio" name="cr-achievement" value="🥈 Silver Medal" class="text-slate-600">
                   <span>🥈 Silver</span>
                 </label>
                 <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-600 has-checked:border-amber-700 has-checked:bg-amber-100 font-black text-xs text-amber-950 transition select-none">
-                  <input type="radio" name="cr-achievement" value="🥉 Bronze Medal (कांस्य पदक)" class="text-amber-700">
+                  <input type="radio" name="cr-achievement" value="🥉 Bronze Medal" class="text-amber-700">
                   <span>🥉 Bronze</span>
                 </label>
                 <label class="flex items-center justify-center gap-1.5 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 has-checked:border-blue-500 has-checked:bg-blue-50 font-black text-xs text-blue-900 transition select-none">
-                  <input type="radio" name="cr-achievement" value="📜 Participant (सहभाग)" class="text-blue-600">
+                  <input type="radio" name="cr-achievement" value="📜 Participant" class="text-blue-600">
                   <span>📜 Participant</span>
                 </label>
               </div>
@@ -1907,7 +1907,7 @@
             <!-- 3. Year & Discipline -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block font-bold text-slate-700 mb-1">3. Year of Achievement (कोणत्या वर्षी मिळाले?) *</label>
+                <label class="block font-bold text-slate-700 mb-1">3. Year of Achievement *</label>
                 <select id="cr-year" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-extrabold text-slate-900 focus:outline-none focus:border-orange-500">
                   <option value="2026">2026</option>
                   <option value="2025">2025</option>
@@ -1919,7 +1919,7 @@
                 </select>
               </div>
               <div>
-                <label class="block font-bold text-slate-700 mb-1">Discipline / Style (खेळ प्रकार)</label>
+                <label class="block font-bold text-slate-700 mb-1">Discipline / Category (e.g. Lathi Sparring, Kata)</label>
                 <input type="text" id="cr-category" placeholder="e.g. Lathi Sparring / Traditional Kata / Pettebaji" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-orange-500">
               </div>
             </div>
@@ -2178,19 +2178,19 @@
 
       <form onsubmit="handleAdminCreateCourse(event)" class="space-y-4 text-xs">
         
-        <!-- 1. COURSE TITLE (वर टायटल) -->
+        <!-- 1. COURSE TITLE -->
         <div>
           <label class="block font-black text-slate-800 text-xs mb-1">Course Title *</label>
           <input type="text" id="adm-crs-name" required placeholder="e.g. Level 1 - Basic Stances & Grips (Lathi Abhyaskram)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 font-bold text-xs transition">
         </div>
 
-        <!-- 2. COURSE DESCRIPTION (त्याच्या खाली डिस्क्रिप्शन) -->
+        <!-- 2. COURSE DESCRIPTION -->
         <div>
           <label class="block font-black text-slate-800 text-xs mb-1">Course Description & Syllabus Details *</label>
           <textarea id="adm-crs-desc" required rows="3" placeholder="Enter course syllabus details, skills taught, training instructions, etc." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 font-medium text-xs transition leading-relaxed"></textarea>
         </div>
 
-        <!-- 3. COURSE VIDEO LINK (त्याच्या खाली कोर्स लिंक) -->
+        <!-- 3. COURSE VIDEO LINK -->
         <div>
           <label class="block font-black text-slate-800 text-xs mb-1 flex items-center justify-between">
             <span class="flex items-center gap-1.5">
@@ -2204,7 +2204,7 @@
           </div>
         </div>
 
-        <!-- 4. THUMBNAIL (त्याच्या खाली थंबनेल) -->
+        <!-- 4. THUMBNAIL -->
         <div>
           <label class="block font-black text-slate-800 text-xs mb-1 flex items-center justify-between">
             <span class="flex items-center gap-1.5">
@@ -2236,7 +2236,7 @@
           </div>
         </div>
 
-        <!-- 5. TRAINER VISIBILITY CHECKLIST (त्याच्या खाली हा कोर्स कोणा कोणाला दिसायला पाहिजे त्या ट्रेनरला टिक करायला हवं) -->
+        <!-- 5. TRAINER VISIBILITY CHECKLIST -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <label class="block font-black text-slate-800 text-xs flex items-center gap-1.5">
@@ -2503,38 +2503,38 @@
 
       <form onsubmit="handleAdminCreateCompetition(event)" class="space-y-4 text-xs">
         
-        <!-- 1. TOURNAMENT TITLE (वर पहिला टायटल) -->
+        <!-- 1. TOURNAMENT TITLE -->
         <div>
           <label class="block font-black text-slate-800 text-xs mb-1">Tournament Title *</label>
           <input type="text" id="adm-comp-title" required placeholder="e.g. Shivaji Maharaj Jayanti District Warrior Championship 2026" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 font-bold text-xs transition">
         </div>
 
-        <!-- 2. CHAMPIONSHIP LEVEL DROPDOWN (त्याच्या खाली District आहे की State आहे की National ते ड्रॉपडाऊन) -->
+        <!-- 2. CHAMPIONSHIP LEVEL DROPDOWN -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block font-black text-slate-800 text-xs mb-1">Championship Level / Scope *</label>
             <select id="adm-comp-level" required onchange="handleCompetitionLevelChange(this.value)" class="w-full bg-slate-50 border border-orange-300 rounded-xl px-3 py-2 text-orange-950 font-black focus:outline-none focus:border-orange-500 focus:bg-white text-xs">
-              <option value="District Level">District Level Match (जिल्हास्तरीय स्पर्धा)</option>
-              <option value="State Level">State Level Championship (राज्यस्तरीय स्पर्धा)</option>
-              <option value="National Level">National Level Championship (राष्ट्रीय स्पर्धा)</option>
+              <option value="District Level">District Level Championship</option>
+              <option value="State Level">State Level Championship</option>
+              <option value="National Level">National Level Championship</option>
             </select>
           </div>
           <div>
             <label class="block font-black text-slate-800 text-xs mb-1">Championship Status *</label>
             <select id="adm-comp-status" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold text-xs">
-              <option value="Registrations Open">Registrations Open (प्रवेश सुरू)</option>
-              <option value="Preparations Active">Preparations Active (तयारी सुरू)</option>
-              <option value="Upcoming Championship">Upcoming Championship (आगामी स्पर्धा)</option>
+              <option value="Registrations Open">Registrations Open</option>
+              <option value="Preparations Active">Preparations Active</option>
+              <option value="Upcoming Championship">Upcoming Championship</option>
             </select>
           </div>
         </div>
 
-        <!-- 3A. DYNAMIC DISTRICT SELECTION (जर District निवडले तर शाखा असणाऱ्या जिल्ह्यांची यादी) -->
+        <!-- 3A. DYNAMIC DISTRICT SELECTION -->
         <div id="comp-scope-district-box" class="bg-blue-50/70 border border-blue-200 rounded-2xl p-3.5 space-y-2">
           <div class="flex items-center justify-between border-b border-blue-200/80 pb-2">
             <span class="font-black text-blue-900 text-xs flex items-center gap-1.5">
               <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-600"></i>
-              <span>Select Allowed Districts (कोणत्या जिल्ह्यांतील मुले भाग घेतील?) *</span>
+              <span>Select Allowed Districts *</span>
             </span>
             <label class="flex items-center gap-1.5 text-[10.5px] font-black text-blue-800 cursor-pointer select-none">
               <input type="checkbox" id="comp-select-all-districts" onchange="toggleSelectAllScopeDistricts(this.checked)" class="w-3.5 h-3.5 text-blue-600 rounded border-blue-400">
@@ -2545,16 +2545,16 @@
             <!-- Dynamically populated district checkboxes -->
           </div>
           <p class="text-[10px] text-blue-800/85 font-medium leading-relaxed">
-            💡 तुम्ही ज्या जिल्ह्यांवर टिक कराल (उदा. ४ जिल्हे), <strong>फक्त त्याच जिल्ह्यांतील विद्यार्थ्यांनाच</strong> फॉर्म भरता येईल; बाकीच्यांना परवानगी नसेल.
+            💡 Only students enrolled under the selected districts will be permitted to register for this tournament.
           </p>
         </div>
 
-        <!-- 3B. DYNAMIC STATE SELECTION (जर State निवडले तर शाखा असणाऱ्या राज्यांची यादी) -->
+        <!-- 3B. DYNAMIC STATE SELECTION -->
         <div id="comp-scope-state-box" class="hidden bg-amber-50/70 border border-amber-200 rounded-2xl p-3.5 space-y-2">
           <div class="flex items-center justify-between border-b border-amber-200/80 pb-2">
             <span class="font-black text-amber-900 text-xs flex items-center gap-1.5">
               <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-600"></i>
-              <span>Select Allowed States (कोणत्या राज्यांतील शाखा भाग घेतील?) *</span>
+              <span>Select Allowed States *</span>
             </span>
             <label class="flex items-center gap-1.5 text-[10.5px] font-black text-amber-800 cursor-pointer select-none">
               <input type="checkbox" id="comp-select-all-states" onchange="toggleSelectAllScopeStates(this.checked)" class="w-3.5 h-3.5 text-amber-600 rounded border-amber-400">
@@ -2565,18 +2565,18 @@
             <!-- Dynamically populated state checkboxes -->
           </div>
           <p class="text-[10px] text-amber-800/85 font-medium leading-relaxed">
-            💡 निवडलेल्या राज्यांतील शाखांनाच या राज्यस्तरीय स्पर्धेत भाग घेता येईल.
+            💡 Only branch academies in the selected states will be eligible to participate in this State Championship.
           </p>
         </div>
 
-        <!-- 3C. NATIONAL SELECTION (जर National निवडले तर All India) -->
+        <!-- 3C. NATIONAL SELECTION -->
         <div id="comp-scope-national-box" class="hidden bg-purple-50/80 border border-purple-200 rounded-2xl p-3.5 space-y-1.5">
           <div class="flex items-center gap-2">
             <i data-lucide="crown" class="w-5 h-5 text-purple-700"></i>
             <h4 class="font-black text-purple-950 text-xs uppercase tracking-wide">All India National Championship 🇮🇳</h4>
           </div>
           <p class="text-[11px] text-purple-900 font-semibold leading-relaxed">
-            संपूर्ण भारतातील सर्व शाखा, सर्व राज्ये आणि सर्व जिल्ह्यांतील विद्यार्थ्यांना या राष्ट्रीय स्पर्धेत सहभागी होता येईल.
+            All warrior students across all branches and states in India are eligible to register for this National Championship.
           </p>
         </div>
 
@@ -3595,14 +3595,14 @@ function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, p
     + '<p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;">ALL INDIA MARTIAL ARTS & SPORTS TRAINING ACADEMY</p>'
     + '</div>'
     + '<div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;">'
-    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🥋 हार्दिक अभिनंदन व सहर्ष स्वागत!</h2>'
-    + '<p style="font-size: 14px; margin-bottom: 12px;">सस्नेह नमस्कार <strong>' + trainerName + '</strong> सर,</p>'
-    + '<p style="font-size: 14px; margin-bottom: 15px;">योध्या अकॅडमी इंडिया परिवारात आपले अधिकृत <strong>' + (position || "Certified Trainer") + '</strong> म्हणून नियुक्ती झाल्याबद्दल आपले मनःपूर्वक अभिनंदन!</p>'
+    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🥋 Warm Congratulations & Welcome!</h2>'
+    + '<p style="font-size: 14px; margin-bottom: 12px;">Greetings Instructor <strong>' + trainerName + '</strong>,</p>'
+    + '<p style="font-size: 14px; margin-bottom: 15px;">Hearty congratulations on your appointment as official <strong>' + (position || "Certified Trainer") + '</strong> in the Yoddha Academy India organization!</p>'
     + '<div style="background: #fff7ed; padding: 14px 16px; border-left: 4px solid #ea580c; border-radius: 6px; font-size: 13px; color: #9a3412; margin-bottom: 20px;">'
-    + 'भारतीय पारंपरिक मार्शल आर्ट्स (लाठी-काठी, तलवारबाजी, कराटे व स्वसंरक्षण) या पवित्र विद्येचा प्रचार-प्रसार करण्यासाठी, तरुण पिढीला सुदृढ व शिस्तबद्ध बनवण्यासाठी आपल्या भावी वाटचालीस व कार्यासाठी <strong>योध्या अकॅडमी इंडिया</strong> कडून लाख लाख शुभेच्छा! 🚩'
+    + 'Best wishes from <strong>Yoddha Academy India</strong> in training and mentoring young warriors in traditional Indian martial arts, discipline, and self-defense! 🚩'
     + '</div>'
     + '<div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;">'
-    + '<h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">🔐 आपले अधिकृत लॉगिन क्रेडेंशियल्स (Official Login Details):</h3>'
+    + '<h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">🔐 Official Login Credentials:</h3>'
     + '<table style="width: 100%; font-size: 14px;">'
     + '<tr><td style="padding: 6px 0; color: #64748b; width: 140px;"><strong>Trainer ID:</strong></td><td style="padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;">' + trainerId + '</td></tr>'
     + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Password / PIN:</strong></td><td style="padding: 6px 0; color: #0f172a; font-weight: bold; font-family: monospace; font-size: 16px; background: #fed7aa; padding: 3px 8px; border-radius: 6px; display: inline-block;">' + trainerPass + '</td></tr>'
@@ -3612,14 +3612,14 @@ function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, p
     + '</div>'
     + '<div style="text-align: center; margin: 25px 0;">'
     + '<a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);">'
-    + '🚀 ओपन ट्रेनर लॉगिन पॅनेल (Open Trainer Panel)'
+    + '🚀 Open Trainer Login Panel'
     + '</a>'
     + '</div>'
-    + '<p style="font-size: 12px; color: #64748b; margin-top: 15px;">⚠️ <em>सुरक्षितता सूचना: हा ईमेल आणि पासवर्ड गोपनीय ठेवा. लॉगिन पोर्टलवर जाऊन आपण आपला पासवर्ड कधीही बदलू शकता.</em></p>'
+    + '<p style="font-size: 12px; color: #64748b; margin-top: 15px;">⚠️ <em>Security Notice: Keep your PIN and credentials confidential. You can update your profile from the portal at any time.</em></p>'
     + '</div>'
     + '<div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;">'
-    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">योध्या अकॅडमी इंडिया • केंद्रीय मुख्यालय</p>'
-    + '<p style="margin: 4px 0 0;">अधिकृत पोर्टल: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
+    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">Yoddha Academy India • Central Headquarters</p>'
+    + '<p style="margin: 4px 0 0;">Official Portal: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
     + '<p style="margin: 4px 0 0;">Traditional Martial Arts & Sports Training • All India Organization</p>'
     + '</div>'
     + '</div>';
@@ -3643,8 +3643,8 @@ function sendStudentAdmissionEmail(toEmail, studentName, studentId, level, train
     + '<p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;">OFFICIAL STUDENT ADMISSION CONFIRMATION</p>'
     + '</div>'
     + '<div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;">'
-    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🎉 प्रवेश निश्चित झाला आहे! (Admission Confirmed)</h2>'
-    + '<p style="font-size: 14px;">प्रिय पालक व <strong>' + studentName + '</strong>,<br><br>योध्या अकॅडमी इंडियामध्ये आपले अधिकृत ॲडमिशन यशस्वीरित्या पूर्ण झाले आहे. पारंपरिक युद्धकला आणि क्रीडा कौशल्यांमध्ये आपले सहर्ष स्वागत!</p>'
+    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🎉 Admission Confirmed - Official Enrollment!</h2>'
+    + '<p style="font-size: 14px;">Dear Parent & <strong>' + studentName + '</strong>,<br><br>Official admission to Yoddha Academy India has been registered successfully. Welcome to our traditional martial arts and sports warrior development curriculum!</p>'
     + '<div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;">'
     + '<table style="width: 100%; font-size: 14px;">'
     + '<tr><td style="padding: 6px 0; color: #64748b; width: 140px;"><strong>Student Name:</strong></td><td style="padding: 6px 0; color: #0f172a; font-weight: bold;">' + studentName + '</td></tr>'
@@ -3656,13 +3656,13 @@ function sendStudentAdmissionEmail(toEmail, studentName, studentId, level, train
     + '</div>'
     + '<div style="text-align: center; margin: 25px 0;">'
     + '<a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block;">'
-    + '🪪 व्ह्यू डिजिटल आयडी कार्ड (View Digital ID Card)'
+    + '🪪 View Digital Identity Card'
     + '</a>'
     + '</div>'
     + '</div>'
     + '<div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;">'
-    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">योध्या अकॅडमी इंडिया • केंद्रीय मुख्यालय</p>'
-    + '<p style="margin: 4px 0 0;">अधिकृत पोर्टल: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
+    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">Yoddha Academy India • Central Headquarters</p>'
+    + '<p style="margin: 4px 0 0;">Official Portal: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
     + '</div>'
     + '</div>';
 
@@ -3821,8 +3821,8 @@ function getOrCreateSheet(ss, sheetName, headers) {
           </h5>
           <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-600 font-medium">
             <div class="flex items-center gap-1.5">✅ Basic Lathi Grip & Stance</div>
-            <div class="flex items-center gap-1.5">✅ Single Hand Spin (उजवी व डावी फिरकी)</div>
-            <div class="flex items-center gap-1.5">✅ Double Hand Whirl (दोन हातांची काठी फिरकी)</div>
+            <div class="flex items-center gap-1.5">✅ Single Hand Spin (Right & Left Rotations)</div>
+            <div class="flex items-center gap-1.5">✅ Double Hand Whirl (Dual Hand Combat Staff Spin)</div>
             <div class="flex items-center gap-1.5">✅ 4-Direction Defensive Guards</div>
           </div>
         </div>
@@ -4232,11 +4232,11 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
           <!-- Payment Mode Selection: Cash vs Online -->
           <div>
-            <label class="block font-black text-slate-800 text-xs mb-1.5">Payment Mode (पेमेंट पद्धत निवडा) *</label>
+            <label class="block font-black text-slate-800 text-xs mb-1.5">Payment Mode *</label>
             <div class="grid grid-cols-2 gap-2">
               <label class="flex items-center justify-center gap-2 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-emerald-400 has-checked:border-emerald-600 has-checked:bg-emerald-50 text-slate-800 font-black text-xs transition shadow-2xs select-none">
                 <input type="radio" name="p-lvl-pay-mode" value="Cash" checked onchange="handleLevelUpPaymentModeChange('Cash')" class="w-4 h-4 text-emerald-600">
-                <span>💵 Cash (रोख)</span>
+                <span>💵 Cash</span>
               </label>
               <label class="flex items-center justify-center gap-2 p-2 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-orange-400 has-checked:border-orange-600 has-checked:bg-orange-50 text-slate-800 font-black text-xs transition shadow-2xs select-none">
                 <input type="radio" name="p-lvl-pay-mode" value="Online" onchange="handleLevelUpPaymentModeChange('Online')" class="w-4 h-4 text-orange-600">
@@ -4249,8 +4249,8 @@ function getOrCreateSheet(ss, sheetName, headers) {
           <div id="lvl-cash-info-box" class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-xs text-emerald-950 flex items-start gap-2">
             <i data-lucide="banknote" class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5"></i>
             <div>
-              <strong class="font-black text-emerald-900 block text-[11px]">रोख फी आखाड्यात जमा होईल</strong>
-              <p class="text-[10.5px] text-emerald-800 font-medium">खालील बटणावर क्लिक करून अर्ज सबमिट करा. ॲडमिन मंजुरी दिल्यावर पुढील लेव्हल सुरू होईल.</p>
+              <strong class="font-black text-emerald-900 block text-[11px]">Cash Payment at Akhada</strong>
+              <p class="text-[10.5px] text-emerald-800 font-medium">Click Submit below to submit application. The student will advance to next level upon Admin verification.</p>
             </div>
           </div>
 
@@ -4293,7 +4293,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
               </label>
               <div class="relative">
                 <i data-lucide="hash" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-                <input type="text" id="levelup-utr-input" placeholder="उदा. 412988771122" maxlength="22" class="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition">
+                <input type="text" id="levelup-utr-input" placeholder="e.g. 412988771122 (12-digit UTR)" maxlength="22" class="w-full bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition">
               </div>
             </div>
           </div>
@@ -6097,7 +6097,7 @@ lucide.createIcons();
         utrNumber = 'Cash Payment at Akhada';
       } else {
         if (!utrNumber) {
-          alert("कृपया 12-अंकी UPI UTR / Transaction No. टाका!");
+          alert("Please enter the 12-Digit UPI UTR / Transaction No. from your payment receipt!");
           document.getElementById('p-stu-utr-number')?.focus();
           return;
         }
@@ -6360,15 +6360,15 @@ lucide.createIcons();
       const s = lastRegisteredStudent;
       const phone = (s.parentMobile || '').replace(/\D/g, '');
       const text = `🥋 *YODDHA ACADEMY INDIA - OFFICIAL ADMISSION CONFIRMATION*\n\n`
-        + `सस्नेह नमस्कार ${s.parentName || 'पालक'},\n`
-        + `आपल्या पाल्याचे *${s.studentName}* चे योध्या अकॅडमी इंडियामध्ये अधिकृत ॲडमिशन यशस्वीरित्या झाले आहे! 🚩\n\n`
+        + `Greetings ${s.parentName || 'Parent'},\n`
+        + `Official admission for *${s.studentName}* has been registered successfully at Yoddha Academy India! 🚩\n\n`
         + `🆔 *Student ID:* ${s.studentId}\n`
         + `⭐ *10-Star Level:* ${s.requestedLevel || 'Level 1'}\n`
         + `🥋 *Certified Trainer:* ${s.trainerName || 'Central Coach'} (${s.trainerId || ''})\n`
         + `💳 *Fee Status:* ${s.feeStatus || 'Paid'} (₹${s.feeAmount || 500})\n`
         + `🏫 *School:* ${s.schoolName || 'N/A'} (${s.standard || ''})\n\n`
-        + `🌐 *डिजिटल ओळखपत्र व अधिकृत पोर्टल लिंक:* https://yoddhaacademyindia.github.io\n\n`
-        + `- योध्या अकॅडमी इंडिया, केंद्रीय मुख्यालय 🚩`;
+        + `🌐 *Digital ID Card & Official Portal Link:* https://yoddhaacademyindia.github.io\n\n`
+        + `- Yoddha Academy India Central Headquarters 🚩`;
       const encoded = encodeURIComponent(text);
       window.open(`https://api.whatsapp.com/send?phone=91${phone}&text=${encoded}`, '_blank');
     }
@@ -6910,7 +6910,7 @@ lucide.createIcons();
       if (!s) return;
 
       if (s.levelUpPending === true) {
-        alert("⏳ " + s.studentName + " चा लेव्हल अप अर्ज आधीच सबमिट केला आहे आणि ॲडमिन पडताळणीसाठी प्रलंबित आहे.");
+        alert("⏳ " + s.studentName + "'s Level Up application is already submitted and pending Admin verification.");
         openStudentLevelProgressModal(studentId);
         return;
       }
@@ -7003,12 +7003,12 @@ lucide.createIcons();
       if (!s) return;
 
       const user = adminState.currentUser || { role: 'Admin' };
-      const confirmMsg = "⚠️ विद्यार्थी रेकॉर्ड कायमचे काढून टाकायचे आहे का?\n\n" +
-        "विद्यार्थी नाव: " + s.studentName + "\n" +
-        "विद्यार्थी आयडी: " + s.studentId + "\n" +
-        "शाखा: " + (s.city || s.state || 'N/A') + "\n" +
-        "ट्रेनर: " + (s.trainerName || s.trainerId || 'N/A') + "\n\n" +
-        "हा विद्यार्थी मुख्य यादी आणि Central Cloud Server वरून कायमचा हटवला जाईल. खात्री आहे का?";
+      const confirmMsg = "⚠️ PERMANENT STUDENT RECORD DELETION\n\n" +
+        "Student Name: " + s.studentName + "\n" +
+        "Student ID: " + s.studentId + "\n" +
+        "Branch: " + (s.city || s.state || 'N/A') + "\n" +
+        "Trainer: " + (s.trainerName || s.trainerId || 'N/A') + "\n\n" +
+        "Are you sure you want to permanently delete this student record from the directory and Central Cloud Server?";
 
       if (!confirm(confirmMsg)) {
         return;
@@ -7034,7 +7034,7 @@ lucide.createIcons();
       if (typeof updateTopMetrics === 'function') updateTopMetrics();
       if (typeof updateTrainerDashboard === 'function') updateTrainerDashboard();
 
-      alert("🗑️ विद्यार्थी \"" + s.studentName + "\" (" + s.studentId + ") यशस्वीरित्या काढून टाकला आहे.");
+      alert("🗑️ Student record for \"" + s.studentName + "\" (" + s.studentId + ") deleted successfully!");
     }
 
 
@@ -7111,7 +7111,7 @@ lucide.createIcons();
             sep.className = "my-3 py-2 px-3.5 bg-gradient-to-r from-red-600/10 via-amber-600/20 to-red-600/10 border-y-2 border-amber-400 rounded-xl text-center flex items-center justify-center gap-2 shadow-2xs";
             sep.innerHTML = `
               <span class="text-base">⚔️</span>
-              <span class="font-black text-xs sm:text-sm uppercase tracking-wider text-amber-950 font-rajdhani">SENIOR WARRIOR RANKS (सीनियर लेव्हल १ ते ४)</span>
+              <span class="font-black text-xs sm:text-sm uppercase tracking-wider text-amber-950 font-rajdhani">SENIOR WARRIOR RANKS (SENIOR LEVELS 1 TO 4)</span>
               <span class="text-base">⚔️</span>
             `;
             levelsContainer.appendChild(sep);
@@ -7150,7 +7150,7 @@ lucide.createIcons();
               <div class="flex flex-wrap items-center gap-2 text-xs">
                 <span class="inline-flex items-center gap-1.5 px-3 py-0.5 bg-emerald-600 text-white font-black rounded-lg shadow-2xs text-[11px]">
                   <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
-                  <span>Running (चालू आहे)</span>
+                  <span>Running (Active Cycle)</span>
                 </span>
                 <span class="text-xs text-emerald-800 font-bold hidden sm:inline">Active Training Cycle</span>
               </div>
@@ -7192,7 +7192,7 @@ lucide.createIcons();
             marksHtml = `
               <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
                 <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-400"></i>
-                <span>Pending (प्रलंबित - Previous level must be passed first)</span>
+                <span>Pending (Previous level examination must be passed first)</span>
               </div>
             `;
             actionHtml = `
@@ -7316,7 +7316,7 @@ lucide.createIcons();
           bottomBtnBox.innerHTML = `
             <button type="button" onclick="toggleAddCompetitionRecordForm(true)" class="w-full py-2.5 bg-orange-50 hover:bg-orange-100 border-2 border-dashed border-orange-300 rounded-2xl text-orange-900 font-extrabold text-xs transition flex items-center justify-center gap-2 cursor-pointer mt-2 shadow-2xs">
               <i data-lucide="plus-circle" class="w-4 h-4 text-orange-600"></i>
-              <span>+ Add Another Tournament / Medal (आणखी स्पर्धा जोडा)</span>
+              <span>+ Add Another Tournament / Medal Record</span>
             </button>
           `;
         }
@@ -7360,16 +7360,16 @@ lucide.createIcons();
       }
 
       const scopeEl = document.querySelector('input[name="cr-scope"]:checked');
-      const scope = scopeEl ? scopeEl.value : 'District Level (जिल्हा स्तर)';
+      const scope = scopeEl ? scopeEl.value : 'District Level';
 
       const title = (document.getElementById('cr-title')?.value || '').trim();
       const achievementEl = document.querySelector('input[name="cr-achievement"]:checked');
-      const achievement = achievementEl ? achievementEl.value : (document.getElementById('cr-achievement')?.value || '🥇 Gold Medal (सुवर्ण पदक)');
+      const achievement = achievementEl ? achievementEl.value : (document.getElementById('cr-achievement')?.value || '🥇 Gold Medal');
       const year = document.getElementById('cr-year')?.value || '2026';
       const category = (document.getElementById('cr-category')?.value || '').trim() || 'Martial Arts Sparring';
 
       if (!title) {
-        alert('Please enter Tournament Name (स्पर्धेचे नाव टाका)!');
+        alert('Please enter Tournament Title / Championship Name!');
         return;
       }
 
@@ -7416,7 +7416,7 @@ lucide.createIcons();
         return;
       }
 
-      if (!confirm("Are you sure you want to delete this tournament record? (ही स्पर्धा नोंद काढून टाकायची आहे का?)")) {
+      if (!confirm("Are you sure you want to delete this tournament record? This cannot be undone.")) {
         return;
       }
 
@@ -8456,7 +8456,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
               <div class="text-right">
                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-emerald-600 text-white font-black text-[11px] rounded-full shadow-2xs">
                   <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
-                  <span>🟢 Running (चालू आहे)</span>
+                  <span>🟢 Running (Active)</span>
                 </span>
                 <span class="block text-[10px] text-emerald-800 font-extrabold mt-0.5">Active Training Cycle</span>
               </div>
@@ -8477,7 +8477,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
               <div class="text-right">
                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-slate-200 text-slate-600 font-bold text-[10px] rounded-full border border-slate-300">
                   <i data-lucide="lock" class="w-2.5 h-2.5"></i>
-                  <span>Pending (प्रलंबित)</span>
+                  <span>Pending</span>
                 </span>
               </div>
             `;
@@ -9222,11 +9222,11 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         // Action buttons: ADMIN ONLY. Trainers get NO edit or delete buttons!
         const adminHeaderActions = isAdmin ? `
           <div class="flex items-center gap-1.5 flex-shrink-0">
-            <button type="button" onclick="openEditCourseModal('${crs.id}')" class="px-2.5 py-1 bg-orange-50 hover:bg-orange-100 border border-orange-300 text-orange-900 rounded-xl font-bold text-xs flex items-center gap-1 transition cursor-pointer shadow-2xs" title="Edit Course Details (कोर्स माहिती बदला)">
+            <button type="button" onclick="openEditCourseModal('${crs.id}')" class="px-2.5 py-1 bg-orange-50 hover:bg-orange-100 border border-orange-300 text-orange-900 rounded-xl font-bold text-xs flex items-center gap-1 transition cursor-pointer shadow-2xs" title="Edit Course Details">
               <i data-lucide="edit-3" class="w-3.5 h-3.5 text-orange-600"></i>
               <span>Edit</span>
             </button>
-            <button type="button" onclick="deleteAdminCourse('${crs.id}')" class="p-1.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 rounded-xl transition cursor-pointer shadow-2xs" title="Delete Course (कोर्स काढून टाका)">
+            <button type="button" onclick="deleteAdminCourse('${crs.id}')" class="p-1.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 rounded-xl transition cursor-pointer shadow-2xs" title="Delete Course">
               <i data-lucide="trash-2" class="w-4 h-4"></i>
             </button>
           </div>
@@ -10137,7 +10137,7 @@ Official Tournament Entry Pass Confirmed & Synced to Central Server!`);
         return;
       }
 
-      const confirmMsg = `Are you sure you want to delete this course?\n\nCourse ID: ${crs.id}\nTitle: ${crs.title || crs.name}\n\n(हा कोर्स कायमचा काढून टाकायचा आहे का?)`;
+      const confirmMsg = `Are you sure you want to delete this course?\n\nCourse ID: ${crs.id}\nTitle: ${crs.title || crs.name}\n\nThis will remove it permanently from all assigned trainers and the Central Cloud Server.`;
       if (!confirm(confirmMsg)) return;
 
       adminState.courses = adminState.courses.filter(c => (c.id || '').toUpperCase() !== (courseId || '').toUpperCase());
