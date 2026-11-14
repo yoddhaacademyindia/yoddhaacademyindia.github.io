@@ -599,7 +599,7 @@
         </div>
 
         <!-- 1. PRIMARY VIEW: STUDENT ID CARDS GRID -->
-        <!-- MASTER LIVE BELT EXAM CONTROLLER BANNER -->
+        <!-- MASTER LIVE LEVEL EXAM CONTROLLER BANNER -->
         <div id="master-exam-controller-banner" class="bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 border-2 border-orange-200 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6 transition-all">
           <div class="flex items-center gap-3">
             <div id="exam-banner-icon-box" class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-slate-200 text-slate-700 flex items-center justify-center flex-shrink-0 shadow-sm transition">
@@ -607,7 +607,7 @@
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <h4 class="text-xs sm:text-sm font-black text-slate-900 uppercase tracking-wide">Live Belt Exam Window</h4>
+                <h4 class="text-xs sm:text-sm font-black text-slate-900 uppercase tracking-wide">Live Level Exam Window</h4>
                 <span id="exam-banner-status-badge" class="text-[9px] sm:text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 border border-slate-300">
                   Exam Coming Soon
                 </span>
@@ -1111,7 +1111,7 @@
                 <option value="Senior 4">Senior 4</option>
               </select>
               <p id="stu-level-trainer-note" class="text-[10px] text-emerald-700 font-medium mt-1 hidden">
-                💡 New student enrollment starts at Level 1; subsequent levels unlock sequentially after passing belt examinations.
+                💡 New student enrollment starts at Level 1; subsequent levels unlock sequentially after passing level examinations.
               </p>
             </div>
 
@@ -1801,7 +1801,7 @@
         </button>
       </div>
 
-      <!-- TAB 1: 10-LEVEL BELT MARKSHEET & E-PRAMANPATRA -->
+      <!-- TAB 1: 10-LEVEL LEVEL MARKSHEET & E-PRAMANPATRA -->
       <div id="stu-record-tab-levels" class="space-y-3">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-3 text-xs">
           <div class="flex items-center gap-2">
@@ -2000,7 +2000,7 @@
               </div>
             </div>
             <div>
-              <label class="block font-bold text-slate-700 mb-1">10-Star Belt Level *</label>
+              <label class="block font-bold text-slate-700 mb-1">10-Star Level *</label>
               <select id="edit-stu-level" required class="w-full bg-white border border-orange-300 rounded-xl px-3 py-2 text-orange-900 font-extrabold focus:outline-none focus:border-orange-500">
                 <option value="Level 1">Level 1</option>
                 <option value="Level 2">Level 2</option>
@@ -2600,7 +2600,7 @@
 
         <!-- 6. CATEGORIES -->
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Categories (Age / Belt Levels) *</label>
+          <label class="block font-bold text-slate-700 mb-1">Categories (Age / Levels) *</label>
           <input type="text" id="adm-comp-categories" required placeholder="e.g. Sub-Junior (8-12), Junior (13-16), Senior (17+)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold text-xs">
         </div>
 
@@ -2832,15 +2832,15 @@
  * Complete A-to-Z Central Cloud Storage & Real-Time Sync Engine for Martial Arts
  * 
  * 10 AUTOMATICALLY MANAGED CLOUD SHEETS:
- * 1. 'Students'             - 30-Point Complete Profile, Belt Ranks, Exam Marks & Level History
- * 2. 'ExamResults'          - Permanent Audit Log of all Live Belt Exams & Marks (AI + Trainer)
- * 3. 'LevelUpApplications'  - Log of all Belt Level-Up Applications, Fees, UTR & Approvals
+ * 1. 'Students'             - 30-Point Complete Profile, Level Ranks, Exam Marks & Level History
+ * 2. 'ExamResults'          - Permanent Audit Log of all Live Level Exams & Marks (AI + Trainer)
+ * 3. 'LevelUpApplications'  - Log of all Level-Up Applications, Fees, UTR & Approvals
  * 4. 'Trainers'             - 13-Point Certified Trainer Profiles & Secure Credentials
  * 5. 'Courses'              - Martial Arts Training Video Courses & Assigned Trainers
  * 6. 'Competitions'         - District, State & National Tournament Announcements
  * 7. 'TournamentEntries'    - Student Registrations for Tournaments & Entry Fees
  * 8. 'StudentSportsRecords' - Medals (Gold/Silver/Bronze) & Official Achievements Track Record
- * 9. 'Fee Structure'        - Level 1-6 & Senior 1-4 Official Belt Pricing + Academy UPI ID
+ * 9. 'Fee Structure'        - Level 1-6 & Senior 1-4 Official Level Pricing + Academy UPI ID
  * 10. 'AcademySettings'     - Master Exam Live Camera Switch (ON/OFF) & System Settings
  * 
  * 100% FREE AUTOMATED EMAIL NOTIFICATIONS (MailApp):
@@ -3278,12 +3278,12 @@ function doPost(e) {
       var updated = updateRowIfExistsOrMerge(sheet, 2, studentId, rowData);
       if (!updated) sheet.appendRow(rowData);
 
-      // Log Belt Exam Result to dedicated 'ExamResults' sheet
+      // Log Level Exam Result to dedicated 'ExamResults' sheet
       if (data.action === "updateExamResults" || (data.lastExam && data.lastExam.totalScore)) {
         try {
           var examSheet = getOrCreateSheet(ss, "ExamResults", [
             "Timestamp", "Exam Reference ID", "Student ID", "Student Name", "Akhada / Branch",
-            "District", "State", "Belt Level", "AI Camera Score (/50)", "Trainer Score (/50)",
+            "District", "State", "Level", "AI Camera Score (/50)", "Trainer Score (/50)",
             "Grand Total (/100)", "Grade", "Exam Date", "Trainer / Ustad Name", "Status"
           ]);
           var examRefId = "EXAM-" + studentId.replace(/[^A-Za-z0-9]/g, "") + "-L" + (data.lastExam?.levelNum || 1);
@@ -3649,7 +3649,7 @@ function sendStudentAdmissionEmail(toEmail, studentName, studentId, level, train
     + '<table style="width: 100%; font-size: 14px;">'
     + '<tr><td style="padding: 6px 0; color: #64748b; width: 140px;"><strong>Student Name:</strong></td><td style="padding: 6px 0; color: #0f172a; font-weight: bold;">' + studentName + '</td></tr>'
     + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Student ID:</strong></td><td style="padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;">' + studentId + '</td></tr>'
-    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>10-Star Belt Level:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: bold;">' + (level || "Level 1") + '</td></tr>'
+    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>10-Star Level:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: bold;">' + (level || "Level 1") + '</td></tr>'
     + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Assigned Trainer:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: 600;">' + (trainerName || "Central Certified Coach") + '</td></tr>'
     + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Fee Paid:</strong></td><td style="padding: 6px 0; color: #166534; font-weight: bold;">₹' + (feeAmount || 500) + ' (UTR: ' + (utrNumber || "Verified") + ')</td></tr>'
     + '</table>'
@@ -3766,7 +3766,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           </div>
           <div>
             <h3 class="text-base sm:text-lg font-black font-rajdhani uppercase tracking-wider">4-Month Training Progress</h3>
-            <p class="text-[11px] text-orange-100 font-medium">Belt Exam Eligibility & Training Countdown</p>
+            <p class="text-[11px] text-orange-100 font-medium">Level Exam Eligibility & Training Countdown</p>
           </div>
         </div>
         <button onclick="closeModal('modal-exam-timeline')" class="text-white/80 hover:text-white p-1 rounded-xl transition">
@@ -3817,7 +3817,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
         <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-2 text-xs">
           <h5 class="font-bold text-slate-800 flex items-center gap-1.5">
             <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
-            <span>Current Belt Curriculum Checklist (4 Months):</span>
+            <span>Current Level Curriculum Checklist (4 Months):</span>
           </h5>
           <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-600 font-medium">
             <div class="flex items-center gap-1.5">✅ Basic Lathi Grip & Stance</div>
@@ -3833,11 +3833,11 @@ function getOrCreateSheet(ss, sheetName, headers) {
             ⚡ Fast-Forward 4 Months (For Testing / Demo)
           </p>
           <p class="text-[11px] text-amber-800 leading-relaxed">
-            Clicking below simulates that the 4-month training has completed. The student will instantly become eligible for the <strong>Belt Exam</strong>!
+            Clicking below simulates that the 4-month training has completed. The student will instantly become eligible for the <strong>Level Exam</strong>!
           </p>
           <button type="button" id="btn-fast-forward-timeline" onclick="fastForwardStudentExam()" class="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black rounded-xl text-xs shadow-md shadow-orange-500/20 transition active:scale-95 flex items-center justify-center gap-1.5">
             <i data-lucide="fast-forward" class="w-4 h-4"></i>
-            <span>Complete 4 Months & Unlock Belt Exam Now</span>
+            <span>Complete 4 Months & Unlock Level Exam Now</span>
           </button>
         </div>
       </div>
@@ -3856,7 +3856,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           </div>
           <div class="min-w-0">
             <h3 class="text-sm sm:text-lg font-black font-rajdhani uppercase tracking-wide truncate">
-              PRACTICAL BELT EXAM & 2-MIN AI LATHI ASSESSMENT
+              PRACTICAL LEVEL EXAM & 2-MIN AI LATHI ASSESSMENT
             </h3>
             <p class="text-[10px] sm:text-xs text-orange-100 font-medium truncate" id="exam-modal-subtitle">
               Yoddha Academy India • 100 Marks Level Promotion Evaluation
@@ -4031,7 +4031,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
       <div class="bg-slate-900 text-white px-4 py-3 flex justify-between items-center border-b border-slate-800">
         <div class="flex items-center gap-2">
           <i data-lucide="award" class="w-5 h-5 text-amber-400"></i>
-          <span class="text-xs sm:text-sm font-black uppercase tracking-wider font-rajdhani text-amber-300">Official Belt Promotion Certificate</span>
+          <span class="text-xs sm:text-sm font-black uppercase tracking-wider font-rajdhani text-amber-300">Official Level Promotion Certificate</span>
         </div>
         <div class="flex items-center gap-2">
           <button onclick="printBeltCertificate()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl transition flex items-center gap-1 shadow-sm">
@@ -4074,7 +4074,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           <!-- Main Certificate Title -->
           <div class="py-1">
             <span class="inline-block px-4 py-1 bg-amber-100/80 text-amber-950 font-black text-xs sm:text-sm rounded-full border border-amber-300 uppercase tracking-widest font-rajdhani shadow-xs">
-              CERTIFICATE OF BELT PROMOTION & SKILL EXCELLENCE
+              CERTIFICATE OF LEVEL PROMOTION & SKILL EXCELLENCE
             </span>
           </div>
 
@@ -4088,7 +4088,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
               Student ID: <span id="cert-student-id" class="text-orange-800">YAI-STU-26-MH-PUN-000001</span> • Akhada: <span id="cert-branch-name" class="text-slate-900">Pune Akhada</span>
             </p>
             <p class="text-[11px] sm:text-xs text-slate-600 pt-1">
-              has successfully fulfilled all 4-Month Traditional Training requirements and cleared the Official Belt Practical Examination with distinguished merit.
+              has successfully fulfilled all 4-Month Traditional Training requirements and cleared the Official Level Practical Examination with distinguished merit.
             </p>
           </div>
 
@@ -4157,7 +4157,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
     </div>
   </div>
 
-  <!-- ================= MODAL: LEVEL UP APPLICATION FORM (BELT PROMOTION) ================= -->
+  <!-- ================= MODAL: LEVEL UP APPLICATION FORM (LEVEL PROMOTION) ================= -->
   <div id="modal-level-up-form" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5">
     <div class="bg-white rounded-3xl max-w-lg w-full border-2 border-emerald-300 shadow-2xl overflow-hidden flex flex-col max-h-[94vh] animate-modal-enter">
       <!-- Modal Header -->
@@ -4168,7 +4168,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           </div>
           <div>
             <h3 class="text-base sm:text-lg font-black font-rajdhani uppercase tracking-wider">Level Up Application</h3>
-            <p class="text-[11px] text-emerald-100 font-medium">Belt Promotion & Next Level Fee Submission</p>
+            <p class="text-[11px] text-emerald-100 font-medium">Level Promotion & Next Level Fee Submission</p>
           </div>
         </div>
         <button onclick="closeModal('modal-level-up-form')" class="text-white/80 hover:text-white p-1 rounded-xl transition">
@@ -4220,7 +4220,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           <div class="flex items-center justify-between border-b border-amber-200 pb-2">
             <div>
               <span class="text-xs font-bold text-slate-800">Official Promotion Fee</span>
-              <span class="block text-[10.5px] text-slate-500 font-medium">Standard rate set by Admin for next belt level</span>
+              <span class="block text-[10.5px] text-slate-500 font-medium">Standard rate set by Admin for next level</span>
             </div>
             <div class="text-right">
               <div class="flex items-center gap-1">
@@ -4330,7 +4330,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           </div>
           <div>
             <h3 class="text-base sm:text-lg font-black font-rajdhani uppercase tracking-wider">10-Level Martial Arts Progression</h3>
-            <p class="text-[11px] text-orange-100 font-medium">Belt Ranks, Live Exam Marks & Promotion Roadmap</p>
+            <p class="text-[11px] text-orange-100 font-medium">Level Ranks, Live Exam Marks & Promotion Roadmap</p>
           </div>
         </div>
         <button onclick="closeModal('modal-student-level-progress')" class="text-white/80 hover:text-white p-1 rounded-xl transition">
@@ -4350,7 +4350,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
       <!-- Footer -->
       <div class="bg-slate-50 p-3 sm:p-4 border-t border-slate-200 flex justify-between items-center">
-        <span class="text-[11px] text-slate-500 font-medium">Official 10-Tier Belt Curriculum • Yoddha Academy India</span>
+        <span class="text-[11px] text-slate-500 font-medium">Official 10-Tier Level Curriculum • Yoddha Academy India</span>
         <button onclick="closeModal('modal-student-level-progress')" class="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs rounded-xl transition">
           Close
         </button>
@@ -5509,7 +5509,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
 
 
-            // Hide Master Live Belt Exam Controller Banner completely from Trainer Panel
+            // Hide Master Live Level Exam Controller Banner completely from Trainer Panel
       const masterExamBanner = document.getElementById("master-exam-controller-banner");
       if (isTrainer) {
         if (masterExamBanner) masterExamBanner.classList.add("hidden");
@@ -6664,7 +6664,7 @@ lucide.createIcons();
             let levelStatusPill = '';
             if (isExamPassed) {
               levelStatusPill = `
-                <button type="button" onclick="openStudentLevelProgressModal('${s.studentId}')" title="Live Belt Exam Passed! Click to view Marks & 10-Level Roadmap" class="inline-flex items-center gap-1 text-[8px] sm:text-[9.5px] font-black text-amber-950 bg-gradient-to-r from-amber-200 via-yellow-200 to-amber-300 hover:from-amber-300 hover:to-yellow-400 border border-amber-400 px-2 sm:px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-2xs transition active:scale-95 animate-pulse">
+                <button type="button" onclick="openStudentLevelProgressModal('${s.studentId}')" title="Live Level Exam Passed! Click to view Marks & 10-Level Roadmap" class="inline-flex items-center gap-1 text-[8px] sm:text-[9.5px] font-black text-amber-950 bg-gradient-to-r from-amber-200 via-yellow-200 to-amber-300 hover:from-amber-300 hover:to-yellow-400 border border-amber-400 px-2 sm:px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-2xs transition active:scale-95 animate-pulse">
                   <span>🏆</span>
                   <span>${currentLevelName}: Passed (${passedScore}/100)</span>
                 </button>
@@ -6796,7 +6796,7 @@ lucide.createIcons();
                   </button>
 
                   ${isExamPassed ? `
-                    <button type="button" onclick="openLevelUpFormModal('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white border sm:border-2 border-emerald-300 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-md flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 animate-bounce cursor-pointer" title="Belt Exam Passed! Click to enroll into Level ${Math.min(10, levelNum + 1)}">
+                    <button type="button" onclick="openLevelUpFormModal('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white border sm:border-2 border-emerald-300 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-md flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 animate-bounce cursor-pointer" title="Level Exam Passed! Click to enroll into Level ${Math.min(10, levelNum + 1)}">
                       <i data-lucide="arrow-up-circle" class="w-3.5 h-3.5 text-white flex-shrink-0"></i>
                       <span>⭐ Level Up</span>
                     </button>
@@ -6806,7 +6806,7 @@ lucide.createIcons();
                       <span>⏳ In Verif</span>
                     </button>
                   ` : `
-                    <button type="button" onclick="handleStudentLevelExamClick('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border border-amber-400 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-2xs flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 cursor-pointer" title="Start Live Belt Examination">
+                    <button type="button" onclick="handleStudentLevelExamClick('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border border-amber-400 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-2xs flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 cursor-pointer" title="Start Live Level Examination">
                       <i data-lucide="camera" class="w-3.5 h-3.5 text-white flex-shrink-0"></i>
                       <span>Level Exam</span>
                     </button>
@@ -6999,7 +6999,7 @@ lucide.createIcons();
         return;
       }
 
-      // Directly launch Live Belt Exam AI Camera modal
+      // Directly launch Live Level Exam AI Camera modal
       openBeltExamModal(studentId);
     }
 
@@ -7637,7 +7637,7 @@ lucide.createIcons();
         `;
       }
 
-      // Render 10-Level Belt Marksheet (Level 1-6 & Senior 1-4)
+      // Render 10-Level Level Marksheet (Level 1-6 & Senior 1-4)
       const levelsContainer = document.getElementById('stu-record-10levels-list');
       if (levelsContainer) {
         levelsContainer.innerHTML = '';
@@ -7677,7 +7677,7 @@ lucide.createIcons();
               </div>
             `;
             actionHtml = `
-              <button type="button" onclick="openBeltCertificateModalByLevel('${s.studentId}', ${lvl.num})" class="px-3.5 sm:px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5 whitespace-nowrap cursor-pointer" title="Download & View Official Belt Promotion E-Pramanpatra">
+              <button type="button" onclick="openBeltCertificateModalByLevel('${s.studentId}', ${lvl.num})" class="px-3.5 sm:px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5 whitespace-nowrap cursor-pointer" title="Download & View Official Level Promotion E-Pramanpatra">
                 <i data-lucide="award" class="w-4 h-4 text-yellow-200"></i>
                 <span>📜 E-Pramanpatra</span>
                 <i data-lucide="download" class="w-3.5 h-3.5 text-white"></i>
@@ -8143,27 +8143,27 @@ lucide.createIcons();
       // STATE 3: Exam Passed -> Ready for Level Up!
       if (s.examStatus === 'PASSED_PENDING_LEVELUP') {
         return `
-          <button type="button" onclick="openLevelUpFormModal('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white border sm:border-2 border-emerald-300 rounded-lg sm:rounded-xl text-[8px] sm:text-[11px] font-black shadow-xs flex flex-col items-center justify-center gap-0.5 transition active:scale-95 animate-bounce" title="Belt Exam Passed! Click to fill Level Up Form & light up next star!">
+          <button type="button" onclick="openLevelUpFormModal('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white border sm:border-2 border-emerald-300 rounded-lg sm:rounded-xl text-[8px] sm:text-[11px] font-black shadow-xs flex flex-col items-center justify-center gap-0.5 transition active:scale-95 animate-bounce" title="Level Exam Passed! Click to fill Level Up Form & light up next star!">
             <i data-lucide="arrow-up-circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white"></i>
             <span>Level Up</span>
           </button>
         `;
       }
 
-      // STATE 2: Exam Window is ON (Master Switch active or individual eligible) -> Belt Exam Camera Button!
+      // STATE 2: Exam Window is ON (Master Switch active or individual eligible) -> Level Exam Camera Button!
       const isExamActive = (adminState.examSessionActive === true) || s.examEligible;
       if (isExamActive) {
         return `
-          <button type="button" onclick="openBeltExamModal('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border sm:border-2 border-amber-300 rounded-lg sm:rounded-xl text-[8px] sm:text-[11px] font-black shadow-md shadow-orange-500/30 flex flex-col items-center justify-center gap-0.5 transition active:scale-95 animate-pulse" title="Live Belt Exam is OPEN! Click to Start 2-Min Live AI Camera Exam">
+          <button type="button" onclick="openBeltExamModal('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border sm:border-2 border-amber-300 rounded-lg sm:rounded-xl text-[8px] sm:text-[11px] font-black shadow-md shadow-orange-500/30 flex flex-col items-center justify-center gap-0.5 transition active:scale-95 animate-pulse" title="Live Level Exam is OPEN! Click to Start 2-Min Live AI Camera Exam">
             <i data-lucide="camera" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white"></i>
-            <span>Belt Exam</span>
+            <span>Level Exam</span>
           </button>
         `;
       }
 
       // STATE 1: Exam Window is OFF -> "Exam Coming Soon"
       return `
-        <button type="button" onclick="handleExamComingSoonClick('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-white hover:bg-orange-50 text-slate-700 hover:text-orange-900 border border-slate-200 hover:border-orange-300 rounded-lg sm:rounded-xl text-[7.5px] sm:text-[10px] font-bold shadow-2xs flex flex-col items-center justify-center gap-0.5 transition active:scale-95" title="Belt Exam will be announced soon by Central HQ. Click to check status.">
+        <button type="button" onclick="handleExamComingSoonClick('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-white hover:bg-orange-50 text-slate-700 hover:text-orange-900 border border-slate-200 hover:border-orange-300 rounded-lg sm:rounded-xl text-[7.5px] sm:text-[10px] font-bold shadow-2xs flex flex-col items-center justify-center gap-0.5 transition active:scale-95" title="Level Exam will be announced soon by Central HQ. Click to check status.">
           <i data-lucide="clock" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-600"></i>
           <span class="truncate">⏳ Coming Soon</span>
         </button>
@@ -8174,7 +8174,7 @@ lucide.createIcons();
     function toggleMasterExamSession() {
       const user = adminState.currentUser || { role: 'Admin' };
       if (user.role === 'Trainer') {
-        alert("🔒 Access Restricted: The Master Belt Exam Window can only be opened/closed by Master Admin Central HQ.");
+        alert("🔒 Access Restricted: The Master Level Exam Window can only be opened/closed by Master Admin Central HQ.");
         return;
       }
 
@@ -8192,9 +8192,9 @@ lucide.createIcons();
       renderAdminStudents();
 
       if (adminState.examSessionActive) {
-        alert("🟢 LIVE BELT EXAM WINDOW OPENED!\\n\\nAll student cards across all India branches now show the active [ 📷 Belt Exam ] camera button! Students can now take their live AI examination.");
+        alert("🟢 LIVE LEVEL EXAM WINDOW OPENED!\\n\\nAll student cards across all India branches now show the active [ 📷 Level Exam ] camera button! Students can now take their live AI examination.");
       } else {
-        alert("⚪ LIVE BELT EXAM WINDOW CLOSED.\\n\\nStudent cards will now display '⏳ Exam Coming Soon'.");
+        alert("⚪ LIVE LEVEL EXAM WINDOW CLOSED.\\n\\nStudent cards will now display '⏳ Exam Coming Soon'.");
       }
     }
 
@@ -8262,12 +8262,12 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     function handleExamComingSoonClick(studentId) {
       const user = adminState.currentUser || { role: 'Admin' };
       if (user.role === 'Admin') {
-        const confirmOpen = confirm("⏳ Belt Exam is currently OFF for students ('Exam Coming Soon').\\n\\nWould you like to turn ON the Master Live Exam Window now so students can take the exam?");
+        const confirmOpen = confirm("⏳ Level Exam is currently OFF for students ('Exam Coming Soon').\\n\\nWould you like to turn ON the Master Live Exam Window now so students can take the exam?");
         if (confirmOpen) {
           toggleMasterExamSession();
         }
       } else {
-        alert("⏳ Belt Exam Coming Soon!\\n\\nThe Live AI Belt Exam Window will be opened by Master Admin Central HQ. As soon as HQ switches it ON, the [ 📷 Belt Exam ] camera button will appear here automatically!");
+        alert("⏳ Level Exam Coming Soon!\\n\\nThe Live AI Level Exam Window will be opened by Master Admin Central HQ. As soon as HQ switches it ON, the [ 📷 Level Exam ] camera button will appear here automatically!");
       }
     }
 
@@ -8319,15 +8319,15 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       closeModal('modal-exam-timeline');
       renderAdminStudents();
 
-      alert(`⚡ Fast-Forward Applied!\n----------------------------------------\nCandidate: ${s.studentName}\n\n4 Months Training is now marked Complete! The 'Belt Exam' camera button is now active on the student's ID card!`);
+      alert(`⚡ Fast-Forward Applied!\n----------------------------------------\nCandidate: ${s.studentName}\n\n4 Months Training is now marked Complete! The 'Level Exam' camera button is now active on the student's ID card!`);
       
-      // Directly open the Belt Exam modal!
+      // Directly open the Level Exam modal!
       setTimeout(() => {
         openBeltExamModal(activeTimelineStudentId);
       }, 300);
     }
 
-    // 6. Open Belt Exam Modal with Live Camera Feed
+    // 6. Open Level Exam Modal with Live Camera Feed
     async function openBeltExamModal(studentId) {
       const s = adminState.students.find(stu => stu.studentId === studentId);
       if (!s) return;
@@ -8559,7 +8559,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const totalScore = Math.min(100, aiScore + trainerScore);
 
       if (totalScore < 60) {
-        alert("⚠️ Examination Score is below 60/100 threshold. Candidate needs further practice before belt promotion.");
+        alert("⚠️ Examination Score is below 60/100 threshold. Candidate needs further practice before level promotion.");
         return;
       }
 
@@ -8612,11 +8612,11 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       // Re-render student cards so Button 3 transforms into [ ⭐ Level Up ]!
       renderAdminStudents();
 
-      // Open the Official Belt Promotion Certificate!
+      // Open the Official Level Promotion Certificate!
       openBeltCertificateModal(s);
     }
 
-    // 13. Populate & Open Belt Certificate Modal (Current / Latest Passed Level)
+    // 13. Populate & Open Level Certificate Modal (Current / Latest Passed Level)
     function openBeltCertificateModal(student) {
       const s = student || lastGeneratedCertStudent;
       if (!s) return;
@@ -8624,7 +8624,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       openBeltCertificateModalByLevel(s.studentId, currNum);
     }
 
-    // 13B. Populate & Open Official Belt E-Pramanpatra for Any Passed Level (Level 1-6 & Senior 1-4)
+    // 13B. Populate & Open Official Level E-Pramanpatra for Any Passed Level (Level 1-6 & Senior 1-4)
     function openBeltCertificateModalByLevel(studentId, levelNum) {
       const s = adminState.students.find(stu => stu.studentId === studentId) || lastGeneratedCertStudent;
       if (!s) return;
@@ -8680,7 +8680,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       lucide.createIcons();
     }
 
-    // 14. Print Belt Certificate
+    // 14. Print Level Certificate
     function printBeltCertificate() {
       window.print();
     }
@@ -8691,7 +8691,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const s = lastGeneratedCertStudent;
       const exam = s.lastExam || {};
       const parentPhone = (s.parentMobile || '').replace(/\D/g, '');
-      const text = `🥋 *YODDHA ACADEMY INDIA - OFFICIAL BELT PROMOTION CERTIFICATE*\n\n` +
+      const text = `🥋 *YODDHA ACADEMY INDIA - OFFICIAL LEVEL PROMOTION CERTIFICATE*\n\n` +
         `Hearty Congratulations!\n` +
         `Candidate: *${s.studentName}*\n` +
         `Student ID: *${s.studentId}*\n` +
@@ -8956,7 +8956,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
             <div class="flex items-center gap-2.5 text-center sm:text-left">
               <span class="text-2xl">🏆</span>
               <div>
-                <h5 class="font-black text-sm uppercase font-rajdhani">Live Belt Exam Passed (${s.lastExam?.totalScore || 91}/100 Marks)!</h5>
+                <h5 class="font-black text-sm uppercase font-rajdhani">Live Level Exam Passed (${s.lastExam?.totalScore || 91}/100 Marks)!</h5>
                 <p class="text-xs text-amber-100">Ready to enroll into Level ${Math.min(10, currNum + 1)}. Submit application with fee & UTR.</p>
               </div>
             </div>
@@ -8983,7 +8983,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
                   </span>
                   <span class="block text-[10px] font-mono text-emerald-700 font-bold mt-0.5">AI: ${lvl.aiScore || 45}/50 • Trainer: ${lvl.trainerScore || 46}/50</span>
                 </div>
-                <button type="button" onclick="closeModal('modal-student-level-progress'); openBeltCertificateModalByLevel('${s.studentId}', ${lvl.num})" class="px-2.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 text-white font-bold text-xs rounded-xl shadow-xs transition active:scale-95 flex items-center gap-1 whitespace-nowrap" title="Download Official Belt E-Pramanpatra">
+                <button type="button" onclick="closeModal('modal-student-level-progress'); openBeltCertificateModalByLevel('${s.studentId}', ${lvl.num})" class="px-2.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 text-white font-bold text-xs rounded-xl shadow-xs transition active:scale-95 flex items-center gap-1 whitespace-nowrap" title="Download Official Level E-Pramanpatra">
                   <i data-lucide="award" class="w-3.5 h-3.5 text-yellow-200"></i>
                   <span>📜 E-Pramanpatra</span>
                 </button>
@@ -9867,17 +9867,17 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         if (stateSecDesc) stateSecDesc.innerText = "Historical breakdown of students in your academy across all martial arts levels (Only Your Students)";
         if (countEl) countEl.innerText = `${myStudents.length} Branch Warriors`;
         if (compSecTitle) compSecTitle.innerText = "2-Year Branch Scale Metrics (2025 vs 2026)";
-        if (compSecDesc) compSecDesc.innerText = "Comparative growth of your branch enrollment, belt exams & tournament entries";
+        if (compSecDesc) compSecDesc.innerText = "Comparative growth of your branch enrollment, level exams & tournament entries";
 
         // 1. Level-wise breakdown for THIS trainer's students (2025 vs 2026)
         const levelsDefinition = [
-          { level: "Level 1", belt: "White Belt", name: "Fundamental Lathi-Kathi", y2025: 4 },
-          { level: "Level 2", belt: "Yellow Belt", name: "Pettebaji Footwork & Spins", y2025: 3 },
-          { level: "Level 3", belt: "Orange Belt", name: "Stances, Grips & Defense", y2025: 2 },
-          { level: "Level 4", belt: "Green Belt", name: "Combat Sparring & Attacks", y2025: 2 },
-          { level: "Level 5", belt: "Blue Belt", name: "Speed Drills & Jump Spins", y2025: 1 },
-          { level: "Level 6", belt: "Purple Belt", name: "Shield Combat & Traditional Kata", y2025: 0 },
-          { level: "Senior 1 to 4", belt: "Brown / Black", name: "Senior Tournament Ranks", y2025: 0 }
+          { level: "Level 1", rank: "Fundamental Lathi-Kathi", desc: "Basic Stances & Strikes", y2025: 4 },
+          { level: "Level 2", rank: "Pettebaji Footwork & Spins", desc: "Speed Footwork & Twirls", y2025: 3 },
+          { level: "Level 3", rank: "Stances, Grips & Defense", desc: "Block & Counter Drills", y2025: 2 },
+          { level: "Level 4", rank: "Combat Sparring & Attacks", desc: "Dual Combat Sparring", y2025: 2 },
+          { level: "Level 5", rank: "Speed Drills & Jump Spins", desc: "Dynamic Weapon Control", y2025: 1 },
+          { level: "Level 6", rank: "Shield Combat & Traditional Kata", desc: "Traditional Warfare Forms", y2025: 0 },
+          { level: "Senior Level 1 to 4", rank: "Senior Progression Ranks", desc: "Senior Tournament Levels", y2025: 0 }
         ];
 
         stateContainer.innerHTML = '';
@@ -9897,9 +9897,9 @@ const iconBox = document.getElementById('exam-banner-icon-box');
               <div class="flex justify-between items-start mb-2">
                 <div>
                   <span class="text-[10px] font-black uppercase text-orange-600 font-mono tracking-wide">${ld.level}</span>
-                  <h4 class="text-xs font-black text-slate-900">${ld.belt}</h4>
+                  <h4 class="text-xs font-black text-slate-900">${ld.rank}</h4>
                 </div>
-                <span class="text-[10px] bg-white border border-orange-200 font-bold px-2 py-0.5 rounded-full text-slate-600">${ld.name}</span>
+                <span class="text-[10px] bg-white border border-orange-200 font-bold px-2 py-0.5 rounded-full text-slate-600">${ld.desc}</span>
               </div>
 
               <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-orange-100 text-center">
@@ -9931,7 +9931,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
           { label: "My Total Students", y2025: String(totalBranch2025), y2026: String(totalBranchNow), growth: growthStr },
           { label: "Level 1-3 Warriors", y2025: "9", y2026: String(myStudents.filter(s => (s.requestedLevel||'').match(/Level [1-3]/)).length), growth: "+110%" },
           { label: "Level 4+ Advanced", y2025: "3", y2026: String(myStudents.filter(s => !(s.requestedLevel||'').match(/Level [1-3]/)).length), growth: "+150%" },
-          { label: "Belt Exams Passed", y2025: "8", y2026: String(Math.max(myStudents.length, 18)), growth: "+125%" },
+          { label: "Level Exams Passed", y2025: "8", y2026: String(Math.max(myStudents.length, 18)), growth: "+125%" },
           { label: "Match Entries", y2025: "2", y2026: "7", growth: "+250%" }
         ];
 
@@ -10037,7 +10037,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
           { label: "Total Enrolled Warriors", y2025: "145", y2026: String(totalWarriors), growth: "+165%" },
           { label: "Certified Instructors", y2025: "8", y2026: String(totalTrainers), growth: "+200%" },
           { label: "Training Akhadas", y2025: "5", y2026: "18", growth: "+260%" },
-          { label: "Belt Exam Graduations", y2025: "96", y2026: "312", growth: "+225%" },
+          { label: "Level Exam Graduations", y2025: "96", y2026: "312", growth: "+225%" },
           { label: "Championship Matches", y2025: "3", y2026: "9", growth: "+200%" }
         ];
 
@@ -11381,7 +11381,7 @@ function handleAdminCreateCompetition(e) {
         });
 
         if (statusEl) statusEl.innerHTML = '<span class="text-emerald-700 font-bold">✅ A-to-Z Academy Data Synchronized to Central Cloud Server Successfully!</span>';
-        alert(`🎉 A-TO-Z CENTRAL CLOUD SYNC SUCCESSFUL!\n========================================\n✔ ${syncedTrainers} Trainers Synced\n✔ ${syncedStudents} Students Synced (with Exam Scores & Belt Levels)\n✔ ${syncedCourses} Video Courses Synced\n✔ ${syncedComps} Competitions Synced\n✔ ${syncedMedals} Student Medals & Sports Records Synced\n✔ 10-Level Fee Structure & UPI ID Synced\n✔ Master Exam Live Camera Switch Synced\n\nAll records in Google Sheet are 100% updated and verified!`);
+        alert(`🎉 A-TO-Z CENTRAL CLOUD SYNC SUCCESSFUL!\n========================================\n✔ ${syncedTrainers} Trainers Synced\n✔ ${syncedStudents} Students Synced (with Exam Scores & Levels)\n✔ ${syncedCourses} Video Courses Synced\n✔ ${syncedComps} Competitions Synced\n✔ ${syncedMedals} Student Medals & Sports Records Synced\n✔ 10-Level Fee Structure & UPI ID Synced\n✔ Master Exam Live Camera Switch Synced\n\nAll records in Google Sheet are 100% updated and verified!`);
       } catch (err) {
         if (statusEl) statusEl.innerHTML = '<span class="text-red-600 font-bold">❌ Error syncing data. Please verify your Web App URL.</span>';
       }
@@ -11467,7 +11467,7 @@ function handleAdminCreateCompetition(e) {
           </div>
           <div>
             <h3 class="text-base sm:text-lg font-black text-slate-900 font-rajdhani uppercase">Download Student Documents</h3>
-            <p class="text-[11px] text-slate-500 font-medium">Official ID Card & 10-Level Belt E-Pramanpatra</p>
+            <p class="text-[11px] text-slate-500 font-medium">Official ID Card & 10-Level Level E-Pramanpatra</p>
           </div>
         </div>
         <button onclick="closeModal('modal-student-download')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl transition cursor-pointer">
@@ -11521,10 +11521,10 @@ function handleAdminCreateCompetition(e) {
           <span>📥 Download Official ID Card (PNG Image)</span>
         </button>
 
-        <!-- 2. Download Belt E-Pramanpatra -->
+        <!-- 2. Download Level E-Pramanpatra -->
         <button type="button" onclick="downloadStudentEPramanpatraDirect()" class="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs sm:text-sm rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
           <i data-lucide="award" class="w-4 h-4 text-yellow-200"></i>
-          <span>📜 View & Download Belt E-Pramanpatra</span>
+          <span>📜 View & Download Level E-Pramanpatra</span>
         </button>
 
         <!-- 3. Share on WhatsApp -->
