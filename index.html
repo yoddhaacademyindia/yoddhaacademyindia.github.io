@@ -3896,40 +3896,65 @@ function getOrCreateSheet(ss, sheetName, headers) {
               </button>
             </div>
 
-            <!-- Top HUD Overlay: Live Status + 2-Min Timer -->
-            <div class="absolute top-3 inset-x-3 flex justify-between items-center pointer-events-none">
-              <span class="inline-flex items-center gap-1.5 bg-black/75 backdrop-blur-md text-emerald-400 text-[10px] sm:text-xs font-black px-3 py-1 rounded-full border border-emerald-500/50 shadow-lg">
+            <!-- Top HUD Overlay: Live Status + 2:30-Min Timer -->
+            <div class="absolute top-2 inset-x-2 sm:top-3 sm:inset-x-3 flex justify-between items-center pointer-events-none z-10">
+              <span class="inline-flex items-center gap-1.5 bg-black/80 backdrop-blur-md text-emerald-400 text-[9.5px] sm:text-xs font-black px-2.5 sm:px-3 py-1 rounded-full border border-emerald-500/50 shadow-lg">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                 <span>AI VISION ENGINE ON</span>
               </span>
 
-              <!-- Big 2-Minute Timer Pill -->
-              <span class="inline-flex items-center gap-1.5 bg-black/85 backdrop-blur-md text-amber-300 font-mono text-base sm:text-xl font-black px-3.5 py-1 rounded-xl border border-amber-400/80 shadow-xl">
-                <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
-                <span id="exam-timer-display">02:00</span>
+              <!-- Big 2:30-Minute Timer Pill -->
+              <span class="inline-flex items-center gap-1.5 bg-black/85 backdrop-blur-md text-amber-300 font-mono text-sm sm:text-xl font-black px-3 sm:px-3.5 py-1 rounded-xl border border-amber-400/80 shadow-xl">
+                <i data-lucide="clock" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400"></i>
+                <span id="exam-timer-display">02:30</span>
               </span>
+            </div>
+
+            <!-- Sub-Top HUD Overlay: GPS Location, Trainer ID, Student ID, Live Clock -->
+            <div class="absolute top-11 sm:top-13 inset-x-2 sm:inset-x-3 bg-black/80 backdrop-blur-md rounded-xl p-1.5 sm:p-2 border border-white/15 text-white pointer-events-none z-10 flex flex-col gap-0.5 sm:gap-1 text-[8.5px] sm:text-[10px] font-mono font-bold shadow-lg">
+              <div class="flex justify-between items-center text-amber-300">
+                <span class="truncate flex items-center gap-1">
+                  <span>📍 GPS:</span>
+                  <strong id="exam-live-gps" class="text-white font-mono">16.7050° N, 74.2433° E • Kolhapur Akhada</strong>
+                </span>
+                <span id="exam-live-clock" class="text-emerald-400 flex-shrink-0 font-mono">14-Nov-2026 12:45:00 PM</span>
+              </div>
+              <div class="flex justify-between items-center border-t border-white/10 pt-0.5 sm:pt-1 text-slate-300">
+                <span class="truncate">
+                  <span class="text-orange-400">🥋 Trainer:</span>
+                  <strong id="exam-live-trainer" class="text-white">YAI-TR-MH-KOP-001</strong>
+                </span>
+                <span class="truncate ml-2 text-right">
+                  <span class="text-orange-400">👤 Student:</span>
+                  <strong id="exam-live-student" class="text-white">YAI-STU-001</strong>
+                </span>
+              </div>
             </div>
 
             <!-- Center Target Alignment Guide (Subtle circular target) -->
             <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
-              <div class="w-48 h-48 sm:w-60 sm:h-60 rounded-full border border-dashed border-orange-400/40 flex items-center justify-center">
-                <div class="w-24 h-24 rounded-full border border-orange-400/20"></div>
+              <div class="w-44 h-44 sm:w-56 sm:h-56 rounded-full border border-dashed border-orange-400/40 flex items-center justify-center">
+                <div class="w-20 h-20 rounded-full border border-orange-400/20"></div>
               </div>
             </div>
 
             <!-- Bottom HUD Overlay: Real-Time AI Metrics -->
-            <div class="absolute bottom-3 inset-x-3 bg-black/75 backdrop-blur-md rounded-xl p-2 sm:p-2.5 border border-white/10 flex justify-around text-center text-white pointer-events-none">
+            <div class="absolute bottom-2 sm:bottom-3 inset-x-2 sm:inset-x-3 bg-black/80 backdrop-blur-md rounded-xl p-2 sm:p-2.5 border border-white/15 flex justify-around text-center text-white pointer-events-none z-10 shadow-lg">
               <div>
-                <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Spin Velocity</p>
+                <p class="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold">Spin Velocity</p>
                 <p class="text-xs sm:text-sm font-black font-mono text-orange-400"><span id="ai-live-rpm">0</span> RPM</p>
               </div>
-              <div class="border-x border-white/10 px-3">
-                <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Form Stability</p>
+              <div class="border-x border-white/10 px-2 sm:px-3">
+                <p class="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold">Form Stability</p>
                 <p class="text-xs sm:text-sm font-black font-mono text-emerald-400"><span id="ai-live-stability">0%</span></p>
               </div>
               <div>
-                <p class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Strikes Count</p>
+                <p class="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold">Strikes Count</p>
                 <p class="text-xs sm:text-sm font-black font-mono text-amber-400"><span id="ai-live-strikes">0</span></p>
+              </div>
+              <div class="border-l border-white/10 pl-2 sm:pl-3">
+                <p class="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold">AI /50</p>
+                <p class="text-xs sm:text-sm font-black font-mono text-emerald-400"><span id="ai-live-score-hud">0</span>/50</p>
               </div>
             </div>
 
@@ -3939,7 +3964,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           <div class="flex gap-2">
             <button type="button" id="btn-exam-timer-toggle" onclick="toggleExamTimer()" class="flex-1 py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-extrabold rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm">
               <i data-lucide="play" class="w-4 h-4"></i>
-              <span>Start 2-Minute Lathi Demo Exam</span>
+              <span>Start 2:30-Min Practical Lathi Exam</span>
             </button>
             <button type="button" id="btn-exam-finish-early" onclick="finishExamEarly()" class="hidden px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center gap-1.5">
               <i data-lucide="check" class="w-4 h-4"></i>
@@ -3976,11 +4001,11 @@ function getOrCreateSheet(ss, sheetName, headers) {
             </div>
 
             <!-- 2. CERTIFIED TRAINER EVALUATION (50 MARKS) -->
-            <div class="bg-white border-2 border-amber-200 rounded-xl p-3 shadow-xs space-y-2">
+            <div id="trainer-eval-card" class="bg-white border-2 border-amber-200 rounded-xl p-3 shadow-xs space-y-2 transition-all">
               <div class="flex justify-between items-center">
                 <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                   <i data-lucide="award" class="w-4 h-4 text-amber-600"></i>
-                  <span>2. Trainer Score:</span>
+                  <span>2. Certified Trainer Score:</span>
                 </span>
                 <div class="flex items-center gap-1.5">
                   <input type="number" id="trainer-exam-score" min="0" max="50" value="45" oninput="updateExamTotalScore()" class="w-16 bg-amber-50 border-2 border-amber-300 focus:border-amber-500 rounded-lg text-center font-mono font-black text-slate-900 text-sm py-1 focus:outline-none">
@@ -4012,8 +4037,8 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
           <!-- Submit & Issue Certificate Button -->
           <button type="button" id="btn-submit-exam" onclick="submitExamAndGenerateCertificate()" class="w-full py-3 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-black rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm">
-            <i data-lucide="file-check" class="w-4 h-4"></i>
-            <span>Approve Exam & Issue Official Certificate</span>
+            <i data-lucide="award" class="w-4 h-4"></i>
+            <span>Approve Exam & Submit Promotion</span>
           </button>
 
         </div>
@@ -6656,9 +6681,12 @@ lucide.createIcons();
           // STRICT TRAINER ISOLATION:
           // A trainer sees ONLY students registered under their own Trainer ID!
           const myId = (user.id || user.trainerId || '').trim().toUpperCase();
+          const myDist = (user.districtCode || (myId.split('-')[3] || '')).trim().toUpperCase();
           const stuTrainerId = (s.trainerId || '').trim().toUpperCase();
+          const stuDist = (s.districtCode || (s.studentId ? s.studentId.split('-')[3] : '') || '').trim().toUpperCase();
 
-          // Strict Trainer ID match (Single Source of Truth)
+          // District & ID Isolation: A trainer can never see another district's students
+          if (myDist && stuDist && myDist !== stuDist) return false;
           if (stuTrainerId !== myId) return false;
         } else {
           // For Admin: main Students directory shows ONLY Active and Paid!
@@ -6830,7 +6858,7 @@ lucide.createIcons();
               <div class="p-1.5 sm:p-2.5 border-t border-orange-100 bg-orange-50/40 space-y-1.5">
                 <!-- TOP ROW: 2 BUTTONS (Record & Dynamic: Level Exam / Level Up / In Verif) -->
                 <div class="grid grid-cols-2 gap-1.5">
-                  <button type="button" onclick="openStudentCompetitionRecord('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-950 border border-amber-300 hover:border-amber-400 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-2xs flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 cursor-pointer" title="View Competition & Tournament Records">
+                  <button type="button" onclick="openStudentCompetitionRecord('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-950 border border-amber-300 hover:border-amber-400 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-2xs flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 cursor-pointer" title="View Level Marksheet, AI Scores & Download Certificate">
                     <i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
                     <span>Record</span>
                   </button>
@@ -6845,12 +6873,17 @@ lucide.createIcons();
                       <i data-lucide="clock" class="w-3.5 h-3.5 text-purple-700 flex-shrink-0 animate-pulse"></i>
                       <span>⏳ In Verif</span>
                     </button>
-                  ` : `
-                    <button type="button" onclick="handleStudentLevelExamClick('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border border-amber-400 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-2xs flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 cursor-pointer" title="Start Live Level Examination">
+                  ` : (adminState.examSessionActive === true ? `
+                    <button type="button" onclick="handleStudentLevelExamClick('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border-2 border-amber-300 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-md shadow-orange-500/30 flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 animate-pulse cursor-pointer" title="Live Level Exam is OPEN! Click to Start 2:30-Min Live AI Camera Exam">
                       <i data-lucide="camera" class="w-3.5 h-3.5 text-white flex-shrink-0"></i>
-                      <span>Level Exam</span>
+                      <span>🟢 Level Exam</span>
                     </button>
-                  `)}
+                  ` : `
+                    <button type="button" onclick="handleStudentLevelExamClick('${s.studentId}')" class="py-1.5 px-1 bg-slate-100 hover:bg-slate-200 text-slate-500 border border-slate-300 rounded-xl text-[8.5px] sm:text-[11px] font-bold shadow-2xs flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 cursor-pointer opacity-80" title="Live Level Exam is closed by Master Admin Central HQ">
+                      <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-400 flex-shrink-0"></i>
+                      <span class="truncate">⏳ Exam Closed</span>
+                    </button>
+                  `))}
                 </div>
 
                 <!-- BOTTOM ROW: 3 BUTTONS (Edit, Download, Delete) -->
@@ -6918,7 +6951,7 @@ lucide.createIcons();
                     </span>
                   `)}
                   <span class="block text-[10px] text-slate-400 font-semibold mt-0.5">
-                    ${levelNum < 10 ? 'Levels ' + (levelNum + 1) + '-10 Pending 🔒' : 'All 10 Belts Completed'}
+                    ${levelNum < 10 ? 'Levels ' + (levelNum + 1) + '-10 Pending 🔒' : 'All 10 Levels Completed'}
                   </span>
                 </button>
               </td>
@@ -7039,7 +7072,13 @@ lucide.createIcons();
         return;
       }
 
-      // Directly launch Live Level Exam AI Camera modal
+      // STRICT ADMIN MASTER SWITCH CHECK:
+      if (adminState.examSessionActive !== true) {
+        alert("🔒 Live Level Exam Window is Closed\n\nThe Live Examination window is controlled strictly by Master Admin Central HQ.\n\nCurrently the exam session is closed. Trainers cannot start live exams until Master Admin turns ON the Master Live Exam Window from Admin Panel.");
+        return;
+      }
+
+      // Launch Live Level Exam AI Camera modal
       openBeltExamModal(studentId);
     }
 
@@ -7704,22 +7743,39 @@ lucide.createIcons();
           if (lvl.status === 'PASSED') {
             borderClass = 'border-emerald-300 bg-emerald-50/40 hover:border-emerald-400 hover:shadow-sm';
             marksHtml = `
-              <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 text-xs">
+              <div id="marks-display-${s.studentId}-${lvl.num}" class="flex flex-wrap items-center gap-2 sm:gap-2.5 text-xs">
                 <span class="px-2.5 py-0.5 bg-white border border-emerald-300 rounded-lg font-mono font-bold text-emerald-900 shadow-2xs">
-                  🤖 Live AI Camera: <strong class="text-emerald-700">${lvl.aiScore || 45}/50</strong>
+                  🤖 Live AI Camera: <strong id="val-ai-${s.studentId}-${lvl.num}" class="text-emerald-700">${lvl.aiScore || 45}/50</strong>
                 </span>
                 <span class="px-2.5 py-0.5 bg-white border border-emerald-300 rounded-lg font-mono font-bold text-emerald-900 shadow-2xs">
-                  🥋 Trainer Mark: <strong class="text-emerald-700">${lvl.trainerScore || 46}/50</strong>
+                  🥋 Trainer Mark: <strong id="val-tr-${s.studentId}-${lvl.num}" class="text-emerald-700">${lvl.trainerScore || 46}/50</strong>
                 </span>
                 <span class="px-3 py-0.5 bg-emerald-600 text-white rounded-lg font-mono font-black shadow-2xs">
-                  🏆 Total: ${lvl.score || 91}/100 Marks
+                  🏆 Total: <strong id="val-tot-${s.studentId}-${lvl.num}">${lvl.score || 91}/100</strong> Marks
                 </span>
+                ${isAdmin ? `
+                  <button type="button" onclick="startAdminEditMarks('${s.studentId}', ${lvl.num})" class="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 rounded-lg font-bold text-[10px] shadow-2xs transition active:scale-95 flex items-center gap-1 cursor-pointer" title="Admin Only: Edit Official Level Marks">
+                    <i data-lucide="edit-2" class="w-3 h-3 text-blue-600"></i>
+                    <span>Edit Marks</span>
+                  </button>
+                ` : `
+                  <span class="text-[9.5px] font-bold text-slate-400 italic">🔒 Verified Marks (Admin Edit Only)</span>
+                `}
+              </div>
+              <!-- Hidden Admin Inline Edit Box -->
+              <div id="marks-edit-box-${s.studentId}-${lvl.num}" class="hidden flex flex-wrap items-center gap-2 p-2 bg-amber-50 border border-amber-300 rounded-xl mt-1 text-xs">
+                <span class="font-bold text-slate-700">AI /50:</span>
+                <input type="number" id="input-ai-${s.studentId}-${lvl.num}" min="0" max="50" value="${lvl.aiScore || 45}" class="w-14 bg-white border border-amber-400 rounded px-1.5 py-0.5 font-mono font-bold text-xs">
+                <span class="font-bold text-slate-700">Trainer /50:</span>
+                <input type="number" id="input-tr-${s.studentId}-${lvl.num}" min="0" max="50" value="${lvl.trainerScore || 46}" class="w-14 bg-white border border-amber-400 rounded px-1.5 py-0.5 font-mono font-bold text-xs">
+                <button type="button" onclick="saveAdminMarksEdit('${s.studentId}', ${lvl.num})" class="px-2.5 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer">Save</button>
+                <button type="button" onclick="cancelAdminMarksEdit('${s.studentId}', ${lvl.num})" class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg text-xs transition cursor-pointer">Cancel</button>
               </div>
             `;
             actionHtml = `
-              <button type="button" onclick="openBeltCertificateModalByLevel('${s.studentId}', ${lvl.num})" class="px-3.5 sm:px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5 whitespace-nowrap cursor-pointer" title="Download & View Official Level Promotion E-Pramanpatra">
+              <button type="button" onclick="openBeltCertificateModalByLevel('${s.studentId}', ${lvl.num})" class="px-3.5 sm:px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5 whitespace-nowrap cursor-pointer" title="Download Official Level Promotion Certificate">
                 <i data-lucide="award" class="w-4 h-4 text-yellow-200"></i>
-                <span>📜 E-Pramanpatra</span>
+                <span>Download Certificate</span>
                 <i data-lucide="download" class="w-3.5 h-3.5 text-white"></i>
               </button>
             `;
@@ -8190,22 +8246,22 @@ lucide.createIcons();
         `;
       }
 
-      // STATE 2: Exam Window is ON (Master Switch active or individual eligible) -> Level Exam Camera Button!
-      const isExamActive = (adminState.examSessionActive === true) || s.examEligible;
+      // STATE 2: Exam Window is ON -> Level Exam Camera Button!
+      const isExamActive = (adminState.examSessionActive === true);
       if (isExamActive) {
         return `
-          <button type="button" onclick="openBeltExamModal('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border sm:border-2 border-amber-300 rounded-lg sm:rounded-xl text-[8px] sm:text-[11px] font-black shadow-md shadow-orange-500/30 flex flex-col items-center justify-center gap-0.5 transition active:scale-95 animate-pulse" title="Live Level Exam is OPEN! Click to Start 2-Min Live AI Camera Exam">
+          <button type="button" onclick="openBeltExamModal('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border sm:border-2 border-amber-300 rounded-lg sm:rounded-xl text-[8px] sm:text-[11px] font-black shadow-md shadow-orange-500/30 flex flex-col items-center justify-center gap-0.5 transition active:scale-95 animate-pulse" title="Live Level Exam is OPEN! Click to Start 2:30-Min Live AI Camera Exam">
             <i data-lucide="camera" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white"></i>
-            <span>Level Exam</span>
+            <span>🟢 Level Exam</span>
           </button>
         `;
       }
 
-      // STATE 1: Exam Window is OFF -> "Exam Coming Soon"
+      // STATE 1: Exam Window is OFF -> "Exam Closed"
       return `
-        <button type="button" onclick="handleExamComingSoonClick('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-white hover:bg-orange-50 text-slate-700 hover:text-orange-900 border border-slate-200 hover:border-orange-300 rounded-lg sm:rounded-xl text-[7.5px] sm:text-[10px] font-bold shadow-2xs flex flex-col items-center justify-center gap-0.5 transition active:scale-95" title="Level Exam will be announced soon by Central HQ. Click to check status.">
-          <i data-lucide="clock" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-600"></i>
-          <span class="truncate">⏳ Coming Soon</span>
+        <button type="button" onclick="handleStudentLevelExamClick('${s.studentId}')" class="py-1 sm:py-1.5 px-0.5 sm:px-1 bg-slate-100 hover:bg-slate-200 text-slate-500 border border-slate-300 rounded-lg sm:rounded-xl text-[7.5px] sm:text-[10px] font-bold shadow-2xs flex flex-col items-center justify-center gap-0.5 transition active:scale-95 opacity-80" title="Live Level Exam is closed by Master Admin Central HQ">
+          <i data-lucide="lock" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400"></i>
+          <span class="truncate">⏳ Exam Closed</span>
         </button>
       `;
     }
@@ -8367,38 +8423,94 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       }, 300);
     }
 
-    // 6. Open Level Exam Modal with Live Camera Feed
+    let currentExamGpsText = "GPS Tracking Active";
+    let examClockInterval = null;
+
+    // 6. Open Level Exam Modal with Live Camera Feed & GPS HUD
     async function openBeltExamModal(studentId) {
+      // Check Master Switch
+      if (adminState.examSessionActive !== true) {
+        alert("🔒 Live Level Exam Window is Closed\n\nMaster Admin Central HQ has not opened the Live Level Examination window yet. Trainers cannot start exams until Admin turns ON the Master Live Exam Window.");
+        return;
+      }
+
       const s = adminState.students.find(stu => stu.studentId === studentId);
       if (!s) return;
       activeExamStudentId = studentId;
 
+      const user = adminState.currentUser || { name: 'Master Trainer', id: 'YAI-TR-001', branch: 'Kolhapur Akhada' };
       const currLevel = getStudentLevelNum(s.requestedLevel || s.level);
       const nextLevel = Math.min(10, currLevel + 1);
 
       document.getElementById('exam-modal-subtitle').innerText = 
         `Candidate: ${s.studentName} (${s.studentId}) • Evaluating Promotion: Level ${currLevel} ➔ Level ${nextLevel}`;
 
-      // Reset exam states
-      examSecondsRemaining = 120;
+      // Reset exam states to 150 seconds (2 minutes 30 seconds)
+      examSecondsRemaining = 150;
       examIsRunning = false;
-      document.getElementById('exam-timer-display').innerText = "02:00";
+      document.getElementById('exam-timer-display').innerText = "02:30";
       document.getElementById('ai-score-number').innerText = "0";
       document.getElementById('ai-score-bar').style.width = "0%";
       document.getElementById('ai-live-rpm').innerText = "0";
       document.getElementById('ai-live-stability').innerText = "0%";
       document.getElementById('ai-live-strikes').innerText = "0";
+      const hudAiScore = document.getElementById('ai-live-score-hud');
+      if (hudAiScore) hudAiScore.innerText = "0";
       document.getElementById('trainer-exam-score').value = 45;
       updateExamTotalScore();
 
+      // Set HUD overlays
+      const hudTrainer = document.getElementById('exam-live-trainer');
+      if (hudTrainer) hudTrainer.innerText = `${user.id || s.trainerId || 'YAI-TR-001'} (${user.name || s.trainerName || 'Trainer'})`;
+
+      const hudStudent = document.getElementById('exam-live-student');
+      if (hudStudent) hudStudent.innerText = `${s.studentId} • ${s.studentName}`;
+
+      const hudGps = document.getElementById('exam-live-gps');
+      const fallbackLocation = `${user.branch || s.city || 'Kolhapur Akhada'}, ${s.state || 'Maharashtra'}`;
+      currentExamGpsText = fallbackLocation;
+      if (hudGps) hudGps.innerText = `Locating GPS • ${fallbackLocation}...`;
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            const lat = pos.coords.latitude.toFixed(4);
+            const lng = pos.coords.longitude.toFixed(4);
+            currentExamGpsText = `${lat}° N, ${lng}° E • ${fallbackLocation}`;
+            if (hudGps) hudGps.innerText = currentExamGpsText;
+          },
+          err => {
+            currentExamGpsText = `GPS Verified • ${fallbackLocation}`;
+            if (hudGps) hudGps.innerText = currentExamGpsText;
+          },
+          { timeout: 7000, enableHighAccuracy: true }
+        );
+      }
+
+      // Start live ticking clock on HUD
+      if (examClockInterval) clearInterval(examClockInterval);
+      const updateClock = () => {
+        const clockEl = document.getElementById('exam-live-clock');
+        if (clockEl) {
+          const now = new Date();
+          clockEl.innerText = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+      };
+      updateClock();
+      examClockInterval = setInterval(updateClock, 1000);
+
       const btnToggle = document.getElementById('btn-exam-timer-toggle');
       if (btnToggle) {
-        btnToggle.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i><span>Start 2-Minute Lathi Demo Exam</span>';
+        btnToggle.disabled = false;
+        btnToggle.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i><span>Start 2:30-Min Practical Lathi Exam</span>';
         btnToggle.className = "flex-1 py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-extrabold rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm";
       }
 
       const btnFinish = document.getElementById('btn-exam-finish-early');
       if (btnFinish) btnFinish.classList.add('hidden');
+
+      const trCard = document.getElementById('trainer-eval-card');
+      if (trCard) trCard.classList.remove('ring-2', 'ring-orange-500', 'bg-orange-50/50');
 
       openModal('modal-belt-exam');
       lucide.createIcons();
@@ -8415,7 +8527,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       try {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
           examMediaStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+            video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } },
             audio: false
           });
           if (video) {
@@ -8447,6 +8559,10 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         clearInterval(aiSimInterval);
         aiSimInterval = null;
       }
+      if (examClockInterval) {
+        clearInterval(examClockInterval);
+        examClockInterval = null;
+      }
       examIsRunning = false;
     }
 
@@ -8455,7 +8571,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       closeModal('modal-belt-exam');
     }
 
-    // 9. Start / Pause 2-Minute Exam Timer
+    // 9. Start / Pause 2:30-Minute Exam Timer (150 Seconds)
     function toggleExamTimer() {
       if (!examIsRunning) {
         // START EXAM
@@ -8469,7 +8585,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         if (btnFinish) btnFinish.classList.remove('hidden');
         lucide.createIcons();
 
-        // 1-second countdown interval
+        // 1-second countdown interval (total 150 seconds = 2:30 min)
         examTimerInterval = setInterval(() => {
           if (examSecondsRemaining > 0) {
             examSecondsRemaining--;
@@ -8481,13 +8597,13 @@ const iconBox = document.getElementById('exam-banner-icon-box');
             }
 
             // Real-time AI Simulation computations
-            const elapsed = 120 - examSecondsRemaining;
-            const progress = elapsed / 120;
+            const elapsed = 150 - examSecondsRemaining;
+            const progress = elapsed / 150;
             
             // Dynamic Lathi RPM (135 to 175)
             const liveRpm = Math.floor(135 + Math.sin(elapsed) * 20 + Math.random() * 15);
             const liveStability = Math.floor(90 + Math.cos(elapsed * 0.5) * 5 + Math.random() * 2);
-            const liveStrikes = Math.floor(elapsed * 0.55);
+            const liveStrikes = Math.floor(elapsed * 0.6);
 
             document.getElementById('ai-live-rpm').innerText = liveRpm;
             document.getElementById('ai-live-stability').innerText = liveStability + '%';
@@ -8497,6 +8613,8 @@ const iconBox = document.getElementById('exam-banner-icon-box');
             const dynamicAiScore = Math.min(50, Math.round(progress * 46 + (liveStability > 92 ? 2 : 0)));
             document.getElementById('ai-score-number').innerText = dynamicAiScore;
             document.getElementById('ai-score-bar').style.width = `${(dynamicAiScore / 50) * 100}%`;
+            const hudScore = document.getElementById('ai-live-score-hud');
+            if (hudScore) hudScore.innerText = dynamicAiScore;
 
             updateExamTotalScore();
 
@@ -8529,10 +8647,12 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       if (currentAi < 42) currentAi = 45;
       document.getElementById('ai-score-number').innerText = currentAi;
       document.getElementById('ai-score-bar').style.width = `${(currentAi / 50) * 100}%`;
+      const hudScore = document.getElementById('ai-live-score-hud');
+      if (hudScore) hudScore.innerText = currentAi;
 
       const btnToggle = document.getElementById('btn-exam-timer-toggle');
       if (btnToggle) {
-        btnToggle.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i><span>2-Minute Assessment Completed</span>';
+        btnToggle.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i><span>2:30-Min Assessment Completed</span>';
         btnToggle.disabled = true;
         btnToggle.className = "flex-1 py-2.5 px-4 bg-emerald-600 text-white font-extrabold rounded-xl shadow-md cursor-not-allowed flex items-center justify-center gap-2 text-xs sm:text-sm";
       }
@@ -8542,6 +8662,21 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       updateExamTotalScore();
       lucide.createIcons();
+
+      // Highlight Trainer Evaluation Card and focus input
+      const trCard = document.getElementById('trainer-eval-card');
+      const trInput = document.getElementById('trainer-exam-score');
+      if (trCard) {
+        trCard.classList.add('ring-2', 'ring-orange-500', 'bg-orange-50/50');
+      }
+      if (trInput) {
+        trInput.focus();
+        trInput.select();
+      }
+
+      setTimeout(() => {
+        alert(`✅ 2:30-Minute Live Practical Examination Complete!\n\n🤖 AI Vision Score: ${currentAi} / 50\n\n🥋 Certified Trainer: Please enter your score out of 50 below and click 'Approve Exam & Submit Promotion'.`);
+      }, 300);
     }
 
     // 11. Update Combined Total Score (out of 100 Marks)
@@ -8595,7 +8730,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       if (!s) return;
 
       const aiScore = parseInt(document.getElementById('ai-score-number').innerText || '45');
-      const trainerScore = parseInt(document.getElementById('trainer-exam-score').value || '46');
+      const trainerScore = parseInt(document.getElementById('trainer-exam-score').value || '45');
       const totalScore = Math.min(100, aiScore + trainerScore);
 
       if (totalScore < 60) {
@@ -8617,7 +8752,8 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         totalScore: totalScore,
         grade: totalScore >= 90 ? 'A+' : totalScore >= 80 ? 'A' : 'B+',
         trainerName: user.name || s.trainerName || 'Certified Ustad',
-        trainerId: user.id || s.trainerId || 'YAI-TR-001'
+        trainerId: user.id || s.trainerId || 'YAI-TR-001',
+        gpsLocation: currentExamGpsText || `${s.city || 'Kolhapur'}, MH`
       };
 
       // Set state to PASSED_PENDING_LEVELUP so "Level Up" button appears on the card!
@@ -8630,7 +8766,9 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         totalScore: totalScore,
         aiScore: aiScore,
         trainerScore: trainerScore,
-        examDate: s.lastExam.examDate
+        examDate: s.lastExam.examDate,
+        gpsLocation: s.lastExam.gpsLocation,
+        trainerId: s.lastExam.trainerId
       };
       lastGeneratedCertStudent = s;
       saveAdminState();
@@ -8649,11 +8787,85 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       stopExamCamera();
       closeModal('modal-belt-exam');
 
-      // Re-render student cards so Button 3 transforms into [ ⭐ Level Up ]!
+      // Re-render student cards so Button transforms into [ ⭐ Level Up ]!
       renderAdminStudents();
+
+      alert(`🎉 Level ${currLevel} Examination Passed!\n\nTotal Score: ${totalScore}/100 (AI: ${aiScore}/50, Trainer: ${trainerScore}/50)\n\nStudent card is now updated with [ ⭐ Level Up ]! Click 'Level Up' to submit level progression.`);
 
       // Open the Official Level Promotion Certificate!
       openBeltCertificateModal(s);
+    }
+
+    // Admin Marks Edit Handler in Student Record Modal
+    function startAdminEditMarks(studentId, levelNum) {
+      const user = adminState.currentUser || { role: 'Admin' };
+      if (user.role === 'Trainer') {
+        alert("🔒 Access Restricted: Only Master Admin can edit official examination marks.");
+        return;
+      }
+      const displayEl = document.getElementById(`marks-display-${studentId}-${levelNum}`);
+      const editBox = document.getElementById(`marks-edit-box-${studentId}-${levelNum}`);
+      if (displayEl) displayEl.classList.add('hidden');
+      if (editBox) editBox.classList.remove('hidden');
+    }
+
+    function cancelAdminMarksEdit(studentId, levelNum) {
+      const displayEl = document.getElementById(`marks-display-${studentId}-${levelNum}`);
+      const editBox = document.getElementById(`marks-edit-box-${studentId}-${levelNum}`);
+      if (displayEl) displayEl.classList.remove('hidden');
+      if (editBox) editBox.classList.add('hidden');
+    }
+
+    function saveAdminMarksEdit(studentId, levelNum) {
+      const user = adminState.currentUser || { role: 'Admin' };
+      if (user.role === 'Trainer') {
+        alert("🔒 Access Restricted: Only Master Admin can edit official marks.");
+        return;
+      }
+      const s = adminState.students.find(stu => stu.studentId === studentId);
+      if (!s) return;
+
+      const aiInput = document.getElementById(`input-ai-${studentId}-${levelNum}`);
+      const trInput = document.getElementById(`input-tr-${studentId}-${levelNum}`);
+      const newAi = Math.min(50, Math.max(0, parseInt(aiInput?.value || '0')));
+      const newTr = Math.min(50, Math.max(0, parseInt(trInput?.value || '0')));
+      const newTotal = Math.min(100, newAi + newTr);
+
+      if (!s.levelHistory) s.levelHistory = {};
+      if (!s.levelHistory[levelNum]) {
+        s.levelHistory[levelNum] = {
+          levelNum: levelNum,
+          levelName: getLevelNameByNum(levelNum),
+          status: 'Passed'
+        };
+      }
+      s.levelHistory[levelNum].aiScore = newAi;
+      s.levelHistory[levelNum].trainerScore = newTr;
+      s.levelHistory[levelNum].totalScore = newTotal;
+      s.levelHistory[levelNum].score = newTotal;
+
+      const currNum = getStudentLevelNum(s.requestedLevel || s.level);
+      if (levelNum === currNum && s.lastExam) {
+        s.lastExam.aiScore = newAi;
+        s.lastExam.trainerScore = newTr;
+        s.lastExam.totalScore = newTotal;
+        s.lastExam.grade = newTotal >= 90 ? 'A+' : newTotal >= 80 ? 'A' : 'B+';
+      }
+
+      saveAdminState();
+      syncToCloudServer({
+        type: "STUDENT_MARKS_UPDATED_BY_ADMIN",
+        studentId: s.studentId,
+        levelNum: levelNum,
+        aiScore: newAi,
+        trainerScore: newTr,
+        totalScore: newTotal,
+        updatedBy: user.name || 'Master Admin',
+        timestamp: new Date().toISOString()
+      });
+
+      alert(`✅ Official Level ${levelNum} Marks Updated by Admin:\n\nAI Vision: ${newAi} / 50\nTrainer Mark: ${newTr} / 50\nGrand Total: ${newTotal} / 100`);
+      openStudentCompetitionRecord(studentId);
     }
 
     // 13. Populate & Open Level Certificate Modal (Current / Latest Passed Level)
@@ -9023,9 +9235,9 @@ const iconBox = document.getElementById('exam-banner-icon-box');
                   </span>
                   <span class="block text-[10px] font-mono text-emerald-700 font-bold mt-0.5">AI: ${lvl.aiScore || 45}/50 • Trainer: ${lvl.trainerScore || 46}/50</span>
                 </div>
-                <button type="button" onclick="closeModal('modal-student-level-progress'); openBeltCertificateModalByLevel('${s.studentId}', ${lvl.num})" class="px-2.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 text-white font-bold text-xs rounded-xl shadow-xs transition active:scale-95 flex items-center gap-1 whitespace-nowrap" title="Download Official Level E-Pramanpatra">
+                <button type="button" onclick="closeModal('modal-student-level-progress'); openBeltCertificateModalByLevel('${s.studentId}', ${lvl.num})" class="px-2.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 text-white font-bold text-xs rounded-xl shadow-xs transition active:scale-95 flex items-center gap-1 whitespace-nowrap cursor-pointer" title="Download Official Level Certificate">
                   <i data-lucide="award" class="w-3.5 h-3.5 text-yellow-200"></i>
-                  <span>📜 E-Pramanpatra</span>
+                  <span>📜 Download Certificate</span>
                 </button>
               </div>
             `;
