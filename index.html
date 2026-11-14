@@ -1098,7 +1098,7 @@
                   🔒 Level 1 (Mandatory for New Enrollees)
                 </span>
               </label>
-              <select id="p-stu-requested-level" required onchange="syncLevelPills(this.value)" class="w-full bg-white border border-orange-300 rounded-xl px-3 py-2 text-orange-900 font-extrabold focus:outline-none focus:border-orange-500">
+              <select id="p-stu-requested-level" onchange="syncLevelPills(this.value)" class="w-full bg-white border border-orange-300 rounded-xl px-3 py-2 text-orange-900 font-extrabold focus:outline-none focus:border-orange-500">
                 <option value="Level 1">Level 1</option>
                 <option value="Level 2">Level 2</option>
                 <option value="Level 3">Level 3</option>
@@ -1210,7 +1210,7 @@
             <!-- 25. Trainer ID & 26. Trainer Name (Dropdown selection) -->
             <div class="sm:col-span-2">
               <label class="block font-bold text-slate-700 mb-1">Assign Trainer (ID & Name) *</label>
-              <select id="p-stu-trainer-select" required onchange="handleTrainerSelectionChange()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500">
+              <select id="p-stu-trainer-select" onchange="handleTrainerSelectionChange()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500">
                 <!-- Dynamically populated -->
               </select>
             </div>
@@ -5289,13 +5289,21 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
             // Trainer Login Success
             const trn = authResult.trainer || authResult;
+            const trnId = trn.userId || trn.trainerId || trn.id || id;
+            const loc = getTrainerLocation({ ...trn, trainerId: trnId });
             adminState.isLoggedIn = true;
             adminState.currentUser = {
               role: 'Trainer',
               name: trn.userName || trn.fullName || trn.name || 'Certified Trainer',
-              id: trn.userId || trn.trainerId || trn.id || id,
-              branch: trn.branch || `${trn.district || 'Kolhapur'} Akhada`,
-              position: trn.position || 'Head Trainer'
+              fullName: trn.userName || trn.fullName || trn.name || 'Certified Trainer',
+              id: trnId,
+              trainerId: trnId,
+              state: loc.stateName,
+              stateCode: loc.stCode,
+              district: loc.districtName,
+              districtCode: loc.distCode,
+              branch: trn.branch || `${loc.districtName} Akhada`,
+              position: trn.position || 'Branch Instructor'
             };
 
             // Update local registry with fresh data from Central Cloud Server
@@ -5335,12 +5343,20 @@ function getOrCreateSheet(ss, sheetName, headers) {
         });
 
         if (localTrainer) {
+          const loc = getTrainerLocation(localTrainer);
           adminState.isLoggedIn = true;
           adminState.currentUser = {
             role: 'Trainer',
             name: localTrainer.fullName || localTrainer.name || 'Trainer',
+            fullName: localTrainer.fullName || localTrainer.name || 'Trainer',
             id: localTrainer.trainerId || localTrainer.id,
-            branch: localTrainer.branch || `${localTrainer.district} Akhada`
+            trainerId: localTrainer.trainerId || localTrainer.id,
+            state: loc.stateName,
+            stateCode: loc.stCode,
+            district: loc.districtName,
+            districtCode: loc.distCode,
+            branch: localTrainer.branch || `${loc.districtName} Akhada`,
+            position: localTrainer.position || 'Branch Instructor'
           };
           localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
           localStorage.setItem('yoddha_admin_logged', 'true');
@@ -5748,6 +5764,32 @@ lucide.createIcons();
     }
 
     // Helper to resolve District Code
+    
+    // Helper to reliably extract state, district and branch from any trainer object or ID
+    function getTrainerLocation(trn) {
+      if (!trn) return { stCode: 'MH', distCode: 'KOP', stateName: 'Maharashtra', districtName: 'Kolhapur' };
+      const tid = (trn.trainerId || trn.id || trn.userId || '').trim().toUpperCase();
+      const parts = tid.split('-');
+
+      let stCode = (trn.stateCode || (parts.length >= 3 ? parts[2] : 'MH') || 'MH').trim().toUpperCase();
+      let distCode = (trn.districtCode || (parts.length >= 4 ? parts[3] : 'KOP') || 'KOP').trim().toUpperCase();
+
+      // Look up names in INDIA_LOCATIONS
+      const stateObj = (typeof INDIA_LOCATIONS !== 'undefined') ? INDIA_LOCATIONS[stCode] : null;
+      let distName = trn.district || '';
+      if (!distName && stateObj && Array.isArray(stateObj.districts)) {
+        const found = stateObj.districts.find(d => d.code.toUpperCase() === distCode);
+        if (found) distName = found.name;
+      }
+      if (!distName && trn.branch) {
+        distName = trn.branch.replace(/ Akhada$/i, '').trim();
+      }
+      if (!distName) distName = distCode;
+
+      const stateName = trn.state || stateObj?.name || 'Maharashtra';
+      return { stCode, distCode, stateName, districtName: distName };
+    }
+
     function resolveDistrictCode(districtCode, stateCode) {
       if (!districtCode) return 'KOP';
       const clean = districtCode.trim().toUpperCase();
@@ -5897,19 +5939,21 @@ lucide.createIcons();
       let trnDisplay = 'Maharashtra - Kolhapur';
 
       if (isTrainer) {
-        const trn = adminState.trainers.find(t => (t.trainerId || t.id) === user.id) || user;
-        stCode = trn.stateCode || 'MH';
-        distCode = trn.districtCode || 'KOP';
-        trnDisplay = `${trn.state || 'Maharashtra'} - ${trn.district || trn.branch || 'Kolhapur'}`;
+        const trn = adminState.trainers.find(t => (t.trainerId || t.id || '').toUpperCase() === (user.id || user.trainerId || '').toUpperCase()) || user;
+        const loc = getTrainerLocation(trn);
+        stCode = loc.stCode;
+        distCode = loc.distCode;
+        trnDisplay = `${loc.stateName} - ${loc.districtName}`;
       } else {
         const trnSelect = document.getElementById('p-stu-trainer-select');
         const rawVal = trnSelect?.value || '';
         const selectedId = rawVal.split('|')[0] || rawVal;
-        const trn = adminState.trainers.find(t => (t.trainerId || t.id) === selectedId) || adminState.trainers[0];
+        const trn = adminState.trainers.find(t => (t.trainerId || t.id || '').toUpperCase() === selectedId.toUpperCase()) || adminState.trainers[0];
         if (trn) {
-          stCode = trn.stateCode || 'MH';
-          distCode = trn.districtCode || 'KOP';
-          trnDisplay = `${trn.state || 'Maharashtra'} - ${trn.district || trn.branch || 'Kolhapur'}`;
+          const loc = getTrainerLocation(trn);
+          stCode = loc.stCode;
+          distCode = loc.distCode;
+          trnDisplay = `${loc.stateName} - ${loc.districtName}`;
         }
       }
 
@@ -6109,8 +6153,31 @@ lucide.createIcons();
     function handleFullStudentSubmit(e) {
       e.preventDefault();
 
+      const user = adminState.currentUser || { role: 'Admin' };
+      const isTrainer = (user.role === 'Trainer');
+
+      let trainerId = '', trainerName = '';
+      if (isTrainer) {
+        trainerId = (user.id || user.trainerId || '').trim();
+        trainerName = (user.name || user.fullName || 'Certified Trainer').trim();
+      } else {
+        const trainerVal = document.getElementById('p-stu-trainer-select')?.value || '';
+        const parts = trainerVal.split('|');
+        trainerId = (parts[0] || 'YAI-TR-MH-KOP-001').trim();
+        trainerName = (parts[1] || 'Ustad Rahul Shinde').trim();
+      }
+
+      // Student automatically inherits State and District from the assigned trainer's official branch
+      const trainerObj = adminState.trainers.find(t => (t.trainerId || t.id || '').toUpperCase() === trainerId.toUpperCase()) || (isTrainer ? user : null);
+      const loc = getTrainerLocation(trainerObj || user);
+      const stateName = loc.stateName;
+      const districtName = loc.districtName;
+      const city = districtName;
+      const stCode = loc.stCode;
+      const distCode = loc.distCode;
+
+      // Safe unique student ID calculation (Zero ReferenceError risk!)
       let studentId = (document.getElementById('p-stu-id')?.value || '').trim();
-      // Anti-collision safeguard: ensure this ID is 100% unique across all students and trainers
       const isIdTaken = adminState.students.some(s => (s.studentId || s.id || '').trim().toUpperCase() === studentId.toUpperCase());
       if (!studentId || isIdTaken) {
         studentId = generateStudentId(stCode, distCode);
@@ -6118,39 +6185,19 @@ lucide.createIcons();
           document.getElementById('p-stu-id').value = studentId;
         }
       }
-      const studentName = document.getElementById('p-stu-name').value.trim();
-      const dob = document.getElementById('p-stu-dob').value;
-      const age = parseInt(document.getElementById('p-stu-age').value) || 0;
+
+      const studentName = (document.getElementById('p-stu-name')?.value || '').trim();
+      const dob = document.getElementById('p-stu-dob')?.value || '';
+      const age = parseInt(document.getElementById('p-stu-age')?.value) || 0;
       const requestedLevel = isTrainer ? 'Level 1' : (document.getElementById('p-stu-requested-level')?.value || 'Level 1');
 
-      const schoolName = document.getElementById('p-stu-school-name').value.trim();
-      const schoolAddress = document.getElementById('p-stu-school-address').value.trim();
-      const schoolContact = document.getElementById('p-stu-school-contact').value.trim();
-      const standard = document.getElementById('p-stu-standard').value.trim();
+      const schoolName = (document.getElementById('p-stu-school-name')?.value || '').trim();
+      const schoolAddress = (document.getElementById('p-stu-school-address')?.value || '').trim();
+      const schoolContact = (document.getElementById('p-stu-school-contact')?.value || '').trim();
+      const standard = (document.getElementById('p-stu-standard')?.value || '').trim();
 
-      const parentName = document.getElementById('p-stu-parent-name').value.trim();
-      const parentMobile = document.getElementById('p-stu-parent-mobile').value.trim();
-
-      const user = adminState.currentUser || { role: 'Admin' };
-      const isTrainer = (user.role === 'Trainer');
-      let trainerId = '', trainerName = '';
-      if (isTrainer) {
-        trainerId = user.id;
-        trainerName = user.name;
-      } else {
-        const trainerVal = document.getElementById('p-stu-trainer-select')?.value || '';
-        const parts = trainerVal.split('|');
-        trainerId = parts[0] || 'YAI-TR-MH-KOP-001';
-        trainerName = parts[1] || 'Ustad Rahul Shinde';
-      }
-
-      // Student automatically inherits State and District from the assigned trainer's official branch
-      const trainerObj = adminState.trainers.find(t => (t.trainerId || t.id) === trainerId) || (isTrainer ? user : null);
-      const stateName = trainerObj?.state || 'Maharashtra';
-      const districtName = trainerObj?.district || trainerObj?.branch || 'Kolhapur';
-      const city = districtName;
-      const stCode = trainerObj?.stateCode || 'MH';
-      const distCode = trainerObj?.districtCode || 'KOP';
+      const parentName = (document.getElementById('p-stu-parent-name')?.value || '').trim();
+      const parentMobile = (document.getElementById('p-stu-parent-mobile')?.value || '').trim();
 
       const admissionDate = document.getElementById('p-stu-admission-date')?.value || new Date().toISOString().split('T')[0];
       const status = 'Pending Approval';
@@ -6607,19 +6654,12 @@ lucide.createIcons();
       const filtered = adminState.students.filter(s => {
         if (isTrainer) {
           // STRICT TRAINER ISOLATION:
-          // A trainer sees ONLY students registered under their own Trainer ID
-          // AND matching their own district/branch!
+          // A trainer sees ONLY students registered under their own Trainer ID!
           const myId = (user.id || user.trainerId || '').trim().toUpperCase();
-          const myDist = (user.districtCode || '').trim().toUpperCase();
           const stuTrainerId = (s.trainerId || '').trim().toUpperCase();
-          const stuDist = (s.districtCode || '').trim().toUpperCase();
 
-          // 1. Strict Trainer ID match
+          // Strict Trainer ID match (Single Source of Truth)
           if (stuTrainerId !== myId) return false;
-
-          // 2. Strict District match - Kolhapur trainer CANNOT see Pune/Nashik students under any circumstance!
-          if (myDist && stuDist && stuDist !== myDist) return false;
-          if (myDist && s.studentId && !s.studentId.toUpperCase().includes(`-${myDist}-`)) return false;
         } else {
           // For Admin: main Students directory shows ONLY Active and Paid!
           const isApproved = (s.status === 'Active') && (s.feeStatus === 'Paid');
@@ -10368,7 +10408,8 @@ Official Tournament Entry Pass Confirmed & Synced to Central Server!`);
       
       // Live Sync all 13 points to Central Cloud Server
       syncToCloudServer({ 
-        type: "TRAINER_REGISTRATION_13_POINTS", 
+        type: "TRAINER_REGISTRATION_13_POINTS",
+        sendWelcomeEmail: true,
         ...trainerObj 
       });
 
@@ -10376,7 +10417,36 @@ Official Tournament Entry Pass Confirmed & Synced to Central Server!`);
       renderAdminTrainers();
       e.target.reset();
       closeFormModal('trainer');
-      alert(`✅ Certified Trainer Registered Successfully!\n\nName: ${fullName}\nTrainer ID: ${trainerId}\nPosition: ${position}\nDistrict: ${districtName}, ${stateName}\nMobile: ${mobile} | WhatsApp: ${whatsapp}\nLogin PIN: ${password}\n\nAll 13 data points synchronized to Central Cloud Server!`);
+
+      const waText = encodeURIComponent(
+        `🥋 *YODDHA ACADEMY INDIA - TRAINER CREDENTIALS*\n\n` +
+        `Congratulations *${fullName}* Sir! You have been appointed as *${position}* at *${districtName} Akhada*.\n\n` +
+        `🔐 *Your Official Login Details:*\n` +
+        `• *Trainer ID:* ${trainerId}\n` +
+        `• *Login PIN / Password:* ${password}\n` +
+        `• *Branch:* ${districtName} Akhada (${stateName})\n\n` +
+        `🌐 *Login Portal:* https://yoddhaacademyindia.github.io/\n\n` +
+        `Jai Hind! Jai Maharashtra! 🚩`
+      );
+      const waLink = whatsapp ? `https://wa.me/91${whatsapp.replace(/\D/g, '').slice(-10)}?text=${waText}` : null;
+
+      const userChoice = confirm(
+        `✅ Certified Trainer Registered Successfully!\n` +
+        `----------------------------------------\n` +
+        `Trainer Name: ${fullName}\n` +
+        `Trainer ID: ${trainerId}\n` +
+        `Login PIN: ${password}\n` +
+        `District: ${districtName}, ${stateName}\n` +
+        `Email: ${email}\n` +
+        `WhatsApp: ${whatsapp}\n\n` +
+        `✔ Welcome Email dispatched to: ${email}\n\n` +
+        `Would you like to send official Login Credentials to Trainer via WhatsApp now?`
+      );
+
+      if (userChoice && waLink) {
+        window.open(waLink, '_blank');
+      }
+
       navigateToPage('trainers');
     }
 

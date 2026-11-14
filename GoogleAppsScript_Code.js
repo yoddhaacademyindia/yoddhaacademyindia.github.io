@@ -84,6 +84,8 @@ function doGet(e) {
           var trnStatus = String(row[4] || "").trim();
           var trnName = String(row[2] || "").trim();
           var trnPosition = String(row[3] || "").trim();
+          var trnState = String(row[8] || "").trim();
+          var trnDistrict = String(row[9] || "").trim();
           var trnBranch = String(row[10] || "").trim();
 
           if (trnId.toLowerCase() === id.toLowerCase()) {
@@ -99,6 +101,8 @@ function doGet(e) {
                   userName: trnName,
                   position: trnPosition,
                   branch: trnBranch,
+                  state: trnState,
+                  district: trnDistrict,
                   message: "Trainer authentication successful"
                 };
               }
@@ -801,11 +805,23 @@ function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, p
     + '</div>'
     + '</div>';
 
-  MailApp.sendEmail({
-    to: toEmail,
-    subject: subject,
-    htmlBody: htmlBody
-  });
+  try {
+    MailApp.sendEmail({
+      to: toEmail,
+      subject: subject,
+      htmlBody: htmlBody,
+      name: "Yoddha Academy India"
+    });
+  } catch (err1) {
+    try {
+      GmailApp.sendEmail(toEmail, subject, "", {
+        htmlBody: htmlBody,
+        name: "Yoddha Academy India"
+      });
+    } catch (err2) {
+      Logger.log("Email error: " + err2.toString());
+    }
+  }
 }
 
 /**
@@ -843,11 +859,23 @@ function sendStudentAdmissionEmail(toEmail, studentName, studentId, level, train
     + '</div>'
     + '</div>';
 
-  MailApp.sendEmail({
-    to: toEmail,
-    subject: subject,
-    htmlBody: htmlBody
-  });
+  try {
+    MailApp.sendEmail({
+      to: toEmail,
+      subject: subject,
+      htmlBody: htmlBody,
+      name: "Yoddha Academy India"
+    });
+  } catch (err1) {
+    try {
+      GmailApp.sendEmail(toEmail, subject, "", {
+        htmlBody: htmlBody,
+        name: "Yoddha Academy India"
+      });
+    } catch (err2) {
+      Logger.log("Email error: " + err2.toString());
+    }
+  }
 }
 
 // -------------------------------------------------------------------------
