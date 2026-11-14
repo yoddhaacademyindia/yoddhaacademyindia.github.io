@@ -88,10 +88,14 @@
       }
       #modal-belt-certificate,
       #modal-belt-certificate #printable-certificate,
-      #modal-belt-certificate #printable-certificate * {
+      #modal-belt-certificate #printable-certificate *,
+      #modal-trainer-profile,
+      #modal-trainer-profile #trainer-affiliation-cert-paper,
+      #modal-trainer-profile #trainer-affiliation-cert-paper * {
         visibility: visible !important;
       }
-      #modal-belt-certificate {
+      #modal-belt-certificate,
+      #modal-trainer-profile.is-printing {
         position: fixed !important;
         left: 0 !important;
         top: 0 !important;
@@ -105,7 +109,9 @@
         align-items: center !important;
         justify-content: center !important;
       }
-      #modal-belt-certificate .bg-slate-900 {
+      #modal-belt-certificate .bg-slate-900,
+      #modal-trainer-profile .bg-gradient-to-r,
+      #modal-trainer-profile .border-t-2 {
         display: none !important;
       }
       #printable-certificate {
@@ -308,7 +314,7 @@
               </div>
             </div>
 
-            <!-- Metric 2: Total Trainers (Non-clickable Count Display) -->
+            <!-- Metric 2 (Admin View): Total Trainers -->
             <div id="top-metric-trainers-card" class="bg-white border-2 border-orange-100 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm relative overflow-hidden flex flex-col justify-between">
               <div class="flex justify-between items-start">
                 <div class="min-w-0">
@@ -322,6 +328,30 @@
               <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] sm:text-xs font-bold text-slate-500">
                 <span class="text-slate-600 font-medium truncate">All State Akhadas</span>
                 <span class="text-[9px] bg-slate-100 px-2 py-0.5 rounded text-slate-500">Count Only</span>
+              </div>
+            </div>
+
+            <!-- Metric 2 (Trainer View): My Profile & Affiliation Certificate (Clickable Box) -->
+            <div id="top-metric-profile-card" onclick="openTrainerProfileModal()" class="hidden bg-gradient-to-tr from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border-2 border-orange-200 hover:border-orange-400 rounded-2xl sm:rounded-3xl p-2.5 sm:p-6 shadow-sm hover:shadow-md transition-all active:scale-95 cursor-pointer relative overflow-hidden flex flex-col justify-between group">
+              <div class="flex justify-between items-start">
+                <div class="min-w-0">
+                  <p class="text-[9px] sm:text-xs font-black uppercase tracking-wider text-orange-700 truncate flex items-center gap-1">
+                    <span>Trainer Profile</span>
+                    <i data-lucide="external-link" class="w-3 h-3 text-orange-500 group-hover:translate-x-0.5 transition-transform"></i>
+                  </p>
+                  <h3 id="stat-top-trainer-name" class="text-sm sm:text-2xl font-black text-slate-900 font-rajdhani mt-0.5 sm:mt-1.5 truncate">My Profile</h3>
+                  <span id="stat-top-trainer-id" class="text-[9.5px] sm:text-xs font-mono font-bold text-orange-800 bg-orange-200/60 px-2 py-0.5 rounded-md mt-1 inline-block truncate">YAI-TR-001</span>
+                </div>
+                <div class="p-1 sm:p-3.5 bg-gradient-to-tr from-orange-500 to-amber-500 text-white rounded-lg sm:rounded-2xl shadow-sm group-hover:scale-105 transition-transform flex-shrink-0">
+                  <i data-lucide="user-check" class="w-3.5 h-3.5 sm:w-7 sm:h-7"></i>
+                </div>
+              </div>
+              <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-orange-200/60 flex justify-between items-center text-[10px] sm:text-xs font-bold text-orange-950">
+                <span class="text-orange-800 font-medium truncate flex items-center gap-1">
+                  <i data-lucide="award" class="w-3 h-3 text-amber-600"></i>
+                  <span>Official Certificate</span>
+                </span>
+                <span class="text-[9px] bg-orange-600 text-white font-black px-2 py-0.5 rounded-full shadow-2xs">View / Edit ➔</span>
               </div>
             </div>
 
@@ -358,6 +388,10 @@
             <button id="nav-section-students" onclick="navigateToPage('students')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group">
               <i data-lucide="users" class="w-4 h-4 text-orange-600 group-hover:text-white transition-colors"></i>
               <span class="truncate">Students</span>
+            </button>
+            <button id="nav-section-profile" onclick="openTrainerProfileModal()" class="hidden py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white border-2 border-orange-400 shadow-md transform active:scale-95 group">
+              <i data-lucide="user-check" class="w-4 h-4 text-white"></i>
+              <span class="truncate">Profile</span>
             </button>
             <button id="nav-section-verify" onclick="navigateToPage('verification')" class="py-2.5 px-2 rounded-xl sm:rounded-2xl text-[11px] sm:text-sm font-extrabold transition-all duration-300 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 bg-slate-50 text-slate-800 hover:bg-gradient-to-r hover:from-orange-500 hover:to-amber-500 hover:text-white border-2 border-orange-100 hover:border-orange-500 hover:shadow-lg transform active:scale-95 group relative">
               <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 group-hover:text-white transition-colors"></i>
@@ -1029,13 +1063,16 @@
             <!-- 3. Date of Birth -->
             <div>
               <label class="block font-bold text-slate-700 mb-1">Date of Birth (DOB) *</label>
-              <input type="date" id="p-stu-dob" required onchange="calculateAgeFromDOB()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold focus:outline-none focus:border-orange-500">
+              <input type="date" id="p-stu-dob" required onchange="calculateAgeFromDOB()" oninput="calculateAgeFromDOB()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold focus:outline-none focus:border-orange-500">
             </div>
 
-            <!-- 4. Age -->
+            <!-- 4. Age (Auto-calculated from DOB) -->
             <div>
-              <label class="block font-bold text-slate-700 mb-1">Age (Years) *</label>
-              <input type="number" id="p-stu-age" required min="4" max="70" placeholder="e.g. 14" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500">
+              <label class="block font-bold text-slate-700 mb-1 flex items-center justify-between">
+                <span>Age (Years) *</span>
+                <span class="text-[9.5px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Auto-Calculated</span>
+              </label>
+              <input type="number" id="p-stu-age" required min="3" max="90" placeholder="Auto-calculated" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500">
             </div>
 
             <!-- 31. Student Photo Upload (With Live Preview for ID Card) -->
@@ -1148,10 +1185,27 @@
               <input type="text" id="p-stu-school-name" required placeholder="e.g. Shivaji Vidyalaya High School" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold focus:outline-none focus:border-orange-500">
             </div>
 
-            <!-- 18. Standard -->
+            <!-- 18. Standard (Dropdown) -->
             <div>
               <label class="block font-bold text-slate-700 mb-1">Standard (Grade/Class) *</label>
-              <input type="text" id="p-stu-standard" required placeholder="e.g. 8th Standard" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold focus:outline-none focus:border-orange-500">
+              <select id="p-stu-standard" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold focus:outline-none focus:border-orange-500">
+                <option value="" disabled selected>Select Standard / Grade</option>
+                <option value="1st Standard">1st Standard</option>
+                <option value="2nd Standard">2nd Standard</option>
+                <option value="3rd Standard">3rd Standard</option>
+                <option value="4th Standard">4th Standard</option>
+                <option value="5th Standard">5th Standard</option>
+                <option value="6th Standard">6th Standard</option>
+                <option value="7th Standard">7th Standard</option>
+                <option value="8th Standard">8th Standard</option>
+                <option value="9th Standard">9th Standard</option>
+                <option value="10th Standard">10th Standard</option>
+                <option value="11th Standard">11th Standard</option>
+                <option value="12th Standard">12th Standard</option>
+                <option value="College / Graduate">College / Graduate</option>
+                <option value="Working Professional / Adult">Working Professional / Adult</option>
+                <option value="Other">Other</option>
+              </select>
             </div>
 
             <!-- 17. School Contact -->
@@ -1216,20 +1270,13 @@
             </div>
 
             <!-- 23. Admission Date -->
-            <div>
+            <div class="sm:col-span-2">
               <label class="block font-bold text-slate-700 mb-1">Admission Date *</label>
               <input type="date" id="p-stu-admission-date" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold focus:outline-none focus:border-orange-500">
             </div>
 
-            <!-- 27. Status -->
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Status *</label>
-              <select id="p-stu-status" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500">
-                <option value="Pending Approval" selected>Pending Approval</option>
-                <option value="Active">Active</option>
-                <option value="Completed">Completed</option>
-              </select>
-            </div>
+            <!-- 27. Status (Managed exclusively by Admin upon verification) -->
+            <input type="hidden" id="p-stu-status" value="Pending Approval">
           </div>
         </div>
 
@@ -4383,6 +4430,300 @@ function getOrCreateSheet(ss, sheetName, headers) {
     </div>
   </div>
 
+  <!-- ================= 15. TRAINER PROFILE & AFFILIATION CERTIFICATE MODAL ================= -->
+  <div id="modal-trainer-profile" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-4xl w-full border-2 border-orange-200 shadow-2xl overflow-hidden flex flex-col max-h-[96vh] animate-modal-enter">
+      
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 text-white px-4 sm:px-6 py-3.5 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center border border-white/20">
+            <i data-lucide="user-check" class="w-5 h-5 text-amber-200"></i>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-sm sm:text-lg font-rajdhani leading-tight tracking-wide">Trainer Profile & Official Affiliation</h3>
+            <p class="text-[10px] sm:text-xs text-orange-100 font-medium">Yoddha Academy India • Central Directorate of Martial Arts</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-trainer-profile')" class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition active:scale-95 cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-4 sm:p-6 overflow-y-auto space-y-6">
+        
+        <!-- SECTION 1: TRAINER DETAILS & EDITABLE FORM -->
+        <div class="bg-gradient-to-br from-amber-50/60 via-white to-orange-50/60 border-2 border-orange-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+          
+          <!-- Trainer Overview Banner -->
+          <div class="flex flex-col sm:flex-row items-center gap-4 pb-5 border-b border-orange-200/80">
+            <!-- Avatar / Photo -->
+            <div class="relative group">
+              <div id="tr-prof-avatar-box" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 text-white flex items-center justify-center font-black font-rajdhani text-2xl sm:text-3xl shadow-md border-2 border-white overflow-hidden">
+                <span id="tr-prof-avatar-initials">TR</span>
+              </div>
+            </div>
+            
+            <div class="text-center sm:text-left flex-1 min-w-0">
+              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                <h4 id="tr-prof-display-name" class="text-lg sm:text-2xl font-black text-slate-900 font-rajdhani">Trainer Profile</h4>
+                <span id="tr-prof-status-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">● Active Certified Trainer</span>
+              </div>
+              <p id="tr-prof-display-branch" class="text-xs sm:text-sm text-slate-600 font-semibold mt-0.5">Central Akhada • Maharashtra</p>
+              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2">
+                <span class="text-[10px] font-mono font-bold bg-orange-100 text-orange-900 px-2 py-0.5 rounded border border-orange-300" id="tr-prof-display-id">ID: YAI-TR-MH-KOP-001</span>
+                <span class="text-[10px] font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded" id="tr-prof-students-badge">Warriors Enrolled</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Profile Form -->
+          <form id="form-trainer-profile" onsubmit="saveTrainerProfileChanges(event)" class="mt-5 space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              
+              <!-- 1. Full Name -->
+              <div>
+                <label class="block font-bold text-xs sm:text-sm text-slate-700 mb-1">Trainer Full Name *</label>
+                <input type="text" id="tr-prof-name" required placeholder="e.g. Ustad Rahul Shinde" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+              </div>
+
+              <!-- 2. Position / Designation -->
+              <div>
+                <label class="block font-bold text-xs sm:text-sm text-slate-700 mb-1">Official Position / Title *</label>
+                <input type="text" id="tr-prof-position" required placeholder="e.g. Chief Instructor / Master Dan" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+              </div>
+
+              <!-- 3. Mobile Number -->
+              <div>
+                <label class="block font-bold text-xs sm:text-sm text-slate-700 mb-1">Contact Mobile Number *</label>
+                <input type="tel" id="tr-prof-mobile" required maxlength="10" placeholder="10-digit mobile number" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+              </div>
+
+              <!-- 4. WhatsApp Number -->
+              <div>
+                <label class="block font-bold text-xs sm:text-sm text-slate-700 mb-1">WhatsApp Number *</label>
+                <input type="tel" id="tr-prof-whatsapp" required maxlength="10" placeholder="WhatsApp number" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+              </div>
+
+              <!-- 5. Email Address -->
+              <div>
+                <label class="block font-bold text-xs sm:text-sm text-slate-700 mb-1">Official Email Address *</label>
+                <input type="email" id="tr-prof-email" required placeholder="trainer@yoddha.org" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+              </div>
+
+              <!-- 6. Branch / Akhada Name -->
+              <div>
+                <label class="block font-bold text-xs sm:text-sm text-slate-700 mb-1">Branch / Akhada Name *</label>
+                <input type="text" id="tr-prof-branch" required placeholder="e.g. Kolhapur Akhada" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+              </div>
+
+              <!-- 7. State & District -->
+              <div>
+                <label class="block font-bold text-xs sm:text-sm text-slate-700 mb-1">State *</label>
+                <input type="text" id="tr-prof-state" required placeholder="e.g. Maharashtra" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+              </div>
+
+              <div>
+                <label class="block font-bold text-xs sm:text-sm text-slate-700 mb-1">District *</label>
+                <input type="text" id="tr-prof-district" required placeholder="e.g. Kolhapur" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+              </div>
+
+              <!-- 8. Akhada Address -->
+              <div class="sm:col-span-2">
+                <label class="block font-bold text-xs sm:text-sm text-slate-700 mb-1">Official Training Center Address *</label>
+                <input type="text" id="tr-prof-address" required placeholder="Campus, Landmark, City, Pincode" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+              </div>
+
+              <!-- 9. Experience & Martial Arts Specialization -->
+              <div>
+                <label class="block font-bold text-xs sm:text-sm text-slate-700 mb-1">Experience & Dan Rank *</label>
+                <input type="text" id="tr-prof-experience" placeholder="e.g. 8+ Years, Senior Black Belt Dan" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+              </div>
+
+              <!-- 10. Login PIN / Password -->
+              <div>
+                <label class="block font-bold text-xs sm:text-sm text-slate-700 mb-1">Login PIN / Password *</label>
+                <input type="text" id="tr-prof-password" required placeholder="Login PIN / Password" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-mono font-bold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+              </div>
+
+            </div>
+
+            <!-- Submit Button for Profile -->
+            <div class="pt-2 flex justify-end">
+              <button type="submit" id="btn-save-trainer-profile" class="px-5 py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-2 cursor-pointer">
+                <i data-lucide="save" class="w-4 h-4"></i>
+                <span>Save & Update Profile</span>
+              </button>
+            </div>
+          </form>
+
+        </div>
+
+        <!-- SECTION 2: OFFICIAL A4 AFFILIATION CERTIFICATE (MANYATA PRAMANPATRA) -->
+        <div class="border-t-2 border-orange-200 pt-6 space-y-4">
+          
+          <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200">
+            <div>
+              <h4 class="text-base sm:text-lg font-black text-slate-900 font-rajdhani flex items-center gap-2">
+                <i data-lucide="award" class="w-5 h-5 text-amber-600"></i>
+                <span>Official Affiliation & Recognition Certificate (मान्यता प्रमाणपत्र)</span>
+              </h4>
+              <p class="text-[11px] sm:text-xs text-slate-600 font-medium">
+                Official A4 Size Accreditation Document issued by Yoddha Academy India
+              </p>
+            </div>
+            
+            <!-- Certificate Action Buttons -->
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="downloadTrainerAffiliationCertificate()" id="btn-dl-trainer-cert" class="px-4 py-2 bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-700 hover:to-orange-700 text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                <span>Download A4 Certificate (PNG)</span>
+              </button>
+              <button type="button" onclick="printTrainerAffiliationCertificate()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shadow-md transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="printer" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">Print (A4)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Printable / Visual Certificate Container -->
+          <div id="trainer-affiliation-cert-wrapper" class="bg-amber-100/40 p-2 sm:p-5 rounded-2xl border-2 border-amber-300 flex items-center justify-center overflow-x-auto">
+            
+            <!-- Royal A4 Landscape Frame -->
+            <div id="trainer-affiliation-cert-paper" class="w-full max-w-3xl bg-white border-4 sm:border-8 border-amber-600 rounded-2xl p-5 sm:p-8 shadow-xl relative overflow-hidden text-center space-y-3.5">
+              
+              <!-- Inner Double Gold Border -->
+              <div class="absolute inset-2 border-2 border-amber-300 pointer-events-none rounded-xl"></div>
+              <div class="absolute inset-3.5 border border-dashed border-amber-400/50 pointer-events-none rounded-lg"></div>
+
+              <!-- Watermark Background Emblem -->
+              <div class="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none select-none">
+                <span class="text-8xl sm:text-9xl font-black font-rajdhani text-orange-950">YODDHA</span>
+              </div>
+
+              <!-- Certificate Header -->
+              <div class="relative z-10 space-y-1">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full text-[9px] sm:text-[11px] font-black uppercase tracking-wider shadow-sm">
+                  <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                  <span>Govt. Regd. National Martial Arts Training Council</span>
+                </div>
+                
+                <h2 class="text-xl sm:text-3xl font-black text-amber-950 tracking-wider font-rajdhani mt-2 uppercase">
+                  YODDHA ACADEMY INDIA
+                </h2>
+                <p class="text-[9.5px] sm:text-xs font-bold text-orange-800 uppercase tracking-widest">
+                  Central Headquarters • Directorate of Traditional Martial Arts & Defence
+                </p>
+                <div class="h-0.5 w-36 mx-auto bg-gradient-to-r from-transparent via-amber-500 to-transparent my-1"></div>
+              </div>
+
+              <!-- Certificate Title -->
+              <div class="relative z-10 pt-1">
+                <span class="text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-500">Official Accreditation</span>
+                <h3 class="text-sm sm:text-xl font-extrabold text-orange-700 font-rajdhani uppercase tracking-wide">
+                  Certificate of Official Affiliation & Trainer Recognition
+                </h3>
+                <p class="text-[11px] sm:text-xs font-bold text-amber-900 mt-0.5">
+                  (अधिकृत शाखा प्रशिक्षक व संलग्नता मान्यता प्रमाणपत्र)
+                </p>
+              </div>
+
+              <!-- Certificate Recipient -->
+              <div class="relative z-10 py-1.5 space-y-1">
+                <p class="text-xs sm:text-sm text-slate-600 font-serif italic">This official credential is proud recognition of authorization granted to</p>
+                <h1 id="tr-cert-name" class="text-xl sm:text-3xl font-black text-slate-900 font-rajdhani underline decoration-amber-400 decoration-2 underline-offset-4 tracking-wide">
+                  Ustad Rahul Shinde
+                </h1>
+                <p id="tr-cert-designation" class="text-xs sm:text-sm font-bold text-orange-800">
+                  Certified Chief Trainer & Akhada Head
+                </p>
+              </div>
+
+              <!-- Empowerment / Legal Text -->
+              <div class="relative z-10 max-w-2xl mx-auto text-[11px] sm:text-xs text-slate-700 leading-relaxed font-medium">
+                <p>
+                  This is to certify that the above-named Master Instructor is recognized and officially affiliated with <strong class="text-orange-950 font-bold">Yoddha Academy India</strong> for the branch akhada at <strong id="tr-cert-branch" class="text-orange-950 font-bold">Kolhapur Akhada (Maharashtra)</strong>. He/She is fully authorized to impart authentic martial arts training, conduct student enrollments, and administer the official 10-Star Level Examinations under the authority and standards of the Academy.
+                </p>
+              </div>
+
+              <!-- Badges & Verification Details -->
+              <div class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 text-[10px] sm:text-xs font-bold">
+                <div class="bg-amber-50 p-2 rounded-xl border border-amber-200">
+                  <span class="text-slate-500 block text-[9px] uppercase">Accreditation ID</span>
+                  <span id="tr-cert-id" class="text-orange-950 font-mono font-black">YAI-TR-MH-KOP-001</span>
+                </div>
+                <div class="bg-amber-50 p-2 rounded-xl border border-amber-200">
+                  <span class="text-slate-500 block text-[9px] uppercase">Affiliation Status</span>
+                  <span class="text-emerald-700 font-black">Active & Authorized</span>
+                </div>
+                <div class="bg-amber-50 p-2 rounded-xl border border-amber-200">
+                  <span class="text-slate-500 block text-[9px] uppercase">Date of Issue</span>
+                  <span id="tr-cert-date" class="text-slate-900 font-black">14-Nov-2026</span>
+                </div>
+                <div class="bg-amber-50 p-2 rounded-xl border border-amber-200">
+                  <span class="text-slate-500 block text-[9px] uppercase">Valid Across</span>
+                  <span class="text-slate-900 font-black">All India (National)</span>
+                </div>
+              </div>
+
+              <!-- Signatures & Golden Seal -->
+              <div class="relative z-10 pt-4 flex justify-between items-end border-t border-amber-200/80">
+                <!-- Sig 1: Technical Director -->
+                <div class="text-center w-36 sm:w-44">
+                  <div class="h-8 flex items-center justify-center font-serif italic text-sm text-slate-700">
+                    S. M. Bhosale
+                  </div>
+                  <div class="border-t border-slate-400 pt-0.5">
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-800">Technical Director</p>
+                    <p class="text-[8px] sm:text-[9px] text-slate-500">Board of Examinations</p>
+                  </div>
+                </div>
+
+                <!-- Golden Seal Center -->
+                <div class="flex flex-col items-center">
+                  <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 p-0.5 shadow-lg flex items-center justify-center border-2 border-white">
+                    <div class="w-full h-full rounded-full border border-dashed border-amber-900 flex flex-col items-center justify-center bg-gradient-to-b from-amber-400 to-amber-500 text-amber-950 font-black text-[7.5px] sm:text-[8px] uppercase tracking-tighter leading-none p-1">
+                      <span>★ OFFICIAL ★</span>
+                      <span class="text-[9px] font-black my-0.5">SEAL</span>
+                      <span>YODDHA</span>
+                    </div>
+                  </div>
+                  <span class="text-[8px] font-bold text-amber-900 mt-1 uppercase tracking-wider">Accredited Body</span>
+                </div>
+
+                <!-- Sig 2: Grandmaster / Founder -->
+                <div class="text-center w-36 sm:w-44">
+                  <div class="h-8 flex items-center justify-center font-serif italic text-sm text-slate-700">
+                    Grandmaster YAI
+                  </div>
+                  <div class="border-t border-slate-400 pt-0.5">
+                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-800">Founder & Grandmaster</p>
+                    <p class="text-[8px] sm:text-[9px] text-slate-500">Yoddha Academy India</p>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-slate-50 px-4 py-3 border-t border-slate-200 flex justify-between items-center">
+        <span class="text-[11px] text-slate-500 font-medium">Yoddha Academy India • Authorized Trainer Management</span>
+        <button onclick="closeModal('modal-trainer-profile')" class="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs rounded-xl transition cursor-pointer">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ================= JAVASCRIPT STATE & LOGIC ================= -->
   <script>
     // ALL INDIA STATES & DISTRICTS DATABASE (WITH OFFICIAL 2-LETTER STATE & 3-LETTER DISTRICT CODES)
@@ -5493,20 +5834,23 @@ function getOrCreateSheet(ss, sheetName, headers) {
         indicatorEl.textContent = isTrainer ? `Trainer Panel (${user.name})` : 'Admin Panel (Central HQ)';
       }
 
-      // Toggle View Data Sections for Trainer (hide Verify and Trainers, show 4 boxes)
+      // Toggle View Data Sections for Trainer (hide Verify and Trainers, show 5 boxes including Profile)
       const btnVerify = document.getElementById('nav-section-verify');
       const btnTrainers = document.getElementById('nav-section-trainers');
+      const btnProfile = document.getElementById('nav-section-profile');
       const navGrid = document.getElementById('nav-sections-grid');
       const navBadge = document.getElementById('nav-sections-badge');
 
       if (isTrainer) {
         if (btnVerify) btnVerify.classList.add('hidden');
         if (btnTrainers) btnTrainers.classList.add('hidden');
-        if (navGrid) navGrid.className = "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-2 sm:gap-3";
-        if (navBadge) navBadge.innerText = "4 Dedicated Pages";
+        if (btnProfile) btnProfile.classList.remove('hidden');
+        if (navGrid) navGrid.className = "grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-5 gap-2 sm:gap-3";
+        if (navBadge) navBadge.innerText = "5 Dedicated Sections";
       } else {
         if (btnVerify) btnVerify.classList.remove('hidden');
         if (btnTrainers) btnTrainers.classList.remove('hidden');
+        if (btnProfile) btnProfile.classList.add('hidden');
         if (navGrid) navGrid.className = "grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3";
         if (navBadge) navBadge.innerText = "6 Dedicated Pages";
       }
@@ -5591,13 +5935,21 @@ lucide.createIcons();
       const isTrainer = (user.role === 'Trainer');
       const metricsGrid = document.getElementById('top-metrics-grid');
       const trainersCard = document.getElementById('top-metric-trainers-card');
+      const profileCard = document.getElementById('top-metric-profile-card');
       const studentsLabel = document.getElementById('stat-top-students-label');
       const studentsSub = document.getElementById('stat-top-students-sub');
 
       if (isTrainer) {
-        // TRAINER VIEW: Exactly 2 boxes (Students assigned to this trainer, and Courses). Trainers box is completely removed!
+        // TRAINER VIEW: 3 boxes (My Students, Trainer Profile, Total Courses)
         if (trainersCard) trainersCard.classList.add('hidden');
-        if (metricsGrid) metricsGrid.className = "grid grid-cols-2 gap-3 sm:gap-6";
+        if (profileCard) {
+          profileCard.classList.remove('hidden');
+          const trainerNameEl = document.getElementById('stat-top-trainer-name');
+          const trainerIdEl = document.getElementById('stat-top-trainer-id');
+          if (trainerNameEl) trainerNameEl.innerText = user.name || user.fullName || 'My Profile';
+          if (trainerIdEl) trainerIdEl.innerText = user.id || user.trainerId || 'YAI-TR-001';
+        }
+        if (metricsGrid) metricsGrid.className = "grid grid-cols-3 gap-2 sm:gap-6";
 
         // Filter only this trainer's students
         const myTId = (user.id || user.trainerId || '').trim().toUpperCase();
@@ -5617,6 +5969,7 @@ lucide.createIcons();
       } else {
         // ADMIN VIEW: 3 boxes (All Students, All Trainers, All Courses)
         if (trainersCard) trainersCard.classList.remove('hidden');
+        if (profileCard) profileCard.classList.add('hidden');
         if (metricsGrid) metricsGrid.className = "grid grid-cols-3 gap-2 sm:gap-6";
 
         document.getElementById('stat-top-students').innerText = adminState.students.length;
@@ -5761,15 +6114,25 @@ lucide.createIcons();
       }
     }
 
-    // Auto-calculate Age from DOB
+    // Auto-calculate exact Age from DOB
     function calculateAgeFromDOB() {
-      const dobVal = document.getElementById('p-stu-dob').value;
+      const dobInput = document.getElementById('p-stu-dob');
+      const ageInput = document.getElementById('p-stu-age');
+      if (!dobInput || !ageInput) return;
+      const dobVal = dobInput.value;
       if (!dobVal) return;
       const dob = new Date(dobVal);
-      const diffMs = Date.now() - dob.getTime();
-      const ageDt = new Date(diffMs);
-      const calculatedAge = Math.abs(ageDt.getUTCFullYear() - 1970);
-      document.getElementById('p-stu-age').value = calculatedAge;
+      if (isNaN(dob.getTime())) return;
+      
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+      }
+      if (age >= 0 && age < 120) {
+        ageInput.value = age;
+      }
     }
 
     // Helper to generate dynamic Trainer ID
@@ -9954,6 +10317,502 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       renderAdminTrainers();
       closeModal('modal-edit-trainer');
       alert(`✅ Trainer Details Updated Successfully!\n\nTrainer ID: ${trainerId}\nName: ${fullName}\nMobile: ${mobile} | WhatsApp: ${whatsapp}\nBranch: ${districtName} (${stateName})\nStatus: ${status}\n\nAll changes updated in Central Cloud Records successfully without duplicate rows!`);
+    }
+
+    // =========================================================================
+    // 🥋 TRAINER PROFILE & OFFICIAL AFFILIATION CERTIFICATE (MANYATA PRAMANPATRA)
+    // =========================================================================
+    function openTrainerProfileModal() {
+      const user = adminState.currentUser || { role: 'Trainer', id: 'YAI-TR-MH-KOP-001', name: 'Ustad Rahul Shinde' };
+      const tId = (user.id || user.trainerId || '').trim().toUpperCase();
+      const tr = adminState.trainers.find(t => (t.id || t.trainerId || '').trim().toUpperCase() === tId) || user;
+
+      // 1. Overview Banner
+      const name = tr.fullName || tr.name || user.name || 'Certified Trainer';
+      const initials = name.trim().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+      
+      const avatarBox = document.getElementById('tr-prof-avatar-box');
+      if (avatarBox) {
+        if (tr.photo) {
+          avatarBox.innerHTML = `<img src="${tr.photo}" alt="${name}" class="w-full h-full object-cover">`;
+        } else {
+          avatarBox.innerHTML = `<span id="tr-prof-avatar-initials">${initials || 'TR'}</span>`;
+        }
+      }
+
+      const dispNameEl = document.getElementById('tr-prof-display-name');
+      const dispBranchEl = document.getElementById('tr-prof-display-branch');
+      const dispIdEl = document.getElementById('tr-prof-display-id');
+      const stuBadgeEl = document.getElementById('tr-prof-students-badge');
+      const statusBadgeEl = document.getElementById('tr-prof-status-badge');
+
+      if (dispNameEl) dispNameEl.innerText = name;
+      if (dispBranchEl) dispBranchEl.innerText = `${tr.branch || ((tr.district || 'Kolhapur') + ' Akhada')} • ${tr.state || 'Maharashtra'}`;
+      if (dispIdEl) dispIdEl.innerText = `ID: ${tr.id || tr.trainerId || 'YAI-TR-MH-KOP-001'}`;
+
+      // Calculate my warriors
+      const myStudents = adminState.students.filter(s => {
+        const sTId = (s.trainerId || '').trim().toUpperCase();
+        return sTId === tId;
+      });
+      if (stuBadgeEl) stuBadgeEl.innerText = `${myStudents.length} Warriors Enrolled`;
+      if (statusBadgeEl) statusBadgeEl.innerText = `● ${tr.status || 'Active'} Certified Trainer`;
+
+      // 2. Populate Form Inputs
+      const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val !== undefined ? val : ''; };
+      setVal('tr-prof-name', name);
+      setVal('tr-prof-position', tr.position || 'Branch Instructor & Chief Trainer');
+      setVal('tr-prof-mobile', tr.mobile || tr.phone || '');
+      setVal('tr-prof-whatsapp', tr.whatsapp || tr.mobile || tr.phone || '');
+      setVal('tr-prof-email', tr.email || '');
+      setVal('tr-prof-branch', tr.branch || `${tr.district || 'Kolhapur'} Akhada`);
+      setVal('tr-prof-state', tr.state || 'Maharashtra');
+      setVal('tr-prof-district', tr.district || 'Kolhapur');
+      setVal('tr-prof-address', tr.address || `${tr.branch || 'Kolhapur Akhada'}, ${tr.district || 'Kolhapur'}, ${tr.state || 'Maharashtra'}`);
+      setVal('tr-prof-experience', tr.experience || '8+ Years (Senior Black Belt / Master Dan)');
+      setVal('tr-prof-password', tr.password || tr.pin || '1234');
+
+      // 3. Populate A4 Affiliation Certificate Elements
+      const certNameEl = document.getElementById('tr-cert-name');
+      const certDesigEl = document.getElementById('tr-cert-designation');
+      const certBranchEl = document.getElementById('tr-cert-branch');
+      const certIdEl = document.getElementById('tr-cert-id');
+      const certDateEl = document.getElementById('tr-cert-date');
+
+      if (certNameEl) certNameEl.innerText = name;
+      if (certDesigEl) certDesigEl.innerText = tr.position || 'Certified Chief Trainer & Akhada Head';
+      if (certBranchEl) certBranchEl.innerText = `${tr.branch || (tr.district + ' Akhada')}, ${tr.district || 'Kolhapur'} (${tr.state || 'Maharashtra'})`;
+      if (certIdEl) certIdEl.innerText = tr.id || tr.trainerId || 'YAI-TR-MH-KOP-001';
+      if (certDateEl) {
+        const today = new Date();
+        certDateEl.innerText = today.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      }
+
+      openModal('modal-trainer-profile');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function saveTrainerProfileChanges(event) {
+      if (event) event.preventDefault();
+
+      const user = adminState.currentUser || { role: 'Trainer', id: 'YAI-TR-MH-KOP-001' };
+      const tId = (user.id || user.trainerId || '').trim().toUpperCase();
+
+      const name = (document.getElementById('tr-prof-name')?.value || '').trim();
+      const position = (document.getElementById('tr-prof-position')?.value || '').trim();
+      const mobile = (document.getElementById('tr-prof-mobile')?.value || '').trim();
+      const whatsapp = (document.getElementById('tr-prof-whatsapp')?.value || '').trim();
+      const email = (document.getElementById('tr-prof-email')?.value || '').trim();
+      const branch = (document.getElementById('tr-prof-branch')?.value || '').trim();
+      const state = (document.getElementById('tr-prof-state')?.value || '').trim();
+      const district = (document.getElementById('tr-prof-district')?.value || '').trim();
+      const address = (document.getElementById('tr-prof-address')?.value || '').trim();
+      const experience = (document.getElementById('tr-prof-experience')?.value || '').trim();
+      const password = (document.getElementById('tr-prof-password')?.value || '').trim() || '1234';
+
+      if (!name || !mobile) {
+        alert("Please enter Trainer Full Name and Mobile Number!");
+        return;
+      }
+
+      // Update trainer in adminState.trainers
+      let trIdx = adminState.trainers.findIndex(t => (t.id || t.trainerId || '').trim().toUpperCase() === tId);
+      let updatedTrainer = {
+        ...(trIdx >= 0 ? adminState.trainers[trIdx] : user),
+        id: tId,
+        trainerId: tId,
+        name,
+        fullName: name,
+        position,
+        mobile,
+        phone: mobile,
+        whatsapp,
+        email,
+        branch,
+        state,
+        district,
+        address,
+        experience,
+        password,
+        pin: password
+      };
+
+      if (trIdx >= 0) {
+        adminState.trainers[trIdx] = updatedTrainer;
+      } else {
+        adminState.trainers.push(updatedTrainer);
+      }
+
+      // Update currentUser session
+      adminState.currentUser = {
+        ...adminState.currentUser,
+        name,
+        fullName: name,
+        position,
+        mobile,
+        phone: mobile,
+        whatsapp,
+        email,
+        branch,
+        state,
+        district,
+        address,
+        experience,
+        password,
+        pin: password
+      };
+
+      // Save to localStorage
+      saveAdminState();
+
+      // Sync to Central Google Sheets Cloud
+      if (typeof syncToCloudServer === 'function') {
+        syncToCloudServer({
+          type: "TRAINER_UPDATE_IN_PLACE",
+          trainerId: tId,
+          id: tId,
+          fullName: name,
+          name: name,
+          position,
+          mobile,
+          phone: mobile,
+          whatsapp,
+          email,
+          state,
+          district,
+          branch,
+          address,
+          password,
+          pin: password
+        });
+      }
+
+      // Update top bar & top metrics UI
+      const headerNameEl = document.getElementById('portal-user-name');
+      const headerSubEl = document.getElementById('portal-subtitle-text');
+      if (headerNameEl) headerNameEl.textContent = name;
+      if (headerSubEl) {
+        headerSubEl.innerHTML = `<span>${branch}</span><span class="text-slate-300 hidden sm:inline">•</span><span class="text-orange-600 font-bold hidden sm:inline">Certified Trainer Control</span>`;
+      }
+
+      updateTopMetrics();
+
+      // Update certificate live preview inside modal
+      const certNameEl = document.getElementById('tr-cert-name');
+      const certDesigEl = document.getElementById('tr-cert-designation');
+      const certBranchEl = document.getElementById('tr-cert-branch');
+      if (certNameEl) certNameEl.innerText = name;
+      if (certDesigEl) certDesigEl.innerText = position;
+      if (certBranchEl) certBranchEl.innerText = `${branch}, ${district} (${state})`;
+
+      const dispNameEl = document.getElementById('tr-prof-display-name');
+      const dispBranchEl = document.getElementById('tr-prof-display-branch');
+      if (dispNameEl) dispNameEl.innerText = name;
+      if (dispBranchEl) dispBranchEl.innerText = `${branch} • ${state}`;
+
+      alert("✅ Trainer Profile & Accreditation Record updated and saved successfully!");
+    }
+
+    function printTrainerAffiliationCertificate() {
+      const modal = document.getElementById('modal-trainer-profile');
+      if (modal) modal.classList.add('is-printing');
+      window.print();
+      setTimeout(() => {
+        if (modal) modal.classList.remove('is-printing');
+      }, 1000);
+    }
+
+    function downloadTrainerAffiliationCertificate() {
+      const user = adminState.currentUser || { role: 'Trainer', id: 'YAI-TR-MH-KOP-001', name: 'Ustad Rahul Shinde' };
+      const tId = (user.id || user.trainerId || 'YAI-TR-001').trim().toUpperCase();
+      const tr = adminState.trainers.find(t => (t.id || t.trainerId || '').trim().toUpperCase() === tId) || user;
+
+      const btn = document.getElementById('btn-dl-trainer-cert');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-white"></i><span>⏳ Generating High-Res A4 PNG...</span>';
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 2100;
+      canvas.height = 1485;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+
+      const trainerName = tr.fullName || tr.name || 'Certified Trainer';
+      const position = tr.position || 'Certified Chief Trainer & Akhada Head';
+      const branch = tr.branch || `${tr.district || 'Kolhapur'} Akhada`;
+      const district = tr.district || 'Kolhapur';
+      const state = tr.state || 'Maharashtra';
+      const today = new Date();
+      const dateStr = today.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      // 1. Background Parchment Texture
+      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+      bgGrad.addColorStop(0, '#fefdfa');
+      bgGrad.addColorStop(0.5, '#ffffff');
+      bgGrad.addColorStop(1, '#fef9ee');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // 2. Heavy Royal Border Frame
+      ctx.strokeStyle = '#7c2d12';
+      ctx.lineWidth = 16;
+      ctx.strokeRect(36, 36, W - 72, H - 72);
+
+      // Gold Secondary Border
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(54, 54, W - 108, H - 108);
+
+      // Inner Dashed Gold Line
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([10, 8]);
+      ctx.strokeRect(66, 66, W - 132, H - 132);
+      ctx.setLineDash([]);
+
+      // Corner Corner Accent Ornaments
+      const cornerSize = 42;
+      const drawCorner = (cx, cy, flipX, flipY) => {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(flipX, flipY);
+        ctx.fillStyle = '#b45309';
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(cornerSize, 0);
+        ctx.lineTo(0, cornerSize);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      };
+      drawCorner(70, 70, 1, 1);
+      drawCorner(W - 70, 70, -1, 1);
+      drawCorner(70, H - 70, 1, -1);
+      drawCorner(W - 70, H - 70, -1, -1);
+
+      // 3. Subtle Watermark Text in Center
+      ctx.save();
+      ctx.fillStyle = 'rgba(124, 45, 18, 0.04)';
+      ctx.font = '900 180px Rajdhani, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('YODDHA', W / 2, H / 2);
+      ctx.restore();
+
+      // 4. Header Badge Pill
+      ctx.fillStyle = '#ea580c';
+      drawCanvasRoundRect(ctx, W / 2 - 270, 100, 540, 38, 19, true, false);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 13px Rajdhani, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('GOVT. REGD. NATIONAL MARTIAL ARTS TRAINING COUNCIL', W / 2, 119);
+
+      // 5. Academy Master Title
+      ctx.fillStyle = '#431407';
+      ctx.font = '900 56px Rajdhani, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('YODDHA ACADEMY INDIA', W / 2, 195);
+
+      ctx.fillStyle = '#9a3412';
+      ctx.font = '700 16px Arial, sans-serif';
+      ctx.fillText('CENTRAL HEADQUARTERS • DIRECTORATE OF TRADITIONAL MARTIAL ARTS & DEFENCE', W / 2, 230);
+
+      // Gold Accent Divider
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(W / 2 - 250, 255);
+      ctx.lineTo(W / 2 + 250, 255);
+      ctx.stroke();
+
+      // Diamond ornament in divider
+      ctx.fillStyle = '#b45309';
+      ctx.beginPath();
+      ctx.arc(W / 2, 255, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 6. Certificate Title
+      ctx.fillStyle = '#64748b';
+      ctx.font = '800 14px Arial, sans-serif';
+      ctx.fillText('OFFICIAL ACCREDITATION', W / 2, 305);
+
+      ctx.fillStyle = '#c2410c';
+      ctx.font = '900 36px Rajdhani, Arial, sans-serif';
+      ctx.fillText('CERTIFICATE OF OFFICIAL AFFILIATION & TRAINER RECOGNITION', W / 2, 350);
+
+      ctx.fillStyle = '#78350f';
+      ctx.font = '700 20px Arial, sans-serif';
+      ctx.fillText('(अधिकृत शाखा प्रशिक्षक व संलग्नता मान्यता प्रमाणपत्र)', W / 2, 388);
+
+      // 7. Recipient Introduction & Name
+      ctx.fillStyle = '#475569';
+      ctx.font = 'italic 20px Georgia, serif';
+      ctx.fillText('This official credential is proud recognition of authorization granted to', W / 2, 455);
+
+      // Recipient Full Name (Calligraphic Style)
+      ctx.fillStyle = '#1e293b';
+      ctx.font = '900 58px Rajdhani, Arial, sans-serif';
+      ctx.fillText(trainerName, W / 2, 530);
+
+      // Golden Underline
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 4;
+      const textWidth = ctx.measureText(trainerName).width;
+      ctx.beginPath();
+      ctx.moveTo(W / 2 - (textWidth / 2) - 30, 545);
+      ctx.lineTo(W / 2 + (textWidth / 2) + 30, 545);
+      ctx.stroke();
+
+      // Designation & Akhada
+      ctx.fillStyle = '#9a3412';
+      ctx.font = '800 24px Rajdhani, Arial, sans-serif';
+      ctx.fillText(`${position} • ${branch}`, W / 2, 590);
+
+      // 8. Legal Empowerment & Authorization Text
+      ctx.fillStyle = '#334155';
+      ctx.font = '500 17px Arial, sans-serif';
+      const legalLine1 = `This is to officially certify that the above-named Master Instructor is recognized and accredited by Yoddha Academy India`;
+      const legalLine2 = `for the official branch akhada at ${branch}, ${district} (${state}).`;
+      const legalLine3 = `He/She is fully empowered and authorized to impart authentic martial arts training, conduct student enrollments,`;
+      const legalLine4 = `and administer official 10-Star Level Examinations under the authority, syllabus, and rules of Yoddha Academy India.`;
+
+      ctx.fillText(legalLine1, W / 2, 650);
+      ctx.fillText(legalLine2, W / 2, 680);
+      ctx.fillText(legalLine3, W / 2, 715);
+      ctx.fillText(legalLine4, W / 2, 745);
+
+      // 9. Badges / Metadata Cards
+      const boxY = 820;
+      const boxW = 420;
+      const boxH = 90;
+      const drawBadgeCard = (x, y, label, val, isAccent) => {
+        ctx.fillStyle = isAccent ? '#fffbeb' : '#f8fafc';
+        drawCanvasRoundRect(ctx, x, y, boxW, boxH, 12, true, true, '#cbd5e1', 1.5);
+        ctx.fillStyle = '#64748b';
+        ctx.font = '800 12px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(label.toUpperCase(), x + boxW / 2, y + 32);
+        ctx.fillStyle = isAccent ? '#047857' : '#0f172a';
+        ctx.font = '900 19px Rajdhani, Arial, sans-serif';
+        ctx.fillText(val, x + boxW / 2, y + 64);
+      };
+
+      drawBadgeCard(W / 2 - boxW * 2 - 30, boxY, 'Accreditation ID', tId, false);
+      drawBadgeCard(W / 2 - boxW - 10, boxY, 'Affiliation Status', 'Active & Authorized', true);
+      drawBadgeCard(W / 2 + 10, boxY, 'Date of Issue', dateStr, false);
+      drawBadgeCard(W / 2 + boxW + 30, boxY, 'Territorial Validity', 'All India (National)', false);
+
+      // 10. Seal & Signatures Footer
+      const footerY = 1140;
+
+      // Left Signature: Technical Director
+      ctx.fillStyle = '#1e293b';
+      ctx.font = 'italic 24px Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('S. M. Bhosale', 360, footerY);
+
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(220, footerY + 12);
+      ctx.lineTo(500, footerY + 12);
+      ctx.stroke();
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '800 16px Arial, sans-serif';
+      ctx.fillText('Technical Director', 360, footerY + 36);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '600 13px Arial, sans-serif';
+      ctx.fillText('Board of Examinations & Standards', 360, footerY + 56);
+
+      // Center: Official Royal Golden Seal
+      const sealX = W / 2;
+      const sealY = footerY + 20;
+      const sealRadius = 68;
+
+      // Outer gold circle
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(sealX, sealY, sealRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Inner dashed ring
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.arc(sealX, sealY, sealRadius - 7, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Inner gold disc
+      ctx.fillStyle = '#d97706';
+      ctx.beginPath();
+      ctx.arc(sealX, sealY, sealRadius - 13, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Seal text
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 11px Rajdhani, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('★ OFFICIAL SEAL ★', sealX, sealY - 18);
+      ctx.font = '900 20px Rajdhani, Arial, sans-serif';
+      ctx.fillText('YODDHA', sealX, sealY + 6);
+      ctx.font = '800 10px Arial, sans-serif';
+      ctx.fillText('ACADEMY INDIA', sealX, sealY + 24);
+
+      // Right Signature: Founder & Grandmaster
+      ctx.fillStyle = '#1e293b';
+      ctx.font = 'italic 24px Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Grandmaster YAI', W - 360, footerY);
+
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(W - 500, footerY + 12);
+      ctx.lineTo(W - 220, footerY + 12);
+      ctx.stroke();
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '800 16px Arial, sans-serif';
+      ctx.fillText('Founder & Grandmaster', W - 360, footerY + 36);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '600 13px Arial, sans-serif';
+      ctx.fillText('Yoddha Academy India', W - 360, footerY + 56);
+
+      // Bottom Authenticity Strip
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '600 12px Arial, sans-serif';
+      ctx.fillText('Certified Accreditation Document • Issued by Central Directorate of Yoddha Academy India • Verify at https://yoddhaacademyindia.github.io/', W / 2, H - 75);
+
+      // Convert to high-resolution PNG blob & trigger direct download
+      canvas.toBlob((blob) => {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="download" class="w-4 h-4"></i><span>Download A4 Certificate (PNG)</span>';
+          if (window.lucide) lucide.createIcons();
+        }
+
+        if (!blob) {
+          alert('Could not generate certificate image. Please try again.');
+          return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const cleanTId = tId.replace(/[^a-zA-Z0-9\-]/g, '_');
+        a.href = url;
+        a.download = `YAI_Affiliation_Certificate_${cleanTId}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      }, 'image/png');
     }
 
     // =========================================================================
