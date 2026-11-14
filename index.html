@@ -10390,6 +10390,8 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       }
 
       openModal('modal-trainer-profile');
+      const modalEl = document.getElementById('modal-trainer-profile');
+      if (modalEl) modalEl.classList.remove('hidden');
       if (window.lucide) lucide.createIcons();
     }
 
@@ -12593,8 +12595,16 @@ function handleAdminCreateCompetition(e) {
       document.getElementById('modal-sync').classList.remove('hidden');
       lucide.createIcons();
     }
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+      }
+    }
     function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
     }
   </script>
 
