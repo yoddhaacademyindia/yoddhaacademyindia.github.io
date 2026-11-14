@@ -4778,6 +4778,29 @@ function getOrCreateSheet(ss, sheetName, headers) {
         studentsCount: 20
       },
       {
+        trainerId: "YAI-TR-MH-PUN-001",
+        id: "YAI-TR-MH-PUN-001",
+        fullName: "Ustad Amit Kulkarni",
+        name: "Ustad Amit Kulkarni",
+        email: "amit.kulkarni@yoddha.org",
+        mobile: "9822998877",
+        phone: "9822998877",
+        whatsapp: "9822998877",
+        state: "Maharashtra",
+        stateCode: "MH",
+        district: "Pune",
+        districtCode: "PUN",
+        branch: "Pune Kothrud Akhada",
+        address: "Near MIT College, Kothrud, Pune - 411038",
+        status: "Active",
+        position: "Senior Coach",
+        password: "1234",
+        pin: "1234",
+        photo: null,
+        aadharPhoto: null,
+        studentsCount: 22
+      },
+      {
         trainerId: "YAI-TR-KA-BGM-001",
         id: "YAI-TR-KA-BGM-001",
         fullName: "Ustad Basavaraj Patil",
@@ -4853,8 +4876,8 @@ function getOrCreateSheet(ss, sheetName, headers) {
         stateCode: "MH",
         admissionDate: "2026-11-08",
         requestedLevel: "Level 1",
-        trainerId: "YAI-TR-MH-NSK-001",
-        trainerName: "Ustad Sachin Patil",
+        trainerId: "YAI-TR-MH-PUN-001",
+        trainerName: "Ustad Amit Kulkarni",
         status: "Active",
         feeStatus: "Paid",
         feeAmount: 500,
@@ -4937,7 +4960,45 @@ function getOrCreateSheet(ss, sheetName, headers) {
       examSessionActive: localStorage.getItem('yoddha_exam_session_active') === 'true',
       adminId: 'ADMIN-YODDHA-01',
       adminPass: localStorage.getItem('yoddha_admin_pass') || '@hupare25077',
-      students: JSON.parse(localStorage.getItem('yoddha_admin_students_v6')) || INITIAL_STUDENTS,
+      students: (() => {
+        // Migration and district integrity sanitizer
+        let raw = localStorage.getItem('yoddha_admin_students_v8');
+        if (!raw) {
+          raw = localStorage.getItem('yoddha_admin_students_v8') || localStorage.getItem('yoddha_admin_students_v8');
+        }
+        let list = raw ? JSON.parse(raw) : INITIAL_STUDENTS;
+        if (!Array.isArray(list) || list.length === 0) list = INITIAL_STUDENTS;
+
+        // SANITIZATION: Strict District & Trainer Alignment
+        list.forEach(s => {
+          const sId = (s.studentId || '').toUpperCase();
+          // If student is Pune (PUN), they must NEVER belong to Kolhapur trainer
+          if (sId.includes('-PUN-') || s.districtCode === 'PUN' || s.district === 'Pune') {
+            s.district = 'Pune';
+            s.districtCode = 'PUN';
+            s.city = 'Pune';
+            if (s.trainerId === 'YAI-TR-MH-KOP-001') {
+              s.trainerId = 'YAI-TR-MH-PUN-001';
+              s.trainerName = 'Ustad Amit Kulkarni';
+            }
+          }
+          // If student is Nashik (NSK), they must NEVER belong to Kolhapur trainer
+          if (sId.includes('-NSK-') || s.districtCode === 'NSK' || s.district === 'Nashik') {
+            s.district = 'Nashik';
+            s.districtCode = 'NSK';
+            s.city = 'Nashik';
+            if (s.trainerId === 'YAI-TR-MH-KOP-001') {
+              s.trainerId = 'YAI-TR-MH-NSK-001';
+              s.trainerName = 'Ustad Sachin Patil';
+            }
+          }
+        });
+
+        try {
+          localStorage.setItem('yoddha_admin_students_v8', JSON.stringify(list));
+        } catch(e) {}
+        return list;
+      })(),
       trainers: (JSON.parse(localStorage.getItem('yoddha_admin_trainers_v5')) || INITIAL_TRAINERS).map(t => ({
         trainerId: t.trainerId || t.id,
         id: t.trainerId || t.id,
@@ -4984,7 +5045,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
     };
 
     function saveAdminState() {
-      localStorage.setItem('yoddha_admin_students_v6', JSON.stringify(adminState.students));
+      localStorage.setItem('yoddha_admin_students_v8', JSON.stringify(adminState.students));
       localStorage.setItem('yoddha_admin_students_v3', JSON.stringify(adminState.students));
       localStorage.setItem('yoddha_admin_trainers_v5', JSON.stringify(adminState.trainers));
       localStorage.setItem('yoddha_admin_trainers', JSON.stringify(adminState.trainers));
@@ -5498,12 +5559,16 @@ lucide.createIcons();
         if (metricsGrid) metricsGrid.className = "grid grid-cols-2 gap-3 sm:gap-6";
 
         // Filter only this trainer's students
-        const myTId = (user.id || '').trim().toUpperCase();
+        const myTId = (user.id || user.trainerId || '').trim().toUpperCase();
         const myTName = (user.name || '').trim().toLowerCase();
+        const myTDist = (user.districtCode || '').trim().toUpperCase();
         const myStudents = adminState.students.filter(s => {
           const sTId = (s.trainerId || '').trim().toUpperCase();
-          const sTName = (s.trainerName || '').trim().toLowerCase();
-          return (sTId && sTId === myTId) || (sTName && sTName === myTName && myTName.length > 2);
+          const sDist = (s.districtCode || '').trim().toUpperCase();
+          if (sTId !== myTId) return false;
+          if (myTDist && sDist && sDist !== myTDist) return false;
+          if (myTDist && s.studentId && !s.studentId.toUpperCase().includes(`-${myTDist}-`)) return false;
+          return true;
         });
         document.getElementById('stat-top-students').innerText = myStudents.length;
         if (studentsLabel) studentsLabel.innerText = "My Students";
@@ -6541,13 +6606,20 @@ lucide.createIcons();
 
       const filtered = adminState.students.filter(s => {
         if (isTrainer) {
-          // For Trainer: STRICTLY show ONLY students registered by THIS trainer
-          const myId = (user.id || '').trim().toUpperCase();
-          const myName = (user.name || '').trim().toLowerCase();
+          // STRICT TRAINER ISOLATION:
+          // A trainer sees ONLY students registered under their own Trainer ID
+          // AND matching their own district/branch!
+          const myId = (user.id || user.trainerId || '').trim().toUpperCase();
+          const myDist = (user.districtCode || '').trim().toUpperCase();
           const stuTrainerId = (s.trainerId || '').trim().toUpperCase();
-          const stuTrainerName = (s.trainerName || '').trim().toLowerCase();
-          const isMine = (stuTrainerId && stuTrainerId === myId) || (stuTrainerName && stuTrainerName === myName && myName.length > 2);
-          if (!isMine) return false;
+          const stuDist = (s.districtCode || '').trim().toUpperCase();
+
+          // 1. Strict Trainer ID match
+          if (stuTrainerId !== myId) return false;
+
+          // 2. Strict District match - Kolhapur trainer CANNOT see Pune/Nashik students under any circumstance!
+          if (myDist && stuDist && stuDist !== myDist) return false;
+          if (myDist && s.studentId && !s.studentId.toUpperCase().includes(`-${myDist}-`)) return false;
         } else {
           // For Admin: main Students directory shows ONLY Active and Paid!
           const isApproved = (s.status === 'Active') && (s.feeStatus === 'Paid');
