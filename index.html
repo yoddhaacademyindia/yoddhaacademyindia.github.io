@@ -6943,11 +6943,17 @@ lucide.createIcons();
       const currLevel = getStudentLevelNum(s.requestedLevel || s.level);
       const levelName = s.requestedLevel || ("Level " + currLevel);
 
-      document.getElementById('dl-modal-stu-name').innerText = s.studentName;
-      document.getElementById('dl-modal-stu-id').innerText = s.studentId;
-      document.getElementById('dl-modal-stu-level').innerText = levelName + " (" + currLevel + "/10 Stars)";
-      document.getElementById('dl-modal-stu-trainer').innerText = "Trainer: " + (s.trainerName || s.trainerId || 'YAI Ustad');
-      document.getElementById('dl-modal-stu-branch').innerText = s.city ? (s.city + " Akhada, " + (s.state || 'Maharashtra')) : (s.state || 'Maharashtra');
+      const nameEl = document.getElementById('dl-modal-stu-name');
+      const idEl = document.getElementById('dl-modal-stu-id');
+      const lvlEl = document.getElementById('dl-modal-stu-level');
+      const trnEl = document.getElementById('dl-modal-stu-trainer');
+      const brnEl = document.getElementById('dl-modal-stu-branch');
+
+      if (nameEl) nameEl.innerText = s.studentName;
+      if (idEl) idEl.innerText = s.studentId;
+      if (lvlEl) lvlEl.innerText = levelName + " (" + currLevel + "/10 Stars)";
+      if (trnEl) trnEl.innerText = "Trainer: " + (s.trainerName || s.trainerId || 'YAI Ustad');
+      if (brnEl) brnEl.innerText = s.city ? (s.city + " Akhada, " + (s.state || 'Maharashtra')) : (s.state || 'Maharashtra');
 
       // Update ID Card badge preview in download modal
       const previewPhoto = document.getElementById('dl-preview-photo');
@@ -6958,91 +6964,134 @@ lucide.createIcons();
           previewPhoto.innerHTML = '<span class="text-xl font-black text-orange-700 font-rajdhani">' + (s.studentName || 'YA').split(' ').map(w=>w[0]).slice(0,2).join('') + '</span>';
         }
       }
-      document.getElementById('dl-preview-name').innerText = s.studentName;
-      document.getElementById('dl-preview-id').innerText = s.studentId;
-      document.getElementById('dl-preview-level').innerText = levelName;
-      document.getElementById('dl-preview-phone').innerText = s.parentMobile ? ("Ph: " + s.parentMobile) : "Ph: Registered";
-      document.getElementById('dl-preview-branch').innerText = (s.city || 'Central') + " Branch";
+      const prevName = document.getElementById('dl-preview-name');
+      const prevId = document.getElementById('dl-preview-id');
+      const prevLvl = document.getElementById('dl-preview-level');
+      const prevPh = document.getElementById('dl-preview-phone');
+      const prevBrn = document.getElementById('dl-preview-branch');
+
+      if (prevName) prevName.innerText = s.studentName;
+      if (prevId) prevId.innerText = s.studentId;
+      if (prevLvl) prevLvl.innerText = levelName;
+      if (prevPh) prevPh.innerText = s.parentMobile ? ("Ph: " + s.parentMobile) : "Ph: Registered";
+      if (prevBrn) prevBrn.innerText = (s.city || 'Central') + " Branch";
 
       openModal('modal-student-download');
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
+
+      // Trigger automatic direct high-resolution PNG download immediately on click!
+      setTimeout(() => {
+        downloadStudentIdCardPNG(studentId);
+      }, 300);
     }
 
     // =====================================================================
-    // DOWNLOAD STUDENT IDENTITY CARD AS PNG IMAGE (HTML5 Canvas)
+    // BULLETPROOF DIRECT STUDENT IDENTITY CARD PNG DOWNLOAD (HTML5 Canvas + Blob)
     // =====================================================================
     function printStudentIdCardDirect() {
-      downloadStudentIdCardPNG();
+      downloadStudentIdCardPNG(activeDownloadStudentId);
     }
 
-    function downloadStudentIdCardPNG() {
-      if (!activeDownloadStudentId) { alert('No student selected!'); return; }
-      const s = adminState.students.find(stu => stu.studentId === activeDownloadStudentId);
-      if (!s) { alert('Student not found!'); return; }
+    function downloadStudentIdCardPNG(targetStudentId) {
+      const stuId = targetStudentId || activeDownloadStudentId;
+      if (!stuId) {
+        alert('Please select a student to download identity card.');
+        return;
+      }
+      const s = adminState.students.find(stu => stu.studentId === stuId);
+      if (!s) {
+        alert('Student not found in active records.');
+        return;
+      }
+      activeDownloadStudentId = stuId;
 
       const btn = document.querySelector('[onclick="printStudentIdCardDirect()"]');
-      if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳ Generating ID Card...</span>'; }
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-white"></i><span>⏳ Generating High-Res ID Card PNG...</span>';
+      }
 
       const canvas = document.createElement('canvas');
-      canvas.width = 680;
-      canvas.height = 1050;
+      canvas.width = 720;
+      canvas.height = 1120;
       const ctx = canvas.getContext('2d');
-
       const W = canvas.width, H = canvas.height;
+
       const levelNum = getStudentLevelNum(s.requestedLevel || s.level);
       const levelName = s.requestedLevel || ('Level ' + levelNum);
       const initials = (s.studentName || 'YA').trim().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+      const filename = 'YAI_Student_ID_' + (s.studentId || 'card').replace(/[^A-Za-z0-9\-]/g, '_') + '.png';
 
-      // --- BACKGROUND ---
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
-      bgGrad.addColorStop(0, '#fff7ed');
-      bgGrad.addColorStop(1, '#fff');
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, W, H);
+      function renderCanvas(photoImg) {
+        // Clear
+        ctx.clearRect(0, 0, W, H);
 
-      // Card border
-      ctx.strokeStyle = '#f97316';
-      ctx.lineWidth = 6;
-      roundRect(ctx, 3, 3, W - 6, H - 6, 28, false, true);
+        // 1. Background (Premium Cardboard White Gradient)
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+        bgGrad.addColorStop(0, '#fffbf5');
+        bgGrad.addColorStop(0.5, '#ffffff');
+        bgGrad.addColorStop(1, '#fff7ed');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
 
-      // --- ORANGE HEADER BAND ---
-      const hGrad = ctx.createLinearGradient(0, 0, W, 130);
-      hGrad.addColorStop(0, '#ea580c');
-      hGrad.addColorStop(0.5, '#d97706');
-      hGrad.addColorStop(1, '#ea580c');
-      ctx.fillStyle = hGrad;
-      roundRect(ctx, 3, 3, W - 6, 130, 24, true, false, true, true, false, false);
+        // Outer Card Border with subtle double outline
+        drawCanvasRoundRect(ctx, 4, 4, W - 8, H - 8, 32, false, true, '#ea580c', 7);
+        drawCanvasRoundRect(ctx, 10, 10, W - 20, H - 20, 26, false, true, '#fed7aa', 2);
 
-      // Academy Name
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 13px Arial';
-      ctx.letterSpacing = '3px';
-      ctx.textAlign = 'center';
-      ctx.fillText('OFFICIAL STUDENT IDENTITY CARD', W / 2, 38);
-      ctx.font = 'bold 30px Arial';
-      ctx.letterSpacing = '0px';
-      ctx.fillText('YODDHA ACADEMY INDIA', W / 2, 76);
-      ctx.font = '13px Arial';
-      ctx.fillStyle = '#fde68a';
-      ctx.fillText('Govt. Regd. | Defence Training Academy | Est. 2024', W / 2, 100);
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 11px Arial';
-      ctx.fillText('YAI Certified | 10-Level Progression System', W / 2, 118);
+        // 2. Top Lanyard Slot Clip
+        ctx.fillStyle = '#cbd5e1';
+        drawCanvasRoundRect(ctx, (W - 90) / 2, 14, 90, 8, 4, true, false, '#cbd5e1');
 
-      // --- PHOTO CIRCLE ---
-      const cx = W / 2, cy = 210, r = 70;
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, r + 5, 0, Math.PI * 2);
-      ctx.fillStyle = '#fff';
-      ctx.fill();
-      ctx.strokeStyle = '#f97316';
-      ctx.lineWidth = 4;
-      ctx.stroke();
-      ctx.restore();
+        // 3. Official Orange Saffron Header
+        const hGrad = ctx.createLinearGradient(0, 28, W, 170);
+        hGrad.addColorStop(0, '#c2410c');
+        hGrad.addColorStop(0.35, '#ea580c');
+        hGrad.addColorStop(0.7, '#f59e0b');
+        hGrad.addColorStop(1, '#c2410c');
+        ctx.fillStyle = hGrad;
+        drawCanvasRoundRect(ctx, 12, 28, W - 24, 150, 22, true, false, null, 0, true, true, false, false);
 
-      function drawPhotoAndRest(photoImg) {
+        // Header Inner Gold Accent Bar
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(20, 174, W - 40, 4);
+
+        // Academy Header Texts
+        ctx.fillStyle = '#ffedd5';
+        ctx.font = '900 13px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('GOVT. REGD. NATIONAL MARTIAL ARTS & DEFENCE ACADEMY', W / 2, 58);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 34px Arial, sans-serif';
+        ctx.fillText('YODDHA ACADEMY INDIA', W / 2, 98);
+
+        ctx.fillStyle = '#fef08a';
+        ctx.font = '700 13px Arial, sans-serif';
+        ctx.fillText('OFFICIAL STUDENT IDENTITY CARD', W / 2, 124);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 11.5px Arial, sans-serif';
+        ctx.fillText('10-Level Progression System  •  Central Headquarters Verified', W / 2, 148);
+
+        // 4. Circular Student Photo / Avatar
+        const cx = W / 2, cy = 275, r = 78;
+        // Outer glow circle
         ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, r + 7, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = '#ea580c';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, r + 2, 0, Math.PI * 2);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#f59e0b';
+        ctx.stroke();
+
+        // Clip and draw image or initials
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
         ctx.clip();
@@ -7050,12 +7099,12 @@ lucide.createIcons();
           ctx.drawImage(photoImg, cx - r, cy - r, r * 2, r * 2);
         } else {
           const pGrad = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
-          pGrad.addColorStop(0, '#fed7aa');
-          pGrad.addColorStop(1, '#fdba74');
+          pGrad.addColorStop(0, '#f97316');
+          pGrad.addColorStop(1, '#ea580c');
           ctx.fillStyle = pGrad;
           ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
-          ctx.fillStyle = '#9a3412';
-          ctx.font = 'bold 42px Arial';
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 48px Arial, sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText(initials, cx, cy);
@@ -7063,150 +7112,278 @@ lucide.createIcons();
         ctx.restore();
         ctx.textBaseline = 'alphabetic';
 
-        // STUDENT NAME
-        ctx.fillStyle = '#1e293b';
-        ctx.font = 'bold 26px Arial';
+        // 5. Student Full Name
+        ctx.fillStyle = '#0f172a';
+        ctx.font = '900 28px Arial, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText((s.studentName || '').toUpperCase(), W / 2, 310);
+        ctx.fillText((s.studentName || 'STUDENT').toUpperCase(), W / 2, 392);
 
-        // ID Badge
-        const idText = s.studentId || '';
-        ctx.font = 'bold 15px monospace';
-        const idW = ctx.measureText(idText).width + 32;
+        // 6. Student Unique ID Badge
+        const idText = s.studentId || 'YAI-STU-001';
+        ctx.font = '900 16px "Courier New", Courier, monospace';
+        const idW = ctx.measureText(idText).width + 36;
         const idX = (W - idW) / 2;
-        roundRect(ctx, idX, 322, idW, 28, 14, true, false);
-        ctx.fillStyle = '#7c2d12';
-        ctx.font = 'bold 15px monospace';
+        const idGrad = ctx.createLinearGradient(idX, 0, idX + idW, 0);
+        idGrad.addColorStop(0, '#fffbeb');
+        idGrad.addColorStop(0.5, '#fef3c7');
+        idGrad.addColorStop(1, '#fffbeb');
+        ctx.fillStyle = idGrad;
+        drawCanvasRoundRect(ctx, idX, 408, idW, 32, 16, true, true, '#f59e0b', 2);
+        ctx.fillStyle = '#78350f';
+        ctx.font = '900 15px "Courier New", Courier, monospace';
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#431407';
-        ctx.fillStyle = '#92400e';
-        const bgIdGrad = ctx.createLinearGradient(idX, 0, idX + idW, 0);
-        bgIdGrad.addColorStop(0, '#fef3c7');
-        bgIdGrad.addColorStop(1, '#fde68a');
-        roundRect(ctx, idX, 322, idW, 28, 14, true, false, false, false, false, false, bgIdGrad);
-        ctx.fillStyle = '#92400e';
-        ctx.font = 'bold 14px monospace';
-        ctx.textAlign = 'center';
-        ctx.fillText(idText, W / 2, 341);
+        ctx.fillText(idText, W / 2, 430);
 
-        // STARS ROW
-        const starY = 388;
-        const starSize = 22, starGap = 8;
+        // 7. 10 Stars Row (Filled for Current Level, Hollow for Pending)
+        const starY = 478;
+        const starR = 12;
+        const starGap = 10;
         const totalStars = 10;
-        const starsRow = (W - (totalStars * (starSize + starGap))) / 2;
+        const totalStarsW = (totalStars * (starR * 2)) + ((totalStars - 1) * starGap);
+        const starStartX = (W - totalStarsW) / 2 + starR;
+
         for (let i = 0; i < totalStars; i++) {
-          drawStar(ctx, starsRow + i * (starSize + starGap) + starSize / 2, starY, starSize / 2, i < levelNum ? '#f59e0b' : '#e2e8f0');
+          const currentStarX = starStartX + (i * (starR * 2 + starGap));
+          const isPassed = (i < levelNum);
+          drawCanvasStar(ctx, currentStarX, starY, starR, isPassed ? '#f59e0b' : '#e2e8f0', isPassed ? '#b45309' : '#cbd5e1');
         }
 
-        // LEVEL PILL
-        const lvlPillW = 260, lvlPillH = 34;
-        const lvlPillX = (W - lvlPillW) / 2;
-        const lvlGrad = ctx.createLinearGradient(lvlPillX, 0, lvlPillX + lvlPillW, 0);
-        lvlGrad.addColorStop(0, '#10b981');
-        lvlGrad.addColorStop(1, '#059669');
-        roundRect(ctx, lvlPillX, 404, lvlPillW, lvlPillH, 17, true, false, false, false, false, false, lvlGrad);
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 15px Arial';
+        // 8. Level Running Pill
+        const pillW = 320, pillH = 38;
+        const pillX = (W - pillW) / 2;
+        const pillGrad = ctx.createLinearGradient(pillX, 0, pillX + pillW, 0);
+        pillGrad.addColorStop(0, '#059669');
+        pillGrad.addColorStop(0.5, '#10b981');
+        pillGrad.addColorStop(1, '#059669');
+        ctx.fillStyle = pillGrad;
+        drawCanvasRoundRect(ctx, pillX, 502, pillW, pillH, 19, true, true, '#047857', 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 16px Arial, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('● ' + levelName.toUpperCase() + ': RUNNING  (' + levelNum + '/10)', W / 2, 427);
+        ctx.fillText('● ' + levelName.toUpperCase() + ': RUNNING  (' + levelNum + '/10 Stars)', W / 2, 527);
 
-        // PROGRESS TEXT
+        // Progress Text Under Pill
         ctx.fillStyle = '#64748b';
-        ctx.font = '12px Arial';
-        ctx.fillText('Level ' + levelNum + ' Running  •  Levels ' + (levelNum + 1) + '-10 Pending 🔒', W / 2, 455);
+        ctx.font = '700 12px Arial, sans-serif';
+        ctx.fillText('Current: ' + levelName + ' Active  •  ' + (levelNum < 10 ? 'Levels ' + (levelNum + 1) + ' to 10 Pending 🔒' : 'Senior Ranks Completed 🏆'), W / 2, 560);
 
-        // INFO BOX
-        const boxX = 36, boxY = 472, boxW = W - 72, boxH = 198;
+        // 9. Comprehensive Official Student Details Card Box
+        const boxX = 36, boxY = 580, boxW = W - 72, boxH = 290;
+        ctx.fillStyle = '#ffffff';
+        drawCanvasRoundRect(ctx, boxX, boxY, boxW, boxH, 18, true, true, '#e2e8f0', 2);
+
+        // Header band inside info box
         ctx.fillStyle = '#f8fafc';
-        ctx.strokeStyle = '#e2e8f0';
-        ctx.lineWidth = 1.5;
-        roundRect(ctx, boxX, boxY, boxW, boxH, 16, true, true);
-
-        ctx.fillStyle = '#374151';
-        ctx.font = '13px Arial';
+        drawCanvasRoundRect(ctx, boxX, boxY, boxW, 36, 18, true, false, null, 0, true, true, false, false);
+        ctx.fillStyle = '#334155';
+        ctx.font = '900 12px Arial, sans-serif';
         ctx.textAlign = 'left';
+        ctx.fillText('ACADEMY ADMISSION & OFFICIAL RECORD', boxX + 18, boxY + 23);
 
         const rows = [
-          ['🏅 Trainer / Ustad', s.trainerName || s.trainerId || 'YAI Certified Ustad'],
-          ['📍 Branch / Akhada', (s.city || 'Central') + ' Akhada, ' + (s.state || 'Maharashtra')],
-          ['📅 Admission Date', s.admissionDate || '2026-11-13'],
-          ['📞 Parent Contact', s.parentMobile ? ('Ph: ' + s.parentMobile) : 'Ph: Registered'],
-          ['✅ Status', (s.status || 'Active') + '  |  Fee: ' + (s.feeStatus || 'Paid')],
+          ['Trainer / Chief Ustad', s.trainerName || s.trainerId || 'Certified Academy Ustad'],
+          ['Branch / Akhada', (s.city || s.district || 'Central') + ' Akhada, ' + (s.state || 'Maharashtra')],
+          ['Admission Date', s.admissionDate || '2026-11-14'],
+          ['Parent / Contact Mobile', s.parentMobile ? ('+91 ' + s.parentMobile) : 'Registered in Cloud'],
+          ['School / Standard', (s.schoolName || 'Enrolled Student') + (s.standard ? ' (' + s.standard + ')' : '')],
+          ['Official Status', (s.status || 'Active') + '  •  Fee: ' + (s.feeStatus || 'Paid') + ' (₹' + (s.feeAmount || 500) + ')']
         ];
+
         rows.forEach((row, i) => {
-          const rowY = boxY + 28 + i * 34;
-          ctx.fillStyle = '#6b7280';
-          ctx.font = 'bold 11px Arial';
-          ctx.fillText(row[0], boxX + 16, rowY);
-          ctx.fillStyle = '#1e293b';
-          ctx.font = '13px Arial';
-          ctx.fillText(String(row[1]).substring(0, 46), boxX + 16, rowY + 16);
+          const itemY = boxY + 62 + (i * 38);
+          // Label
+          ctx.fillStyle = '#64748b';
+          ctx.font = '700 11px Arial, sans-serif';
+          ctx.fillText(row[0].toUpperCase(), boxX + 18, itemY);
+          // Value
+          ctx.fillStyle = '#0f172a';
+          ctx.font = '900 13.5px Arial, sans-serif';
+          const maxValLen = 42;
+          const displayVal = String(row[1]).length > maxValLen ? String(row[1]).substring(0, maxValLen) + '...' : String(row[1]);
+          ctx.fillText(displayVal, boxX + 18, itemY + 17);
         });
 
-        // QR placeholder
-        const qrX = boxX + boxW - 80, qrY = boxY + 14, qrS = 64;
-        ctx.fillStyle = '#f1f5f9';
+        // QR Verification Box in Right Corner of Info Box
+        const qrSize = 80;
+        const qrX = boxX + boxW - qrSize - 18;
+        const qrY = boxY + 48;
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(qrX, qrY, qrSize, qrSize);
         ctx.strokeStyle = '#cbd5e1';
-        ctx.lineWidth = 1;
-        ctx.fillRect(qrX, qrY, qrS, qrS);
-        ctx.strokeRect(qrX, qrY, qrS, qrS);
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = 'bold 8px monospace';
-        ctx.textAlign = 'center';
-        ctx.fillText('QR VERIFY', qrX + qrS / 2, qrY + qrS / 2 - 4);
-        ctx.fillText('yoddhaacademyindia', qrX + qrS / 2, qrY + qrS / 2 + 8);
-        ctx.fillText('.github.io', qrX + qrS / 2, qrY + qrS / 2 + 20);
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(qrX, qrY, qrSize, qrSize);
 
-        // SEAL / BOTTOM
-        const sealGrad = ctx.createLinearGradient(0, 690, 0, 740);
-        sealGrad.addColorStop(0, '#7c3aed');
-        sealGrad.addColorStop(1, '#6d28d9');
+        // QR Fake Grid / Seal Art
+        ctx.fillStyle = '#ea580c';
+        ctx.fillRect(qrX + 6, qrY + 6, 22, 22);
+        ctx.fillRect(qrX + qrSize - 28, qrY + 6, 22, 22);
+        ctx.fillRect(qrX + 6, qrY + qrSize - 28, 22, 22);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(qrX + 11, qrY + 11, 12, 12);
+        ctx.fillRect(qrX + qrSize - 23, qrY + 11, 12, 12);
+        ctx.fillRect(qrX + 11, qrY + qrSize - 23, 12, 12);
+        ctx.fillStyle = '#ea580c';
+        ctx.fillRect(qrX + 14, qrY + 14, 6, 6);
+        ctx.fillRect(qrX + qrSize - 20, qrY + 14, 6, 6);
+        ctx.fillRect(qrX + 14, qrY + qrSize - 20, 6, 6);
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = '800 8px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('OFFICIAL QR', qrX + qrSize / 2, qrY + qrSize + 12);
+        ctx.fillText('VERIFY PORTAL', qrX + qrSize / 2, qrY + qrSize + 22);
+
+        // 10. Official Headquarters Security Seal
+        const sealY = 890, sealH = 72;
+        const sealGrad = ctx.createLinearGradient(0, sealY, W, sealY + sealH);
+        sealGrad.addColorStop(0, '#581c87');
+        sealGrad.addColorStop(0.5, '#7e22ce');
+        sealGrad.addColorStop(1, '#581c87');
         ctx.fillStyle = sealGrad;
-        roundRect(ctx, 36, 686, W - 72, 54, 14, true, false);
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 12px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('🛡️ YODDHA ACADEMY INDIA — CENTRAL HEADQUARTERS SEAL', W / 2, 710);
-        ctx.font = '10px Arial';
-        ctx.fillStyle = '#ddd6fe';
-        ctx.fillText('Issued under authority of Yoddha Academy India | Valid Academic Year 2026', W / 2, 727);
+        drawCanvasRoundRect(ctx, boxX, sealY, boxW, sealH, 16, true, false);
 
-        // FOOTER
+        ctx.fillStyle = '#fef08a';
+        ctx.font = '900 13px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🛡️ YODDHA ACADEMY INDIA — CENTRAL HEADQUARTERS SEAL', W / 2, sealY + 28);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 11px Arial, sans-serif';
+        ctx.fillText('Authenticated & Issued under the authority of Central Examination Board', W / 2, sealY + 46);
+
+        ctx.fillStyle = '#e9d5ff';
+        ctx.font = '600 9.5px Arial, sans-serif';
+        ctx.fillText('Valid for Academic Training Year 2026  •  Digital Signature ID: ' + (s.studentId || 'YAI'), W / 2, sealY + 62);
+
+        // 11. Bottom Card Footer
         ctx.fillStyle = '#94a3b8';
-        ctx.font = '10px Arial';
+        ctx.font = '700 10.5px Arial, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('yoddhaacademyindia.github.io  •  Official Govt. Regd. Martial Arts Academy', W / 2, 760);
-        ctx.fillText('Generated: ' + new Date().toLocaleDateString('en-IN'), W / 2, 776);
+        ctx.fillText('Official Portal: https://yoddhaacademyindia.github.io  •  Support: support@yoddha.org', W / 2, 990);
+        ctx.fillText('Generated on: ' + new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + '  |  Authorized Digital Identity Copy', W / 2, 1010);
 
-        // --- DOWNLOAD ---
-        try {
-          const link = document.createElement('a');
-          link.download = 'YAI_Student_ID_' + (s.studentId || 'card').replace(/[^A-Za-z0-9\-]/g, '_') + '.png';
-          link.href = canvas.toDataURL('image/png', 1.0);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          if (btn) { btn.disabled = false; btn.innerHTML = '<span>📥 Download Official ID Card (PNG) — Downloaded!</span>'; setTimeout(() => { if(btn) btn.innerHTML = '<i data-lucide=\"download\" class=\"w-4 h-4\"></i><span>📥 Download Official ID Card (PNG Image)</span>'; lucide.createIcons(); }, 2500); }
-        } catch(e) {
-          alert('Download error: ' + e.message);
-          if (btn) { btn.disabled = false; btn.innerHTML = '<span>📥 Download Official ID Card (PNG Image)</span>'; }
-        }
+        // Trigger Bulletproof File Download
+        executeCanvasDownload(canvas, filename, s.studentName, btn);
       }
 
-      // Load photo if available, else draw immediately
-      if (s.photo) {
+      // Safe Photo Loading with Timeout and Fallback
+      let photoHandled = false;
+      const finishWithPhoto = (imgObj) => {
+        if (photoHandled) return;
+        photoHandled = true;
+        try {
+          renderCanvas(imgObj);
+        } catch (err) {
+          console.warn("Canvas render failed with photo, retrying clean:", err);
+          renderCanvas(null);
+        }
+      };
+
+      if (s.photo && typeof s.photo === 'string' && s.photo.length > 20) {
         const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => drawPhotoAndRest(img);
-        img.onerror = () => drawPhotoAndRest(null);
+        if (s.photo.startsWith('http')) {
+          img.crossOrigin = 'anonymous';
+        }
+        img.onload = () => finishWithPhoto(img);
+        img.onerror = () => finishWithPhoto(null);
         img.src = s.photo;
+        // Safety timeout: 1.2 seconds max waiting for photo
+        setTimeout(() => finishWithPhoto(null), 1200);
       } else {
-        drawPhotoAndRest(null);
+        finishWithPhoto(null);
       }
     }
 
-    // Helper: draw rounded rectangle
-    function roundRect(ctx, x, y, w, h, r, fill, stroke, tlr, trr, brr, blr, fillStyle) {
+    // Bulletproof download dispatcher using Blob, Data URL and mobile compatibility
+    function executeCanvasDownload(canvas, filename, studentName, btn) {
+      try {
+        if (canvas.toBlob) {
+          canvas.toBlob(function(blob) {
+            if (!blob) {
+              executeDataUrlDownload(canvas, filename, studentName, btn);
+              return;
+            }
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = blobUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+
+            setTimeout(() => {
+              document.body.removeChild(a);
+              URL.revokeObjectURL(blobUrl);
+            }, 3000);
+
+            showDownloadSuccessFeedback(studentName, btn);
+          }, 'image/png', 1.0);
+        } else {
+          executeDataUrlDownload(canvas, filename, studentName, btn);
+        }
+      } catch (e) {
+        console.error("Blob export failed:", e);
+        executeDataUrlDownload(canvas, filename, studentName, btn);
+      }
+    }
+
+    function executeDataUrlDownload(canvas, filename, studentName, btn) {
+      try {
+        const dataUrl = canvas.toDataURL('image/png', 1.0);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = dataUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => document.body.removeChild(a), 3000);
+        showDownloadSuccessFeedback(studentName, btn);
+      } catch (err) {
+        console.error("DataURL download failed:", err);
+        // Fallback: Open in new window/tab for user to save
+        try {
+          const w = window.open('');
+          if (w) {
+            w.document.write('<title>Yoddha Academy - Official Student ID Card</title>');
+            w.document.write('<body style="margin:0;background:#1e293b;display:flex;align-items:center;justify-content:center;min-height:100vh;">');
+            w.document.write('<img src="' + canvas.toDataURL() + '" style="max-width:95vw;max-height:95vh;box-shadow:0 10px 25px rgba(0,0,0,0.5);border-radius:16px;">');
+            w.document.write('</body>');
+          }
+        } catch (e2) {}
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="download" class="w-4 h-4 text-white"></i><span>📥 Download Official ID Card (PNG Image)</span>';
+          if (window.lucide) lucide.createIcons();
+        }
+      }
+    }
+
+    function showDownloadSuccessFeedback(studentName, btn) {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="text-white font-black">✅ Official ID Card Downloaded!</span>';
+        setTimeout(() => {
+          if (btn) {
+            btn.innerHTML = '<i data-lucide="download" class="w-4 h-4 text-white"></i><span>📥 Download Official ID Card (PNG Image)</span>';
+            if (window.lucide) lucide.createIcons();
+          }
+        }, 3000);
+      }
+
+      // Visual Toast on UI
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-5 right-5 z-[100] bg-emerald-600 text-white font-black text-xs sm:text-sm px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 animate-bounce border-2 border-emerald-400';
+      toast.innerHTML = '<span>📥</span><span>Student ID Card Downloaded: <strong>' + (studentName || 'Warrior') + '</strong></span>';
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.transition = 'opacity 0.5s ease';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 600);
+      }, 3500);
+    }
+
+    // Helper: draw rounded rectangle on canvas
+    function drawCanvasRoundRect(ctx, x, y, w, h, r, fill, stroke, strokeColor, lineWidth, tlr, trr, brr, blr) {
       const tl = (tlr !== false) ? r : 0;
       const tr = (trr !== false) ? r : 0;
       const br = (brr !== false) ? r : 0;
@@ -7222,30 +7399,41 @@ lucide.createIcons();
       ctx.lineTo(x, y + tl);
       ctx.quadraticCurveTo(x, y, x + tl, y);
       ctx.closePath();
-      if (fillStyle) { ctx.fillStyle = fillStyle; }
       if (fill) ctx.fill();
-      if (stroke) ctx.stroke();
+      if (stroke) {
+        ctx.save();
+        if (strokeColor) ctx.strokeStyle = strokeColor;
+        if (lineWidth) ctx.lineWidth = lineWidth;
+        ctx.stroke();
+        ctx.restore();
+      }
     }
 
-    // Helper: draw a star
-    function drawStar(ctx, cx, cy, r, color) {
+    // Helper: draw a 5-pointed star on canvas
+    function drawCanvasStar(ctx, cx, cy, r, fillColor, strokeColor) {
       ctx.save();
       ctx.beginPath();
-      ctx.fillStyle = color;
       for (let i = 0; i < 5; i++) {
         const angle = (Math.PI / 2) + (i * 4 * Math.PI / 5);
         const x = cx + r * Math.cos(angle);
         const y = cy - r * Math.sin(angle);
         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         const innerAngle = angle + (2 * Math.PI / 5);
-        ctx.lineTo(cx + (r * 0.4) * Math.cos(innerAngle), cy - (r * 0.4) * Math.sin(innerAngle));
+        ctx.lineTo(cx + (r * 0.42) * Math.cos(innerAngle), cy - (r * 0.42) * Math.sin(innerAngle));
       }
       ctx.closePath();
-      ctx.fill();
+      if (fillColor) {
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+      }
+      if (strokeColor) {
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
       ctx.restore();
     }
 
-    // Download E-Pramanpatra from download modal
     function downloadStudentEPramanpatraDirect() {
       if (!activeDownloadStudentId) return;
       const s = adminState.students.find(stu => stu.studentId === activeDownloadStudentId);
