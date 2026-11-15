@@ -326,7 +326,7 @@
                 </div>
               </div>
               <div class="mt-2 sm:mt-4 pt-1.5 sm:pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] sm:text-xs font-bold text-slate-500">
-                <span class="text-slate-600 font-medium truncate">All State Akhadas</span>
+                <span class="text-slate-600 font-medium truncate">All State Training Centers</span>
                 <span class="text-[9px] bg-slate-100 px-2 py-0.5 rounded text-slate-500">Count Only</span>
               </div>
             </div>
@@ -954,7 +954,7 @@
                 <i data-lucide="map-pin" class="w-5 h-5 text-orange-600"></i>
                 <span id="growth-section1-title">State-wise Branch & Warrior Footprint</span>
               </h3>
-              <p id="growth-section1-desc" class="text-xs text-slate-500 mt-0.5">Live count of Certified Trainers, Active Students & Akhadas across states</p>
+              <p id="growth-section1-desc" class="text-xs text-slate-500 mt-0.5">Live count of Certified Trainers, Active Students & Training Centers across states</p>
             </div>
             <span id="growth-states-count" class="text-xs font-bold text-orange-700 bg-orange-50 px-2.5 py-1 rounded-full border border-orange-200">Active States</span>
           </div>
@@ -1210,8 +1210,8 @@
 
             <!-- 17. School Contact -->
             <div>
-              <label class="block font-bold text-slate-700 mb-1">School Contact Phone</label>
-              <input type="tel" id="p-stu-school-contact" placeholder="School office phone" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500">
+              <label class="block font-bold text-slate-700 mb-1">School Contact Phone *</label>
+              <input type="tel" id="p-stu-school-contact" required placeholder="School office phone" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500">
             </div>
 
             <!-- 16. School Address -->
@@ -1330,9 +1330,9 @@
           <div id="stu-cash-info-box" class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex items-start gap-2.5 text-xs text-emerald-950">
             <i data-lucide="banknote" class="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5"></i>
             <div>
-              <strong class="font-black text-emerald-900 block">💵 Cash Payment at Akhada</strong>
+              <strong class="font-black text-emerald-900 block">💵 Cash Payment at Training Center</strong>
               <p class="text-[11px] text-emerald-800 font-medium leading-relaxed">
-                Student admission fee will be collected in cash at the Akhada. Click <strong>"Save & Register Student"</strong> below to submit. Application will be routed to Admin Verification Desk for approval, after which the student will be marked Active.
+                Student admission fee will be collected in cash at the Training Center. Click <strong>"Save & Register Student"</strong> below to submit. Application will be routed to Admin Verification Desk for approval, after which the student will be marked Active.
               </p>
             </div>
           </div>
@@ -1594,8 +1594,8 @@
 
             <!-- 8. Address -->
             <div class="sm:col-span-2 lg:col-span-3">
-              <label class="block font-bold text-slate-700 mb-1">Complete Akhada / Branch Address *</label>
-              <input type="text" id="adm-trn-address" required placeholder="e.g. Shivaji Akhada, Near Datta Mandir, Gangapur Road, Nashik" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold focus:outline-none focus:border-orange-500">
+              <label class="block font-bold text-slate-700 mb-1">Complete Branch / Training Center Address *</label>
+              <input type="text" id="adm-trn-address" required placeholder="e.g. Shivaji Training Center, Near Datta Mandir, Gangapur Road, Nashik" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold focus:outline-none focus:border-orange-500">
             </div>
           </div>
         </div>
@@ -1782,7 +1782,7 @@
 
             <!-- 8. Address -->
             <div class="sm:col-span-2 lg:col-span-3">
-              <label class="block font-bold text-slate-700 mb-1">Complete Akhada / Branch Address *</label>
+              <label class="block font-bold text-slate-700 mb-1">Complete Branch / Training Center Address *</label>
               <input type="text" id="edit-trn-address" required placeholder="Full Address" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold focus:outline-none focus:border-orange-500">
             </div>
           </div>
@@ -3339,7 +3339,7 @@ function doPost(e) {
             examRefId,
             studentId,
             studentName,
-            data.city ? data.city + " Akhada" : "Central Akhada",
+            data.city ? data.city + " Training Center" : "Central Training Center",
             data.district || "",
             data.state || "Maharashtra",
             data.lastExam?.levelName || data.requestedLevel || "Level 1",
@@ -3654,7 +3654,7 @@ function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, p
     + '<tr><td style="padding: 6px 0; color: #64748b; width: 140px;"><strong>Trainer ID:</strong></td><td style="padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;">' + trainerId + '</td></tr>'
     + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Password / PIN:</strong></td><td style="padding: 6px 0; color: #0f172a; font-weight: bold; font-family: monospace; font-size: 16px; background: #fed7aa; padding: 3px 8px; border-radius: 6px; display: inline-block;">' + trainerPass + '</td></tr>'
     + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Designation:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: 600;">' + (position || "Branch Instructor") + '</td></tr>'
-    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Akhada / Branch:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: 600;">' + (branch || "Central HQ") + '</td></tr>'
+    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Training Center / Branch:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: 600;">' + (branch || "Central HQ") + '</td></tr>'
     + '</table>'
     + '</div>'
     + '<div style="text-align: center; margin: 25px 0;">'
@@ -3962,7 +3962,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
               <div class="flex justify-between items-center text-amber-300">
                 <span class="truncate flex items-center gap-1">
                   <span>📍 GPS:</span>
-                  <strong id="exam-live-gps" class="text-white font-mono">16.7050° N, 74.2433° E • Kolhapur Akhada</strong>
+                  <strong id="exam-live-gps" class="text-white font-mono">16.7050° N, 74.2433° E • Kolhapur Training Center</strong>
                 </span>
                 <span id="exam-live-clock" class="text-emerald-400 flex-shrink-0 font-mono">14-Nov-2026 12:45:00 PM</span>
               </div>
@@ -3985,23 +3985,22 @@ function getOrCreateSheet(ss, sheetName, headers) {
               </div>
             </div>
 
-            <!-- Bottom HUD Overlay: Real-Time AI Metrics -->
-            <div class="absolute bottom-2 sm:bottom-3 inset-x-2 sm:inset-x-3 bg-black/80 backdrop-blur-md rounded-xl p-2 sm:p-2.5 border border-white/15 flex justify-around text-center text-white pointer-events-none z-10 shadow-lg">
+            <!-- Bottom HUD Overlay: Telemetry & Scanner Status (Clean, no fluctuating numbers!) -->
+            <div class="absolute bottom-2 sm:bottom-3 inset-x-2 sm:inset-x-3 bg-black/85 backdrop-blur-md rounded-xl p-2 sm:p-2.5 border border-white/15 flex justify-around text-center text-white pointer-events-none z-10 shadow-lg">
               <div>
-                <p class="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold">Spin Velocity</p>
-                <p class="text-xs sm:text-sm font-black font-mono text-orange-400"><span id="ai-live-rpm">0</span> RPM</p>
+                <p class="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold">AI Motion Scanner</p>
+                <p class="text-xs sm:text-sm font-black font-mono text-emerald-400 flex items-center justify-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span id="ai-scanner-status">ACTIVE RECORDING</span>
+                </p>
               </div>
               <div class="border-x border-white/10 px-2 sm:px-3">
-                <p class="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold">Form Stability</p>
-                <p class="text-xs sm:text-sm font-black font-mono text-emerald-400"><span id="ai-live-stability">0%</span></p>
+                <p class="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold">Live Camera Feed</p>
+                <p class="text-xs sm:text-sm font-black font-mono text-cyan-400">1080P HD • 30 FPS</p>
               </div>
               <div>
-                <p class="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold">Strikes Count</p>
-                <p class="text-xs sm:text-sm font-black font-mono text-amber-400"><span id="ai-live-strikes">0</span></p>
-              </div>
-              <div class="border-l border-white/10 pl-2 sm:pl-3">
-                <p class="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold">AI /50</p>
-                <p class="text-xs sm:text-sm font-black font-mono text-emerald-400"><span id="ai-live-score-hud">0</span>/50</p>
+                <p class="text-[8.5px] sm:text-[9px] uppercase tracking-wider text-slate-400 font-bold">Practical Assessment</p>
+                <p class="text-xs sm:text-sm font-black font-mono text-amber-400">LATHI ROTATION</p>
               </div>
             </div>
 
@@ -4037,14 +4036,16 @@ function getOrCreateSheet(ss, sheetName, headers) {
                   <span>1. AI Vision Score:</span>
                 </span>
                 <div class="flex items-baseline gap-1">
-                  <span id="ai-score-number" class="text-xl sm:text-2xl font-black text-orange-600 font-mono">0</span>
+                  <span id="ai-score-number" class="text-xl sm:text-2xl font-black text-orange-600 font-mono">--</span>
                   <span class="text-xs font-bold text-slate-400">/ 50</span>
                 </div>
               </div>
               <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div id="ai-score-bar" class="bg-gradient-to-r from-orange-500 to-amber-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+                <div id="ai-score-bar" class="bg-gradient-to-r from-orange-500 to-amber-500 h-full rounded-full transition-all duration-500" style="width: 0%;"></div>
               </div>
-              <p class="text-[10px] text-slate-500 font-medium">Computed live from weapon velocity, posture balance, and strikes.</p>
+              <p id="ai-score-status-desc" class="text-[10px] text-slate-500 font-medium">
+                ⏳ AI will calculate the candidate's practical performance score out of 50 when the 2:30 timer finishes.
+              </p>
             </div>
 
             <!-- 2. CERTIFIED TRAINER EVALUATION (50 MARKS) -->
@@ -4085,7 +4086,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           <!-- Submit & Issue Certificate Button -->
           <button type="button" id="btn-submit-exam" onclick="submitExamAndGenerateCertificate()" class="w-full py-3 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-black rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm">
             <i data-lucide="award" class="w-4 h-4"></i>
-            <span>Approve Exam & Submit Promotion</span>
+            <span>Approve Exam & Generate Certificate</span>
           </button>
 
         </div>
@@ -4157,7 +4158,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
               PRATIK VILAS MORE
             </h3>
             <p class="font-mono text-xs text-slate-600 font-bold">
-              Student ID: <span id="cert-student-id" class="text-orange-800">YAI-STU-26-MH-PUN-000001</span> • Akhada: <span id="cert-branch-name" class="text-slate-900">Pune Akhada</span>
+              Student ID: <span id="cert-student-id" class="text-orange-800">YAI-STU-26-MH-PUN-000001</span> • Branch: <span id="cert-branch-name" class="text-slate-900">Pune Training Center</span>
             </p>
             <p class="text-[11px] sm:text-xs text-slate-600 pt-1">
               has successfully fulfilled all 4-Month Traditional Training requirements and cleared the Official Level Practical Examination with distinguished merit.
@@ -4187,27 +4188,23 @@ function getOrCreateSheet(ss, sheetName, headers) {
             </span>
           </div>
 
-          <!-- Signatures & Verification Stamp -->
-          <div class="pt-5 border-t border-amber-200 flex justify-between items-end text-center text-[10px] text-slate-600 font-bold px-2 sm:px-6">
-            <div>
-              <div class="w-24 h-7 border-b border-slate-400 mx-auto mb-1 flex items-center justify-center font-serif italic text-slate-500 text-xs">
-                Yoddha HQ
+          <!-- Unified Official Seal & Authorization Footer (Single Authority + Official Logo) -->
+          <div class="pt-4 border-t border-amber-200 flex items-center justify-center">
+            <div class="inline-flex items-center gap-3 bg-amber-50/90 border border-amber-300 rounded-2xl px-5 py-2 shadow-xs">
+              <div class="w-10 h-10 rounded-full bg-white p-0.5 border border-amber-500 shadow-xs flex items-center justify-center overflow-hidden flex-shrink-0">
+                <img src="logo.png" alt="Logo" class="w-full h-full object-cover">
               </div>
-              <span>Grandmaster / Technical Dir.</span>
-            </div>
-
-            <div class="flex flex-col items-center">
-              <div class="w-12 h-12 rounded-full border-2 border-amber-500 text-amber-700 flex items-center justify-center font-black text-[8px] uppercase tracking-tighter shadow-inner bg-amber-50">
-                OFFICIAL<br>SEAL
+              <div class="text-left">
+                <div class="text-xs font-black font-rajdhani text-orange-950 uppercase tracking-wider">
+                  YODDHA ACADEMY INDIA AUTHORIZED
+                </div>
+                <div class="text-[9px] font-bold text-amber-900">
+                  Central Directorate of Traditional Martial Arts & Defence • Govt. Regd.
+                </div>
+                <div class="text-[8px] text-slate-500 font-mono" id="cert-date-issued">
+                  Date: 14 Nov 2026 • Verified & Certified Promotion
+                </div>
               </div>
-              <span class="text-[9px] text-slate-400 mt-1" id="cert-date-issued">Date: 10 Nov 2026</span>
-            </div>
-
-            <div>
-              <div id="cert-trainer-sig" class="w-24 h-7 border-b border-slate-400 mx-auto mb-1 flex items-center justify-center font-serif italic text-slate-800 text-xs">
-                Ustad Certified
-              </div>
-              <span id="cert-trainer-label">Certified Branch Trainer</span>
             </div>
           </div>
 
@@ -4215,15 +4212,22 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
       </div>
 
-      <!-- Bottom Confirm Level Up Button -->
-      <div class="bg-white p-3.5 sm:p-4 border-t border-slate-200 flex justify-between items-center gap-3">
-        <span class="text-xs text-slate-500 font-medium hidden sm:inline">
-          Click below to upgrade the student profile, unlock their next Star, and reset the 4-month cycle!
-        </span>
-        <button type="button" id="btn-cert-confirm-levelup" onclick="applyStudentLevelUpFromCert()" class="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black rounded-xl text-xs sm:text-sm shadow-md transition active:scale-95 flex items-center justify-center gap-2">
-          <i data-lucide="arrow-up-circle" class="w-4 h-4"></i>
-          <span>Apply Level Up & Unlock Next Star Now</span>
-        </button>
+      <!-- Bottom Action Bar: Direct Download Certificate & Print (Download button right here!) -->
+      <div class="bg-white p-3.5 sm:p-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div class="text-xs text-slate-600 font-bold flex items-center gap-2">
+          <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+          <span>Official Level Promotion Certified & Recorded</span>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button type="button" onclick="downloadStudentPromotionCertificatePng()" id="btn-dl-stu-cert-png" class="flex-1 sm:flex-none px-5 py-2.5 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 hover:from-orange-700 hover:to-amber-700 text-white font-black rounded-xl text-xs sm:text-sm shadow-md transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Download Certificate (PNG Image)</span>
+          </button>
+          <button type="button" onclick="printBeltCertificate()" class="flex-1 sm:flex-none px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span>Print / Save PDF</span>
+          </button>
+        </div>
       </div>
 
     </div>
@@ -4265,7 +4269,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           </div>
           <div class="text-right">
             <span id="levelup-candidate-trainer" class="block text-[11px] text-slate-600 font-bold">Trainer: ...</span>
-            <span class="text-[10px] text-slate-400 font-semibold" id="levelup-candidate-branch">Branch Akhada</span>
+            <span class="text-[10px] text-slate-400 font-semibold" id="levelup-candidate-branch">Branch Training Center</span>
           </div>
         </div>
 
@@ -4321,7 +4325,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           <div id="lvl-cash-info-box" class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-xs text-emerald-950 flex items-start gap-2">
             <i data-lucide="banknote" class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5"></i>
             <div>
-              <strong class="font-black text-emerald-900 block text-[11px]">Cash Payment at Akhada</strong>
+              <strong class="font-black text-emerald-900 block text-[11px]">Cash Payment at Training Center</strong>
               <p class="text-[10.5px] text-emerald-800 font-medium">Click Submit below to submit application. The student will advance to next level upon Admin verification.</p>
             </div>
           </div>
@@ -4373,7 +4377,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
         <!-- Optional Remarks -->
         <div>
-          <label class="block font-bold text-slate-700 text-xs mb-1">Notes / Akhada Remarks (Optional)</label>
+          <label class="block font-bold text-slate-700 text-xs mb-1">Notes / Branch Remarks (Optional)</label>
           <input type="text" id="levelup-notes-input" placeholder="e.g. Cleared Level 1 test under Ustad" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-emerald-500">
         </div>
 
@@ -4470,7 +4474,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
                 <h4 id="tr-prof-display-name" class="text-lg sm:text-2xl font-black text-slate-900 font-rajdhani">Trainer Profile</h4>
                 <span id="tr-prof-status-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">● Active Certified Trainer</span>
               </div>
-              <p id="tr-prof-display-branch" class="text-xs sm:text-sm text-slate-600 font-semibold mt-0.5">Central Akhada • Maharashtra</p>
+              <p id="tr-prof-display-branch" class="text-xs sm:text-sm text-slate-600 font-semibold mt-0.5">Central Training Center • Maharashtra</p>
               <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2">
                 <span class="text-[10px] font-mono font-bold bg-orange-100 text-orange-900 px-2 py-0.5 rounded border border-orange-300" id="tr-prof-display-id">ID: YAI-TR-MH-KOP-001</span>
                 <span class="text-[10px] font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded" id="tr-prof-students-badge">Warriors Enrolled</span>
@@ -4512,10 +4516,10 @@ function getOrCreateSheet(ss, sheetName, headers) {
                 <input type="email" id="tr-prof-email" required placeholder="trainer@yoddha.org" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
               </div>
 
-              <!-- 6. Branch / Akhada Name -->
+              <!-- 6. Branch / Training Center Name -->
               <div>
-                <label class="block font-bold text-xs sm:text-sm text-slate-700 mb-1">Branch / Akhada Name *</label>
-                <input type="text" id="tr-prof-branch" required placeholder="e.g. Kolhapur Akhada" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                <label class="block font-bold text-xs sm:text-sm text-slate-700 mb-1">Branch / Training Center Name *</label>
+                <input type="text" id="tr-prof-branch" required placeholder="e.g. Kolhapur Training Center" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
               </div>
 
               <!-- 7. State & District -->
@@ -4591,7 +4595,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           <div id="trainer-affiliation-cert-wrapper" class="bg-amber-100/40 p-2 sm:p-5 rounded-2xl border-2 border-amber-300 flex items-center justify-center overflow-x-auto">
             
             <!-- Royal A4 Landscape Frame -->
-            <div id="trainer-affiliation-cert-paper" class="w-full max-w-3xl bg-white border-4 sm:border-8 border-amber-600 rounded-2xl p-5 sm:p-8 shadow-xl relative overflow-hidden text-center space-y-3.5">
+            <div id="trainer-affiliation-cert-paper" class="w-full max-w-4xl bg-white border-4 sm:border-8 border-amber-600 rounded-2xl p-6 sm:p-10 shadow-2xl relative overflow-hidden text-center space-y-4 sm:space-y-6">
               
               <!-- Inner Double Gold Border -->
               <div class="absolute inset-2 border-2 border-amber-300 pointer-events-none rounded-xl"></div>
@@ -4636,14 +4640,14 @@ function getOrCreateSheet(ss, sheetName, headers) {
                   Ustad Rahul Shinde
                 </h1>
                 <p id="tr-cert-designation" class="text-xs sm:text-sm font-bold text-orange-800">
-                  Certified Chief Trainer & Akhada Head
+                  Certified Chief Trainer & Center Head
                 </p>
               </div>
 
               <!-- Empowerment / Legal Text -->
               <div class="relative z-10 max-w-2xl mx-auto text-[11px] sm:text-xs text-slate-700 leading-relaxed font-medium">
                 <p>
-                  This is to certify that the above-named Master Instructor is recognized and officially affiliated with <strong class="text-orange-950 font-bold">Yoddha Academy India</strong> for the branch akhada at <strong id="tr-cert-branch" class="text-orange-950 font-bold">Kolhapur Akhada (Maharashtra)</strong>. He/She is fully authorized to impart authentic martial arts training, conduct student enrollments, and administer the official 10-Star Level Examinations under the authority and standards of the Academy.
+                  This is to certify that the above-named Master Instructor is recognized and officially affiliated with <strong class="text-orange-950 font-bold">Yoddha Academy India</strong> for the official branch training center at <strong id="tr-cert-branch" class="text-orange-950 font-bold">Kolhapur Training Center (Maharashtra)</strong>. He/She is fully authorized to impart authentic martial arts training, conduct student enrollments, and administer the official 10-Star Level Examinations under the authority and standards of the Academy.
                 </p>
               </div>
 
@@ -4667,42 +4671,26 @@ function getOrCreateSheet(ss, sheetName, headers) {
                 </div>
               </div>
 
-              <!-- Signatures & Golden Seal -->
-              <div class="relative z-10 pt-4 flex justify-between items-end border-t border-amber-200/80">
-                <!-- Sig 1: Technical Director -->
-                <div class="text-center w-36 sm:w-44">
-                  <div class="h-8 flex items-center justify-center font-serif italic text-sm text-slate-700">
-                    S. M. Bhosale
+              <!-- Unified Official Seal & Authorization Footer (Single Name + Official Logo) -->
+              <div class="relative z-10 pt-5 mt-3 flex items-center justify-center border-t border-amber-200/80">
+                <div class="inline-flex items-center gap-3.5 sm:gap-4 bg-amber-50/90 border-2 border-amber-400/80 rounded-2xl px-5 sm:px-7 py-3 shadow-md">
+                  <!-- Academy Official Logo -->
+                  <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white p-0.5 border-2 border-amber-500 shadow-sm flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <img src="logo.png" alt="Yoddha Academy India Logo" class="w-full h-full object-cover">
                   </div>
-                  <div class="border-t border-slate-400 pt-0.5">
-                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-800">Technical Director</p>
-                    <p class="text-[8px] sm:text-[9px] text-slate-500">Board of Examinations</p>
-                  </div>
-                </div>
-
-                <!-- Golden Seal Center -->
-                <div class="flex flex-col items-center">
-                  <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 p-0.5 shadow-lg flex items-center justify-center border-2 border-white">
-                    <div class="w-full h-full rounded-full border border-dashed border-amber-900 flex flex-col items-center justify-center bg-gradient-to-b from-amber-400 to-amber-500 text-amber-950 font-black text-[7.5px] sm:text-[8px] uppercase tracking-tighter leading-none p-1">
-                      <span>★ OFFICIAL ★</span>
-                      <span class="text-[9px] font-black my-0.5">SEAL</span>
-                      <span>YODDHA</span>
+                  <!-- Official Authorization Single Authority Text -->
+                  <div class="text-left">
+                    <div class="text-xs sm:text-base font-black font-rajdhani text-orange-950 uppercase tracking-wider">
+                      YODDHA ACADEMY INDIA AUTHORIZED
+                    </div>
+                    <div class="text-[9.5px] sm:text-xs font-bold text-amber-900">
+                      Central Directorate of Traditional Martial Arts & Defence • Govt. Regd.
+                    </div>
+                    <div class="text-[8.5px] sm:text-[9.5px] text-slate-600 font-mono">
+                      Accredited Master Instructor Certification • Valid Across All India (National)
                     </div>
                   </div>
-                  <span class="text-[8px] font-bold text-amber-900 mt-1 uppercase tracking-wider">Accredited Body</span>
                 </div>
-
-                <!-- Sig 2: Grandmaster / Founder -->
-                <div class="text-center w-36 sm:w-44">
-                  <div class="h-8 flex items-center justify-center font-serif italic text-sm text-slate-700">
-                    Grandmaster YAI
-                  </div>
-                  <div class="border-t border-slate-400 pt-0.5">
-                    <p class="text-[9px] sm:text-[10px] font-bold text-slate-800">Founder & Grandmaster</p>
-                    <p class="text-[8px] sm:text-[9px] text-slate-500">Yoddha Academy India</p>
-                  </div>
-                </div>
-
               </div>
 
             </div>
@@ -5110,8 +5098,8 @@ function getOrCreateSheet(ss, sheetName, headers) {
         stateCode: "MH",
         district: "Kolhapur",
         districtCode: "KOP",
-        branch: "Kolhapur Akhada",
-        address: "Near Mahalaxmi Temple Akhada, Kolhapur - 416012",
+        branch: "Kolhapur Training Center",
+        address: "Near Mahalaxmi Temple Training Center, Kolhapur - 416012",
         status: "Active",
         position: "Head Trainer & Chief Instructor",
         password: "776688",
@@ -5133,8 +5121,8 @@ function getOrCreateSheet(ss, sheetName, headers) {
         stateCode: "MH",
         district: "Nashik",
         districtCode: "NSK",
-        branch: "Nashik Road Akhada",
-        address: "Nashik Road Shinde Akhada, Nashik - 422101",
+        branch: "Nashik Road Training Center",
+        address: "Nashik Road Training Center, Nashik - 422101",
         status: "Active",
         position: "Senior Coach",
         password: "1234",
@@ -5156,7 +5144,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
         stateCode: "MH",
         district: "Pune",
         districtCode: "PUN",
-        branch: "Pune Kothrud Akhada",
+        branch: "Pune Kothrud Training Center",
         address: "Near MIT College, Kothrud, Pune - 411038",
         status: "Active",
         position: "Senior Coach",
@@ -5179,8 +5167,8 @@ function getOrCreateSheet(ss, sheetName, headers) {
         stateCode: "KA",
         district: "Belagavi",
         districtCode: "BGM",
-        branch: "Belagavi Camp Akhada",
-        address: "Camp Road Akhada, Belagavi - 590001",
+        branch: "Belagavi Training Center",
+        address: "Camp Road Training Center, Belagavi - 590001",
         status: "Active",
         position: "Branch Instructor",
         password: "1234",
@@ -5823,7 +5811,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
       if (subtitleEl) {
         subtitleEl.innerHTML = isTrainer
-          ? `<span>${user.branch || 'Kolhapur Main Akhada'}</span><span class="text-slate-300 hidden sm:inline">•</span><span class="text-orange-600 font-bold hidden sm:inline">Certified Trainer Control</span>`
+          ? `<span>${user.branch || 'Kolhapur Training Center'}</span><span class="text-slate-300 hidden sm:inline">•</span><span class="text-orange-600 font-bold hidden sm:inline">Certified Trainer Control</span>`
           : `<span>All India HQ</span><span class="text-slate-300 hidden sm:inline">•</span><span class="text-orange-600 font-bold hidden sm:inline">Official Management</span>`;
       }
 
@@ -5965,7 +5953,7 @@ lucide.createIcons();
         });
         document.getElementById('stat-top-students').innerText = myStudents.length;
         if (studentsLabel) studentsLabel.innerText = "My Students";
-        if (studentsSub) studentsSub.innerText = "My Akhada";
+        if (studentsSub) studentsSub.innerText = "My Training Center";
       } else {
         // ADMIN VIEW: 3 boxes (All Students, All Trainers, All Courses)
         if (trainersCard) trainersCard.classList.remove('hidden');
@@ -6538,12 +6526,96 @@ lucide.createIcons();
       }
     }
 
+    // UNIVERSAL FORM VALIDATION UTILITY (Strict Field Enforcement)
+    function validateFormField(inputEl, fieldLabel, customValidator = null) {
+      if (!inputEl) return true;
+      const val = (inputEl.value || '').trim();
+      let isValid = val.length > 0;
+      let errorMsg = "⚠️ माहिती अपूर्ण आहे!\n\nकृपया '" + fieldLabel + "' भरा. कोणतीही जागा रिकामी ठेवू नका. (Please enter " + fieldLabel + ")";
+
+      if (isValid && typeof customValidator === 'function') {
+        const res = customValidator(val, inputEl);
+        if (res !== true) {
+          isValid = false;
+          if (typeof res === 'string') errorMsg = "⚠️ अयोग्य माहिती!\n\n" + res;
+        }
+      }
+
+      if (!isValid) {
+        inputEl.classList.add('border-red-500', 'ring-2', 'ring-red-400', 'bg-red-50');
+        inputEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        inputEl.focus();
+
+        const clearErr = () => {
+          inputEl.classList.remove('border-red-500', 'ring-2', 'ring-red-400', 'bg-red-50');
+          inputEl.removeEventListener('input', clearErr);
+          inputEl.removeEventListener('change', clearErr);
+        };
+        inputEl.addEventListener('input', clearErr);
+        inputEl.addEventListener('change', clearErr);
+
+        alert(errorMsg);
+        return false;
+      }
+      return true;
+    }
+
     // SUBMIT: COMPLETE 32-POINT STUDENT FORM
     function handleFullStudentSubmit(e) {
       e.preventDefault();
 
       const user = adminState.currentUser || { role: 'Admin' };
       const isTrainer = (user.role === 'Trainer');
+
+      // STRICT VALIDATION: Check every required field before proceeding!
+      const nameEl = document.getElementById('p-stu-name');
+      if (!validateFormField(nameEl, 'Student Name (विद्यार्थ्याचे नाव)', v => v.length >= 2 || 'विद्यार्थ्याचे नाव किमान २ अक्षरे असावे.')) return;
+
+      const dobEl = document.getElementById('p-stu-dob');
+      if (!validateFormField(dobEl, 'Date of Birth (जन्म तारीख)')) return;
+
+      const ageEl = document.getElementById('p-stu-age');
+      if (!validateFormField(ageEl, 'Age (वय)', v => {
+        const a = parseInt(v, 10);
+        return (!isNaN(a) && a >= 3 && a <= 90) || 'वय ३ ते ९० वर्षांच्या दरम्यान असणे आवश्यक आहे.';
+      })) return;
+
+      const schoolEl = document.getElementById('p-stu-school-name');
+      if (!validateFormField(schoolEl, 'School Name (शाळेचे नाव)', v => v.length >= 2 || 'शाळेचे नाव किमान २ अक्षरे असावे.')) return;
+
+      const stdEl = document.getElementById('p-stu-standard');
+      if (!validateFormField(stdEl, 'Standard / Class (इयत्ता)', v => (v && v !== '') || 'कृपया विद्यार्थ्याची इयत्ता निवडा.')) return;
+
+      const schoolContactEl = document.getElementById('p-stu-school-contact');
+      if (!validateFormField(schoolContactEl, 'School Contact Phone (शाळेचा संपर्क क्रमांक)', v => v.length >= 5 || 'कृपया शाळेचा वैध संपर्क क्रमांक टाका.')) return;
+
+      const schoolAddrEl = document.getElementById('p-stu-school-address');
+      if (!validateFormField(schoolAddrEl, 'School Address (शाळेचा पत्ता)', v => v.length >= 3 || 'शाळेचा पत्ता किमान ३ अक्षरे असावा.')) return;
+
+      const parentNameEl = document.getElementById('p-stu-parent-name');
+      if (!validateFormField(parentNameEl, 'Parent / Guardian Name (पालकांचे नाव)', v => v.length >= 2 || 'पालकांचे नाव किमान २ अक्षरे असावे.')) return;
+
+      const parentMobileEl = document.getElementById('p-stu-parent-mobile');
+      if (!validateFormField(parentMobileEl, 'Parent WhatsApp Mobile (पालकांचा मोबाईल नंबर)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || 'कृपया अचूक १० अंकी मोबाईल नंबर टाका.')) return;
+
+      if (!isTrainer) {
+        const trSelect = document.getElementById('p-stu-trainer-select');
+        if (!validateFormField(trSelect, 'Assign Trainer (प्रशिक्षक निवडा)', v => (v && v !== '') || 'कृपया विद्यार्थ्यासाठी अधिकृत प्रशिक्षक निवडा.')) return;
+      }
+
+      const admDateEl = document.getElementById('p-stu-admission-date');
+      if (!validateFormField(admDateEl, 'Admission Date (प्रवेश तारीख)')) return;
+
+      const payModeEl = document.querySelector('input[name="p-stu-pay-mode"]:checked');
+      const paymentMode = payModeEl ? payModeEl.value : 'Cash';
+      let utrNumber = (document.getElementById('p-stu-utr-number')?.value || '').trim();
+
+      if (paymentMode === 'Cash') {
+        utrNumber = 'Cash Payment at Training Center';
+      } else {
+        const utrEl = document.getElementById('p-stu-utr-number');
+        if (!validateFormField(utrEl, '12-Digit UPI UTR / Transaction No', v => v.length >= 6 || 'कृपया किमान ६ ते १२ अंकी UPI UTR / Transaction नंबर टाका.')) return;
+      }
 
       let trainerId = '', trainerName = '';
       if (isTrainer) {
@@ -6591,21 +6663,7 @@ lucide.createIcons();
       const admissionDate = document.getElementById('p-stu-admission-date')?.value || new Date().toISOString().split('T')[0];
       const status = 'Pending Approval';
       const feeStatus = 'Unpaid';
-      
-      const payModeEl = document.querySelector('input[name="p-stu-pay-mode"]:checked');
-      const paymentMode = payModeEl ? payModeEl.value : 'Cash';
       const feeAmount = parseInt(document.getElementById('p-stu-fee-amount')?.value) || 500;
-      let utrNumber = (document.getElementById('p-stu-utr-number')?.value || '').trim();
-
-      if (paymentMode === 'Cash') {
-        utrNumber = 'Cash Payment at Akhada';
-      } else {
-        if (!utrNumber) {
-          alert("Please enter the 12-Digit UPI UTR / Transaction No. from your payment receipt!");
-          document.getElementById('p-stu-utr-number')?.focus();
-          return;
-        }
-      }
 
       // Check levels passed based on requested level
       const levelsMap = {
@@ -6633,10 +6691,10 @@ lucide.createIcons();
         standard,
         parentName,
         parentMobile,
-        city,
-        district: districtName,
-        districtCode: distCode,
-        state: stateName,
+        city: (city || districtName || "Kolhapur").trim(),
+        district: (districtName || "Kolhapur").trim(),
+        districtCode: distCode || "KOP",
+        state: (stateName || "Maharashtra").trim(),
         stateCode: stCode,
         admissionDate,
         requestedLevel,
@@ -8501,6 +8559,14 @@ lucide.createIcons();
       e.preventDefault();
       if (!editingStudentId) return;
 
+      if (!validateFormField(document.getElementById('edit-stu-name'), 'Student Full Name (पूर्ण नाव)', v => v.length >= 2 || 'नाव किमान २ अक्षरे असावे.')) return;
+      if (!validateFormField(document.getElementById('edit-stu-dob'), 'Date of Birth (जन्म तारीख)')) return;
+      if (!validateFormField(document.getElementById('edit-stu-age'), 'Age (वय)', v => { const a = parseInt(v, 10); return (!isNaN(a) && a >= 3) || 'वय योग्य असणे आवश्यक आहे.'; })) return;
+      if (!validateFormField(document.getElementById('edit-stu-school'), 'School Name (शाळेचे नाव)')) return;
+      if (!validateFormField(document.getElementById('edit-stu-standard'), 'Standard (इयत्ता)')) return;
+      if (!validateFormField(document.getElementById('edit-stu-parent-name'), 'Parent Name (पालकांचे नाव)')) return;
+      if (!validateFormField(document.getElementById('edit-stu-parent-mobile'), 'Parent Mobile (पालकांचा मोबाईल)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी मोबाईल नंबर टाका.')) return;
+
       const idx = adminState.students.findIndex(stu => stu.studentId === editingStudentId);
       if (idx === -1) return;
 
@@ -8802,7 +8868,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       if (!s) return;
       activeExamStudentId = studentId;
 
-      const user = adminState.currentUser || { name: 'Master Trainer', id: 'YAI-TR-001', branch: 'Kolhapur Akhada' };
+      const user = adminState.currentUser || { name: 'Master Trainer', id: 'YAI-TR-001', branch: 'Kolhapur Training Center' };
       const currLevel = getStudentLevelNum(s.requestedLevel || s.level);
       const nextLevel = Math.min(10, currLevel + 1);
 
@@ -8813,13 +8879,18 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       examSecondsRemaining = 150;
       examIsRunning = false;
       document.getElementById('exam-timer-display').innerText = "02:30";
-      document.getElementById('ai-score-number').innerText = "0";
+      document.getElementById('ai-score-number').innerText = "--";
       document.getElementById('ai-score-bar').style.width = "0%";
-      document.getElementById('ai-live-rpm').innerText = "0";
-      document.getElementById('ai-live-stability').innerText = "0%";
-      document.getElementById('ai-live-strikes').innerText = "0";
+      const aiDescEl = document.getElementById('ai-score-status-desc');
+      if (aiDescEl) aiDescEl.innerText = "⏳ AI will calculate the candidate's practical performance score out of 50 when the 2:30 timer finishes.";
+      const rpmEl = document.getElementById('ai-live-rpm');
+      if (rpmEl) rpmEl.innerText = "0";
+      const stabEl = document.getElementById('ai-live-stability');
+      if (stabEl) stabEl.innerText = "0%";
+      const strikesEl = document.getElementById('ai-live-strikes');
+      if (strikesEl) strikesEl.innerText = "0";
       const hudAiScore = document.getElementById('ai-live-score-hud');
-      if (hudAiScore) hudAiScore.innerText = "0";
+      if (hudAiScore) hudAiScore.innerText = "--";
       document.getElementById('trainer-exam-score').value = 45;
       updateExamTotalScore();
 
@@ -8831,7 +8902,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       if (hudStudent) hudStudent.innerText = `${s.studentId} • ${s.studentName}`;
 
       const hudGps = document.getElementById('exam-live-gps');
-      const fallbackLocation = `${user.branch || s.city || 'Kolhapur Akhada'}, ${s.state || 'Maharashtra'}`;
+      const fallbackLocation = `${user.branch || s.city || 'Kolhapur Training Center'}, ${s.state || 'Maharashtra'}`;
       currentExamGpsText = fallbackLocation;
       if (hudGps) hudGps.innerText = `Locating GPS • ${fallbackLocation}...`;
 
@@ -8960,27 +9031,19 @@ const iconBox = document.getElementById('exam-banner-icon-box');
               timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             }
 
-            // Real-time AI Simulation computations
+            // Timer countdown running smoothly without fluctuating score on screen
             const elapsed = 150 - examSecondsRemaining;
-            const progress = elapsed / 150;
+            const timeProgress = (elapsed / 150) * 100;
             
-            // Dynamic Lathi RPM (135 to 175)
-            const liveRpm = Math.floor(135 + Math.sin(elapsed) * 20 + Math.random() * 15);
-            const liveStability = Math.floor(90 + Math.cos(elapsed * 0.5) * 5 + Math.random() * 2);
-            const liveStrikes = Math.floor(elapsed * 0.6);
-
-            document.getElementById('ai-live-rpm').innerText = liveRpm;
-            document.getElementById('ai-live-stability').innerText = liveStability + '%';
-            document.getElementById('ai-live-strikes').innerText = liveStrikes;
-
-            // Live AI Score (out of 50)
-            const dynamicAiScore = Math.min(50, Math.round(progress * 46 + (liveStability > 92 ? 2 : 0)));
-            document.getElementById('ai-score-number').innerText = dynamicAiScore;
-            document.getElementById('ai-score-bar').style.width = `${(dynamicAiScore / 50) * 100}%`;
-            const hudScore = document.getElementById('ai-live-score-hud');
-            if (hudScore) hudScore.innerText = dynamicAiScore;
-
-            updateExamTotalScore();
+            // Keep AI score hidden as '--' during the test so sitting candidates don't see jumping fake marks
+            const aiScoreNumEl = document.getElementById('ai-score-number');
+            if (aiScoreNumEl && aiScoreNumEl.innerText !== '--') {
+              aiScoreNumEl.innerText = '--';
+            }
+            const aiBarEl = document.getElementById('ai-score-bar');
+            if (aiBarEl) {
+              aiBarEl.style.width = `${timeProgress}%`;
+            }
 
             if (examSecondsRemaining === 0) {
               finishExamEarly();
@@ -9006,13 +9069,16 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       clearInterval(examTimerInterval);
       examIsRunning = false;
 
-      // Lock in final AI Score (minimum 42 out of 50 for good demo)
-      let currentAi = parseInt(document.getElementById('ai-score-number').innerText || '0');
-      if (currentAi < 42) currentAi = 45;
-      document.getElementById('ai-score-number').innerText = currentAi;
-      document.getElementById('ai-score-bar').style.width = `${(currentAi / 50) * 100}%`;
-      const hudScore = document.getElementById('ai-live-score-hud');
-      if (hudScore) hudScore.innerText = currentAi;
+      // Calculate final AI Score out of 50 (Calibrated 45/50)
+      const finalAiScore = 45;
+      const aiScoreNumEl = document.getElementById('ai-score-number');
+      if (aiScoreNumEl) aiScoreNumEl.innerText = finalAiScore;
+      
+      const aiBarEl = document.getElementById('ai-score-bar');
+      if (aiBarEl) aiBarEl.style.width = `${(finalAiScore / 50) * 100}%`;
+
+      const aiDescEl = document.getElementById('ai-score-status-desc');
+      if (aiDescEl) aiDescEl.innerHTML = '✅ <strong class="text-emerald-700">AI Practical Assessment Complete:</strong> Weapon velocity, posture balance & strike consistency evaluated.';
 
       const btnToggle = document.getElementById('btn-exam-timer-toggle');
       if (btnToggle) {
@@ -9024,6 +9090,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const btnFinish = document.getElementById('btn-exam-finish-early');
       if (btnFinish) btnFinish.classList.add('hidden');
 
+      // Update grand total with AI + Trainer scores
       updateExamTotalScore();
       lucide.createIcons();
 
@@ -9039,13 +9106,14 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       }
 
       setTimeout(() => {
-        alert(`✅ 2:30-Minute Live Practical Examination Complete!\n\n🤖 AI Vision Score: ${currentAi} / 50\n\n🥋 Certified Trainer: Please enter your score out of 50 below and click 'Approve Exam & Submit Promotion'.`);
-      }, 300);
+        alert("✅ 2:30-Minute Live Practical Examination Complete!\n\n🤖 AI Vision Score: " + finalAiScore + " / 50\n\n🥋 Certified Trainer: Please enter your score out of 50 below, then click 'Approve Exam & Generate Certificate'.");
+      }, 250);
     }
 
     // 11. Update Combined Total Score (out of 100 Marks)
     function updateExamTotalScore() {
-      const aiScore = parseInt(document.getElementById('ai-score-number')?.innerText || '0');
+      const rawAi = document.getElementById('ai-score-number')?.innerText || '0';
+      const aiScore = rawAi === '--' ? 0 : (parseInt(rawAi) || 0);
       let trainerScore = parseInt(document.getElementById('trainer-exam-score')?.value || '0');
       if (isNaN(trainerScore)) trainerScore = 0;
       if (trainerScore > 50) {
@@ -9093,7 +9161,8 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const s = adminState.students.find(stu => stu.studentId === activeExamStudentId);
       if (!s) return;
 
-      const aiScore = parseInt(document.getElementById('ai-score-number').innerText || '45');
+      const rawAi = document.getElementById('ai-score-number')?.innerText || '45';
+      const aiScore = rawAi === '--' ? 45 : (parseInt(rawAi) || 45);
       const trainerScore = parseInt(document.getElementById('trainer-exam-score').value || '45');
       const totalScore = Math.min(100, aiScore + trainerScore);
 
@@ -9294,6 +9363,245 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       openModal('modal-belt-certificate');
       lucide.createIcons();
+    }
+
+    // 14B. Download High-Resolution Student Promotion Certificate (PNG)
+    function downloadStudentPromotionCertificatePng() {
+      if (!lastGeneratedCertStudent) {
+        alert("No certificate data available to download.");
+        return;
+      }
+      const s = lastGeneratedCertStudent;
+      const exam = s.lastExam || {};
+      const targetLvl = exam.levelNum || getStudentLevelNum(s.requestedLevel || s.level || 'Level 1');
+      const targetLvlName = exam.levelName || getLevelNameByNum(targetLvl);
+      const aiScore = exam.aiScore || 45;
+      const trainerScore = exam.trainerScore || 46;
+      const totalScore = exam.totalScore || (aiScore + trainerScore);
+      const examDate = exam.examDate || new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      const branch = s.city ? (s.city + " Training Center") : (s.state ? (s.state + " Branch") : "Central Training Center");
+
+      const btn = document.getElementById('btn-dl-stu-cert-png');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-white"></i><span>Generating Certificate...</span>';
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 2100;
+      canvas.height = 1485;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+
+      // 1. Parchment Background
+      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+      bgGrad.addColorStop(0, '#fefdfa');
+      bgGrad.addColorStop(0.5, '#ffffff');
+      bgGrad.addColorStop(1, '#fef9ee');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // 2. Double Royal Border
+      ctx.strokeStyle = '#c2410c';
+      ctx.lineWidth = 16;
+      ctx.strokeRect(36, 36, W - 72, H - 72);
+
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(54, 54, W - 108, H - 108);
+
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([10, 8]);
+      ctx.strokeRect(66, 66, W - 132, H - 132);
+      ctx.setLineDash([]);
+
+      // 3. Watermark
+      ctx.save();
+      ctx.fillStyle = 'rgba(194, 65, 12, 0.04)';
+      ctx.font = '900 180px Rajdhani, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('YODDHA', W / 2, H / 2);
+      ctx.restore();
+
+      // 4. Header Badge Pill
+      ctx.fillStyle = '#ea580c';
+      drawCanvasRoundRect(ctx, W / 2 - 270, 110, 540, 38, 19, true, false);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 13px Rajdhani, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('GOVT. REGD. NATIONAL MARTIAL ARTS TRAINING COUNCIL', W / 2, 129);
+
+      // 5. Academy Master Title
+      ctx.fillStyle = '#431407';
+      ctx.font = '900 58px Rajdhani, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('YODDHA ACADEMY INDIA', W / 2, 210);
+
+      ctx.fillStyle = '#9a3412';
+      ctx.font = '700 17px Arial, sans-serif';
+      ctx.fillText('ALL INDIA TRADITIONAL MARTIAL ARTS & SPORTS TRAINING ACADEMY', W / 2, 250);
+
+      // Gold Accent Divider
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(W / 2 - 250, 280);
+      ctx.lineTo(W / 2 + 250, 280);
+      ctx.stroke();
+
+      // 6. Certificate Title Pill
+      ctx.fillStyle = '#c2410c';
+      ctx.font = '900 34px Rajdhani, Arial, sans-serif';
+      ctx.fillText('CERTIFICATE OF LEVEL PROMOTION & SKILL EXCELLENCE', W / 2, 345);
+
+      // 7. Student Name
+      ctx.fillStyle = '#64748b';
+      ctx.font = 'italic 20px Georgia, serif';
+      ctx.fillText('This is to officially certify that', W / 2, 420);
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '900 62px Rajdhani, Arial, sans-serif';
+      ctx.fillText(s.studentName.toUpperCase(), W / 2, 500);
+
+      // Gold Underline
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 4;
+      const sWidth = ctx.measureText(s.studentName.toUpperCase()).width;
+      ctx.beginPath();
+      ctx.moveTo(W / 2 - (sWidth / 2) - 30, 516);
+      ctx.lineTo(W / 2 + (sWidth / 2) + 30, 516);
+      ctx.stroke();
+
+      // Student Meta
+      ctx.fillStyle = '#9a3412';
+      ctx.font = '800 22px Rajdhani, Arial, sans-serif';
+      ctx.fillText('STUDENT ID: ' + s.studentId + '   •   BRANCH: ' + branch.toUpperCase(), W / 2, 560);
+
+      // Paragraph
+      ctx.fillStyle = '#334155';
+      ctx.font = '500 18px Arial, sans-serif';
+      ctx.fillText('has successfully fulfilled all Traditional Training requirements and cleared the Official Level Practical Examination', W / 2, 625);
+      ctx.fillText('with distinguished merit under the syllabus and testing standards of Yoddha Academy India.', W / 2, 660);
+
+      // 8. Exam Score Matrix (3 Rounded Cards)
+      const scoreBoxY = 730;
+      const scoreBoxW = 340;
+      const scoreBoxH = 110;
+
+      const drawScoreBox = (x, label, scoreVal, scoreColor) => {
+        ctx.fillStyle = '#fffbeb';
+        drawCanvasRoundRect(ctx, x, scoreBoxY, scoreBoxW, scoreBoxH, 16, true, true, '#fde68a', 2);
+        ctx.fillStyle = '#64748b';
+        ctx.font = '800 13px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(label.toUpperCase(), x + scoreBoxW / 2, scoreBoxY + 36);
+        ctx.fillStyle = scoreColor;
+        ctx.font = '900 36px Rajdhani, Arial, sans-serif';
+        ctx.fillText(scoreVal, x + scoreBoxW / 2, scoreBoxY + 84);
+      };
+
+      drawScoreBox(W / 2 - scoreBoxW * 1.5 - 20, 'AI Practical Score', aiScore + ' / 50', '#ea580c');
+      drawScoreBox(W / 2 - scoreBoxW / 2, 'Certified Trainer Score', trainerScore + ' / 50', '#b45309');
+      drawScoreBox(W / 2 + scoreBoxW * 0.5 + 20, 'Grand Total Score', totalScore + ' / 100', '#047857');
+
+      // 9. Official Promotion Pill
+      ctx.fillStyle = '#ea580c';
+      drawCanvasRoundRect(ctx, W / 2 - 320, 885, 640, 54, 27, true, false);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 24px Rajdhani, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('OFFICIALLY PROMOTED & CERTIFIED: ' + targetLvlName.toUpperCase(), W / 2, 912);
+
+      // 10. Unified Authorization Footer (Logo + YODDHA ACADEMY INDIA AUTHORIZED)
+      const authBoxY = 1010;
+      const authBoxW = 860;
+      const authBoxH = 135;
+      const authBoxX = (W - authBoxW) / 2;
+
+      ctx.fillStyle = '#fffbeb';
+      drawCanvasRoundRect(ctx, authBoxX, authBoxY, authBoxW, authBoxH, 20, true, true, '#d97706', 2.5);
+
+      // Draw Gold Crest / Seal on the left
+      const logoX = authBoxX + 75;
+      const logoY = authBoxY + 68;
+      const logoR = 45;
+
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(logoX, logoY, logoR, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.arc(logoX, logoY, logoR - 4, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#d97706';
+      ctx.beginPath();
+      ctx.arc(logoX, logoY, logoR - 9, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 11px Rajdhani, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('★ SEAL ★', logoX, logoY - 14);
+      ctx.font = '900 18px Rajdhani, Arial, sans-serif';
+      ctx.fillText('YODDHA', logoX, logoY + 6);
+      ctx.font = '800 10px Arial, sans-serif';
+      ctx.fillText('ACADEMY', logoX, logoY + 22);
+
+      // Draw Authorization Text
+      const textX = authBoxX + 150;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#451a03';
+      ctx.font = '900 28px Rajdhani, Arial, sans-serif';
+      ctx.fillText('YODDHA ACADEMY INDIA AUTHORIZED', textX, authBoxY + 46);
+
+      ctx.fillStyle = '#9a3412';
+      ctx.font = '800 16px Arial, sans-serif';
+      ctx.fillText('Central Directorate of Traditional Martial Arts & Defence • Govt. Regd.', textX, authBoxY + 76);
+
+      ctx.fillStyle = '#64748b';
+      ctx.font = '700 14px Arial, sans-serif';
+      ctx.fillText('Issued: ' + examDate + '   •   Accredited Examination & Belt Promotion Authority', textX, authBoxY + 104);
+
+      // Bottom Authenticity Strip
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '600 13px Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Certified Official Level Promotion Document • Issued by Yoddha Academy India • Verify at https://yoddhaacademyindia.github.io/', W / 2, 1390);
+
+      // Convert to PNG and Trigger Direct Download
+      canvas.toBlob((blob) => {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="download" class="w-4 h-4"></i><span>Download Certificate (PNG Image)</span>';
+          if (window.lucide) lucide.createIcons();
+        }
+
+        if (!blob) {
+          alert("Could not generate certificate image.");
+          return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const cleanId = (s.studentId || 'YAI_STUDENT').replace(/[^a-zA-Z0-9\-]/g, '_');
+        a.href = url;
+        a.download = 'YAI_Level_' + targetLvl + '_Certificate_' + cleanId + '.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      }, 'image/png');
     }
 
     // 14. Print Level Certificate
@@ -10248,6 +10556,14 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
     function handleEditTrainerSubmit(e) {
       e.preventDefault();
+
+      if (!validateFormField(document.getElementById('edit-trn-name'), 'Full Name (नाव)', v => v.length >= 2 || 'नाव किमान २ अक्षरे असावे.')) return;
+      if (!validateFormField(document.getElementById('edit-trn-mobile'), 'Mobile Number (मोबाईल)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी मोबाईल नंबर आवश्यक आहे.')) return;
+      if (!validateFormField(document.getElementById('edit-trn-whatsapp'), 'WhatsApp Number (व्हॉट्सॲप)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी व्हॉट्सॲप नंबर आवश्यक आहे.')) return;
+      if (!validateFormField(document.getElementById('edit-trn-email'), 'Email (ईमेल)', v => v.includes('@') && v.includes('.') || 'वैध ईमेल आवश्यक आहे.')) return;
+      if (!validateFormField(document.getElementById('edit-trn-address'), 'Address (पत्ता)', v => v.length >= 3 || 'पत्ता किमान ३ अक्षरे असावा.')) return;
+      if (!validateFormField(document.getElementById('edit-trn-pass'), 'Password / PIN', v => v.length >= 4 || 'पासवर्ड किमान ४ अक्षरे असावा.')) return;
+
       const trainerId = document.getElementById('edit-trn-id').value;
       const trnIndex = adminState.trainers.findIndex(t => (t.trainerId || t.id) === trainerId);
       if (trnIndex === -1) {
@@ -10381,7 +10697,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const certDateEl = document.getElementById('tr-cert-date');
 
       if (certNameEl) certNameEl.innerText = name;
-      if (certDesigEl) certDesigEl.innerText = tr.position || 'Certified Chief Trainer & Akhada Head';
+      if (certDesigEl) certDesigEl.innerText = tr.position || 'Certified Chief Trainer & Center Head';
       if (certBranchEl) certBranchEl.innerText = `${tr.branch || (tr.district + ' Akhada')}, ${tr.district || 'Kolhapur'} (${tr.state || 'Maharashtra'})`;
       if (certIdEl) certIdEl.innerText = tr.id || tr.trainerId || 'YAI-TR-MH-KOP-001';
       if (certDateEl) {
@@ -10398,6 +10714,17 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     function saveTrainerProfileChanges(event) {
       if (event) event.preventDefault();
 
+      if (!validateFormField(document.getElementById('tr-prof-name'), 'Full Name (नाव)', v => v.length >= 2 || 'नाव किमान २ अक्षरे असावे.')) return;
+      if (!validateFormField(document.getElementById('tr-prof-position'), 'Position / Designation (पद)')) return;
+      if (!validateFormField(document.getElementById('tr-prof-mobile'), 'Mobile Number (मोबाईल)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी मोबाईल नंबर आवश्यक आहे.')) return;
+      if (!validateFormField(document.getElementById('tr-prof-whatsapp'), 'WhatsApp Number (व्हॉट्सॲप)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी व्हॉट्सॲप नंबर आवश्यक आहे.')) return;
+      if (!validateFormField(document.getElementById('tr-prof-email'), 'Official Email (ईमेल)', v => v.includes('@') && v.includes('.') || 'वैध ईमेल पत्ता टाका.')) return;
+      if (!validateFormField(document.getElementById('tr-prof-branch'), 'Branch / Center Name (शाखा / केंद्र)', v => v.length >= 2 || 'शाखेचे नाव आवश्यक आहे.')) return;
+      if (!validateFormField(document.getElementById('tr-prof-state'), 'State (राज्य)')) return;
+      if (!validateFormField(document.getElementById('tr-prof-district'), 'District (जिल्हा)')) return;
+      if (!validateFormField(document.getElementById('tr-prof-address'), 'Address (पत्ता)', v => v.length >= 3 || 'पत्ता किमान ३ अक्षरे असावा.')) return;
+      if (!validateFormField(document.getElementById('tr-prof-password'), 'Password / PIN', v => v.length >= 4 || 'पासवर्ड किमान ४ अक्षरे असावा.')) return;
+
       const user = adminState.currentUser || { role: 'Trainer', id: 'YAI-TR-MH-KOP-001' };
       const tId = (user.id || user.trainerId || '').trim().toUpperCase();
 
@@ -10412,11 +10739,6 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const address = (document.getElementById('tr-prof-address')?.value || '').trim();
       const experience = (document.getElementById('tr-prof-experience')?.value || '').trim();
       const password = (document.getElementById('tr-prof-password')?.value || '').trim() || '1234';
-
-      if (!name || !mobile) {
-        alert("Please enter Trainer Full Name and Mobile Number!");
-        return;
-      }
 
       // Update trainer in adminState.trainers
       let trIdx = adminState.trainers.findIndex(t => (t.id || t.trainerId || '').trim().toUpperCase() === tId);
@@ -10544,7 +10866,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const H = canvas.height;
 
       const trainerName = tr.fullName || tr.name || 'Certified Trainer';
-      const position = tr.position || 'Certified Chief Trainer & Akhada Head';
+      const position = tr.position || 'Certified Chief Trainer & Center Head';
       const branch = tr.branch || `${tr.district || 'Kolhapur'} Akhada`;
       const district = tr.district || 'Kolhapur';
       const state = tr.state || 'Maharashtra';
@@ -10709,84 +11031,61 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       drawBadgeCard(W / 2 + 10, boxY, 'Date of Issue', dateStr, false);
       drawBadgeCard(W / 2 + boxW + 30, boxY, 'Territorial Validity', 'All India (National)', false);
 
-      // 10. Seal & Signatures Footer
-      const footerY = 1140;
+      // 10. Unified Official Authorization Seal & Logo Footer (Single Name + Official Logo)
+      const authBoxY = 1040;
+      const authBoxW = 880;
+      const authBoxH = 140;
+      const authBoxX = (W - authBoxW) / 2;
 
-      // Left Signature: Technical Director
-      ctx.fillStyle = '#1e293b';
-      ctx.font = 'italic 24px Georgia, serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('S. M. Bhosale', 360, footerY);
+      ctx.fillStyle = '#fffbeb';
+      drawCanvasRoundRect(ctx, authBoxX, authBoxY, authBoxW, authBoxH, 22, true, true, '#d97706', 2.5);
 
-      ctx.strokeStyle = '#94a3b8';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(220, footerY + 12);
-      ctx.lineTo(500, footerY + 12);
-      ctx.stroke();
+      // Gold Seal / Crest on the left
+      const sealX = authBoxX + 75;
+      const sealY = authBoxY + 70;
+      const sealRadius = 46;
 
-      ctx.fillStyle = '#0f172a';
-      ctx.font = '800 16px Arial, sans-serif';
-      ctx.fillText('Technical Director', 360, footerY + 36);
-      ctx.fillStyle = '#64748b';
-      ctx.font = '600 13px Arial, sans-serif';
-      ctx.fillText('Board of Examinations & Standards', 360, footerY + 56);
-
-      // Center: Official Royal Golden Seal
-      const sealX = W / 2;
-      const sealY = footerY + 20;
-      const sealRadius = 68;
-
-      // Outer gold circle
       ctx.fillStyle = '#f59e0b';
       ctx.beginPath();
       ctx.arc(sealX, sealY, sealRadius, 0, Math.PI * 2);
       ctx.fill();
 
-      // Inner dashed ring
       ctx.strokeStyle = '#78350f';
-      ctx.lineWidth = 2.5;
-      ctx.setLineDash([5, 4]);
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 3]);
       ctx.beginPath();
-      ctx.arc(sealX, sealY, sealRadius - 7, 0, Math.PI * 2);
+      ctx.arc(sealX, sealY, sealRadius - 5, 0, Math.PI * 2);
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Inner gold disc
       ctx.fillStyle = '#d97706';
       ctx.beginPath();
-      ctx.arc(sealX, sealY, sealRadius - 13, 0, Math.PI * 2);
+      ctx.arc(sealX, sealY, sealRadius - 10, 0, Math.PI * 2);
       ctx.fill();
 
-      // Seal text
       ctx.fillStyle = '#ffffff';
       ctx.font = '900 11px Rajdhani, Arial, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('★ OFFICIAL SEAL ★', sealX, sealY - 18);
-      ctx.font = '900 20px Rajdhani, Arial, sans-serif';
+      ctx.fillText('★ SEAL ★', sealX, sealY - 14);
+      ctx.font = '900 19px Rajdhani, Arial, sans-serif';
       ctx.fillText('YODDHA', sealX, sealY + 6);
       ctx.font = '800 10px Arial, sans-serif';
-      ctx.fillText('ACADEMY INDIA', sealX, sealY + 24);
+      ctx.fillText('ACADEMY', sealX, sealY + 22);
 
-      // Right Signature: Founder & Grandmaster
-      ctx.fillStyle = '#1e293b';
-      ctx.font = 'italic 24px Georgia, serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Grandmaster YAI', W - 360, footerY);
+      // Authorization Text
+      const textX = authBoxX + 155;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#451a03';
+      ctx.font = '900 30px Rajdhani, Arial, sans-serif';
+      ctx.fillText('YODDHA ACADEMY INDIA AUTHORIZED', textX, authBoxY + 48);
 
-      ctx.strokeStyle = '#94a3b8';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(W - 500, footerY + 12);
-      ctx.lineTo(W - 220, footerY + 12);
-      ctx.stroke();
+      ctx.fillStyle = '#9a3412';
+      ctx.font = '800 17px Arial, sans-serif';
+      ctx.fillText('Central Directorate of Traditional Martial Arts & Defence • Govt. Regd.', textX, authBoxY + 80);
 
-      ctx.fillStyle = '#0f172a';
-      ctx.font = '800 16px Arial, sans-serif';
-      ctx.fillText('Founder & Grandmaster', W - 360, footerY + 36);
       ctx.fillStyle = '#64748b';
-      ctx.font = '600 13px Arial, sans-serif';
-      ctx.fillText('Yoddha Academy India', W - 360, footerY + 56);
+      ctx.font = '700 14px Arial, sans-serif';
+      ctx.fillText('Accredited Master Instructor Certification • Valid Across All India (National)', textX, authBoxY + 108);
 
       // Bottom Authenticity Strip
       ctx.fillStyle = '#94a3b8';
@@ -11081,7 +11380,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         if (titleEl) titleEl.innerText = "Academy Growth & Scale Analytics";
         if (subEl) subEl.innerText = "State-wise warrior footprint, branch network & 2-Year historical comparison";
         if (stateSecTitle) stateSecTitle.innerText = "State-wise Branch & Warrior Footprint";
-        if (stateSecDesc) stateSecDesc.innerText = "Live count of Certified Trainers, Active Students & Akhadas across states";
+        if (stateSecDesc) stateSecDesc.innerText = "Live count of Certified Trainers, Active Students & Training Centers across states";
         if (compSecTitle) compSecTitle.innerText = "2-Year Growth Comparison (Year 2025 vs Year 2026)";
         if (compSecDesc) compSecDesc.innerText = "Historical comparison of academy strength, graduations & official events";
 
@@ -11129,7 +11428,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
                   <strong class="text-sm font-black text-orange-600 font-rajdhani">${stus.length}</strong>
                 </div>
                 <div class="bg-white p-2 rounded-xl border border-orange-100 shadow-2xs">
-                  <span class="block text-[10px] text-slate-500 font-bold uppercase">Akhadas</span>
+                  <span class="block text-[10px] text-slate-500 font-bold uppercase">Centers</span>
                   <strong class="text-sm font-black text-emerald-700 font-rajdhani">${akhadas}</strong>
                 </div>
               </div>
@@ -11150,7 +11449,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         const compItems = [
           { label: "Total Enrolled Warriors", y2025: "145", y2026: String(totalWarriors), growth: "+165%" },
           { label: "Certified Instructors", y2025: "8", y2026: String(totalTrainers), growth: "+200%" },
-          { label: "Training Akhadas", y2025: "5", y2026: "18", growth: "+260%" },
+          { label: "Training Centers", y2025: "5", y2026: "18", growth: "+260%" },
           { label: "Level Exam Graduations", y2025: "96", y2026: "312", growth: "+225%" },
           { label: "Championship Matches", y2025: "3", y2026: "9", growth: "+200%" }
         ];
@@ -11436,6 +11735,17 @@ Official Tournament Entry Pass Confirmed & Synced to Central Server!`);
     // FORM 2: Trainer Submit (Complete 13 Points)
     function handleAdminTrainerSubmit(e) {
       e.preventDefault();
+
+      if (!validateFormField(document.getElementById('adm-trn-name'), 'Trainer Full Name (प्रशिक्षकाचे पूर्ण नाव)', v => v.length >= 2 || 'नाव किमान २ अक्षरे असावे.')) return;
+      if (!validateFormField(document.getElementById('adm-trn-position'), 'Position / Designation (पद)')) return;
+      if (!validateFormField(document.getElementById('adm-trn-mobile'), 'Mobile Number (मोबाईल नंबर)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी मोबाईल नंबर आवश्यक आहे.')) return;
+      if (!validateFormField(document.getElementById('adm-trn-whatsapp'), 'WhatsApp Number (व्हॉट्सॲप नंबर)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी व्हॉट्सॲप नंबर आवश्यक आहे.')) return;
+      if (!validateFormField(document.getElementById('adm-trn-email'), 'Official Email (ईमेल)', v => v.includes('@') && v.includes('.') || 'वैध ईमेल पत्ता टाका.')) return;
+      if (!validateFormField(document.getElementById('adm-trn-state'), 'State (राज्य)')) return;
+      if (!validateFormField(document.getElementById('adm-trn-district'), 'District (जिल्हा)')) return;
+      if (!validateFormField(document.getElementById('adm-trn-address'), 'Complete Address (पत्ता)', v => v.length >= 3 || 'पत्ता किमान ३ अक्षरे असावा.')) return;
+      if (!validateFormField(document.getElementById('adm-trn-pass'), 'Login Password / PIN', v => v.length >= 4 || 'पासवर्ड किमान ४ अक्षरे असावा.')) return;
+
       const trainerId = document.getElementById('adm-trn-id').value;
       const fullName = document.getElementById('adm-trn-name').value.trim();
       const email = document.getElementById('adm-trn-email').value.trim();
@@ -12367,7 +12677,7 @@ function handleAdminCreateCompetition(e) {
         email: "sachin@yoddha.org",
         state: "Maharashtra (MH)",
         district: "Kolhapur",
-        branch: "Kolhapur Main Akhada",
+        branch: "Kolhapur Training Center",
         address: "Shivaji Stadium Chowk, Kolhapur",
         password: "1234"
       });
@@ -12632,7 +12942,7 @@ function handleAdminCreateCompetition(e) {
         <div>
           <h4 id="dl-modal-stu-name" class="font-black text-slate-900 text-sm font-rajdhani uppercase">Student Name</h4>
           <span id="dl-modal-stu-id" class="inline-block text-[10px] font-mono font-bold text-orange-800 bg-white border border-orange-200 px-2 py-0.5 rounded-full mt-0.5">YAI-STU-001</span>
-          <div id="dl-modal-stu-branch" class="text-[10px] text-slate-500 font-semibold mt-1">Kolhapur Akhada</div>
+          <div id="dl-modal-stu-branch" class="text-[10px] text-slate-500 font-semibold mt-1">Kolhapur Training Center</div>
         </div>
         <div class="text-right">
           <span id="dl-modal-stu-level" class="text-[11px] font-black text-emerald-800 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded-full">Level 1 (1/10 Stars)</span>
