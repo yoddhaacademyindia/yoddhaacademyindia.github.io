@@ -4086,7 +4086,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           <!-- Submit & Issue Certificate Button -->
           <button type="button" id="btn-submit-exam" onclick="submitExamAndGenerateCertificate()" class="w-full py-3 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-black rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm">
             <i data-lucide="award" class="w-4 h-4"></i>
-            <span>Approve Exam & Generate Certificate</span>
+            <span>Export Result & Generate Certificate</span>
           </button>
 
         </div>
@@ -4571,7 +4571,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
             <div>
               <h4 class="text-base sm:text-lg font-black text-slate-900 font-rajdhani flex items-center gap-2">
                 <i data-lucide="award" class="w-5 h-5 text-amber-600"></i>
-                <span>Official Affiliation & Recognition Certificate (मान्यता प्रमाणपत्र)</span>
+                <span>Official Affiliation & Recognition Certificate</span>
               </h4>
               <p class="text-[11px] sm:text-xs text-slate-600 font-medium">
                 Official A4 Size Accreditation Document issued by Yoddha Academy India
@@ -4629,7 +4629,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
                   Certificate of Official Affiliation & Trainer Recognition
                 </h3>
                 <p class="text-[11px] sm:text-xs font-bold text-amber-900 mt-0.5">
-                  (अधिकृत शाखा प्रशिक्षक व संलग्नता मान्यता प्रमाणपत्र)
+                  Official Branch Training Center Accreditation & Recognition
                 </p>
               </div>
 
@@ -6531,13 +6531,13 @@ lucide.createIcons();
       if (!inputEl) return true;
       const val = (inputEl.value || '').trim();
       let isValid = val.length > 0;
-      let errorMsg = "⚠️ माहिती अपूर्ण आहे!\n\nकृपया '" + fieldLabel + "' भरा. कोणतीही जागा रिकामी ठेवू नका. (Please enter " + fieldLabel + ")";
+      let errorMsg = "⚠️ Required Field Empty!\n\nPlease enter " + fieldLabel + ". All fields must be filled before proceeding.";
 
       if (isValid && typeof customValidator === 'function') {
         const res = customValidator(val, inputEl);
         if (res !== true) {
           isValid = false;
-          if (typeof res === 'string') errorMsg = "⚠️ अयोग्य माहिती!\n\n" + res;
+          if (typeof res === 'string') errorMsg = "⚠️ Invalid Input!\n\n" + res;
         }
       }
 
@@ -6569,42 +6569,42 @@ lucide.createIcons();
 
       // STRICT VALIDATION: Check every required field before proceeding!
       const nameEl = document.getElementById('p-stu-name');
-      if (!validateFormField(nameEl, 'Student Name (विद्यार्थ्याचे नाव)', v => v.length >= 2 || 'विद्यार्थ्याचे नाव किमान २ अक्षरे असावे.')) return;
+      if (!validateFormField(nameEl, 'Student Full Name', v => v.length >= 2 || 'Student Name must be at least 2 characters.')) return;
 
       const dobEl = document.getElementById('p-stu-dob');
-      if (!validateFormField(dobEl, 'Date of Birth (जन्म तारीख)')) return;
+      if (!validateFormField(dobEl, 'Date of Birth')) return;
 
       const ageEl = document.getElementById('p-stu-age');
-      if (!validateFormField(ageEl, 'Age (वय)', v => {
+      if (!validateFormField(ageEl, 'Age', v => {
         const a = parseInt(v, 10);
-        return (!isNaN(a) && a >= 3 && a <= 90) || 'वय ३ ते ९० वर्षांच्या दरम्यान असणे आवश्यक आहे.';
+        return (!isNaN(a) && a >= 3 && a <= 90) || 'Age must be between 3 and 90 years.';
       })) return;
 
       const schoolEl = document.getElementById('p-stu-school-name');
-      if (!validateFormField(schoolEl, 'School Name (शाळेचे नाव)', v => v.length >= 2 || 'शाळेचे नाव किमान २ अक्षरे असावे.')) return;
+      if (!validateFormField(schoolEl, 'School Name', v => v.length >= 2 || 'School Name must be at least 2 characters.')) return;
 
       const stdEl = document.getElementById('p-stu-standard');
-      if (!validateFormField(stdEl, 'Standard / Class (इयत्ता)', v => (v && v !== '') || 'कृपया विद्यार्थ्याची इयत्ता निवडा.')) return;
+      if (!validateFormField(stdEl, 'Standard / Grade', v => (v && v !== '') || 'Please select student standard/grade.')) return;
 
       const schoolContactEl = document.getElementById('p-stu-school-contact');
-      if (!validateFormField(schoolContactEl, 'School Contact Phone (शाळेचा संपर्क क्रमांक)', v => v.length >= 5 || 'कृपया शाळेचा वैध संपर्क क्रमांक टाका.')) return;
+      if (!validateFormField(schoolContactEl, 'School Contact Phone', v => v.length >= 5 || 'Please enter a valid school contact number.')) return;
 
       const schoolAddrEl = document.getElementById('p-stu-school-address');
-      if (!validateFormField(schoolAddrEl, 'School Address (शाळेचा पत्ता)', v => v.length >= 3 || 'शाळेचा पत्ता किमान ३ अक्षरे असावा.')) return;
+      if (!validateFormField(schoolAddrEl, 'School Address', v => v.length >= 3 || 'School address must be at least 3 characters.')) return;
 
       const parentNameEl = document.getElementById('p-stu-parent-name');
-      if (!validateFormField(parentNameEl, 'Parent / Guardian Name (पालकांचे नाव)', v => v.length >= 2 || 'पालकांचे नाव किमान २ अक्षरे असावे.')) return;
+      if (!validateFormField(parentNameEl, 'Parent / Guardian Full Name', v => v.length >= 2 || 'Parent name must be at least 2 characters.')) return;
 
       const parentMobileEl = document.getElementById('p-stu-parent-mobile');
-      if (!validateFormField(parentMobileEl, 'Parent WhatsApp Mobile (पालकांचा मोबाईल नंबर)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || 'कृपया अचूक १० अंकी मोबाईल नंबर टाका.')) return;
+      if (!validateFormField(parentMobileEl, 'Parent WhatsApp Mobile', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || 'Please enter an exact 10-digit mobile number.')) return;
 
       if (!isTrainer) {
         const trSelect = document.getElementById('p-stu-trainer-select');
-        if (!validateFormField(trSelect, 'Assign Trainer (प्रशिक्षक निवडा)', v => (v && v !== '') || 'कृपया विद्यार्थ्यासाठी अधिकृत प्रशिक्षक निवडा.')) return;
+        if (!validateFormField(trSelect, 'Assign Trainer', v => (v && v !== '') || 'Please select a Certified Trainer.')) return;
       }
 
       const admDateEl = document.getElementById('p-stu-admission-date');
-      if (!validateFormField(admDateEl, 'Admission Date (प्रवेश तारीख)')) return;
+      if (!validateFormField(admDateEl, 'Admission Date')) return;
 
       const payModeEl = document.querySelector('input[name="p-stu-pay-mode"]:checked');
       const paymentMode = payModeEl ? payModeEl.value : 'Cash';
@@ -6614,7 +6614,7 @@ lucide.createIcons();
         utrNumber = 'Cash Payment at Training Center';
       } else {
         const utrEl = document.getElementById('p-stu-utr-number');
-        if (!validateFormField(utrEl, '12-Digit UPI UTR / Transaction No', v => v.length >= 6 || 'कृपया किमान ६ ते १२ अंकी UPI UTR / Transaction नंबर टाका.')) return;
+        if (!validateFormField(utrEl, '12-Digit UPI UTR / Transaction No', v => v.length >= 6 || 'Please enter valid 6 to 12 digit UPI Transaction number.')) return;
       }
 
       let trainerId = '', trainerName = '';
@@ -8559,13 +8559,13 @@ lucide.createIcons();
       e.preventDefault();
       if (!editingStudentId) return;
 
-      if (!validateFormField(document.getElementById('edit-stu-name'), 'Student Full Name (पूर्ण नाव)', v => v.length >= 2 || 'नाव किमान २ अक्षरे असावे.')) return;
-      if (!validateFormField(document.getElementById('edit-stu-dob'), 'Date of Birth (जन्म तारीख)')) return;
-      if (!validateFormField(document.getElementById('edit-stu-age'), 'Age (वय)', v => { const a = parseInt(v, 10); return (!isNaN(a) && a >= 3) || 'वय योग्य असणे आवश्यक आहे.'; })) return;
-      if (!validateFormField(document.getElementById('edit-stu-school'), 'School Name (शाळेचे नाव)')) return;
-      if (!validateFormField(document.getElementById('edit-stu-standard'), 'Standard (इयत्ता)')) return;
-      if (!validateFormField(document.getElementById('edit-stu-parent-name'), 'Parent Name (पालकांचे नाव)')) return;
-      if (!validateFormField(document.getElementById('edit-stu-parent-mobile'), 'Parent Mobile (पालकांचा मोबाईल)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी मोबाईल नंबर टाका.')) return;
+      if (!validateFormField(document.getElementById('edit-stu-name'), 'Student Full Name', v => v.length >= 2 || 'Name must be at least 2 characters.')) return;
+      if (!validateFormField(document.getElementById('edit-stu-dob'), 'Date of Birth')) return;
+      if (!validateFormField(document.getElementById('edit-stu-age'), 'Age', v => { const a = parseInt(v, 10); return (!isNaN(a) && a >= 3) || 'Please enter valid age.'; })) return;
+      if (!validateFormField(document.getElementById('edit-stu-school'), 'School Name')) return;
+      if (!validateFormField(document.getElementById('edit-stu-standard'), 'Standard / Grade')) return;
+      if (!validateFormField(document.getElementById('edit-stu-parent-name'), 'Parent Name')) return;
+      if (!validateFormField(document.getElementById('edit-stu-parent-mobile'), 'Parent Mobile', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || 'Please enter 10-digit mobile number.')) return;
 
       const idx = adminState.students.findIndex(stu => stu.studentId === editingStudentId);
       if (idx === -1) return;
@@ -10557,12 +10557,12 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     function handleEditTrainerSubmit(e) {
       e.preventDefault();
 
-      if (!validateFormField(document.getElementById('edit-trn-name'), 'Full Name (नाव)', v => v.length >= 2 || 'नाव किमान २ अक्षरे असावे.')) return;
-      if (!validateFormField(document.getElementById('edit-trn-mobile'), 'Mobile Number (मोबाईल)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी मोबाईल नंबर आवश्यक आहे.')) return;
-      if (!validateFormField(document.getElementById('edit-trn-whatsapp'), 'WhatsApp Number (व्हॉट्सॲप)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी व्हॉट्सॲप नंबर आवश्यक आहे.')) return;
-      if (!validateFormField(document.getElementById('edit-trn-email'), 'Email (ईमेल)', v => v.includes('@') && v.includes('.') || 'वैध ईमेल आवश्यक आहे.')) return;
-      if (!validateFormField(document.getElementById('edit-trn-address'), 'Address (पत्ता)', v => v.length >= 3 || 'पत्ता किमान ३ अक्षरे असावा.')) return;
-      if (!validateFormField(document.getElementById('edit-trn-pass'), 'Password / PIN', v => v.length >= 4 || 'पासवर्ड किमान ४ अक्षरे असावा.')) return;
+      if (!validateFormField(document.getElementById('edit-trn-name'), 'Trainer Full Name', v => v.length >= 2 || 'Name must be at least 2 characters.')) return;
+      if (!validateFormField(document.getElementById('edit-trn-mobile'), 'Mobile Number', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || 'Valid 10-digit mobile required.')) return;
+      if (!validateFormField(document.getElementById('edit-trn-whatsapp'), 'WhatsApp Number', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || 'Valid 10-digit WhatsApp number required.')) return;
+      if (!validateFormField(document.getElementById('edit-trn-email'), 'Email Address', v => v.includes('@') && v.includes('.') || 'Valid email required.')) return;
+      if (!validateFormField(document.getElementById('edit-trn-address'), 'Complete Address', v => v.length >= 3 || 'Address must be at least 3 characters.')) return;
+      if (!validateFormField(document.getElementById('edit-trn-pass'), 'Password / PIN', v => v.length >= 4 || 'Password must be at least 4 characters.')) return;
 
       const trainerId = document.getElementById('edit-trn-id').value;
       const trnIndex = adminState.trainers.findIndex(t => (t.trainerId || t.id) === trainerId);
@@ -10714,16 +10714,16 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     function saveTrainerProfileChanges(event) {
       if (event) event.preventDefault();
 
-      if (!validateFormField(document.getElementById('tr-prof-name'), 'Full Name (नाव)', v => v.length >= 2 || 'नाव किमान २ अक्षरे असावे.')) return;
-      if (!validateFormField(document.getElementById('tr-prof-position'), 'Position / Designation (पद)')) return;
-      if (!validateFormField(document.getElementById('tr-prof-mobile'), 'Mobile Number (मोबाईल)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी मोबाईल नंबर आवश्यक आहे.')) return;
-      if (!validateFormField(document.getElementById('tr-prof-whatsapp'), 'WhatsApp Number (व्हॉट्सॲप)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी व्हॉट्सॲप नंबर आवश्यक आहे.')) return;
-      if (!validateFormField(document.getElementById('tr-prof-email'), 'Official Email (ईमेल)', v => v.includes('@') && v.includes('.') || 'वैध ईमेल पत्ता टाका.')) return;
-      if (!validateFormField(document.getElementById('tr-prof-branch'), 'Branch / Center Name (शाखा / केंद्र)', v => v.length >= 2 || 'शाखेचे नाव आवश्यक आहे.')) return;
-      if (!validateFormField(document.getElementById('tr-prof-state'), 'State (राज्य)')) return;
-      if (!validateFormField(document.getElementById('tr-prof-district'), 'District (जिल्हा)')) return;
-      if (!validateFormField(document.getElementById('tr-prof-address'), 'Address (पत्ता)', v => v.length >= 3 || 'पत्ता किमान ३ अक्षरे असावा.')) return;
-      if (!validateFormField(document.getElementById('tr-prof-password'), 'Password / PIN', v => v.length >= 4 || 'पासवर्ड किमान ४ अक्षरे असावा.')) return;
+      if (!validateFormField(document.getElementById('tr-prof-name'), 'Trainer Full Name', v => v.length >= 2 || 'Name must be at least 2 characters.')) return;
+      if (!validateFormField(document.getElementById('tr-prof-position'), 'Position / Designation')) return;
+      if (!validateFormField(document.getElementById('tr-prof-mobile'), 'Mobile Number', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || 'Valid 10-digit mobile required.')) return;
+      if (!validateFormField(document.getElementById('tr-prof-whatsapp'), 'WhatsApp Number', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || 'Valid 10-digit WhatsApp number required.')) return;
+      if (!validateFormField(document.getElementById('tr-prof-email'), 'Official Email', v => v.includes('@') && v.includes('.') || 'Valid email required.')) return;
+      if (!validateFormField(document.getElementById('tr-prof-branch'), 'Branch / Center Name', v => v.length >= 2 || 'Branch name is required.')) return;
+      if (!validateFormField(document.getElementById('tr-prof-state'), 'State')) return;
+      if (!validateFormField(document.getElementById('tr-prof-district'), 'District')) return;
+      if (!validateFormField(document.getElementById('tr-prof-address'), 'Complete Address', v => v.length >= 3 || 'Address must be at least 3 characters.')) return;
+      if (!validateFormField(document.getElementById('tr-prof-password'), 'Password / PIN', v => v.length >= 4 || 'Password must be at least 4 characters.')) return;
 
       const user = adminState.currentUser || { role: 'Trainer', id: 'YAI-TR-MH-KOP-001' };
       const tId = (user.id || user.trainerId || '').trim().toUpperCase();
@@ -10971,7 +10971,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       ctx.fillStyle = '#78350f';
       ctx.font = '700 20px Arial, sans-serif';
-      ctx.fillText('(अधिकृत शाखा प्रशिक्षक व संलग्नता मान्यता प्रमाणपत्र)', W / 2, 388);
+      ctx.fillText('Official Branch Training Center Accreditation & Recognition', W / 2, 388);
 
       // 7. Recipient Introduction & Name
       ctx.fillStyle = '#475569';
@@ -11736,15 +11736,15 @@ Official Tournament Entry Pass Confirmed & Synced to Central Server!`);
     function handleAdminTrainerSubmit(e) {
       e.preventDefault();
 
-      if (!validateFormField(document.getElementById('adm-trn-name'), 'Trainer Full Name (प्रशिक्षकाचे पूर्ण नाव)', v => v.length >= 2 || 'नाव किमान २ अक्षरे असावे.')) return;
-      if (!validateFormField(document.getElementById('adm-trn-position'), 'Position / Designation (पद)')) return;
-      if (!validateFormField(document.getElementById('adm-trn-mobile'), 'Mobile Number (मोबाईल नंबर)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी मोबाईल नंबर आवश्यक आहे.')) return;
-      if (!validateFormField(document.getElementById('adm-trn-whatsapp'), 'WhatsApp Number (व्हॉट्सॲप नंबर)', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || '१० अंकी व्हॉट्सॲप नंबर आवश्यक आहे.')) return;
-      if (!validateFormField(document.getElementById('adm-trn-email'), 'Official Email (ईमेल)', v => v.includes('@') && v.includes('.') || 'वैध ईमेल पत्ता टाका.')) return;
-      if (!validateFormField(document.getElementById('adm-trn-state'), 'State (राज्य)')) return;
-      if (!validateFormField(document.getElementById('adm-trn-district'), 'District (जिल्हा)')) return;
-      if (!validateFormField(document.getElementById('adm-trn-address'), 'Complete Address (पत्ता)', v => v.length >= 3 || 'पत्ता किमान ३ अक्षरे असावा.')) return;
-      if (!validateFormField(document.getElementById('adm-trn-pass'), 'Login Password / PIN', v => v.length >= 4 || 'पासवर्ड किमान ४ अक्षरे असावा.')) return;
+      if (!validateFormField(document.getElementById('adm-trn-name'), 'Trainer Full Name', v => v.length >= 2 || 'Name must be at least 2 characters.')) return;
+      if (!validateFormField(document.getElementById('adm-trn-position'), 'Position / Designation')) return;
+      if (!validateFormField(document.getElementById('adm-trn-mobile'), 'Mobile Number', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || 'Valid 10-digit mobile required.')) return;
+      if (!validateFormField(document.getElementById('adm-trn-whatsapp'), 'WhatsApp Number', v => /^[0-9]{10}$/.test(v.replace(/\s+/g, '')) || 'Valid 10-digit WhatsApp number required.')) return;
+      if (!validateFormField(document.getElementById('adm-trn-email'), 'Official Email', v => v.includes('@') && v.includes('.') || 'Valid email required.')) return;
+      if (!validateFormField(document.getElementById('adm-trn-state'), 'State')) return;
+      if (!validateFormField(document.getElementById('adm-trn-district'), 'District')) return;
+      if (!validateFormField(document.getElementById('adm-trn-address'), 'Complete Address', v => v.length >= 3 || 'Address must be at least 3 characters.')) return;
+      if (!validateFormField(document.getElementById('adm-trn-pass'), 'Login Password / PIN', v => v.length >= 4 || 'Password must be at least 4 characters.')) return;
 
       const trainerId = document.getElementById('adm-trn-id').value;
       const fullName = document.getElementById('adm-trn-name').value.trim();
