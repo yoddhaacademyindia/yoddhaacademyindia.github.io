@@ -4188,23 +4188,24 @@ function getOrCreateSheet(ss, sheetName, headers) {
             </span>
           </div>
 
-          <!-- Unified Official Seal & Authorization Footer (Single Authority + Official Logo) -->
-          <div class="pt-4 border-t border-amber-200 flex items-center justify-center">
-            <div class="inline-flex items-center gap-3 bg-amber-50/90 border border-amber-300 rounded-2xl px-5 py-2 shadow-xs">
-              <div class="w-10 h-10 rounded-full bg-white p-0.5 border border-amber-500 shadow-xs flex items-center justify-center overflow-hidden flex-shrink-0">
-                <img src="logo.png" alt="Logo" class="w-full h-full object-cover">
-              </div>
-              <div class="text-left">
-                <div class="text-xs font-black font-rajdhani text-orange-950 uppercase tracking-wider">
-                  YODDHA ACADEMY INDIA AUTHORIZED
-                </div>
-                <div class="text-[9px] font-bold text-amber-900">
-                  Central Directorate of Traditional Martial Arts & Defence • Govt. Regd.
-                </div>
-                <div class="text-[8px] text-slate-500 font-mono" id="cert-date-issued">
-                  Date: 14 Nov 2026 • Verified & Certified Promotion
-                </div>
-              </div>
+          <!-- Official Central Signature & Authorization Block (Large Middle Signature Area) -->
+          <div class="pt-5 border-t border-amber-200 flex flex-col items-center justify-center space-y-2">
+            <div id="stu-cert-sig-box" class="w-64 sm:w-80 h-20 sm:h-24 flex flex-col items-center justify-end pb-1 border-b-2 border-slate-800 relative bg-amber-50/30 rounded-t-xl px-4">
+              <img id="stu-cert-signature-img" src="" alt="Official Signature" class="hidden max-h-16 max-w-full object-contain mb-1">
+              <span id="stu-cert-sig-placeholder" class="font-serif italic text-lg sm:text-2xl text-slate-800 font-bold tracking-wider">
+                Authorized Signatory
+              </span>
+            </div>
+            <div class="text-center space-y-0.5">
+              <p class="text-xs sm:text-sm font-black font-rajdhani text-orange-950 uppercase tracking-wider">
+                YODDHA ACADEMY INDIA AUTHORIZED
+              </p>
+              <p class="text-[9.5px] sm:text-[10.5px] font-bold text-amber-900">
+                Founder & Grandmaster • Central Directorate of Martial Arts & Defence
+              </p>
+              <p class="text-[8.5px] text-slate-500 font-mono" id="cert-date-issued">
+                Date: 14 Nov 2026 • Verified & Certified Promotion
+              </p>
             </div>
           </div>
 
@@ -9517,61 +9518,50 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       ctx.textBaseline = 'middle';
       ctx.fillText('OFFICIALLY PROMOTED & CERTIFIED: ' + targetLvlName.toUpperCase(), W / 2, 912);
 
-      // 10. Unified Authorization Footer (Logo + YODDHA ACADEMY INDIA AUTHORIZED)
-      const authBoxY = 1010;
-      const authBoxW = 860;
-      const authBoxH = 135;
-      const authBoxX = (W - authBoxW) / 2;
+      // 10. Central Signature & Authorization Footer (Large Middle Signature Area)
+      const sigLineY = 1080;
+      const sigLineW = 380;
+      const sigLineX = (W - sigLineW) / 2;
 
-      ctx.fillStyle = '#fffbeb';
-      drawCanvasRoundRect(ctx, authBoxX, authBoxY, authBoxW, authBoxH, 20, true, true, '#d97706', 2.5);
-
-      // Draw Gold Crest / Seal on the left
-      const logoX = authBoxX + 75;
-      const logoY = authBoxY + 68;
-      const logoR = 45;
-
-      ctx.fillStyle = '#f59e0b';
+      // Draw horizontal signature line
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.arc(logoX, logoY, logoR, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.strokeStyle = '#78350f';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([4, 3]);
-      ctx.beginPath();
-      ctx.arc(logoX, logoY, logoR - 4, 0, Math.PI * 2);
+      ctx.moveTo(sigLineX, sigLineY);
+      ctx.lineTo(sigLineX + sigLineW, sigLineY);
       ctx.stroke();
-      ctx.setLineDash([]);
 
-      ctx.fillStyle = '#d97706';
-      ctx.beginPath();
-      ctx.arc(logoX, logoY, logoR - 9, 0, Math.PI * 2);
-      ctx.fill();
+      // Check if signature image is provided on page
+      const sigImgEl = document.getElementById('stu-cert-signature-img');
+      if (sigImgEl && sigImgEl.src && !sigImgEl.classList.contains('hidden') && sigImgEl.complete) {
+        try {
+          ctx.drawImage(sigImgEl, W / 2 - 120, sigLineY - 90, 240, 80);
+        } catch(e) {
+          ctx.fillStyle = '#1e293b';
+          ctx.font = 'italic bold 32px Georgia, serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Authorized Signatory', W / 2, sigLineY - 20);
+        }
+      } else {
+        ctx.fillStyle = '#1e293b';
+        ctx.font = 'italic bold 32px Georgia, serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Authorized Signatory', W / 2, sigLineY - 20);
+      }
 
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '900 11px Rajdhani, Arial, sans-serif';
+      // Title & Authority below signature line
       ctx.textAlign = 'center';
-      ctx.fillText('★ SEAL ★', logoX, logoY - 14);
-      ctx.font = '900 18px Rajdhani, Arial, sans-serif';
-      ctx.fillText('YODDHA', logoX, logoY + 6);
-      ctx.font = '800 10px Arial, sans-serif';
-      ctx.fillText('ACADEMY', logoX, logoY + 22);
-
-      // Draw Authorization Text
-      const textX = authBoxX + 150;
-      ctx.textAlign = 'left';
       ctx.fillStyle = '#451a03';
-      ctx.font = '900 28px Rajdhani, Arial, sans-serif';
-      ctx.fillText('YODDHA ACADEMY INDIA AUTHORIZED', textX, authBoxY + 46);
+      ctx.font = '900 30px Rajdhani, Arial, sans-serif';
+      ctx.fillText('YODDHA ACADEMY INDIA AUTHORIZED', W / 2, sigLineY + 40);
 
       ctx.fillStyle = '#9a3412';
-      ctx.font = '800 16px Arial, sans-serif';
-      ctx.fillText('Central Directorate of Traditional Martial Arts & Defence • Govt. Regd.', textX, authBoxY + 76);
+      ctx.font = '800 17px Arial, sans-serif';
+      ctx.fillText('Founder & Grandmaster • Central Directorate of Traditional Martial Arts & Defence', W / 2, sigLineY + 68);
 
       ctx.fillStyle = '#64748b';
       ctx.font = '700 14px Arial, sans-serif';
-      ctx.fillText('Issued: ' + examDate + '   •   Accredited Examination & Belt Promotion Authority', textX, authBoxY + 104);
+      ctx.fillText('Date: ' + examDate + '   •   Accredited Examination & Belt Promotion Authority', W / 2, sigLineY + 95);
 
       // Bottom Authenticity Strip
       ctx.fillStyle = '#94a3b8';
