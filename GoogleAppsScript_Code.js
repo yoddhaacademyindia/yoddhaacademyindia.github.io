@@ -313,7 +313,15 @@ function doGet(e) {
       }
     }
 
-    // 7. Read Master Exam Switch & Custom Admin Password from AcademySettings Sheet
+    // 7. Read Master Exam Switch & Settings from ScriptProperties & AcademySettings Sheet
+    var scriptProps = PropertiesService.getScriptProperties();
+    var propSwitch = scriptProps.getProperty("EXAM_MASTER_SWITCH");
+    if (propSwitch !== null && propSwitch !== "") {
+      allData.examSessionActive = (propSwitch === "ON" || propSwitch === "TRUE");
+    } else {
+      allData.examSessionActive = false; // Default closed until Admin opens it
+    }
+
     var setSheet = ss.getSheetByName("AcademySettings");
     if (setSheet) {
       var setRows = setSheet.getDataRange().getValues();
@@ -323,6 +331,7 @@ function doGet(e) {
         var sv = rawVal.toUpperCase();
         if (sk === "EXAM_MASTER_SWITCH") {
           allData.examSessionActive = (sv === "ON" || sv === "TRUE");
+          scriptProps.setProperty("EXAM_MASTER_SWITCH", sv);
         }
         if (sk === "ADMIN_PASSWORD" || sk === "ADMIN_PIN" || sk === "MASTER_PASSWORD") {
           allData.adminPass = rawVal;
@@ -729,18 +738,28 @@ function doPost(e) {
     // 8. MASTER EXAM SWITCH & ACADEMY SETTINGS
     // -----------------------------------------------------------------------
     if (type.indexOf("EXAM_SESSION_TOGGLED") !== -1 || type.indexOf("SETTING") !== -1) {
-      var sheet = getOrCreateSheet(ss, "AcademySettings", [
-        "Setting Key", "Setting Value", "Updated By", "Last Updated"
-      ]);
-
       var settingVal = data.examSessionActive ? "ON" : "OFF";
-      var rowData = ["EXAM_MASTER_SWITCH", settingVal, data.toggledBy || "Admin", new Date()];
-      var updated = updateRowIfExistsOrMerge(sheet, 1, "EXAM_MASTER_SWITCH", rowData);
-      if (!updated) sheet.appendRow(rowData);
+
+      // Store in ScriptProperties for instant cross-device synchronization
+      var scriptProps = PropertiesService.getScriptProperties();
+      scriptProps.setProperty("EXAM_MASTER_SWITCH", settingVal);
+
+      // Persist to AcademySettings sheet as backup
+      try {
+        var sheet = getOrCreateSheet(ss, "AcademySettings", [
+          "Setting Key", "Setting Value", "Updated By", "Last Updated"
+        ]);
+        var rowData = ["EXAM_MASTER_SWITCH", settingVal, data.toggledBy || "Admin", new Date()];
+        var updated = updateRowIfExistsOrMerge(sheet, 1, "EXAM_MASTER_SWITCH", rowData);
+        if (!updated) sheet.appendRow(rowData);
+      } catch(sheetErr) {
+        Logger.log("AcademySettings sheet error: " + sheetErr.toString());
+      }
 
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        message: "Master exam switch updated to " + settingVal
+        message: "Master exam switch updated to " + settingVal,
+        examSessionActive: (settingVal === "ON")
       })).setMimeType(ContentService.MimeType.JSON);
     }
 

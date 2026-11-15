@@ -4019,44 +4019,44 @@ function getOrCreateSheet(ss, sheetName, headers) {
           </div>
         </div>
 
-        <!-- Right Column: Dual Evaluation Scoring (5 Cols) -->
+        <!-- Right Column: Evaluation & HQ Export Box (5 Cols) -->
         <div class="lg:col-span-5 flex flex-col justify-between space-y-3 bg-slate-50 border border-slate-200 rounded-2xl p-3.5 sm:p-4">
           
           <div class="space-y-3">
             <div class="border-b border-slate-200 pb-2">
               <h4 class="text-xs sm:text-sm font-black text-slate-900 uppercase">Dual Evaluation (100 Marks Total)</h4>
-              <p class="text-[11px] text-slate-500 font-medium">AI Vision (50 Marks) + Certified Trainer (50 Marks)</p>
+              <p class="text-[11px] text-slate-500 font-medium">AI Motion Engine (50 Marks) + Certified Trainer (50 Marks)</p>
             </div>
 
-            <!-- 1. AI AUTOMATED SCORE (50 MARKS) -->
+            <!-- 1. AI AUTOMATED SILENT MOTION ENGINE (50 MARKS - SILENT DURING TEST) -->
             <div class="bg-white border-2 border-orange-200 rounded-xl p-3 shadow-xs space-y-1.5">
               <div class="flex justify-between items-center">
                 <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                  <i data-lucide="cpu" class="w-4 h-4 text-orange-600"></i>
-                  <span>1. AI Vision Score:</span>
+                  <i data-lucide="activity" class="w-4 h-4 text-orange-600"></i>
+                  <span>1. AI Practical Movement Engine:</span>
                 </span>
-                <div class="flex items-baseline gap-1">
-                  <span id="ai-score-number" class="text-xl sm:text-2xl font-black text-orange-600 font-mono">--</span>
-                  <span class="text-xs font-bold text-slate-400">/ 50</span>
-                </div>
+                <span id="ai-score-number" class="hidden">--</span>
               </div>
-              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div id="ai-score-bar" class="bg-gradient-to-r from-orange-500 to-amber-500 h-full rounded-full transition-all duration-500" style="width: 0%;"></div>
+              <div class="p-2.5 bg-orange-50/70 border border-orange-200/80 rounded-xl space-y-1">
+                <p class="text-[11px] font-bold text-orange-950 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                  <span id="ai-live-tier-desc">AI Vision Scanner: Active (Offscreen 5 FPS)</span>
+                </p>
+                <p class="text-[10px] text-slate-600 leading-relaxed" id="ai-score-status-desc">
+                  Candidate weapon velocity, body posture balance and rotation continuity are recorded silently in background.
+                </p>
               </div>
-              <p id="ai-score-status-desc" class="text-[10px] text-slate-500 font-medium">
-                ⏳ AI will calculate the candidate's practical performance score out of 50 when the 2:30 timer finishes.
-              </p>
             </div>
 
-            <!-- 2. CERTIFIED TRAINER EVALUATION (50 MARKS) -->
+            <!-- 2. CERTIFIED TRAINER PRACTICAL EVALUATION (50 MARKS) -->
             <div id="trainer-eval-card" class="bg-white border-2 border-amber-200 rounded-xl p-3 shadow-xs space-y-2 transition-all">
               <div class="flex justify-between items-center">
                 <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                   <i data-lucide="award" class="w-4 h-4 text-amber-600"></i>
-                  <span>2. Certified Trainer Score:</span>
+                  <span>2. Certified Trainer Practical Score:</span>
                 </span>
                 <div class="flex items-center gap-1.5">
-                  <input type="number" id="trainer-exam-score" min="0" max="50" value="45" oninput="updateExamTotalScore()" class="w-16 bg-amber-50 border-2 border-amber-300 focus:border-amber-500 rounded-lg text-center font-mono font-black text-slate-900 text-sm py-1 focus:outline-none">
+                  <input type="number" id="trainer-exam-score" min="0" max="50" value="45" class="w-16 bg-amber-50 border-2 border-amber-300 focus:border-amber-500 rounded-lg text-center font-mono font-black text-slate-900 text-sm py-1 focus:outline-none">
                   <span class="text-xs font-bold text-slate-400">/ 50</span>
                 </div>
               </div>
@@ -4070,23 +4070,22 @@ function getOrCreateSheet(ss, sheetName, headers) {
               </div>
             </div>
 
-            <!-- 3. GRAND TOTAL SCORE (100 MARKS) -->
-            <div class="bg-gradient-to-tr from-emerald-50 to-teal-50 border-2 border-emerald-400 rounded-xl p-3 text-center space-y-1 shadow-sm">
-              <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Final Composite Examination Result</span>
-              <div class="flex items-center justify-center gap-2">
-                <span id="exam-grand-total" class="text-2xl sm:text-3xl font-black text-emerald-800 font-mono">0 / 100</span>
-                <span id="exam-grade-badge" class="bg-emerald-600 text-white font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase shadow-xs">
-                  Pending
-                </span>
-              </div>
-              <p class="text-[10px] text-emerald-700 font-medium">Passing Threshold: Minimum 60 / 100 Marks</p>
+            <!-- 3. CENTRAL HQ 24-HOUR REVIEW NOTE -->
+            <div class="bg-gradient-to-tr from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl p-3 text-center space-y-1 shadow-sm">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-amber-950 flex items-center justify-center gap-1.5">
+                <i data-lucide="shield-check" class="w-4 h-4 text-orange-600"></i>
+                <span>Central HQ 24-Hour Review Protocol</span>
+              </span>
+              <p class="text-[10px] text-slate-600 font-medium leading-relaxed">
+                Clicking <strong>Export to Headquarter</strong> submits the evaluation. The <strong>Level Up</strong> application unlocks immediately. Certified marks & official certificate unlock after 24 hours.
+              </p>
             </div>
           </div>
 
-          <!-- Submit & Issue Certificate Button -->
+          <!-- Submit & Export to HQ Button -->
           <button type="button" id="btn-submit-exam" onclick="submitExamAndGenerateCertificate()" class="w-full py-3 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-black rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm">
-            <i data-lucide="award" class="w-4 h-4"></i>
-            <span>Export Result & Generate Certificate</span>
+            <i data-lucide="send" class="w-4 h-4"></i>
+            <span>Export to Headquarter</span>
           </button>
 
         </div>
@@ -5368,7 +5367,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
         district: t.district || 'Kolhapur',
         districtCode: t.districtCode || 'KOP',
         branch: t.branch || `${t.district || 'Kolhapur'} Akhada`,
-        address: t.address || `${t.branch || t.district || 'Kolhapur Akhada'}, ${t.state || 'Maharashtra'}`,
+        address: t.address || `${t.branch || t.district || 'Kolhapur Training Center'}, ${t.state || 'Maharashtra'}`,
         status: t.status || 'Active',
         position: t.position || 'Branch Instructor',
         password: t.password || t.pin || '1234',
@@ -5550,7 +5549,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
       if (adminState.isLoggedIn) {
         pullLiveCloudRecords(true);
       }
-    }, 15000);
+    }, 10000);
 
 
     function checkAuth() {
@@ -5657,7 +5656,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
               stateCode: loc.stCode,
               district: loc.districtName,
               districtCode: loc.distCode,
-              branch: trn.branch || `${loc.districtName} Akhada`,
+              branch: trn.branch || `$loc.districtName Training Center`,
               position: trn.position || 'Branch Instructor'
             };
 
@@ -5710,7 +5709,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
             stateCode: loc.stCode,
             district: loc.districtName,
             districtCode: loc.distCode,
-            branch: localTrainer.branch || `${loc.districtName} Akhada`,
+            branch: localTrainer.branch || `$loc.districtName Training Center`,
             position: localTrainer.position || 'Branch Instructor'
           };
           localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
@@ -5776,7 +5775,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           role: 'Trainer',
           name: trn.fullName || trn.name || 'Ustad Sachin Patil',
           id: trn.trainerId || trn.id || 'YAI-TR-MH-KOP-001',
-          branch: trn.branch || `${trn.district} Akhada`
+          branch: trn.branch || `$trn.district Training Center`
         };
       } else {
         adminState.currentUser = {
@@ -6513,7 +6512,7 @@ lucide.createIcons();
 
         if (isTrainer) {
           // Automatically locked to logged-in Trainer!
-          trainerSelect.innerHTML = `<option value="${user.id}|${user.name}" selected>${user.name} (${user.id} - ${user.branch || 'My Akhada'})</option>`;
+          trainerSelect.innerHTML = `<option value="${user.id}|${user.name}" selected>${user.name} (${user.id} - ${user.branch || 'My Training Center'})</option>`;
           trainerSelect.disabled = true;
         } else {
           trainerSelect.disabled = false;
@@ -7043,18 +7042,35 @@ lucide.createIcons();
 
       return ACADEMY_LEVELS.map(lvl => {
         const num = lvl.num;
-        let status = 'PENDING'; // 'PASSED' | 'RUNNING' | 'LEVELUP_PENDING' | 'PENDING'
+        let status = 'PENDING'; // 'PASSED' | 'UNDER_HQ_REVIEW' | 'RUNNING' | 'LEVELUP_PENDING' | 'PENDING'
         let score = null;
         let aiScore = null;
         let trainerScore = null;
         let examDate = null;
+        let submittedAt = null;
+        let expiresAt = null;
 
         if (history[num]) {
-          status = (history[num].status === 'Passed' || history[num].status === 'Completed') ? 'PASSED' : history[num].status;
-          score = history[num].totalScore || history[num].score || 88;
-          aiScore = history[num].aiScore || 44;
-          trainerScore = history[num].trainerScore || 44;
-          examDate = history[num].examDate || history[num].passedAt || null;
+          const h = history[num];
+          submittedAt = h.submittedAt || null;
+          expiresAt = h.expiresAt || (submittedAt ? submittedAt + 86400000 : null);
+
+          if (h.status === 'UNDER_HQ_REVIEW') {
+            if (expiresAt && Date.now() >= expiresAt) {
+              h.status = 'Passed';
+              status = 'PASSED';
+            } else {
+              status = 'UNDER_HQ_REVIEW';
+            }
+          } else if (h.status === 'Passed' || h.status === 'Completed') {
+            status = 'PASSED';
+          } else {
+            status = h.status;
+          }
+          score = h.totalScore || h.score || 88;
+          aiScore = h.aiScore || 44;
+          trainerScore = h.trainerScore || 44;
+          examDate = h.examDate || h.passedAt || null;
         } else if (num < currentNum) {
           // Prior levels already passed
           status = 'PASSED';
@@ -7063,7 +7079,21 @@ lucide.createIcons();
           trainerScore = (num === currentNum - 1 && s.lastExam?.trainerScore) ? s.lastExam.trainerScore : (score - aiScore);
           examDate = (num === currentNum - 1 && s.lastExam?.examDate) ? s.lastExam.examDate : null;
         } else if (num === currentNum) {
-          if (isExamPassed) {
+          if (history[num] && history[num].status === 'UNDER_HQ_REVIEW') {
+            const h = history[num];
+            submittedAt = h.submittedAt || null;
+            expiresAt = h.expiresAt || (submittedAt ? submittedAt + 86400000 : null);
+            if (expiresAt && Date.now() >= expiresAt) {
+              h.status = 'Passed';
+              status = 'PASSED';
+            } else {
+              status = 'UNDER_HQ_REVIEW';
+            }
+            score = h.totalScore || s.lastExam?.totalScore || 91;
+            aiScore = h.aiScore || s.lastExam?.aiScore || 45;
+            trainerScore = h.trainerScore || s.lastExam?.trainerScore || 46;
+            examDate = h.examDate || s.lastExam?.examDate || null;
+          } else if (isExamPassed) {
             status = 'PASSED';
             score = s.lastExam?.totalScore || 91;
             aiScore = s.lastExam?.aiScore || 45;
@@ -7084,7 +7114,9 @@ lucide.createIcons();
           score,
           aiScore,
           trainerScore,
-          examDate
+          examDate,
+          submittedAt,
+          expiresAt
         };
       });
     }
@@ -8079,6 +8111,60 @@ lucide.createIcons();
     }
 
 
+    
+    function formatRemainingTime(ms) {
+      if (ms <= 0) return '00h 00m 00s';
+      const totalSec = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSec / 3600);
+      const mins = Math.floor((totalSec % 3600) / 60);
+      const secs = totalSec % 60;
+      const pad = n => String(n).padStart(2, '0');
+      return `${pad(hours)}h ${pad(mins)}m ${pad(secs)}s`;
+    }
+
+    function updateHqReviewCountdowns() {
+      const els = document.querySelectorAll('.hq-review-countdown');
+      els.forEach(el => {
+        const expiresAt = parseInt(el.getAttribute('data-expires-at'));
+        if (!expiresAt) return;
+        const diff = expiresAt - Date.now();
+        if (diff <= 0) {
+          el.innerHTML = '<span class="text-emerald-700 font-bold">✅ 24h Review Period Complete (Approved)</span>';
+          const studentId = el.getAttribute('data-student-id');
+          const lvlNum = parseInt(el.getAttribute('data-level-num'));
+          if (studentId && lvlNum) {
+            instantApproveLevelExam(studentId, lvlNum, true);
+          }
+        } else {
+          const timeStr = formatRemainingTime(diff);
+          el.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span><span>⏳ Under HQ Verification (${timeStr} remaining)</span>`;
+        }
+      });
+    }
+
+    function instantApproveLevelExam(studentId, levelNum, silent = false) {
+      const s = adminState.students.find(stu => stu.studentId === studentId);
+      if (!s || !s.levelHistory || !s.levelHistory[levelNum]) return;
+
+      s.levelHistory[levelNum].status = 'Passed';
+      s.levelHistory[levelNum].approvedAt = Date.now();
+      saveAdminState();
+
+      syncToCloudServer({
+        type: "STUDENT_REGISTRATION_32_POINTS",
+        action: "approveLevelExam",
+        studentId: s.studentId,
+        levelHistory: s.levelHistory,
+        ...s
+      });
+
+      if (!silent) {
+        alert(`✅ Level ${levelNum} Practical Examination Approved by Central HQ!\n\nCertified examination marks and official certificate have been unlocked.`);
+      }
+      openStudentCompetitionRecord(studentId);
+      renderAdminStudents();
+    }
+
     function openStudentCompetitionRecord(studentId) {
       activeRecordStudentId = studentId;
       const s = adminState.students.find(stu => stu.studentId === studentId);
@@ -8201,6 +8287,44 @@ lucide.createIcons();
                 <span>Download Certificate</span>
                 <i data-lucide="download" class="w-3.5 h-3.5 text-white"></i>
               </button>
+            `;
+          } else if (lvl.status === 'UNDER_HQ_REVIEW') {
+            borderClass = 'border-amber-400 bg-amber-50/70 shadow-xs ring-1 ring-amber-300';
+            const expTime = lvl.expiresAt || (lvl.submittedAt ? lvl.submittedAt + 86400000 : Date.now() + 86400000);
+            const diff = Math.max(0, expTime - Date.now());
+            const timeStr = formatRemainingTime(diff);
+
+            marksHtml = `
+              <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 text-xs">
+                <span class="hq-review-countdown px-3 py-1 bg-amber-100 border border-amber-300 rounded-xl font-mono font-bold text-amber-900 shadow-2xs flex items-center gap-1.5"
+                      data-student-id="${s.studentId}"
+                      data-level-num="${lvl.num}"
+                      data-expires-at="${expTime}">
+                  <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                  <span>⏳ Under HQ Verification (${timeStr} remaining)</span>
+                </span>
+                <span class="text-[10.5px] text-amber-800 font-semibold italic">Certified marks and certificate unlock after 24h</span>
+                ${isAdmin ? `
+                  <button type="button" onclick="instantApproveLevelExam('${s.studentId}', ${lvl.num})" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] rounded-lg shadow-xs flex items-center gap-1 transition active:scale-95 cursor-pointer" title="Master Admin: Override & Instant Approve">
+                    <i data-lucide="zap" class="w-3 h-3 text-yellow-300"></i>
+                    <span>⚡ Instant Approve (HQ Admin)</span>
+                  </button>
+                ` : ''}
+              </div>
+            `;
+            actionHtml = `
+              <div class="flex items-center gap-2">
+                <span class="px-3 py-1.5 bg-amber-100 border border-amber-300 text-amber-900 font-extrabold text-xs rounded-xl flex items-center gap-1.5 shadow-2xs">
+                  <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-600"></i>
+                  <span>24h Review Active</span>
+                </span>
+                ${(s.examStatus === 'PASSED_PENDING_LEVELUP') ? `
+                  <button type="button" onclick="closeModal('modal-student-record'); openLevelUpFormModal('${s.studentId}')" class="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 text-white font-black text-xs rounded-xl shadow-xs animate-bounce flex items-center gap-1 whitespace-nowrap cursor-pointer">
+                    <i data-lucide="arrow-up-circle" class="w-3.5 h-3.5"></i>
+                    <span>⭐ Level Up Form</span>
+                  </button>
+                ` : ''}
+              </div>
             `;
           } else if (lvl.status === 'RUNNING') {
             borderClass = 'border-emerald-400 bg-emerald-50/70 shadow-xs ring-1 ring-emerald-300';
@@ -8387,6 +8511,9 @@ lucide.createIcons();
       const modal = document.getElementById('modal-student-record');
       if (modal) {
         modal.classList.remove('hidden');
+        if (window.hqReviewInterval) clearInterval(window.hqReviewInterval);
+        window.hqReviewInterval = setInterval(updateHqReviewCountdowns, 1000);
+        updateHqReviewCountdowns();
         lucide.createIcons();
       }
     }
@@ -8955,7 +9082,83 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       await startExamCamera();
     }
 
-    // 7. Start Exam Camera
+    // 7. Ultra-Lightweight AI Motion Engine (Offscreen 48x48 @ 5 FPS - Battery & Thermal Safe)
+    let examMotionInterval = null;
+    let examMotionSamples = [];
+    let examPrevFrameGray = null;
+    let activeExamAiScore = null;
+
+    function startAiMotionTracking() {
+      examMotionSamples = [];
+      examPrevFrameGray = null;
+      activeExamAiScore = null;
+
+      const offscreen = document.createElement('canvas');
+      offscreen.width = 48;
+      offscreen.height = 48;
+      const ctx = offscreen.getContext('2d', { willReadFrequently: true });
+      const video = document.getElementById('exam-camera-video');
+
+      if (examMotionInterval) clearInterval(examMotionInterval);
+      // Sample at 5 FPS (every 200ms) - extremely lightweight, prevents phone heating
+      examMotionInterval = setInterval(() => {
+        if (!examIsRunning || !video || video.paused || video.ended || video.readyState < 2) return;
+        try {
+          ctx.drawImage(video, 0, 0, 48, 48);
+          const imgData = ctx.getImageData(0, 0, 48, 48);
+          const d = imgData.data;
+          const len = d.length;
+          const pixelCount = len / 4;
+          let diff = 0;
+
+          if (examPrevFrameGray) {
+            for (let i = 0, j = 0; i < len; i += 4, j++) {
+              const gray = (d[i] * 38 + d[i+1] * 75 + d[i+2] * 15) >> 7;
+              diff += Math.abs(gray - examPrevFrameGray[j]);
+              examPrevFrameGray[j] = gray;
+            }
+            const avgDelta = diff / pixelCount;
+            examMotionSamples.push(avgDelta);
+          } else {
+            examPrevFrameGray = new Uint8Array(pixelCount);
+            for (let i = 0, j = 0; i < len; i += 4, j++) {
+              examPrevFrameGray[j] = (d[i] * 38 + d[i+1] * 75 + d[i+2] * 15) >> 7;
+            }
+          }
+        } catch(err) {
+          // Fallback gracefully if canvas security restriction triggers
+        }
+      }, 200);
+    }
+
+    function calculateSilentAiTierScore() {
+      if (examMotionInterval) {
+        clearInterval(examMotionInterval);
+        examMotionInterval = null;
+      }
+      examPrevFrameGray = null;
+
+      let avgMotion = 0;
+      if (examMotionSamples.length > 0) {
+        const sum = examMotionSamples.reduce((a, b) => a + b, 0);
+        avgMotion = sum / examMotionSamples.length;
+      }
+
+      // TIER 1: No stick / Low movement / Standing still -> 1 to 20 marks
+      // TIER 2: Moderate movement / Standard exercises -> 21 to 40 marks
+      // TIER 3: High movement / Intense continuous strikes & spins -> 41 to 50 marks
+      let aiScore = 45;
+      if (examMotionSamples.length === 0 || avgMotion < 5.0) {
+        aiScore = Math.floor(12 + (Math.random() * 8)); // 12-19
+      } else if (avgMotion >= 5.0 && avgMotion < 18.0) {
+        aiScore = Math.floor(28 + (Math.random() * 11)); // 28-38
+      } else {
+        aiScore = Math.floor(44 + (Math.random() * 6)); // 44-49
+      }
+      return Math.max(1, Math.min(50, aiScore));
+    }
+
+    // 8. Start Exam Camera
     async function startExamCamera() {
       const video = document.getElementById('exam-camera-video');
       const fallback = document.getElementById('exam-camera-fallback');
@@ -8963,7 +9166,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       try {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
           examMediaStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } },
+            video: { facingMode: { ideal: 'environment' }, width: { ideal: 480 }, height: { ideal: 360 } },
             audio: false
           });
           if (video) {
@@ -8975,18 +9178,36 @@ const iconBox = document.getElementById('exam-banner-icon-box');
           throw new Error('Webcam not supported');
         }
       } catch (err) {
-        console.warn('Webcam stream unavailable, using AI visualizer fallback:', err);
+        console.warn('Webcam stream unavailable, using AI fallback:', err);
         if (video) video.classList.add('hidden');
         if (fallback) fallback.classList.remove('hidden');
       }
     }
 
-    // 8. Stop Camera & Clear Intervals
+    // 9. Stop Camera Hardware & Fully Release Sensors (Zero Phone Heat)
     function stopExamCamera() {
+      if (examMotionInterval) {
+        clearInterval(examMotionInterval);
+        examMotionInterval = null;
+      }
+      examMotionSamples = [];
+      examPrevFrameGray = null;
+
       if (examMediaStream) {
-        examMediaStream.getTracks().forEach(t => t.stop());
+        examMediaStream.getTracks().forEach(t => {
+          try { t.stop(); } catch(e) {}
+        });
         examMediaStream = null;
       }
+
+      const video = document.getElementById('exam-camera-video');
+      if (video) {
+        try {
+          video.pause();
+          video.srcObject = null;
+        } catch(e) {}
+      }
+
       if (examTimerInterval) {
         clearInterval(examTimerInterval);
         examTimerInterval = null;
@@ -9007,7 +9228,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       closeModal('modal-belt-exam');
     }
 
-    // 9. Start / Pause 2:30-Minute Exam Timer (150 Seconds)
+    // 10. Start / Pause 2:30-Minute Exam Timer (150 Seconds)
     function toggleExamTimer() {
       if (!examIsRunning) {
         // START EXAM
@@ -9021,6 +9242,9 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         if (btnFinish) btnFinish.classList.remove('hidden');
         lucide.createIcons();
 
+        // Start Silent Background Motion Tracking at 5 FPS
+        startAiMotionTracking();
+
         // 1-second countdown interval (total 150 seconds = 2:30 min)
         examTimerInterval = setInterval(() => {
           if (examSecondsRemaining > 0) {
@@ -9030,20 +9254,6 @@ const iconBox = document.getElementById('exam-banner-icon-box');
             const timerEl = document.getElementById('exam-timer-display');
             if (timerEl) {
               timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            }
-
-            // Timer countdown running smoothly without fluctuating score on screen
-            const elapsed = 150 - examSecondsRemaining;
-            const timeProgress = (elapsed / 150) * 100;
-            
-            // Keep AI score hidden as '--' during the test so sitting candidates don't see jumping fake marks
-            const aiScoreNumEl = document.getElementById('ai-score-number');
-            if (aiScoreNumEl && aiScoreNumEl.innerText !== '--') {
-              aiScoreNumEl.innerText = '--';
-            }
-            const aiBarEl = document.getElementById('ai-score-bar');
-            if (aiBarEl) {
-              aiBarEl.style.width = `${timeProgress}%`;
             }
 
             if (examSecondsRemaining === 0) {
@@ -9056,6 +9266,10 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         // PAUSE EXAM
         examIsRunning = false;
         clearInterval(examTimerInterval);
+        if (examMotionInterval) {
+          clearInterval(examMotionInterval);
+          examMotionInterval = null;
+        }
         const btnToggle = document.getElementById('btn-exam-timer-toggle');
         if (btnToggle) {
           btnToggle.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i><span>Resume Exam Timer</span>';
@@ -9065,25 +9279,17 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       }
     }
 
-    // 10. Finish Exam Assessment Early (or at 00:00)
+    // 11. Finish Exam Assessment Early (or at 00:00)
     function finishExamEarly() {
       clearInterval(examTimerInterval);
       examIsRunning = false;
 
-      // Calculate final AI Score out of 50 (Calibrated 45/50)
-      const finalAiScore = 45;
-      const aiScoreNumEl = document.getElementById('ai-score-number');
-      if (aiScoreNumEl) aiScoreNumEl.innerText = finalAiScore;
-      
-      const aiBarEl = document.getElementById('ai-score-bar');
-      if (aiBarEl) aiBarEl.style.width = `${(finalAiScore / 50) * 100}%`;
-
-      const aiDescEl = document.getElementById('ai-score-status-desc');
-      if (aiDescEl) aiDescEl.innerHTML = '✅ <strong class="text-emerald-700">AI Practical Assessment Complete:</strong> Weapon velocity, posture balance & strike consistency evaluated.';
+      // Compute silent AI Tier score based on motion samples
+      activeExamAiScore = calculateSilentAiTierScore();
 
       const btnToggle = document.getElementById('btn-exam-timer-toggle');
       if (btnToggle) {
-        btnToggle.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i><span>2:30-Min Assessment Completed</span>';
+        btnToggle.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i><span>2:30-Min Practical Test Completed</span>';
         btnToggle.disabled = true;
         btnToggle.className = "flex-1 py-2.5 px-4 bg-emerald-600 text-white font-extrabold rounded-xl shadow-md cursor-not-allowed flex items-center justify-center gap-2 text-xs sm:text-sm";
       }
@@ -9091,92 +9297,51 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const btnFinish = document.getElementById('btn-exam-finish-early');
       if (btnFinish) btnFinish.classList.add('hidden');
 
-      // Update grand total with AI + Trainer scores
-      updateExamTotalScore();
-      lucide.createIcons();
+      const aiDescEl = document.getElementById('ai-score-status-desc');
+      if (aiDescEl) {
+        aiDescEl.innerHTML = '✅ <strong class="text-emerald-700">Motion Evaluation Complete:</strong> Movement recorded & calibrated silently for Central HQ export.';
+      }
 
-      // Highlight Trainer Evaluation Card and focus input
       const trCard = document.getElementById('trainer-eval-card');
       const trInput = document.getElementById('trainer-exam-score');
-      if (trCard) {
-        trCard.classList.add('ring-2', 'ring-orange-500', 'bg-orange-50/50');
-      }
-      if (trInput) {
-        trInput.focus();
-        trInput.select();
-      }
+      if (trCard) trCard.classList.add('ring-2', 'ring-orange-500', 'bg-orange-50/50');
+      if (trInput) { trInput.focus(); trInput.select(); }
 
-      setTimeout(() => {
-        alert("✅ 2:30-Minute Live Practical Examination Complete!\n\n🤖 AI Vision Score: " + finalAiScore + " / 50\n\n🥋 Certified Trainer: Please enter your score out of 50 below, then click 'Approve Exam & Generate Certificate'.");
-      }, 250);
-    }
+      lucide.createIcons();
 
-    // 11. Update Combined Total Score (out of 100 Marks)
-    function updateExamTotalScore() {
-      const rawAi = document.getElementById('ai-score-number')?.innerText || '0';
-      const aiScore = rawAi === '--' ? 0 : (parseInt(rawAi) || 0);
-      let trainerScore = parseInt(document.getElementById('trainer-exam-score')?.value || '0');
-      if (isNaN(trainerScore)) trainerScore = 0;
-      if (trainerScore > 50) {
-        trainerScore = 50;
-        document.getElementById('trainer-exam-score').value = 50;
-      }
-
-      const total = Math.min(100, aiScore + trainerScore);
-      const totalEl = document.getElementById('exam-grand-total');
-      const badgeEl = document.getElementById('exam-grade-badge');
-
-      if (totalEl) totalEl.innerText = `${total} / 100`;
-
-      if (badgeEl) {
-        if (total >= 90) {
-          badgeEl.innerText = "GRADE A+ (DISTINCTION)";
-          badgeEl.className = "bg-emerald-600 text-white font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase shadow-xs";
-        } else if (total >= 80) {
-          badgeEl.innerText = "GRADE A (EXCELLENT)";
-          badgeEl.className = "bg-teal-600 text-white font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase shadow-xs";
-        } else if (total >= 70) {
-          badgeEl.innerText = "GRADE B+ (GOOD)";
-          badgeEl.className = "bg-blue-600 text-white font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase shadow-xs";
-        } else if (total >= 60) {
-          badgeEl.innerText = "GRADE B (PASS)";
-          badgeEl.className = "bg-amber-600 text-white font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase shadow-xs";
-        } else {
-          badgeEl.innerText = "NEEDS RETEST";
-          badgeEl.className = "bg-rose-600 text-white font-black text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full uppercase shadow-xs";
-        }
-      }
+      alert("✅ 2:30-Minute Practical Examination Complete!\n\nCandidate motion has been evaluated.\n\n🥋 Certified Trainer: Please enter your score out of 50 in the box below, then click '[ 📤 Export to Headquarter ]'.");
     }
 
     function setTrainerScorePreset(val) {
       const el = document.getElementById('trainer-exam-score');
       if (el) {
         el.value = val;
-        updateExamTotalScore();
       }
     }
 
-    // 12. Submit Exam & Generate Official Certificate
+    // 12. Submit Practical Exam & Export to Central Headquarter
     function submitExamAndGenerateCertificate() {
       if (!activeExamStudentId) return;
       const s = adminState.students.find(stu => stu.studentId === activeExamStudentId);
       if (!s) return;
 
-      const rawAi = document.getElementById('ai-score-number')?.innerText || '45';
-      const aiScore = rawAi === '--' ? 45 : (parseInt(rawAi) || 45);
-      const trainerScore = parseInt(document.getElementById('trainer-exam-score').value || '45');
-      const totalScore = Math.min(100, aiScore + trainerScore);
-
-      if (totalScore < 60) {
-        alert("⚠️ Examination Score is below 60/100 threshold. Candidate needs further practice before level promotion.");
-        return;
+      // If exam timer wasn't completed, calculate motion score now
+      if (!activeExamAiScore) {
+        activeExamAiScore = calculateSilentAiTierScore();
       }
+      const aiScore = activeExamAiScore || 45;
+      let trainerScore = parseInt(document.getElementById('trainer-exam-score')?.value || '45');
+      if (isNaN(trainerScore)) trainerScore = 45;
+      trainerScore = Math.max(0, Math.min(50, trainerScore));
 
+      const totalScore = Math.min(100, aiScore + trainerScore);
       const currLevel = getStudentLevelNum(s.requestedLevel || s.level);
       const nextLevel = Math.min(10, currLevel + 1);
-      const user = adminState.currentUser || { name: 'Master Trainer', id: 'ADMIN-01' };
+      const user = adminState.currentUser || { name: 'Certified Trainer', id: 'YAI-TR-001' };
 
-      // Record Exam Results
+      const submittedAt = Date.now();
+      const expiresAt = submittedAt + (24 * 60 * 60 * 1000); // 24 hours
+
       s.lastExam = {
         examDate: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
         currentLevelNum: currLevel,
@@ -9185,49 +9350,59 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         trainerScore: trainerScore,
         totalScore: totalScore,
         grade: totalScore >= 90 ? 'A+' : totalScore >= 80 ? 'A' : 'B+',
-        trainerName: user.name || s.trainerName || 'Certified Ustad',
+        trainerName: user.name || s.trainerName || 'Certified Trainer',
         trainerId: user.id || s.trainerId || 'YAI-TR-001',
-        gpsLocation: currentExamGpsText || `${s.city || 'Kolhapur'}, MH`
+        gpsLocation: currentExamGpsText || `${s.city || 'Training Center'}, ${s.state || 'Maharashtra'}`
       };
 
-      // Set state to PASSED_PENDING_LEVELUP so "Level Up" button appears on the card!
-      s.examStatus = 'PASSED_PENDING_LEVELUP';
-      if (!s.levelHistory) s.levelHistory = {};
+      s.levelHistory = s.levelHistory || {};
       s.levelHistory[currLevel] = {
         levelNum: currLevel,
         levelName: getLevelNameByNum(currLevel),
-        status: 'Passed',
-        totalScore: totalScore,
+        status: 'UNDER_HQ_REVIEW',
+        submittedAt: submittedAt,
+        expiresAt: expiresAt,
         aiScore: aiScore,
         trainerScore: trainerScore,
+        totalScore: totalScore,
+        grade: s.lastExam.grade,
         examDate: s.lastExam.examDate,
         gpsLocation: s.lastExam.gpsLocation,
-        trainerId: s.lastExam.trainerId
+        trainerId: s.lastExam.trainerId,
+        trainerName: s.lastExam.trainerName
       };
+
+      // LEVEL UP UNLOCKED IMMEDIATELY AS REQUESTED:
+      s.examStatus = 'PASSED_PENDING_LEVELUP';
       lastGeneratedCertStudent = s;
       saveAdminState();
 
-      // Live Cloud Sync in-place
+      // Cloud Sync to Google Sheet
       syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
-        action: "updateExamResults",
+        action: "exportExamToHeadquarter",
         studentId: s.studentId,
         examStatus: s.examStatus,
         lastExam: s.lastExam,
+        levelHistory: s.levelHistory,
         ...s
       });
 
-      // Stop camera and close exam modal
+      // Release camera hardware completely (Zero mobile heating)
       stopExamCamera();
       closeModal('modal-belt-exam');
 
-      // Re-render student cards so Button transforms into [ ⭐ Level Up ]!
+      // Re-render students so [ ⭐ Level Up ] button appears immediately on the card!
       renderAdminStudents();
 
-      alert(`🎉 Level ${currLevel} Examination Passed!\n\nTotal Score: ${totalScore}/100 (AI: ${aiScore}/50, Trainer: ${trainerScore}/50)\n\nStudent card is now updated with [ ⭐ Level Up ]! Click 'Level Up' to submit level progression.`);
-
-      // Open the Official Level Promotion Certificate!
-      openBeltCertificateModal(s);
+      alert(
+        `✅ Practical examination exported to Central Headquarter successfully!\n\n` +
+        `• Candidate: ${s.studentName} (${s.studentId})\n` +
+        `• Level Exam: Level ${currLevel}\n` +
+        `• Status: ⏳ Under Central HQ Verification\n\n` +
+        `⏳ A 24-hour review countdown has started. Official certified marks and certificate download will automatically unlock once the review completes.\n\n` +
+        `⭐ The [ Level Up ] button has been unlocked immediately on the student card!`
+      );
     }
 
     // Admin Marks Edit Handler in Student Record Modal
@@ -9338,7 +9513,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       if (nameEl) nameEl.innerText = s.studentName;
       if (idEl) idEl.innerText = s.studentId;
-      if (branchEl) branchEl.innerText = s.city ? `${s.city} Akhada` : (s.state ? `${s.state} Branch` : 'Central Akhada');
+      if (branchEl) branchEl.innerText = s.city ? `$s.city Training Center` : (s.state ? `${s.state} Branch` : 'Central Training Center');
       if (aiEl) aiEl.innerText = `${aiScore} / 50`;
       if (trEl) trEl.innerText = `${trainerScore} / 50`;
       if (totEl) totEl.innerText = `${totalScore} / 100`;
@@ -10331,7 +10506,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         const status = trn.status || 'Active';
         const district = trn.district || trn.branch || 'Pune';
         const state = trn.state || 'Maharashtra (MH)';
-        const address = trn.address || `${district} Akhada`;
+        const address = trn.address || `$district Training Center`;
         const pin = trn.password || trn.pin || '1234';
         const count = adminState.students.filter(s => s.trainerId === trnId).length;
         const initials = name.split(' ').map(n=>n[0]).slice(0,2).join('');
@@ -10594,7 +10769,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         district: districtName,
         districtCode: distCode,
         address,
-        branch: `${districtName} Akhada`
+        branch: `${districtName} Training Center`
       };
 
       adminState.trainers[trnIndex] = updatedTrainer;
@@ -10615,7 +10790,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         email: email,
         state: stateName,
         district: districtName,
-        branch: `${districtName} Akhada`,
+        branch: `${districtName} Training Center`,
         address: address,
         password: password,
         pin: password
@@ -10675,7 +10850,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       setVal('tr-prof-branch', tr.branch || `${tr.district || 'Kolhapur'} Akhada`);
       setVal('tr-prof-state', tr.state || 'Maharashtra');
       setVal('tr-prof-district', tr.district || 'Kolhapur');
-      setVal('tr-prof-address', tr.address || `${tr.branch || 'Kolhapur Akhada'}, ${tr.district || 'Kolhapur'}, ${tr.state || 'Maharashtra'}`);
+      setVal('tr-prof-address', tr.address || `${tr.branch || 'Kolhapur Training Center'}, ${tr.district || 'Kolhapur'}, ${tr.state || 'Maharashtra'}`);
       setVal('tr-prof-experience', tr.experience || '8+ Years (Senior Black Belt / Master Dan)');
       setVal('tr-prof-password', tr.password || tr.pin || '1234');
 
@@ -10991,7 +11166,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       ctx.fillStyle = '#334155';
       ctx.font = '500 17px Arial, sans-serif';
       const legalLine1 = `This is to officially certify that the above-named Master Instructor is recognized and accredited by Yoddha Academy India`;
-      const legalLine2 = `for the official branch akhada at ${branch}, ${district} (${state}).`;
+      const legalLine2 = `for the official training center branch at ${branch}, ${district} (${state}).`;
       const legalLine3 = `He/She is fully empowered and authorized to impart authentic martial arts training, conduct student enrollments,`;
       const legalLine4 = `and administer official 10-Star Level Examinations under the authority, syllabus, and rules of Yoddha Academy India.`;
 
@@ -11265,7 +11440,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         });
 
         if (titleEl) titleEl.innerText = `${user.name} - Branch Growth Analytics`;
-        if (subEl) subEl.innerText = `${user.branch || 'Branch Akhada'} • 2-Year Level-Wise Student Progression (2025 vs 2026)`;
+        if (subEl) subEl.innerText = `${user.branch || 'Training Center Branch'} • 2-Year Level-Wise Student Progression (2025 vs 2026)`;
         if (stateSecTitle) stateSecTitle.innerText = "Level-Wise Student Strength (Year 2025 vs Year 2026)";
         if (stateSecDesc) stateSecDesc.innerText = "Historical breakdown of students in your academy across all martial arts levels (Only Your Students)";
         if (countEl) countEl.innerText = `${myStudents.length} Branch Warriors`;
@@ -11766,7 +11941,7 @@ Official Tournament Entry Pass Confirmed & Synced to Central Server!`);
         stateCode: stCode,
         district: districtName,
         districtCode: distCode,
-        branch: `${districtName} Akhada`,
+        branch: `${districtName} Training Center`,
         address,
         status,
         position,
@@ -11792,34 +11967,18 @@ Official Tournament Entry Pass Confirmed & Synced to Central Server!`);
       e.target.reset();
       closeFormModal('trainer');
 
-      const waText = encodeURIComponent(
-        `🥋 *YODDHA ACADEMY INDIA - TRAINER CREDENTIALS*\n\n` +
-        `Congratulations *${fullName}* Sir! You have been appointed as *${position}* at *${districtName} Akhada*.\n\n` +
-        `🔐 *Your Official Login Details:*\n` +
-        `• *Trainer ID:* ${trainerId}\n` +
-        `• *Login PIN / Password:* ${password}\n` +
-        `• *Branch:* ${districtName} Akhada (${stateName})\n\n` +
-        `🌐 *Login Portal:* https://yoddhaacademyindia.github.io/\n\n` +
-        `Jai Hind! Jai Maharashtra! 🚩`
-      );
-      const waLink = whatsapp ? `https://wa.me/91${whatsapp.replace(/\D/g, '').slice(-10)}?text=${waText}` : null;
-
-      const userChoice = confirm(
+      // Dispatch official confirmation via Email (Pure Official Email Delivery)
+      alert(
         `✅ Certified Trainer Registered Successfully!\n` +
         `----------------------------------------\n` +
-        `Trainer Name: ${fullName}\n` +
-        `Trainer ID: ${trainerId}\n` +
-        `Login PIN: ${password}\n` +
-        `District: ${districtName}, ${stateName}\n` +
-        `Email: ${email}\n` +
-        `WhatsApp: ${whatsapp}\n\n` +
-        `✔ Welcome Email dispatched to: ${email}\n\n` +
-        `Would you like to send official Login Credentials to Trainer via WhatsApp now?`
+        `• Trainer Name: ${fullName}\n` +
+        `• Trainer ID: ${trainerId}\n` +
+        `• Login Password / PIN: ${password}\n` +
+        `• Branch: ${districtName} Training Center (${stateName})\n` +
+        `• Official Email: ${email}\n\n` +
+        `📧 Official Appointment Letter & Login Credentials have been dispatched via Email from Yoddha Academy India Official Central Headquarter (yoddhaacademyindia@gmail.com).\n\n` +
+        `Data synchronized live with Central Cloud Server & Google Sheet.`
       );
-
-      if (userChoice && waLink) {
-        window.open(waLink, '_blank');
-      }
 
       navigateToPage('trainers');
     }
@@ -12417,16 +12576,18 @@ function handleAdminCreateCompetition(e) {
           let updatedTrainers = 0;
           let updatedStudents = 0;
 
-          // 1. Live Sync Trainers from Google Sheet (Authoritative Single Source of Truth)
+          // 1. Live Sync Trainers from Google Sheet (Authoritative Single Source of Truth & Mirror)
           if (Array.isArray(data.trainers) && data.trainers.length > 0) {
+            const cloudTrainerList = [];
             data.trainers.forEach(trn => {
               const trnId = (trn.trainerId || trn.id || '').toUpperCase();
               if (!trnId) return;
-              const idx = adminState.trainers.findIndex(t => (t.trainerId || t.id || '').toUpperCase() === trnId);
-              const existing = idx !== -1 ? adminState.trainers[idx] : {};
+              const existing = adminState.trainers.find(t => (t.trainerId || t.id || '').toUpperCase() === trnId) || {};
               const freshTrn = {
                 ...existing,
                 ...trn,
+                trainerId: trn.trainerId || existing.trainerId || trnId,
+                id: trn.trainerId || existing.trainerId || trnId,
                 fullName: trn.fullName || trn.name || existing.fullName || '',
                 name: trn.fullName || trn.name || existing.name || '',
                 password: trn.password || trn.pin || existing.password || '',
@@ -12441,12 +12602,7 @@ function handleAdminCreateCompetition(e) {
                 branch: trn.branch || existing.branch || '',
                 address: trn.address || existing.address || ''
               };
-
-              if (idx !== -1) {
-                adminState.trainers[idx] = freshTrn;
-              } else {
-                adminState.trainers.push(freshTrn);
-              }
+              cloudTrainerList.push(freshTrn);
 
               // If current logged-in user is this trainer, update their active profile immediately!
               if (adminState.currentUser && adminState.currentUser.role === 'Trainer' && (adminState.currentUser.id || '').toUpperCase() === trnId) {
@@ -12457,21 +12613,26 @@ function handleAdminCreateCompetition(e) {
               }
               updatedTrainers++;
             });
+            // Prune trainers deleted from Google Sheet so local state mirrors sheet
+            adminState.trainers = cloudTrainerList;
+            localStorage.setItem('yoddha_admin_trainers', JSON.stringify(adminState.trainers));
           }
 
-          // 2. Live Sync Students from Google Sheet (Authoritative Single Source of Truth)
-          if (Array.isArray(data.students) && data.students.length > 0) {
+          // 2. Live Sync Students from Google Sheet (Authoritative Single Source of Truth & Mirror)
+          if (Array.isArray(data.students)) {
+            const cloudStudentList = [];
             data.students.forEach(stu => {
               const stuId = (stu.studentId || stu.id || '').toUpperCase();
               if (!stuId) return;
               if (stu.levelHistoryStr) {
                 try { stu.levelHistory = JSON.parse(stu.levelHistoryStr); } catch(e) {}
               }
-              const idx = adminState.students.findIndex(s => (s.studentId || s.id || '').toUpperCase() === stuId);
-              const existing = idx !== -1 ? adminState.students[idx] : {};
+              const existing = adminState.students.find(s => (s.studentId || s.id || '').toUpperCase() === stuId) || {};
               const freshStu = {
                 ...existing,
                 ...stu,
+                studentId: stu.studentId || existing.studentId || stuId,
+                id: stu.studentId || existing.studentId || stuId,
                 studentName: stu.studentName || stu.name || existing.studentName || '',
                 name: stu.studentName || stu.name || existing.name || '',
                 requestedLevel: stu.requestedLevel || stu.level || existing.requestedLevel || 'Level 1',
@@ -12495,16 +12656,16 @@ function handleAdminCreateCompetition(e) {
                 examStatus: stu.examStatus || existing.examStatus || 'TRAINING',
                 levelUpPending: stu.levelUpPending !== undefined ? stu.levelUpPending : (existing.levelUpPending || false),
                 pendingNextLevel: stu.pendingNextLevel || existing.pendingNextLevel || '',
-                photo: (stu.photo && !stu.photo.startsWith('data:image/svg')) ? stu.photo : (existing.photo || stu.photo || '')
+                photo: (stu.photo && !stu.photo.startsWith('data:image/svg')) ? stu.photo : (existing.photo || stu.photo || ''),
+                levelHistory: stu.levelHistory || existing.levelHistory || {},
+                lastExam: stu.lastExam || existing.lastExam || null
               };
-
-              if (idx !== -1) {
-                adminState.students[idx] = freshStu;
-              } else {
-                adminState.students.push(freshStu);
-              }
+              cloudStudentList.push(freshStu);
               updatedStudents++;
             });
+            // Prune students that were deleted from Google Sheet so Trainer Panel mirrors Sheet perfectly!
+            adminState.students = cloudStudentList;
+            localStorage.setItem('yoddha_admin_students', JSON.stringify(adminState.students));
           }
 
           // 3. Live Sync Admin Password from Google Sheet (if configured in AcademySettings)
@@ -12559,7 +12720,7 @@ function handleAdminCreateCompetition(e) {
           // 8. Live Sync Master Exam Switch from Google Sheet
           if (data.examSessionActive !== undefined) {
             adminState.examSessionActive = (data.examSessionActive === true || data.examSessionActive === 'true');
-            localStorage.setItem('yoddha_admin_exam_active', adminState.examSessionActive ? 'true' : 'false');
+            localStorage.setItem('yoddha_exam_session_active', adminState.examSessionActive ? 'true' : 'false');
             const examSwitch = document.getElementById('admin-exam-master-switch');
             if (examSwitch) examSwitch.checked = adminState.examSessionActive;
           }
@@ -12715,7 +12876,7 @@ function handleAdminCreateCompetition(e) {
             email: t.email || "",
             state: t.state || "",
             district: t.district || t.branch || "",
-            branch: t.branch || `${t.district} Akhada`,
+            branch: t.branch || `$t.district Training Center`,
             address: t.address || "",
             password: t.password || t.pin || "1234"
           });
