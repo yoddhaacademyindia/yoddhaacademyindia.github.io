@@ -5696,6 +5696,13 @@ function getOrCreateSheet(ss, sheetName, headers) {
             localStorage.setItem('yoddha_admin_logged', 'true');
             localStorage.setItem('yoddha_last_active_time', Date.now().toString());
 
+            // Pull fresh records from Google Sheet immediately so Trainer Panel is 100% up-to-date on mobile
+            try {
+              await pullLiveCloudRecords(true);
+            } catch (e) {
+              console.warn("Initial login cloud sync notice:", e);
+            }
+
             checkAuth();
             setPortalRole('Trainer', adminState.currentUser);
             resetInactivityTimer();
@@ -5974,15 +5981,15 @@ lucide.createIcons();
 
         // Filter only this trainer's students
         const myTId = (user.id || user.trainerId || '').trim().toUpperCase();
-        const myTName = (user.name || '').trim().toLowerCase();
-        const myTDist = (user.districtCode || '').trim().toUpperCase();
+        const myTName = (user.name || user.fullName || '').trim().toLowerCase();
         const myStudents = adminState.students.filter(s => {
           const sTId = (s.trainerId || '').trim().toUpperCase();
-          const sDist = (s.districtCode || '').trim().toUpperCase();
-          if (sTId !== myTId) return false;
-          if (myTDist && sDist && sDist !== myTDist) return false;
-          if (myTDist && s.studentId && !s.studentId.toUpperCase().includes(`-${myTDist}-`)) return false;
-          return true;
+          const sTName = (s.trainerName || '').trim().toLowerCase();
+          return (
+            (sTId && myTId && sTId === myTId) ||
+            (sTName && myTName && (sTName === myTName || sTName.includes(myTName) || myTName.includes(sTName))) ||
+            (s.trainerId && user.trainerId && s.trainerId.toUpperCase() === user.trainerId.toUpperCase())
+          );
         });
         document.getElementById('stat-top-students').innerText = myStudents.length;
         if (studentsLabel) studentsLabel.innerText = "My Students";
@@ -7167,16 +7174,19 @@ lucide.createIcons();
 
       const filtered = adminState.students.filter(s => {
         if (isTrainer) {
-          // STRICT TRAINER ISOLATION:
-          // A trainer sees ONLY students registered under their own Trainer ID!
+          // RESILIENT TRAINER MATCHING:
+          // Matches student by Trainer ID OR Trainer Name (case-insensitive & whitespace trimmed)
           const myId = (user.id || user.trainerId || '').trim().toUpperCase();
-          const myDist = (user.districtCode || (myId.split('-')[3] || '')).trim().toUpperCase();
+          const myName = (user.name || user.fullName || '').trim().toLowerCase();
           const stuTrainerId = (s.trainerId || '').trim().toUpperCase();
-          const stuDist = (s.districtCode || (s.studentId ? s.studentId.split('-')[3] : '') || '').trim().toUpperCase();
+          const stuTrainerName = (s.trainerName || '').trim().toLowerCase();
 
-          // District & ID Isolation: A trainer can never see another district's students
-          if (myDist && stuDist && myDist !== stuDist) return false;
-          if (stuTrainerId !== myId) return false;
+          const isMyStudent = (
+            (stuTrainerId && myId && stuTrainerId === myId) ||
+            (stuTrainerName && myName && (stuTrainerName === myName || stuTrainerName.includes(myName) || myName.includes(stuTrainerName))) ||
+            (s.trainerId && user.trainerId && s.trainerId.toUpperCase() === user.trainerId.toUpperCase())
+          );
+          if (!isMyStudent) return false;
         } else {
           // For Admin: main Students directory shows ONLY Active and Paid!
           const isApproved = (s.status === 'Active') && (s.feeStatus === 'Paid');
