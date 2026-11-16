@@ -1522,13 +1522,8 @@
             <!-- 10. Position -->
             <div>
               <label class="block font-bold text-slate-700 mb-1">Position / Designation *</label>
-              <select id="adm-trn-position" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500">
-                <option value="Head Trainer & Chief Instructor">Head Trainer & Chief Instructor</option>
-                <option value="Senior Coach">Senior Coach</option>
-                <option value="Branch Instructor" selected>Branch Instructor</option>
-                <option value="Assistant Trainer">Assistant Trainer</option>
-                <option value="Master Grandmaster">Master Grandmaster</option>
-                <option value="National / State Referee">National / State Referee</option>
+              <select id="adm-trn-position" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500">
+                <option value="Trainer" selected>Trainer</option>
               </select>
             </div>
 
@@ -2532,7 +2527,7 @@
 
           <div class="relative">
             <i data-lucide="credit-card" class="w-4 h-4 text-emerald-600 absolute left-3 top-2.5"></i>
-            <input type="text" id="fee-upi-id" required placeholder="e.g. 9822001122 or 9822001122@ybl or yoddhaacademy@upi" value="yoddhaacademy@upi" class="w-full bg-white border border-emerald-300 rounded-xl pl-9 pr-3 py-2 text-xs text-emerald-900 font-mono font-black focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-200">
+            <input type="text" id="fee-upi-id" required placeholder="e.g. 9822001122 or 9822001122@ybl or yoddhaacademy@upi" value="yoddhaacademy5@okicici" class="w-full bg-white border border-emerald-300 rounded-xl pl-9 pr-3 py-2 text-xs text-emerald-900 font-mono font-black focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-200">
           </div>
           <p class="text-[10px] text-slate-500 font-medium">
             Enter the Academy's UPI Mobile Number (PhonePe, Google Pay, Paytm) or UPI ID. Students and Trainers will see this number/ID to transfer admission fees.
@@ -2719,10 +2714,27 @@
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Select Active Student Athlete *</label>
-          <select id="tourn-student-select" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold text-xs">
-            <!-- Populated via JS with active verified students -->
+          <label class="block font-black text-slate-800 text-xs mb-1">Select Student ID (Dropdown) *</label>
+          <select id="tourn-student-select" required onchange="handleTournStudentSelect(this.value)" class="w-full bg-slate-50 border-2 border-orange-300 rounded-xl px-3.5 py-2.5 text-slate-900 font-bold focus:outline-none focus:border-orange-500 focus:bg-white text-xs">
+            <!-- Populated via JS with active student athletes -->
           </select>
+        </div>
+
+        <!-- AUTO-POPULATED STUDENT DETAILS CARD -->
+        <div id="tourn-student-detail-card" class="hidden bg-amber-50/70 border border-amber-200 rounded-2xl p-3.5 space-y-2">
+          <div class="flex items-center justify-between border-b border-amber-200/80 pb-2">
+            <span class="font-black text-amber-950 text-xs flex items-center gap-1.5">
+              <i data-lucide="user-check" class="w-4 h-4 text-orange-600"></i>
+              <span id="tourn-pop-name">Candidate Name</span>
+            </span>
+            <span id="tourn-pop-level" class="bg-amber-200 text-amber-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">Level 1</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-700">
+            <div><span class="text-slate-400 font-medium">Age / DOB:</span> <strong id="tourn-pop-age" class="text-slate-900">--</strong></div>
+            <div><span class="text-slate-400 font-medium">Branch:</span> <strong id="tourn-pop-branch" class="text-slate-900">--</strong></div>
+            <div><span class="text-slate-400 font-medium">Trainer:</span> <strong id="tourn-pop-trainer" class="text-slate-900">--</strong></div>
+            <div><span class="text-slate-400 font-medium">Mobile:</span> <strong id="tourn-pop-mobile" class="text-slate-900">--</strong></div>
+          </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -2775,6 +2787,83 @@
   </div>
 
   <!-- ================= MODAL: CENTRAL CLOUD SERVER SETUP & LIVE SYNC GUIDE ================= -->
+  
+  <!-- ================= MODAL: COMPETITION REGISTERED ATHLETES (VIEW EXCEL) ================= -->
+  <div id="modal-comp-athletes-excel" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white border-2 border-orange-200 rounded-3xl max-w-4xl w-full p-5 sm:p-7 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto animate-modal-pop relative">
+      <div class="flex justify-between items-center border-b border-orange-100 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-emerald-100 text-emerald-800 rounded-2xl shadow-sm">
+            <i data-lucide="file-spreadsheet" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-slate-900">Registered Athletes List (Excel View)</h3>
+            <p id="comp-excel-modal-sub" class="text-xs text-slate-500 font-medium">Tournament registrations and athlete entries</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="exportCompetitionAthletesCsv()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-sm flex items-center gap-1.5 transition active:scale-95 cursor-pointer">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Export CSV</span>
+          </button>
+          <button onclick="closeModal('modal-comp-athletes-excel')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Summary Stats -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <div class="bg-slate-50 border border-slate-200 p-2.5 rounded-2xl">
+          <span class="text-[10px] text-slate-400 uppercase font-black block">Total Athletes</span>
+          <span id="comp-excel-stat-count" class="text-lg font-black text-slate-900 font-rajdhani">0</span>
+        </div>
+        <div class="bg-emerald-50 border border-emerald-200 p-2.5 rounded-2xl">
+          <span class="text-[10px] text-emerald-700 uppercase font-black block">Fees Collected</span>
+          <span id="comp-excel-stat-fee" class="text-lg font-black text-emerald-800 font-rajdhani">₹0</span>
+        </div>
+        <div class="bg-blue-50 border border-blue-200 p-2.5 rounded-2xl">
+          <span class="text-[10px] text-blue-700 uppercase font-black block">Scope / Level</span>
+          <span id="comp-excel-stat-level" class="text-xs font-black text-blue-900 truncate block mt-1">State Level</span>
+        </div>
+        <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-2xl">
+          <span class="text-[10px] text-amber-700 uppercase font-black block">Published Date</span>
+          <span id="comp-excel-stat-date" class="text-xs font-black text-amber-900 truncate block mt-1">--</span>
+        </div>
+      </div>
+
+      <!-- Athletes Table -->
+      <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-2xs">
+        <div class="overflow-x-auto max-h-96">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="bg-slate-100 text-slate-700 font-black uppercase text-[10px] sticky top-0 border-b border-slate-200">
+              <tr>
+                <th class="p-3">#</th>
+                <th class="p-3">Student ID</th>
+                <th class="p-3">Athlete Name</th>
+                <th class="p-3">Event / Discipline</th>
+                <th class="p-3">Division</th>
+                <th class="p-3">District / Branch</th>
+                <th class="p-3">Trainer</th>
+                <th class="p-3">Fee & Status</th>
+                <th class="p-3">Registered At</th>
+              </tr>
+            </thead>
+            <tbody id="comp-athletes-excel-tbody" class="divide-y divide-slate-100 font-medium text-slate-800">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button type="button" onclick="closeModal('modal-comp-athletes-excel')" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition text-xs">
+          Close Window
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-sync" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white border-2 border-orange-200 rounded-3xl max-w-3xl w-full p-6 sm:p-7 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto animate-modal-pop relative">
       <div class="flex justify-between items-center border-b border-orange-100 pb-3">
@@ -3696,6 +3785,8 @@ function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, p
 
   MailApp.sendEmail({
     to: toEmail,
+    name: "Yoddha Academy India",
+    replyTo: "yoddhaacademy5@gmail.com",
     subject: subject,
     htmlBody: htmlBody
   });
@@ -3915,6 +4006,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
   </div>
 
   <!-- ================= MODAL: 2-MINUTE LIVE VIDEO BELT EXAM & AI LATHI ASSESSMENT ================= -->
+  <div id="ai-score-bar" class="hidden"></div>
   <div id="modal-belt-exam" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-2 sm:p-4">
     <div class="bg-white rounded-3xl max-w-4xl w-full border-2 border-orange-300 shadow-2xl overflow-hidden flex flex-col max-h-[96vh] animate-modal-enter">
       
@@ -4180,7 +4272,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
               PRATIK VILAS MORE
             </h3>
             <p class="font-mono text-xs text-slate-600 font-bold">
-              Student ID: <span id="cert-student-id" class="text-orange-800">YAI-STU-26-MH-PUN-000001</span> • Branch: <span id="cert-branch-name" class="text-slate-900">Pune Training Center</span>
+              Student ID: <span id="cert-student-id" class="text-orange-800">YAI-STU-26-MH-PUN-000001</span> • Branch: <span id="cert-branch-name" class="text-slate-900">Branch</span>
             </p>
             <p class="text-[11px] sm:text-xs text-slate-600 pt-1">
               has successfully fulfilled all 4-Month Traditional Training requirements and cleared the Official Level Practical Examination with distinguished merit.
@@ -5404,7 +5496,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
       DEFAULT_LEVEL_FEES: {
       level1: 500, level2: 600, level3: 700, level4: 800, level5: 900, level6: 1000,
       senior1: 1200, senior2: 1400, senior3: 1600, senior4: 1800,
-      upi: 'yoddhaacademy@upi'
+      upi: 'yoddhaacademy5@okicici'
     },
     get feeStructure() {
       try {
@@ -5424,6 +5516,8 @@ function getOrCreateSheet(ss, sheetName, headers) {
     function saveAdminState() {
       localStorage.setItem('yoddha_admin_students_v8', JSON.stringify(adminState.students));
       localStorage.setItem('yoddha_admin_students_v3', JSON.stringify(adminState.students));
+      localStorage.setItem('yoddha_admin_students', JSON.stringify(adminState.students));
+            localStorage.setItem('yoddha_admin_students_v8', JSON.stringify(adminState.students));
       localStorage.setItem('yoddha_admin_trainers_v5', JSON.stringify(adminState.trainers));
       localStorage.setItem('yoddha_admin_trainers', JSON.stringify(adminState.trainers));
       localStorage.setItem('yoddha_admin_courses', JSON.stringify(adminState.courses));
@@ -5800,12 +5894,48 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
     function setPortalRole(role, trainerObj) {
       if (role === 'Trainer') {
-        const trn = trainerObj || adminState.trainers[0];
+        const trn = trainerObj || (adminState.currentUser && adminState.currentUser.role === 'Trainer' ? adminState.currentUser : adminState.trainers[0]);
+        const loc = getTrainerLocation(trn);
         adminState.currentUser = {
+          ...trn,
           role: 'Trainer',
-          name: trn.fullName || trn.name || 'Ustad Sachin Patil',
-          id: trn.trainerId || trn.id || 'YAI-TR-MH-KOP-001',
-          branch: trn.branch || `$trn.district Training Center`
+          name: trn.fullName || trn.name || 'Trainer',
+          fullName: trn.fullName || trn.name || 'Trainer',
+          id: trn.trainerId || trn.id,
+          trainerId: trn.trainerId || trn.id,
+          state: loc.stateName,
+          stateCode: loc.stCode,
+          district: loc.districtName,
+          districtCode: loc.distCode,
+          branch: (trn.branch || `${loc.districtName} Branch`).replace(/Akhada/gi, 'Branch'),
+          position: 'Trainer'
+        };
+      } else {
+        adminState.currentUser = {
+          role: 'Admin',
+          name: 'Central Headquarters',
+          id: adminState.adminId
+        };
+      }
+      localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
+      updatePortalRoleUI();
+    }
+      if (role === 'Trainer') {
+        const trn = trainerObj || (adminState.currentUser && adminState.currentUser.role === 'Trainer' ? adminState.currentUser : adminState.trainers[0]);
+        const loc = getTrainerLocation(trn);
+        adminState.currentUser = {
+          ...trn,
+          role: 'Trainer',
+          name: trn.fullName || trn.name || 'Trainer',
+          fullName: trn.fullName || trn.name || 'Trainer',
+          id: trn.trainerId || trn.id,
+          trainerId: trn.trainerId || trn.id,
+          state: loc.stateName,
+          stateCode: loc.stCode,
+          district: loc.districtName,
+          districtCode: loc.distCode,
+          branch: (trn.branch || `${loc.districtName} Branch`).replace(/Akhada/gi, 'Branch'),
+          position: 'Trainer'
         };
       } else {
         adminState.currentUser = {
@@ -6419,7 +6549,7 @@ lucide.createIcons();
       const fees = adminState.feeStructure || {
         level1: 500, level2: 600, level3: 700, level4: 800, level5: 900, level6: 1000,
         senior1: 1200, senior2: 1400, senior3: 1600, senior4: 1800,
-        upi: 'yoddhaacademy@upi'
+        upi: 'yoddhaacademy5@okicici'
       };
       const lvl = String(levelName || 'Level 1').toLowerCase().trim();
       if (lvl.includes('senior 1')) return fees.senior1 || 1200;
@@ -6721,6 +6851,7 @@ lucide.createIcons();
       };
 
       const newStudent = {
+        createdAt: new Date().toISOString(),
         studentId,
         studentName,
         dob,
@@ -7188,9 +7319,9 @@ lucide.createIcons();
           );
           if (!isMyStudent) return false;
         } else {
-          // For Admin: main Students directory shows ONLY Active and Paid!
-          const isApproved = (s.status === 'Active') && (s.feeStatus === 'Paid');
-          if (!isApproved) return false;
+        } else {
+          // For Admin: Show ALL students (Active, Pending, Paid, Unpaid) so newly registered students are immediately visible!
+          // (No restriction)
         }
 
         return (s.studentName || '').toLowerCase().includes(search) || 
@@ -7198,6 +7329,13 @@ lucide.createIcons();
           (s.city || '').toLowerCase().includes(search) ||
           (s.trainerName || '').toLowerCase().includes(search) ||
           (s.trainerId || '').toLowerCase().includes(search);
+      });
+
+      // Sort newest students first (jo navin form bharanar to var desyala hava)
+      filtered.sort((a, b) => {
+        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : (a.admissionDate ? new Date(a.admissionDate).getTime() : 0);
+        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : (b.admissionDate ? new Date(b.admissionDate).getTime() : 0);
+        return timeB - timeA;
       });
 
       if (countBadge) {
@@ -7603,7 +7741,7 @@ lucide.createIcons();
       if (idEl) idEl.innerText = s.studentId;
       if (lvlEl) lvlEl.innerText = levelName + " (" + currLevel + "/10 Stars)";
       if (trnEl) trnEl.innerText = "Trainer: " + (s.trainerName || s.trainerId || 'YAI Ustad');
-      if (brnEl) brnEl.innerText = s.city ? (s.city + " Akhada, " + (s.state || 'Maharashtra')) : (s.state || 'Maharashtra');
+      if (brnEl) brnEl.innerText = s.city ? (s.city + " Branch, " + (s.state || 'Maharashtra')) : (s.state || 'Maharashtra');
 
       // Update ID Card badge preview in download modal
       const previewPhoto = document.getElementById('dl-preview-photo');
@@ -7832,7 +7970,7 @@ lucide.createIcons();
 
         const rows = [
           ['Trainer / Chief Ustad', s.trainerName || s.trainerId || 'Certified Academy Ustad'],
-          ['Branch / Akhada', (s.city || s.district || 'Central') + ' Akhada, ' + (s.state || 'Maharashtra')],
+          ['Branch', (s.city || s.district || 'Central') + ' Branch, ' + (s.state || 'Maharashtra')],
           ['Admission Date', s.admissionDate || '2026-11-14'],
           ['Parent / Contact Mobile', s.parentMobile ? ('+91 ' + s.parentMobile) : 'Registered in Cloud'],
           ['School / Standard', (s.schoolName || 'Enrolled Student') + (s.standard ? ' (' + s.standard + ')' : '')],
@@ -8105,7 +8243,7 @@ lucide.createIcons();
         "Warrior Name: *" + s.studentName + "*\n" +
         "Official ID: *" + s.studentId + "*\n" +
         "Current Martial Rank: *" + (s.requestedLevel || ('Level ' + currLevel)) + "*\n" +
-        "Branch / Akhada: *" + (s.city || 'Central') + " (" + (s.state || 'Maharashtra') + ")*\n" +
+        "Branch: *" + (s.city || 'Central') + " Branch (" + (s.state || 'Maharashtra') + ")*\n" +
         "Trainer / Ustad: *" + (s.trainerName || s.trainerId || 'Certified Ustad') + "*\n" +
         "Fee Status: *" + (s.feeStatus || 'Paid') + "*\n\n" +
         "Official Portal: https://yoddhaacademyindia.github.io/"
@@ -9052,7 +9190,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       examIsRunning = false;
       document.getElementById('exam-timer-display').innerText = "02:30";
       document.getElementById('ai-score-number').innerText = "--";
-      document.getElementById('ai-score-bar').style.width = "0%";
+      const barEl = document.getElementById('ai-score-bar'); if (barEl) barEl.style.width = '0%';
       const aiDescEl = document.getElementById('ai-score-status-desc');
       if (aiDescEl) aiDescEl.innerText = "⏳ AI will calculate the candidate's practical performance score out of 50 when the 2:30 timer finishes.";
       const rpmEl = document.getElementById('ai-live-rpm');
@@ -9884,7 +10022,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       if (trainerEl) trainerEl.innerText = `Trainer: ${s.trainerName || s.trainerId || 'Central Certified Coach'}`;
 
       const branchEl = document.getElementById('levelup-candidate-branch');
-      if (branchEl) branchEl.innerText = `${s.city || 'Central'} Akhada`;
+      if (branchEl) branchEl.innerText = `${s.city || 'Central'} Branch`;
 
       const passedLvlEl = document.getElementById('levelup-passed-level-badge');
       if (passedLvlEl) passedLvlEl.innerText = `${currName} (Passed)`;
@@ -10050,7 +10188,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
               <h4 class="font-black text-sm sm:text-base text-slate-900 font-rajdhani uppercase">${s.studentName}</h4>
               <div class="flex items-center gap-2 mt-0.5">
                 <span class="font-mono text-[11px] font-bold text-orange-800 bg-orange-100/90 px-2 py-0.5 rounded-md">${s.studentId}</span>
-                <span class="text-xs text-slate-600 font-semibold">${s.city || 'Central'} Akhada • Trainer: ${s.trainerId || 'YAI-TR-001'}</span>
+                <span class="text-xs text-slate-600 font-semibold">${s.city || 'Central'} Branch • Trainer: ${s.trainerId || 'YAI-TR-001'}</span>
               </div>
             </div>
           </div>
@@ -10873,7 +11011,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const statusBadgeEl = document.getElementById('tr-prof-status-badge');
 
       if (dispNameEl) dispNameEl.innerText = name;
-      if (dispBranchEl) dispBranchEl.innerText = `${tr.branch || ((tr.district || 'Kolhapur') + ' Akhada')} • ${tr.state || 'Maharashtra'}`;
+      if (dispBranchEl) dispBranchEl.innerText = `${(tr.branch || ((tr.district || 'Kolhapur') + ' Branch')).replace(/Akhada/gi, 'Branch')} • ${tr.state || 'Maharashtra'}`;
       if (dispIdEl) dispIdEl.innerText = `ID: ${tr.id || tr.trainerId || 'YAI-TR-MH-KOP-001'}`;
 
       // Calculate my warriors
@@ -10891,7 +11029,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       setVal('tr-prof-mobile', tr.mobile || tr.phone || '');
       setVal('tr-prof-whatsapp', tr.whatsapp || tr.mobile || tr.phone || '');
       setVal('tr-prof-email', tr.email || '');
-      setVal('tr-prof-branch', tr.branch || `${tr.district || 'Kolhapur'} Akhada`);
+      setVal('tr-prof-branch', (tr.branch || `${tr.district || 'Kolhapur'} Branch`).replace(/Akhada/gi, 'Branch'));
       setVal('tr-prof-state', tr.state || 'Maharashtra');
       setVal('tr-prof-district', tr.district || 'Kolhapur');
       setVal('tr-prof-address', tr.address || `${tr.branch || 'Kolhapur Training Center'}, ${tr.district || 'Kolhapur'}, ${tr.state || 'Maharashtra'}`);
@@ -10907,7 +11045,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       if (certNameEl) certNameEl.innerText = name;
       if (certDesigEl) certDesigEl.innerText = tr.position || 'Certified Chief Trainer & Center Head';
-      if (certBranchEl) certBranchEl.innerText = `${tr.branch || (tr.district + ' Akhada')}, ${tr.district || 'Kolhapur'} (${tr.state || 'Maharashtra'})`;
+      if (certBranchEl) certBranchEl.innerText = `${(tr.branch || (tr.district + ' Branch')).replace(/Akhada/gi, 'Branch')}, ${tr.district || 'Kolhapur'} (${tr.state || 'Maharashtra'})`;
       if (certIdEl) certIdEl.innerText = tr.id || tr.trainerId || 'YAI-TR-MH-KOP-001';
       if (certDateEl) {
         const today = new Date();
@@ -11076,7 +11214,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       const trainerName = tr.fullName || tr.name || 'Certified Trainer';
       const position = tr.position || 'Certified Chief Trainer & Center Head';
-      const branch = tr.branch || `${tr.district || 'Kolhapur'} Akhada`;
+      const branch = (tr.branch || `${tr.district || 'Kolhapur'} Branch`).replace(/Akhada/gi, 'Branch');
       const district = tr.district || 'Kolhapur';
       const state = tr.state || 'Maharashtra';
       const today = new Date();
@@ -11210,7 +11348,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       ctx.fillStyle = '#334155';
       ctx.font = '500 17px Arial, sans-serif';
       const legalLine1 = `This is to officially certify that the above-named Master Instructor is recognized and accredited by Yoddha Academy India`;
-      const legalLine2 = `for the official training center branch at ${branch}, ${district} (${state}).`;
+      const legalLine2 = `for the official branch at ${branch}, ${district} (${state}).`;
       const legalLine3 = `He/She is fully empowered and authorized to impart authentic martial arts training, conduct student enrollments,`;
       const legalLine4 = `and administer official 10-Star Level Examinations under the authority, syllabus, and rules of Yoddha Academy India.`;
 
@@ -11775,22 +11913,48 @@ const iconBox = document.getElementById('exam-banner-icon-box');
             </div>
           </div>
 
-          <div class="mt-4 pt-3 border-t border-slate-100 space-y-3">
+                    <div class="mt-4 pt-3 border-t border-slate-100 space-y-3">
+            <!-- Published Date & Status Info -->
             <div class="flex justify-between items-center text-xs">
-              <span class="text-slate-600 font-semibold">Registered Athletes: <strong class="text-orange-700 font-rajdhani text-base font-black">${comp.entries || 0}</strong></span>
-              <span class="text-orange-600 font-bold">Official HQ Championship</span>
+              <span class="text-slate-500 font-medium">📅 Published: <strong class="text-slate-800 font-bold">${comp.publishedDate || comp.date}</strong></span>
+              ${!isTrainer ? `
+                <span class="bg-orange-100 text-orange-900 border border-orange-300 text-[10.5px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <i data-lucide="users" class="w-3.5 h-3.5 text-orange-600"></i>
+                  <span>${(comp.athletes && comp.athletes.length) || comp.entries || 0} Registered</span>
+                </span>
+              ` : `
+                <span class="text-orange-600 font-bold text-[11px]">Official HQ Championship</span>
+              `}
             </div>
 
-            ${(!isTrainer || isTrainerEligible) ? `
-              <button onclick="openTournamentEntryModal('${comp.id}')" class="w-full py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white rounded-xl font-black text-xs shadow-md shadow-orange-500/20 flex items-center justify-center gap-2 transition transform active:scale-95 cursor-pointer">
-                <i data-lucide="user-plus" class="w-4 h-4"></i>
-                <span>Register Student For This Match</span>
+            <!-- ADMIN CONTROLS (View Excel, Delete Competition) vs TRAINER REGISTRATION -->
+            ${!isTrainer ? `
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <button type="button" onclick="openCompetitionExcelModal('${comp.id}')" class="py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs shadow-sm flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
+                  <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                  <span>View Excel</span>
+                </button>
+                <button type="button" onclick="deleteCompetition('${comp.id}')" class="py-2 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 rounded-xl font-black text-xs shadow-2xs flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
+                  <i data-lucide="trash-2" class="w-4 h-4 text-rose-600"></i>
+                  <span>Delete</span>
+                </button>
+              </div>
+              <button onclick="openTournamentEntryModal('${comp.id}')" class="w-full py-2 px-3 bg-orange-100 hover:bg-orange-200 text-orange-950 border border-orange-300 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
+                <i data-lucide="user-plus" class="w-4 h-4 text-orange-600"></i>
+                <span>+ Register Student (Admin)</span>
               </button>
             ` : `
-              <button type="button" onclick="alert('🔒 Branch Restricted: This competition is exclusively for athletes from [${(comp.allowedDistricts||[]).join(', ')}]. Your branch is registered in [${user.branch || user.district}].')" class="w-full py-2.5 px-4 bg-slate-100 text-slate-500 rounded-xl font-bold text-xs border border-slate-200 flex items-center justify-center gap-2 cursor-not-allowed">
-                <i data-lucide="lock" class="w-4 h-4 text-slate-400"></i>
-                <span>Restricted to ${(comp.allowedDistricts || comp.allowedStates || []).slice(0,3).join(', ')} Branches</span>
-              </button>
+              ${isTrainerEligible ? `
+                <button onclick="openTournamentEntryModal('${comp.id}')" class="w-full py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white rounded-xl font-black text-xs shadow-md shadow-orange-500/20 flex items-center justify-center gap-2 transition transform active:scale-95 cursor-pointer animate-pulse">
+                  <i data-lucide="user-plus" class="w-4 h-4"></i>
+                  <span>Register Student For This Match</span>
+                </button>
+              ` : `
+                <button type="button" onclick="alert('🔒 Branch Restricted: This competition is exclusively for athletes from [${(comp.allowedDistricts||[]).join(', ')}]. Your branch is registered in [${user.branch || user.district}].')" class="w-full py-2.5 px-4 bg-slate-100 text-slate-500 rounded-xl font-bold text-xs border border-slate-200 flex items-center justify-center gap-2 cursor-not-allowed">
+                  <i data-lucide="lock" class="w-4 h-4 text-slate-400"></i>
+                  <span>Restricted to ${(comp.allowedDistricts || comp.allowedStates || []).slice(0,3).join(', ')} Branches</span>
+                </button>
+              `}
             `}
           </div>
         `;
@@ -11802,6 +11966,121 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     // =========================================================================
     // 🥋 TOURNAMENT STUDENT REGISTRATION MODAL HANDLERS
     // =========================================================================
+    
+    // Active competition viewed in Excel modal
+    let activeExcelCompId = null;
+
+    function openCompetitionExcelModal(compId) {
+      const comp = adminState.competitions.find(c => c.id === compId);
+      if (!comp) return;
+      activeExcelCompId = compId;
+
+      const subEl = document.getElementById('comp-excel-modal-sub');
+      if (subEl) subEl.innerText = `${comp.title} • ID: ${comp.id}`;
+
+      const athletes = comp.athletes || [];
+      const totalFee = athletes.reduce((sum, a) => sum + (Number(a.feeAmount) || 0), 0);
+
+      document.getElementById('comp-excel-stat-count').innerText = athletes.length;
+      document.getElementById('comp-excel-stat-fee').innerText = '₹' + totalFee;
+      document.getElementById('comp-excel-stat-level').innerText = comp.level || 'State Level';
+      document.getElementById('comp-excel-stat-date').innerText = comp.publishedDate || comp.date || 'Active';
+
+      const tbody = document.getElementById('comp-athletes-excel-tbody');
+      if (tbody) {
+        if (athletes.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="9" class="p-8 text-center text-slate-400">
+                <i data-lucide="users" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+                <p class="font-bold">No athletes registered yet for this competition.</p>
+                <p class="text-[11px] text-slate-400">Students registering via Trainer / Admin panels will appear here automatically.</p>
+              </td>
+            </tr>
+          `;
+        } else {
+          tbody.innerHTML = athletes.map((a, i) => `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="p-3 font-bold text-slate-400">${i + 1}</td>
+              <td class="p-3 font-mono font-bold text-orange-700">${a.studentId}</td>
+              <td class="p-3 font-bold text-slate-900">${a.studentName}</td>
+              <td class="p-3 font-semibold text-slate-800">${a.discipline || 'Single Lathi'}</td>
+              <td class="p-3 text-slate-600">${a.division || 'Open'}</td>
+              <td class="p-3 text-slate-600">${a.branch || a.district || 'Branch'}</td>
+              <td class="p-3 text-slate-600">${a.trainerName || 'Trainer'}</td>
+              <td class="p-3">
+                <span class="inline-block px-2 py-0.5 rounded text-[10px] font-black ${a.feeStatus?.includes('Paid') ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                  ₹${a.feeAmount || 300} (${a.feeStatus || 'Paid'})
+                </span>
+              </td>
+              <td class="p-3 text-[10px] text-slate-500">${new Date(a.registeredAt || Date.now()).toLocaleDateString('en-IN')}</td>
+            </tr>
+          `).join('');
+        }
+      }
+
+      openModal('modal-comp-athletes-excel');
+      lucide.createIcons();
+    }
+
+    function exportCompetitionAthletesCsv() {
+      const comp = adminState.competitions.find(c => c.id === activeExcelCompId);
+      if (!comp) return;
+      const athletes = comp.athletes || [];
+
+      let csv = "SNo,StudentID,StudentName,EventDiscipline,Division,DistrictBranch,TrainerName,FeeAmount,FeeStatus,RegisteredDate\n";
+      athletes.forEach((a, i) => {
+        csv += `${i + 1},"${a.studentId}","${a.studentName}","${a.discipline || ''}","${a.division || ''}","${a.branch || a.district || ''}","${a.trainerName || ''}",${a.feeAmount || 0},"${a.feeStatus || 'Paid'}","${a.registeredAt || ''}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${comp.id}_${comp.title.replace(/[^a-zA-Z0-9]/g, '_')}_athletes.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function deleteCompetition(compId) {
+      const comp = adminState.competitions.find(c => c.id === compId);
+      if (!comp) return;
+
+      if (confirm(`⚠️ Are you sure you want to permanently delete this competition?\n\n• ${comp.title} (${comp.id})\n• Level: ${comp.level}\n\nThis action cannot be undone.`)) {
+        adminState.competitions = adminState.competitions.filter(c => c.id !== compId);
+        saveAdminState();
+
+        syncToCloudServer({
+          type: "COMPETITION_DELETED",
+          compId: compId
+        });
+
+        renderAdminCompetitions();
+        alert("✅ Competition deleted successfully!");
+      }
+    }
+
+    function handleTournStudentSelect(studentId) {
+      const s = adminState.students.find(stu => (stu.studentId || stu.id) === studentId);
+      const card = document.getElementById('tourn-student-detail-card');
+      if (!s) {
+        if (card) card.classList.add('hidden');
+        return;
+      }
+
+      if (card) {
+        card.classList.remove('hidden');
+        document.getElementById('tourn-pop-name').innerText = s.studentName || s.name || 'Candidate';
+        document.getElementById('tourn-pop-level').innerText = s.requestedLevel || s.level || 'Level 1';
+        document.getElementById('tourn-pop-age').innerText = (s.age ? s.age + ' Years' : '') + (s.dob ? ' (' + s.dob + ')' : '');
+        document.getElementById('tourn-pop-branch').innerText = (s.city ? s.city + ' Branch' : (s.state || 'Maharashtra'));
+        document.getElementById('tourn-pop-trainer').innerText = s.trainerName || 'Certified Trainer';
+        document.getElementById('tourn-pop-mobile').innerText = s.parentMobile || 'Not Provided';
+        lucide.createIcons();
+      }
+    }
+
     function openTournamentEntryModal(compId) {
       const comp = adminState.competitions.find(c => c.id === compId);
       if (!comp) return;
@@ -11896,8 +12175,19 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         return;
       }
 
-      comp.entries = (comp.entries || 0) + 1;
+            // STRICT DUPLICATE VALIDATION: One student cannot register for the same event multiple times!
       comp.athletes = comp.athletes || [];
+      const alreadyReg = comp.athletes.some(a => 
+        (a.studentId || '').toUpperCase() === studentId.toUpperCase() && 
+        (a.discipline || '').toLowerCase() === (discipline || '').toLowerCase()
+      );
+
+      if (alreadyReg) {
+        alert(`⚠️ DUPLICATE ENTRY RESTRICTED:\n\nCandidate ${student.studentName} (${studentId}) is ALREADY registered for event: "${discipline}".\n\nA student can only register once per event.`);
+        return;
+      }
+
+      comp.entries = (comp.entries || 0) + 1;
       comp.athletes.push({
         studentId,
         studentName: student.studentName,
@@ -11905,6 +12195,9 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         division,
         feeStatus,
         feeAmount,
+        district: student.district || student.city || '',
+        branch: student.city ? student.city + ' Branch' : (student.state || 'Maharashtra'),
+        trainerName: student.trainerName || '',
         registeredAt: new Date().toISOString()
       });
 
@@ -12546,12 +12839,14 @@ function handleAdminCreateCompetition(e) {
       e.preventDefault();
       const title = document.getElementById('adm-comp-title').value.trim();
       const date = document.getElementById('adm-comp-date').value.trim();
-      const fee = parseInt(document.getElementById('adm-comp-fee').value);
+      const fee = parseInt(document.getElementById('adm-comp-fee').value) || 300;
       const location = document.getElementById('adm-comp-location').value.trim();
       const categories = document.getElementById('adm-comp-categories').value.trim();
+      const publishedDate = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
-      const level = document.getElementById('adm-comp-level')?.value || "State Level";
-      const status = document.getElementById('adm-comp-status')?.value || "Registrations Open";
+      const level = document.getElementById('adm-comp-level').value;
+      const status = document.getElementById('adm-comp-status').value;
+
       const compId = `COMP-2026-0${adminState.competitions.length + 1}`;
       const compObj = {
         id: compId,
@@ -12561,7 +12856,9 @@ function handleAdminCreateCompetition(e) {
         location,
         fee,
         categories,
+        publishedDate,
         entries: 0,
+        athletes: [],
         status
       };
 
@@ -12719,8 +13016,11 @@ function handleAdminCreateCompetition(e) {
           }
 
           // 4. Live Sync Level Fee Structure from Google Sheet
-          if (data.feeStructure && typeof data.feeStructure === 'object' && Object.keys(data.feeStructure).length > 0) {
-            adminState.feeStructure = Object.assign({}, adminState.feeStructure, data.feeStructure);
+          if (data.feeStructure && typeof data.feeStructure === 'object') {
+            const currentFees = adminState.feeStructure || {};
+            const cloudUpi = (data.feeStructure.upi || '').trim();
+            const safeUpi = (cloudUpi && cloudUpi !== 'yoddhaacademy@upi') ? cloudUpi : (currentFees.upi || 'yoddhaacademy5@okicici');
+            adminState.feeStructure = Object.assign({}, currentFees, data.feeStructure, { upi: safeUpi });
             localStorage.setItem('yoddha_admin_fee', JSON.stringify(adminState.feeStructure));
           }
 
