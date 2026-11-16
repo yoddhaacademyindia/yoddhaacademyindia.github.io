@@ -257,14 +257,10 @@
               <span id="auto-logout-timer-display">Active 🟢</span>
             </div>
 
-            <button id="btn-refresh-cloud" onclick="pullLiveCloudRecords(false)" class="px-2 py-1.5 sm:px-3 sm:py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl transition flex items-center gap-1 sm:gap-1.5 text-xs font-bold shadow-sm" title="Refresh Live Data from Central Server">
-              <i data-lucide="refresh-cw" id="icon-refresh-cloud" class="w-3.5 h-3.5 text-amber-600"></i>
-              <span class="hidden sm:inline">Refresh Sheet</span>
-            </button>
-
-            <button id="btn-cloud-sync" onclick="openSyncModal()" class="px-2 py-1.5 sm:px-3.5 sm:py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl transition flex items-center gap-1 sm:gap-1.5 text-xs font-bold shadow-sm" title="Central Cloud Server Status">
-              <i data-lucide="cloud" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600"></i>
-              <span class="hidden sm:inline">Cloud Sync</span>
+            <!-- MASTER ACADEMY EXCEL DATABASE (CORNER BUTTON) -->
+            <button id="btn-master-excel" onclick="handleMasterExcelClick()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white rounded-xl transition flex items-center gap-1.5 text-xs font-black shadow-md shadow-emerald-700/20 active:scale-95 cursor-pointer" title="Open Master Excel Database / All Academy Data">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-200"></i>
+              <span class="hidden sm:inline">Master Excel</span>
             </button>
 
             <button onclick="handleAdminLogout()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl transition flex items-center gap-1 sm:gap-1.5 text-xs font-bold shadow-sm" title="Logout from Portal">
@@ -2859,6 +2855,106 @@
       <div class="pt-2 flex justify-end">
         <button type="button" onclick="closeModal('modal-comp-athletes-excel')" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition text-xs">
           Close Window
+        </button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- ================= MODAL: MASTER ACADEMY EXCEL DATABASE ================= -->
+  <div id="modal-master-excel" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white border-2 border-emerald-300 rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl space-y-5 animate-modal-pop relative">
+      <div class="flex justify-between items-center border-b border-emerald-100 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl shadow-md shadow-emerald-600/30">
+            <i data-lucide="file-spreadsheet" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-slate-900 font-rajdhani uppercase tracking-wide">Academy Master Excel Database</h3>
+            <p class="text-xs text-slate-500 font-medium">1-Click direct access to all academy spreadsheets & records</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-master-excel')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick Summary Cards -->
+      <div class="grid grid-cols-3 gap-2.5">
+        <div class="bg-emerald-50/70 border border-emerald-200 p-3 rounded-2xl text-center">
+          <span class="text-[10px] text-emerald-700 font-black uppercase tracking-wider block">Total Students</span>
+          <span id="m-excel-stat-students" class="text-xl font-black text-emerald-950 font-rajdhani">0</span>
+        </div>
+        <div class="bg-amber-50/70 border border-amber-200 p-3 rounded-2xl text-center">
+          <span class="text-[10px] text-amber-700 font-black uppercase tracking-wider block">Certified Trainers</span>
+          <span id="m-excel-stat-trainers" class="text-xl font-black text-amber-950 font-rajdhani">0</span>
+        </div>
+        <div class="bg-blue-50/70 border border-blue-200 p-3 rounded-2xl text-center">
+          <span class="text-[10px] text-blue-700 font-black uppercase tracking-wider block">Competitions</span>
+          <span id="m-excel-stat-comps" class="text-xl font-black text-blue-950 font-rajdhani">0</span>
+        </div>
+      </div>
+
+      <!-- Action Options -->
+      <div class="space-y-3">
+        <!-- Option 1: Direct Download Complete Master Excel (CSV) -->
+        <div class="bg-slate-50 border-2 border-slate-200 hover:border-emerald-400 rounded-2xl p-4 transition group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="space-y-0.5">
+            <h4 class="text-sm font-black text-slate-900 flex items-center gap-1.5">
+              <i data-lucide="download" class="w-4 h-4 text-emerald-600"></i>
+              <span>Download Complete Master Excel File</span>
+            </h4>
+            <p class="text-[11px] text-slate-500 font-medium">
+              Instant download of all 32-point student details, trainers, fees, exams, and competitions in one structured spreadsheet.
+            </p>
+          </div>
+          <button type="button" onclick="downloadMasterCompleteExcel()" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-xs rounded-xl shadow-md shadow-emerald-700/20 flex items-center justify-center gap-1.5 transition active:scale-95 flex-shrink-0 cursor-pointer">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-200"></i>
+            <span>Download All Data</span>
+          </button>
+        </div>
+
+        <!-- Option 2: Open Live Google Sheet directly -->
+        <div class="bg-emerald-50/50 border-2 border-emerald-200 hover:border-emerald-400 rounded-2xl p-4 transition group flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="space-y-0.5">
+            <h4 class="text-sm font-black text-slate-900 flex items-center gap-1.5">
+              <i data-lucide="external-link" class="w-4 h-4 text-emerald-700"></i>
+              <span>Open Connected Live Google Sheet</span>
+            </h4>
+            <p class="text-[11px] text-slate-500 font-medium">
+              Opens the live Google Sheets cloud database directly in your browser with real-time rows.
+            </p>
+          </div>
+          <button type="button" onclick="openConnectedGoogleSheet()" class="w-full sm:w-auto px-5 py-2.5 bg-white hover:bg-emerald-100 text-emerald-800 border-2 border-emerald-300 font-black text-xs rounded-xl shadow-2xs flex items-center justify-center gap-1.5 transition active:scale-95 flex-shrink-0 cursor-pointer">
+            <i data-lucide="table" class="w-4 h-4 text-emerald-600"></i>
+            <span>Open Google Sheet</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Individual Category Exports -->
+      <div class="pt-2 border-t border-slate-100">
+        <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-2">Individual Section Exports:</label>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+          <button type="button" onclick="downloadSectionCsv('students')" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold flex items-center justify-center gap-1.5 transition active:scale-95">
+            <i data-lucide="users" class="w-3.5 h-3.5 text-orange-600"></i>
+            <span>Students CSV</span>
+          </button>
+          <button type="button" onclick="downloadSectionCsv('trainers')" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold flex items-center justify-center gap-1.5 transition active:scale-95">
+            <i data-lucide="user-check" class="w-3.5 h-3.5 text-amber-600"></i>
+            <span>Trainers CSV</span>
+          </button>
+          <button type="button" onclick="downloadSectionCsv('competitions')" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold flex items-center justify-center gap-1.5 transition active:scale-95">
+            <i data-lucide="trophy" class="w-3.5 h-3.5 text-blue-600"></i>
+            <span>Competitions CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-between items-center text-[11px] text-slate-400 font-medium">
+        <span>🔒 100% Free & Unlimited • Powered by Client-Side Data</span>
+        <button type="button" onclick="closeModal('modal-master-excel')" class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">
+          Close
         </button>
       </div>
     </div>
@@ -5980,6 +6076,13 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
       if (indicatorEl) {
         indicatorEl.textContent = isTrainer ? `Trainer Panel (${user.name})` : 'Admin Panel (Central HQ)';
+      }
+
+      // Hide Master Excel Corner Button for Trainer (Admin only)
+      const btnMasterExcel = document.getElementById('btn-master-excel');
+      if (btnMasterExcel) {
+        if (isTrainer) btnMasterExcel.classList.add('hidden');
+        else btnMasterExcel.classList.remove('hidden');
       }
 
       // Toggle View Data Sections for Trainer (hide Verify and Trainers, show 5 boxes including Profile)
@@ -11969,6 +12072,113 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     
     // Active competition viewed in Excel modal
     let activeExcelCompId = null;
+
+    
+    // =========================================================================
+    // 📊 MASTER ACADEMY EXCEL DATABASE (CORNER 1-CLICK ACCESS)
+    // =========================================================================
+    function handleMasterExcelClick() {
+      const user = adminState.currentUser || { role: 'Admin' };
+      if (user.role === 'Trainer') {
+        alert("🔒 Access Restricted: Master Academy Excel is only accessible to Central Headquarter Master Admin.");
+        return;
+      }
+
+      const stCount = adminState.students ? adminState.students.length : 0;
+      const trCount = adminState.trainers ? adminState.trainers.length : 0;
+      const cpCount = adminState.competitions ? adminState.competitions.length : 0;
+
+      const stEl = document.getElementById('m-excel-stat-students');
+      if (stEl) stEl.innerText = stCount;
+      const trEl = document.getElementById('m-excel-stat-trainers');
+      if (trEl) trEl.innerText = trCount;
+      const cpEl = document.getElementById('m-excel-stat-comps');
+      if (cpEl) cpEl.innerText = cpCount;
+
+      openModal('modal-master-excel');
+      lucide.createIcons();
+    }
+
+    function openConnectedGoogleSheet() {
+      // If user saved a direct spreadsheet URL, open it
+      let sheetUrl = localStorage.getItem('yoddha_google_sheet_url');
+      if (!sheetUrl) {
+        // Default Google Sheets home or prompt
+        const promptUrl = prompt("Enter your Google Spreadsheet URL (e.g. https://docs.google.com/spreadsheets/d/.../edit):\n\nOnce entered, this will be saved forever so clicking 'Open Google Sheet' directly opens it:", "");
+        if (promptUrl && promptUrl.trim().startsWith('http')) {
+          sheetUrl = promptUrl.trim();
+          localStorage.setItem('yoddha_google_sheet_url', sheetUrl);
+          window.open(sheetUrl, '_blank');
+        } else {
+          // Open Google Drive / Sheets home
+          window.open('https://docs.google.com/spreadsheets/u/0/', '_blank');
+        }
+      } else {
+        window.open(sheetUrl, '_blank');
+      }
+    }
+
+    function downloadMasterCompleteExcel() {
+      const students = adminState.students || [];
+      const trainers = adminState.trainers || [];
+
+      let csv = "--- YODDHA ACADEMY INDIA: ALL REGISTERED STUDENTS ---\n";
+      csv += "SNo,StudentID,StudentName,Level,Status,FeeStatus,FeeAmount,UTR,TrainerID,TrainerName,District,State,ParentMobile,AdmissionDate,ExamStatus,TotalExamScore\n";
+      students.forEach((s, i) => {
+        csv += `${i + 1},"${s.studentId}","${s.studentName}","${s.requestedLevel || s.level || 'Level 1'}","${s.status || 'Active'}","${s.feeStatus || 'Paid'}",${s.feeAmount || 500},"${s.utrNumber || ''}","${s.trainerId || ''}","${s.trainerName || ''}","${s.district || s.city || ''}","${s.state || ''}","${s.parentMobile || ''}","${s.admissionDate || ''}","${s.examStatus || ''}",${s.lastExam?.totalScore || ''}\n`;
+      });
+
+      csv += "\n--- YODDHA ACADEMY INDIA: ALL CERTIFIED TRAINERS ---\n";
+      csv += "SNo,TrainerID,TrainerName,Designation,Branch,District,State,Mobile,Email,Status\n";
+      trainers.forEach((t, i) => {
+        csv += `${i + 1},"${t.trainerId || t.id}","${t.fullName || t.name}","${t.position || 'Trainer'}","${t.branch || ''}","${t.district || ''}","${t.state || ''}","${t.mobile || t.phone || ''}","${t.email || ''}","${t.status || 'Active'}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `Yoddha_Academy_India_Master_Database_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function downloadSectionCsv(section) {
+      if (section === 'students') {
+        const students = adminState.students || [];
+        let csv = "StudentID,StudentName,Age,DOB,Level,SchoolName,Standard,ParentName,ParentMobile,District,State,TrainerID,TrainerName,Status,FeeStatus,FeeAmount,UTR,AdmissionDate\n";
+        students.forEach(s => {
+          csv += `"${s.studentId}","${s.studentName}",${s.age || ''},"${s.dob || ''}","${s.requestedLevel || s.level || ''}","${s.schoolName || ''}","${s.standard || ''}","${s.parentName || ''}","${s.parentMobile || ''}","${s.district || ''}","${s.state || ''}","${s.trainerId || ''}","${s.trainerName || ''}","${s.status || ''}","${s.feeStatus || ''}",${s.feeAmount || ''},"${s.utrNumber || ''}","${s.admissionDate || ''}"\n`;
+        });
+        triggerCsvDownload(csv, 'YAI_Students_Directory.csv');
+      } else if (section === 'trainers') {
+        const trainers = adminState.trainers || [];
+        let csv = "TrainerID,FullName,Position,Branch,District,State,Mobile,WhatsApp,Email,Status,StudentsCount\n";
+        trainers.forEach(t => {
+          csv += `"${t.trainerId || t.id}","${t.fullName || t.name}","${t.position || 'Trainer'}","${t.branch || ''}","${t.district || ''}","${t.state || ''}","${t.mobile || ''}","${t.whatsapp || ''}","${t.email || ''}","${t.status || 'Active'}",${t.studentsCount || 0}\n`;
+        });
+        triggerCsvDownload(csv, 'YAI_Trainers_Directory.csv');
+      } else if (section === 'competitions') {
+        const comps = adminState.competitions || [];
+        let csv = "CompetitionID,Title,Level,Status,Date,Venue,Fee,RegisteredAthletes\n";
+        comps.forEach(c => {
+          csv += `"${c.id}","${c.title}","${c.level}","${c.status}","${c.date}","${c.location}",${c.fee || 300},${c.athletes?.length || c.entries || 0}\n`;
+        });
+        triggerCsvDownload(csv, 'YAI_Competitions_Directory.csv');
+      }
+    }
+
+    function triggerCsvDownload(csvContent, filename) {
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
 
     function openCompetitionExcelModal(compId) {
       const comp = adminState.competitions.find(c => c.id === compId);
