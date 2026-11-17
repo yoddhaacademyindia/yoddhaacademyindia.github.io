@@ -3631,8 +3631,8 @@ function doPost(e) {
         data.branch || "",
         data.address || "",
         trainerPass,
-        data.photo || "",
-        data.aadharPhoto || ""
+        stuPhoto,
+        stuAadhar
       ];
 
       var updated = updateRowIfExistsOrMerge(sheet, 2, trainerId, rowData);
@@ -3682,6 +3682,10 @@ function doPost(e) {
       var totScore = (data.lastExam &amp;&amp; data.lastExam.totalScore) ? data.lastExam.totalScore : (data.totalScore || "");
       var exDate = (data.lastExam &amp;&amp; data.lastExam.examDate) ? data.lastExam.examDate : (data.examDate || "");
       var lvlHistStr = data.levelHistory ? JSON.stringify(data.levelHistory) : (data.levelHistoryStr || "");
+      var stuPhoto = String(data.photo || "").trim();
+      if (stuPhoto.length &gt; 45000) stuPhoto = stuPhoto.substring(0, 45000);
+      var stuAadhar = String(data.aadharPhoto || "").trim();
+      if (stuAadhar.length &gt; 45000) stuAadhar = stuAadhar.substring(0, 45000);
 
       var rowData = [
         new Date(),
@@ -7143,8 +7147,14 @@ lucide.createIcons();
     }
 
     // SUBMIT: COMPLETE 32-POINT STUDENT FORM
-    function handleFullStudentSubmit(e) {
+    async function handleFullStudentSubmit(e) {
       e.preventDefault();
+
+      // Ensure photo is read directly from file input if not already cached
+      const photoFileInput = document.getElementById('p-stu-photo');
+      if (photoFileInput && photoFileInput.files && photoFileInput.files[0] && (!uploadedStudentRegPhotoData || uploadedStudentRegPhotoData.length < 50)) {
+        uploadedStudentRegPhotoData = await compressImageFile(photoFileInput.files[0], 200, 0.65);
+      }
 
       const user = adminState.currentUser || { role: 'Admin' };
       const isTrainer = (user.role === 'Trainer');
@@ -7419,8 +7429,8 @@ lucide.createIcons();
     let uploadedStudentRegAadharData = null;
     let uploadedStudentEditPhotoData = null;
 
-    // Fast HTML5 Canvas Image Compressor (Optimizes photo to ~30KB for lightning speed)
-    function compressImageFile(file, maxDimension = 240, quality = 0.68) {
+    // Fast HTML5 Canvas Image Compressor (Optimizes photo strictly under 40,000 chars for Google Sheets cell limit)
+    function compressImageFile(file, maxDimension = 200, quality = 0.65) {
       return new Promise((resolve) => {
         if (!file) return resolve(null);
         const reader = new FileReader();
@@ -7447,7 +7457,21 @@ lucide.createIcons();
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL('image/jpeg', quality));
+
+            let dataUrl = canvas.toDataURL('image/jpeg', quality);
+            // Strict Google Sheets cell size protection (must be < 45,000 chars)
+            if (dataUrl.length > 40000) {
+              dataUrl = canvas.toDataURL('image/jpeg', 0.5);
+            }
+            if (dataUrl.length > 40000) {
+              const smallCanvas = document.createElement('canvas');
+              smallCanvas.width = 160;
+              smallCanvas.height = Math.round((height * 160) / width);
+              const smallCtx = smallCanvas.getContext('2d');
+              smallCtx.drawImage(canvas, 0, 0, smallCanvas.width, smallCanvas.height);
+              dataUrl = smallCanvas.toDataURL('image/jpeg', 0.5);
+            }
+            resolve(dataUrl);
           };
           img.onerror = () => resolve(null);
           img.src = e.target.result;
@@ -7462,7 +7486,7 @@ lucide.createIcons();
       const file = event.target.files[0];
       if (!file) return;
 
-      const compressed = await compressImageFile(file, 360, 0.82);
+      const compressed = await compressImageFile(file, 200, 0.65);
       if (compressed) {
         uploadedStudentRegPhotoData = compressed;
         const imgEl = document.getElementById('preview-img-reg-photo');
@@ -7486,7 +7510,7 @@ lucide.createIcons();
       const file = event.target.files[0];
       if (!file) return;
 
-      const compressed = await compressImageFile(file, 360, 0.82);
+      const compressed = await compressImageFile(file, 200, 0.65);
       if (compressed) {
         uploadedStudentEditPhotoData = compressed;
         const imgEl = document.getElementById('preview-img-edit-photo');
@@ -7830,13 +7854,17 @@ lucide.createIcons();
                 
                 <!-- 1. Student Photo Frame -->
                 <div class="w-12 h-12 sm:w-22 sm:h-22 rounded-full p-0.5 sm:p-1 bg-gradient-to-tr from-orange-500 via-amber-400 to-orange-600 shadow-md">
-                  <div class="w-full h-full bg-orange-50 rounded-full overflow-hidden flex flex-col items-center justify-center border-1.5 sm:border-2 border-white relative">
+                  <div class="w-full h-full bg-orange-50 rounded-full overflow-hidden flex flex-col items-center justify-center border-1.5 sm:border-2 border-white relative group cursor-pointer shadow-sm" onclick="triggerStudentCardPhotoUpload('${s.studentId}')" title="Click to upload/change student photo">
                     ${s.photo ? `<img src="${s.photo}" alt="${s.studentName}" class="w-full h-full object-cover">` : `
                       <div class="w-full h-full bg-gradient-to-tr from-orange-100 to-amber-100 flex flex-col items-center justify-center text-orange-700 font-black font-rajdhani">
                         <span class="text-sm sm:text-2xl font-black">${(s.studentName || 'YA').split(' ').map(w=>w[0]).slice(0,2).join('')}</span>
                         <span class="text-[7px] sm:text-[9px] font-black uppercase text-orange-900 tracking-wider">Student</span>
                       </div>
                     `}
+                    <!-- 1-Click Camera Upload Overlay -->
+                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                      <i data-lucide="camera" class="w-4 h-4"></i>
+                    </div>
                   </div>
                 </div>
 
@@ -9213,6 +9241,42 @@ lucide.createIcons();
       switchStudentRecordTab('tournaments');
     }
 
+    
+    // 1-Click Quick Photo Upload directly from Student ID Card
+    async function triggerStudentCardPhotoUpload(studentId) {
+      let input = document.getElementById('quick-student-photo-input');
+      if (!input) {
+        input = document.createElement('input');
+        input.type = 'file';
+        input.id = 'quick-student-photo-input';
+        input.accept = 'image/*';
+        input.className = 'hidden';
+        document.body.appendChild(input);
+      }
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const compressed = await compressImageFile(file, 200, 0.65);
+        if (!compressed) return;
+
+        const s = adminState.students.find(stu => (stu.studentId || stu.id) === studentId);
+        if (!s) return;
+        s.photo = compressed;
+        saveAdminState();
+        renderAdminStudents();
+
+        syncToCloudServer({
+          type: "STUDENT_REGISTRATION_32_POINTS",
+          action: "updateStudentPhoto",
+          studentId: s.studentId,
+          photo: compressed,
+          ...s
+        });
+        alert(`✅ Photo uploaded successfully for ${s.studentName}!`);
+      };
+      input.click();
+    }
+
     function openEditStudentModal(studentId) {
       editingStudentId = studentId;
       const s = adminState.students.find(stu => stu.studentId === studentId);
@@ -9283,8 +9347,14 @@ lucide.createIcons();
       document.getElementById('edit-stu-age').value = calculatedAge;
     }
 
-    function handleEditStudentSubmit(e) {
+    async function handleEditStudentSubmit(e) {
       e.preventDefault();
+
+      // Ensure photo is read directly from edit file input if not already cached
+      const editPhotoFileInput = document.getElementById('edit-stu-photo');
+      if (editPhotoFileInput && editPhotoFileInput.files && editPhotoFileInput.files[0] && (!uploadedStudentEditPhotoData || uploadedStudentEditPhotoData.length < 50)) {
+        uploadedStudentEditPhotoData = await compressImageFile(editPhotoFileInput.files[0], 200, 0.65);
+      }
       if (!editingStudentId) return;
 
       if (!validateFormField(document.getElementById('edit-stu-name'), 'Student Full Name', v => v.length >= 2 || 'Name must be at least 2 characters.')) return;

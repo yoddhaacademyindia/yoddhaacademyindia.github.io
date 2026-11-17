@@ -436,8 +436,8 @@ function doPost(e) {
         data.branch || "",
         data.address || "",
         trainerPass,
-        data.photo || "",
-        data.aadharPhoto || ""
+        stuPhoto,
+        stuAadhar
       ];
 
       var updated = updateRowIfExistsOrMerge(sheet, 2, trainerId, rowData);
@@ -487,6 +487,10 @@ function doPost(e) {
       var totScore = (data.lastExam && data.lastExam.totalScore) ? data.lastExam.totalScore : (data.totalScore || "");
       var exDate = (data.lastExam && data.lastExam.examDate) ? data.lastExam.examDate : (data.examDate || "");
       var lvlHistStr = data.levelHistory ? JSON.stringify(data.levelHistory) : (data.levelHistoryStr || "");
+      var stuPhoto = String(data.photo || "").trim();
+      if (stuPhoto.length > 45000) stuPhoto = stuPhoto.substring(0, 45000);
+      var stuAadhar = String(data.aadharPhoto || "").trim();
+      if (stuAadhar.length > 45000) stuAadhar = stuAadhar.substring(0, 45000);
 
       var rowData = [
         new Date(),
