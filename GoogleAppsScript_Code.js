@@ -497,6 +497,56 @@ function doPost(e) {
     }
 
     // -----------------------------------------------------------------------
+    // 1B. TRAINER DELETION
+    // -----------------------------------------------------------------------
+    if (type === "TRAINER_DELETE" || type === "DELETE_TRAINER") {
+      var trnSheet = ss.getSheetByName("Trainers");
+      var deleted = false;
+      var targetTrnId = String(data.trainerId || data.id || "").trim().toUpperCase();
+      if (trnSheet && targetTrnId) {
+        var tData = trnSheet.getDataRange().getValues();
+        for (var tr = 1; tr < tData.length; tr++) {
+          if (String(tData[tr][1] || "").trim().toUpperCase() === targetTrnId) {
+            trnSheet.deleteRow(tr + 1);
+            deleted = true;
+            break;
+          }
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        deleted: deleted,
+        trainerId: targetTrnId,
+        message: deleted ? "Trainer deleted from sheet" : "Trainer not found"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // -----------------------------------------------------------------------
+    // 2A. STUDENT DELETION (FROM CLOUD GOOGLE SHEET)
+    // -----------------------------------------------------------------------
+    if (type === "STUDENT_DELETE" || type === "DELETE_STUDENT") {
+      var stuSheet = ss.getSheetByName("Students");
+      var deleted = false;
+      var targetId = String(data.studentId || data.id || "").trim().toUpperCase();
+      if (stuSheet && targetId) {
+        var sData = stuSheet.getDataRange().getValues();
+        for (var r = 1; r < sData.length; r++) {
+          if (String(sData[r][1] || "").trim().toUpperCase() === targetId) {
+            stuSheet.deleteRow(r + 1);
+            deleted = true;
+            break;
+          }
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        deleted: deleted,
+        studentId: targetId,
+        message: deleted ? "Student deleted from sheet" : "Student not found"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // -----------------------------------------------------------------------
     // 2. STUDENT REGISTRATION, EXAM MARKS & LEVEL PROGRESSION (30 POINTS)
     // -----------------------------------------------------------------------
     if (type.indexOf("STUDENT") !== -1 && type.indexOf("TOURNAMENT") === -1 && type.indexOf("COMPETITION") === -1) {
