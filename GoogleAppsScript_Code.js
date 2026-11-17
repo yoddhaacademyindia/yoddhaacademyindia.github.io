@@ -57,19 +57,15 @@ function doGet(e) {
     var isAdminValid = (
       normIdUpper === "ADMIN-YODDHA-01" || 
       normIdUpper === "ADMIN" || 
+      normIdUpper === "ADMIN-01" || 
       normIdUpper === "HQ" || 
+      normIdUpper === "CENTRAL-HQ" || 
       normIdUpper === "YODDHA" || 
-      normIdUpper === "YODDHAACADEMY5@GMAIL.COM" ||
-      normIdUpper.indexOf("ADMIN") !== -1 ||
-      normIdUpper.indexOf("HUPARE") !== -1
+      normIdUpper === "YODDHA-ADMIN"
     ) && (
       pass === "@hupare25077" || 
-      pass === "hupare25077" || 
       pass === "yoddha2026" || 
       pass === "Yoddha@2026" || 
-      pass === "1234" || 
-      pass === "776688" || 
-      pass === "admin" || 
       (customAdminPass && pass === customAdminPass)
     );
 
@@ -115,7 +111,7 @@ function doGet(e) {
           var matchTrnEmail = trnEmail && (trnEmail === id.toLowerCase());
 
           if (matchTrnId || matchTrnName || matchTrnPhone || matchTrnEmail) {
-            var isPassMatch = (!pass || trnPass === pass || pass === "1234" || pass === "776688" || pass === "yoddha2026" || pass === "Yoddha@2026" || pass.toLowerCase().indexOf("yoddha") !== -1 || pass.toLowerCase().indexOf("hupare") !== -1);
+            var isPassMatch = (pass && trnPass && (pass === trnPass || (pass === "yoddha2026" && customAdminPass)));
             if (isPassMatch) {
               if (trnStatus.toLowerCase() === "inactive") {
                 result = { status: "error", authenticated: false, message: "Your Trainer Account is currently Inactive. Please contact Central HQ." };

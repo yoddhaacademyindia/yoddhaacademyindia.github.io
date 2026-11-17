@@ -3314,7 +3314,7 @@ function doGet(e) {
           var matchTrnEmail = trnEmail &amp;&amp; (trnEmail === id.toLowerCase());
 
           if (matchTrnId || matchTrnName || matchTrnPhone || matchTrnEmail) {
-            var isPassMatch = (!pass || trnPass === pass || pass === "1234" || pass === "776688" || pass === "yoddha2026" || pass === "Yoddha@2026" || pass.toLowerCase().indexOf("yoddha") !== -1 || pass.toLowerCase().indexOf("hupare") !== -1);
+            var isPassMatch = (pass && trnPass && (pass === trnPass || (pass === "yoddha2026" && customAdminPass)));
             if (isPassMatch) {
               if (trnStatus.toLowerCase() === "inactive") {
                 result = { status: "error", authenticated: false, message: "Your Trainer Account is currently Inactive. Please contact Central HQ." };
@@ -4439,9 +4439,15 @@ function getOrCreateSheet(ss, sheetName, headers) {
             </p>
           </div>
         </div>
-        <button onclick="closeBeltExamModal()" class="text-white/80 hover:text-white p-1 rounded-xl transition">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeBeltExamModal()" class="px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-bold transition active:scale-95 flex items-center gap-1.5 shadow-sm" title="Go back to Student List">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            <span>← Back</span>
+          </button>
+          <button type="button" onclick="closeBeltExamModal()" class="text-white/80 hover:text-white p-1.5 rounded-xl transition bg-white/10 hover:bg-white/20" title="Close Exam">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Exam Modal Body (2 Columns on Desktop) -->
@@ -4535,8 +4541,12 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
           </div>
 
-          <!-- Exam Action Button (Start / Stop) -->
+          <!-- Exam Action Button (Start / Stop / Back) -->
           <div class="flex gap-2">
+            <button type="button" onclick="closeBeltExamModal()" class="py-2.5 px-3.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5 transition active:scale-95 whitespace-nowrap shadow-sm" title="Exit Exam and Return to Student List">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+              <span>← Back</span>
+            </button>
             <button type="button" id="btn-exam-timer-toggle" onclick="toggleExamTimer()" class="flex-1 py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-extrabold rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm">
               <i data-lucide="play" class="w-4 h-4"></i>
               <span>Start 2:30-Min Practical Lathi Exam</span>
@@ -4611,11 +4621,17 @@ function getOrCreateSheet(ss, sheetName, headers) {
             </div>
           </div>
 
-          <!-- Submit & Export to HQ Button -->
-          <button type="button" id="btn-submit-exam" onclick="submitExamAndGenerateCertificate()" class="w-full py-3 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-black rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm">
-            <i data-lucide="send" class="w-4 h-4"></i>
-            <span>Export to Headquarter</span>
-          </button>
+          <div class="space-y-2">
+            <!-- Submit & Export to HQ Button -->
+            <button type="button" id="btn-submit-exam" onclick="submitExamAndGenerateCertificate()" class="w-full py-3 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white font-black rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center gap-2 text-xs sm:text-sm">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span>Export to Headquarter</span>
+            </button>
+            <button type="button" onclick="closeBeltExamModal()" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 active:scale-95" title="Exit without exporting">
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+              <span>← Back / Cancel Exam (Exit to Portal)</span>
+            </button>
+          </div>
 
         </div>
 
@@ -6164,8 +6180,17 @@ function getOrCreateSheet(ss, sheetName, headers) {
         return;
       }
 
+      if (!normPass) {
+        if (errorMsg) {
+          errorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>Please enter your Password or Security PIN.</span>';
+          errorMsg.classList.remove('hidden');
+          lucide.createIcons();
+        }
+        return;
+      }
+
       try {
-        // 1. INSTANT ZERO-LATENCY ADMIN VERIFICATION:
+        // 1. STRICT ADMIN AUTHENTICATION
         const isAdminId = (
           normId === 'ADMIN-YODDHA-01' || 
           normId === 'ADMIN' || 
@@ -6175,74 +6200,61 @@ function getOrCreateSheet(ss, sheetName, headers) {
           normId === 'YODDHA-ADMIN' ||
           normId === 'CENTRAL-HQ' ||
           normId === 'HQ' ||
-          normId.includes('YODDHAACADEMY5') ||
-          normId.includes('ADMIN') ||
-          normId.includes('HUPARE') ||
           normId === (adminState.adminId || 'ADMIN-YODDHA-01').toUpperCase()
         );
 
+        const configuredAdminPass = String(adminState.adminPass || '@hupare25077').trim();
         const isAdminPass = (
-          !normPass ||
           normPass === '@hupare25077' || 
-          normPass === 'hupare25077' || 
-          normPass === '@Hupare25077' || 
-          normPass === 'Hupare25077' || 
-          normPass.toLowerCase().includes('hupare') ||
-          normPass.toLowerCase().includes('yoddha') ||
-          normPass === 'admin' || 
-          normPass === 'Admin' || 
-          normPass === '1234' ||
-          normPass === '776688' ||
-          normPass === (adminState.adminPass || '@hupare25077')
+          normPass === 'yoddha2026' || 
+          normPass === 'Yoddha@2026' ||
+          normPass === configuredAdminPass
         );
 
-        if (isAdminId && isAdminPass) {
-          adminState.isLoggedIn = true;
-          adminState.currentUser = {
-            role: 'Admin',
-            name: 'Central Headquarters',
-            id: 'ADMIN-YODDHA-01'
-          };
-          localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
-          localStorage.setItem('yoddha_admin_logged', 'true');
-          localStorage.setItem('yoddha_last_active_time', Date.now().toString());
+        if (isAdminId) {
+          if (isAdminPass) {
+            adminState.isLoggedIn = true;
+            adminState.currentUser = {
+              role: 'Admin',
+              name: 'Central Headquarters',
+              id: 'ADMIN-YODDHA-01'
+            };
+            localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
+            localStorage.setItem('yoddha_admin_logged', 'true');
+            localStorage.setItem('yoddha_last_active_time', Date.now().toString());
 
-          checkAuth();
-          setPortalRole('Admin');
-          resetInactivityTimer();
-          startCountdownTicker();
-          return;
+            checkAuth();
+            setPortalRole('Admin');
+            resetInactivityTimer();
+            startCountdownTicker();
+            return;
+          } else {
+            // Strictly reject wrong Admin password!
+            if (errorMsg) {
+              errorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>Incorrect Admin Password! Please verify and enter valid password.</span>';
+              errorMsg.classList.remove('hidden');
+              lucide.createIcons();
+            }
+            return;
+          }
         }
 
-        // 2. INSTANT ZERO-LATENCY LOCAL TRAINER VERIFICATION:
-        // Matches trainer flexibly by ID, Full Name, Mobile, Email or district
+        // 2. STRICT TRAINER AUTHENTICATION
         const cleanDigitsOnly = normId.replace(/[^0-9]/g, '');
         const localTrainerMatch = adminState.trainers.find(t => {
           const tId = (t.trainerId || t.id || '').trim().toUpperCase();
-          const tName = (t.fullName || t.name || '').trim().toUpperCase();
           const tPhone = (t.mobile || t.phone || '').trim().replace(/[^0-9]/g, '');
           const tEmail = (t.email || '').trim().toUpperCase();
           
-          const matchId = (tId === normId || (normId.length >= 3 && tId.includes(normId)) || normId.includes(tId));
-          const matchName = tName && (tName.includes(normId) || normId.includes(tName));
-          const matchPhone = cleanDigitsOnly.length >= 6 && tPhone && (tPhone.includes(cleanDigitsOnly) || cleanDigitsOnly.includes(tPhone));
-          const matchEmail = tEmail && (tEmail.includes(normId) || normId.includes(tEmail));
-          const matchGeneric = (normId === 'TRAINER' || normId === 'TR' || normId === 'COACH');
+          const matchId = (tId === normId);
+          const matchPhone = (cleanDigitsOnly.length >= 10 && tPhone === cleanDigitsOnly);
+          const matchEmail = (tEmail && tEmail === normId);
 
-          if (!(matchId || matchName || matchPhone || matchEmail || matchGeneric)) return false;
+          if (!(matchId || matchPhone || matchEmail)) return false;
 
-          const storedPass = String(t.password || t.pin || '1234').trim();
-          const matchPass = (
-            !normPass ||
-            storedPass === normPass || 
-            storedPass.toLowerCase() === normPass.toLowerCase() ||
-            normPass === '1234' || 
-            normPass === '776688' || 
-            normPass.toLowerCase().includes('yoddha') || 
-            normPass.toLowerCase().includes('hupare') ||
-            normPass === 'admin'
-          );
-          return matchPass;
+          const storedPass = String(t.password || t.pin || '').trim();
+          // STRICT MATCH: Password must match trainer's stored password / PIN exactly!
+          return (storedPass && normPass === storedPass);
         });
 
         if (localTrainerMatch) {
@@ -6275,7 +6287,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           return;
         }
 
-        // 3. Central Cloud Server Verification:
+        // 3. Central Cloud Server Verification (if not found in local cache or updated on cloud)
         if (submitBtn) {
           submitBtn.disabled = true;
           submitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Verifying credentials...</span>';
@@ -6298,7 +6310,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           }
         }
 
-        if (authResult && authResult.authenticated) {
+        if (authResult && authResult.authenticated === true) {
           if (authResult.role === 'admin') {
             adminState.isLoggedIn = true;
             adminState.currentUser = {
@@ -6357,44 +6369,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
           return;
         }
 
-        // Fallback local check with relaxed PIN
-        const fallbackTrainer = adminState.trainers.find(t => {
-          const tId = (t.trainerId || t.id || '').trim().toUpperCase();
-          const tName = (t.fullName || t.name || '').trim().toUpperCase();
-          const matchId = (tId === normId || (normId.length >= 2 && tId.includes(normId)) || (tName && tName.includes(normId)));
-          return matchId;
-        });
-
-        if (fallbackTrainer) {
-          const loc = getTrainerLocation(fallbackTrainer);
-          adminState.isLoggedIn = true;
-          adminState.currentUser = {
-            ...fallbackTrainer,
-            role: 'Trainer',
-            name: fallbackTrainer.fullName || fallbackTrainer.name || 'Trainer',
-            fullName: fallbackTrainer.fullName || fallbackTrainer.name || 'Trainer',
-            id: fallbackTrainer.trainerId || fallbackTrainer.id,
-            trainerId: fallbackTrainer.trainerId || fallbackTrainer.id,
-            photo: fallbackTrainer.photo || null,
-            state: loc.stateName,
-            stateCode: loc.stCode,
-            district: loc.districtName,
-            districtCode: loc.distCode,
-            branch: (fallbackTrainer.branch || `${loc.districtName} Branch`).replace(/Akhada/gi, 'Branch'),
-            position: 'Trainer'
-          };
-          localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
-          localStorage.setItem('yoddha_admin_logged', 'true');
-          localStorage.setItem('yoddha_last_active_time', Date.now().toString());
-
-          checkAuth();
-          setPortalRole('Trainer', fallbackTrainer);
-          resetInactivityTimer();
-          startCountdownTicker();
-          return;
-        }
-
-        // Credentials invalid
+        // Credentials strictly invalid - NEVER allow unauthorized login!
         if (errorMsg) {
           const msg = (authResult && authResult.message) ? authResult.message : 'Invalid Unique ID or Password! Please verify and re-enter.';
           errorMsg.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>${msg}</span>`;
@@ -8069,16 +8044,36 @@ lucide.createIcons();
                   </div>
                   <div class="mt-1 flex items-center justify-center gap-1 sm:gap-1.5 flex-wrap">
                     ${levelStatusPill}
+                    <button type="button" onclick="openStudentLevelProgressModal('${s.studentId}')" title="View 10-Level Progression Timeline" class="inline-flex items-center gap-1 text-[8px] sm:text-[9.5px] font-black text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border border-indigo-300 px-2 sm:px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-2xs transition active:scale-95 cursor-pointer">
+                      <i data-lucide="git-commit" class="w-2.5 h-2.5 text-indigo-600"></i>
+                      <span>📊 Timeline</span>
+                    </button>
                     <span class="text-[8px] sm:text-[10px] font-bold text-slate-500 font-mono">
                       (${levelNum}/10 Stars)
                     </span>
                   </div>
                   <!-- Mini 10-Level Progress Line: Running & Pending indicator -->
                   <div onclick="openStudentLevelProgressModal('${s.studentId}')" class="mt-1 text-[7.5px] sm:text-[9px] font-bold text-slate-500 hover:text-orange-700 flex items-center justify-center gap-1 cursor-pointer transition" title="Click to view full 10-Level progression breakdown">
-                    <span class="font-bold text-emerald-700">${currentLevelName} Running</span>
-                    <span class="text-slate-300">•</span>
-                    <span class="text-slate-400 font-semibold">${levelNum < 10 ? 'Levels ' + (levelNum + 1) + '-10' : 'Senior 4'} Pending 🔒</span>
-                    <i data-lucide="chevron-right" class="w-2.5 h-2.5 text-slate-400"></i>
+                    ${isExamPassed ? `
+                      <span class="font-bold text-amber-700">${currentLevelName} Passed 🏆</span>
+                      <span class="text-slate-300">•</span>
+                      <span class="text-indigo-600 font-bold underline flex items-center gap-0.5">
+                        <i data-lucide="git-commit" class="w-2.5 h-2.5"></i>
+                        <span>10-Level Timeline</span>
+                      </span>
+                    ` : (isLevelUpPending ? `
+                      <span class="font-bold text-purple-700">Level Up Pending (${s.pendingNextLevel})</span>
+                      <span class="text-slate-300">•</span>
+                      <span class="text-indigo-600 font-bold underline flex items-center gap-0.5">
+                        <i data-lucide="git-commit" class="w-2.5 h-2.5"></i>
+                        <span>10-Level Timeline</span>
+                      </span>
+                    ` : `
+                      <span class="font-bold text-emerald-700">${currentLevelName} Running</span>
+                      <span class="text-slate-300">•</span>
+                      <span class="text-slate-400 font-semibold">${levelNum < 10 ? 'Levels ' + (levelNum + 1) + '-10' : 'Senior 4'} Pending 🔒</span>
+                      <i data-lucide="chevron-right" class="w-2.5 h-2.5 text-slate-400"></i>
+                    `)}
                   </div>
                 </div>
 
@@ -9988,6 +9983,8 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
         // INSTANTLY OPEN MODAL (Zero UI delay!)
         openModal('modal-belt-exam');
+        const examModalEl = document.getElementById('modal-belt-exam');
+        if (examModalEl) examModalEl.style.display = 'flex';
         if (window.lucide) lucide.createIcons();
 
         // Launch Webcam asynchronously
@@ -10142,7 +10139,26 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
     function closeBeltExamModal() {
       stopExamCamera();
+      if (examTimerInterval) {
+        clearInterval(examTimerInterval);
+        examTimerInterval = null;
+      }
+      if (examClockInterval) {
+        clearInterval(examClockInterval);
+        examClockInterval = null;
+      }
+      if (examMotionInterval) {
+        clearInterval(examMotionInterval);
+        examMotionInterval = null;
+      }
+      examIsRunning = false;
+      activeExamAiScore = null;
       closeModal('modal-belt-exam');
+      const modal = document.getElementById('modal-belt-exam');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
     }
 
     // 10. Start / Pause 2:30-Minute Exam Timer (150 Seconds)
@@ -10305,21 +10321,16 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         ...s
       });
 
-      // Release camera hardware completely (Zero mobile heating)
-      stopExamCamera();
-      closeModal('modal-belt-exam');
+      // 1. Immediately close exam modal & release camera hardware
+      closeBeltExamModal();
 
-      // Re-render students so [ ⭐ Level Up ] button appears immediately on the card!
+      // 2. Re-render students so [ ⭐ Level Up ] and timeline appear immediately on the card!
       renderAdminStudents();
 
-      alert(
-        `✅ Practical examination exported to Central Headquarter successfully!\n\n` +
-        `• Candidate: ${s.studentName} (${s.studentId})\n` +
-        `• Level Exam: Level ${currLevel}\n` +
-        `• Status: ⏳ Under Central HQ Verification\n\n` +
-        `⏳ A 24-hour review countdown has started. Official certified marks and certificate download will automatically unlock once the review completes.\n\n` +
-        `⭐ The [ Level Up ] button has been unlocked immediately on the student card!`
-      );
+      // 3. Automatically pop open the 10-Level Timeline Progress modal for this student!
+      setTimeout(() => {
+        openStudentLevelProgressModal(s.studentId);
+      }, 250);
     }
 
     // Admin Marks Edit Handler in Student Record Modal
