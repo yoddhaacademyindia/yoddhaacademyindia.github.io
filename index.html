@@ -1082,7 +1082,7 @@
             <!-- 2. Student Name -->
             <div class="sm:col-span-2">
               <label class="block font-bold text-slate-700 mb-1">Student Name *</label>
-              <input type="text" id="p-stu-name" required placeholder="Full Name of Student" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-200">
+              <input type="text" id="p-stu-name" required placeholder="Full Name of Student" oninput="updateStudentPaymentQR()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-200">
             </div>
 
             <!-- 3. Date of Birth -->
@@ -1437,6 +1437,10 @@
                 <p class="text-[11px] text-slate-600 font-medium">
                   Scan this official QR code with any UPI app. Fee amount is pre-filled. After successful payment, enter the 12-digit UTR/Transaction ID in the box below.
                 </p>
+                <div class="pt-1 flex items-center justify-center sm:justify-start gap-1.5 text-[11px] font-bold text-orange-800">
+                  <span>📝 Payment Note (Student ID):</span>
+                  <span id="stu-qr-note-preview" class="font-mono bg-white px-2 py-0.5 rounded border border-orange-300 text-orange-950 font-black shadow-2xs">YAI-STU-...</span>
+                </div>
               </div>
             </div>
 
@@ -7163,20 +7167,41 @@ lucide.createIcons();
       lucide.createIcons();
     }
 
+    // Helper: Build precise Student Payment Note with Unique Student ID
+    function getStudentPaymentNote() {
+      let stuId = (document.getElementById('p-stu-id')?.value || '').trim();
+      if (!stuId) {
+        if (typeof prepareNewStudentId === 'function') prepareNewStudentId();
+        stuId = (document.getElementById('p-stu-id')?.value || '').trim();
+      }
+      const stuName = (document.getElementById('p-stu-name')?.value || '').trim();
+      let noteText = stuId;
+      if (stuName && stuName.toLowerCase() !== 'student') {
+        noteText = `${stuId} - ${stuName}`;
+      }
+      // Ensure safe length for all banking/UPI apps
+      if (noteText.length > 45) {
+        noteText = stuId || noteText.substring(0, 45);
+      }
+      return noteText;
+    }
+
     function updateStudentPaymentQR() {
       const upiId = adminState.feeStructure?.upi || 'yoddhaacademy5@okicici';
       const feeAmount = document.getElementById('p-stu-fee-amount')?.value || '500';
-      const stuName = (document.getElementById('p-stu-name')?.value || 'Student').trim();
-      const note = encodeURIComponent('YAI Fee - ' + stuName);
+      const noteText = getStudentPaymentNote();
+      const note = encodeURIComponent(noteText);
       const payee = encodeURIComponent('Yoddha Academy India');
 
       const upiUri = 'upi://pay?pa=' + upiId + '&pn=' + payee + '&am=' + feeAmount + '&cu=INR&tn=' + note;
       const qrImg = document.getElementById('stu-reg-qr-img');
       const amtText = document.getElementById('stu-qr-amount-text');
       const upiEl = document.getElementById('stu-reg-upi-val');
+      const notePreviewEl = document.getElementById('stu-qr-note-preview');
 
       if (upiEl) upiEl.innerText = upiId;
       if (amtText) amtText.innerText = '₹' + feeAmount;
+      if (notePreviewEl) notePreviewEl.innerText = noteText;
       if (qrImg) {
         qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(upiUri);
       }
@@ -7185,8 +7210,8 @@ lucide.createIcons();
     function triggerUpiPayment(app) {
       const upiId = adminState.feeStructure?.upi || 'yoddhaacademy5@okicici';
       const feeAmount = document.getElementById('p-stu-fee-amount')?.value || '500';
-      const stuName = (document.getElementById('p-stu-name')?.value || 'Student').trim();
-      const note = encodeURIComponent('YAI Fee - ' + stuName);
+      const noteText = getStudentPaymentNote();
+      const note = encodeURIComponent(noteText);
       const payee = encodeURIComponent('Yoddha Academy India');
 
       const genericUri = 'upi://pay?pa=' + upiId + '&pn=' + payee + '&am=' + feeAmount + '&cu=INR&tn=' + note;
@@ -7201,6 +7226,10 @@ lucide.createIcons();
       }
 
       window.location.href = appUri;
+      // Fallback to generic UPI chooser if direct app intent doesn't launch
+      setTimeout(() => {
+        window.location.href = genericUri;
+      }, 900);
     }
 
     function copyAcademyUpi() {
@@ -10837,8 +10866,10 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     function triggerLevelUpUpi(app) {
       const upiId = adminState.feeStructure?.upi || 'yoddhaacademy5@okicici';
       const feeAmount = document.getElementById('levelup-fee-amount')?.value || '600';
+      const stuId = (document.getElementById('levelup-candidate-display-id')?.innerText || '').trim();
       const stuName = (document.getElementById('levelup-candidate-name')?.innerText || 'Student').trim();
-      const note = encodeURIComponent('YAI LevelUp - ' + stuName);
+      const noteText = stuId ? `${stuId} - LevelUp` : `YAI LevelUp - ${stuName}`;
+      const note = encodeURIComponent(noteText.substring(0, 45));
       const payee = encodeURIComponent('Yoddha Academy India');
 
       const genericUri = 'upi://pay?pa=' + upiId + '&pn=' + payee + '&am=' + feeAmount + '&cu=INR&tn=' + note;
@@ -13419,9 +13450,11 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const feeAmount = document.getElementById('tourn-fee-amount')?.value || '300';
       const compTitle = (document.getElementById('tourn-comp-title')?.innerText || 'Tournament').trim();
       const stuSelect = document.getElementById('tourn-student-select');
+      const stuId = (stuSelect?.value || '').trim();
       const stuText = stuSelect ? stuSelect.options[stuSelect.selectedIndex]?.text || '' : '';
       const stuName = stuText.split('(')[0]?.trim() || 'Athlete';
-      const note = encodeURIComponent(`YAI Comp - ${stuName} - ${compTitle}`.substring(0, 40));
+      const noteText = stuId ? `${stuId} - Comp` : `YAI Comp - ${stuName}`;
+      const note = encodeURIComponent(noteText.substring(0, 45));
       const payee = encodeURIComponent('Yoddha Academy India');
 
       const genericUri = `upi://pay?pa=${upiId}&pn=${payee}&am=${feeAmount}&cu=INR&tn=${note}`;
