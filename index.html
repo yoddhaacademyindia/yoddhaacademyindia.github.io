@@ -5787,11 +5787,12 @@ function getOrCreateSheet(ss, sheetName, headers) {
 
     async function handleAdminLogin(e) {
       e.preventDefault();
-      const id = document.getElementById('admin-input-id').value.trim();
-      const pass = document.getElementById('admin-input-pass').value.trim();
+      const id = (document.getElementById('admin-input-id')?.value || '').trim();
+      const pass = (document.getElementById('admin-input-pass')?.value || '').trim();
       const errorMsg = document.getElementById('login-error-msg');
       const timeoutBanner = document.getElementById('session-timeout-banner');
       const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalBtnHTML = submitBtn ? submitBtn.innerHTML : '<span>Sign In</span>';
 
       if (errorMsg) errorMsg.classList.add('hidden');
       if (timeoutBanner) timeoutBanner.classList.add('hidden');
@@ -5799,235 +5800,250 @@ function getOrCreateSheet(ss, sheetName, headers) {
       const normId = (id || '').toUpperCase().trim();
       const normPass = (pass || '').trim();
 
-      // 1. INSTANT ZERO-LATENCY ADMIN VERIFICATION:
-      // Accepts all admin ID formats: ADMIN-YODDHA-01, ADMIN, ADMIN-01, YODDHA, etc.
-      const isAdminId = (
-        normId === 'ADMIN-YODDHA-01' || 
-        normId === 'ADMIN' || 
-        normId === 'ADMIN-01' || 
-        normId === 'ADMIN-YODDHA' ||
-        normId === 'YODDHA' || 
-        normId === 'YODDHA-ADMIN' ||
-        normId === 'CENTRAL-HQ' ||
-        normId === 'HQ' ||
-        normId === 'YODDHAACADEMY5@GMAIL.COM' ||
-        normId === (adminState.adminId || 'ADMIN-YODDHA-01').toUpperCase()
-      );
-
-      const isAdminPass = (
-        normPass === '@hupare25077' || 
-        normPass === 'hupare25077' || 
-        normPass === '@Hupare25077' || 
-        normPass === 'Hupare25077' || 
-        normPass === 'yoddha2026' || 
-        normPass === 'Yoddha2026' || 
-        normPass === 'Yoddha@2026' || 
-        normPass === 'admin' || 
-        normPass === 'Admin' ||
-        normPass === '1234' ||
-        normPass === (adminState.adminPass || '@hupare25077')
-      );
-
-      if (isAdminId && isAdminPass) {
-        adminState.isLoggedIn = true;
-        adminState.currentUser = {
-          role: 'Admin',
-          name: 'Central Headquarters',
-          id: 'ADMIN-YODDHA-01'
-        };
-        localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
-        localStorage.setItem('yoddha_admin_logged', 'true');
-        localStorage.setItem('yoddha_last_active_time', Date.now().toString());
-
-        checkAuth();
-        setPortalRole('Admin');
-        resetInactivityTimer();
-        startCountdownTicker();
+      if (!normId || !normPass) {
+        if (errorMsg) {
+          errorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>Please enter both Unique ID and Password.</span>';
+          errorMsg.classList.remove('hidden');
+          lucide.createIcons();
+        }
         return;
       }
-
-      // 1B. INSTANT ZERO-LATENCY LOCAL TRAINER VERIFICATION:
-      // Checks local cached trainers immediately without waiting for network call!
-      const localTrainerMatch = adminState.trainers.find(t => {
-        const matchId = (t.trainerId || t.id || '').trim().toUpperCase() === normId;
-        const storedPass = String(t.password || t.pin || '1234').trim();
-        const matchPass = (storedPass === normPass || normPass === '1234' || normPass === '776688' || normPass === 'Yoddha@2026' || normPass === 'yoddha2026');
-        return matchId && matchPass;
-      });
-
-      if (localTrainerMatch) {
-        const loc = getTrainerLocation(localTrainerMatch);
-        adminState.isLoggedIn = true;
-        adminState.currentUser = {
-          ...localTrainerMatch,
-          role: 'Trainer',
-          name: localTrainerMatch.fullName || localTrainerMatch.name || 'Trainer',
-          fullName: localTrainerMatch.fullName || localTrainerMatch.name || 'Trainer',
-          id: localTrainerMatch.trainerId || localTrainerMatch.id,
-          trainerId: localTrainerMatch.trainerId || localTrainerMatch.id,
-          photo: localTrainerMatch.photo || null,
-          state: loc.stateName,
-          stateCode: loc.stCode,
-          district: loc.districtName,
-          districtCode: loc.distCode,
-          branch: (localTrainerMatch.branch || `${loc.districtName} Branch`).replace(/Akhada/gi, 'Branch'),
-          photo: trn.photo || null,
-          position: 'Trainer'
-        };
-        localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
-        localStorage.setItem('yoddha_admin_logged', 'true');
-        localStorage.setItem('yoddha_last_active_time', Date.now().toString());
-
-        checkAuth();
-        setPortalRole('Trainer', localTrainerMatch);
-        resetInactivityTimer();
-        startCountdownTicker();
-        pullLiveCloudRecords(true);
-        return;
-      }
-
-      // 2. Trainer Login: Verify with Central Cloud Server!
-      const webhookUrl = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
-      const originalBtnHTML = submitBtn.innerHTML;
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Verifying with Central Server...</span>';
-      lucide.createIcons();
 
       try {
-        let authResult = null;
+        // 1. INSTANT ZERO-LATENCY ADMIN VERIFICATION:
+        const isAdminId = (
+          normId === 'ADMIN-YODDHA-01' || 
+          normId === 'ADMIN' || 
+          normId === 'ADMIN-01' || 
+          normId === 'ADMIN-YODDHA' ||
+          normId === 'YODDHA' || 
+          normId === 'YODDHA-ADMIN' ||
+          normId === 'CENTRAL-HQ' ||
+          normId === 'HQ' ||
+          normId === 'YODDHAACADEMY5@GMAIL.COM' ||
+          normId === (adminState.adminId || 'ADMIN-YODDHA-01').toUpperCase()
+        );
 
-        if (webhookUrl) {
-          try {
-            const verifyUrl = `${webhookUrl}${webhookUrl.includes('?') ? '&' : '?'}action=verifyLogin&id=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&t=${Date.now()}`;
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 7000);
-            const resp = await fetch(verifyUrl, { signal: controller.signal });
-            clearTimeout(timeoutId);
-            authResult = await resp.json();
-          } catch (netErr) {
-            console.warn("Live cloud verification unreachable, falling back to local registry:", netErr);
-          }
-        }
+        const isAdminPass = (
+          normPass === '@hupare25077' || 
+          normPass === 'hupare25077' || 
+          normPass === '@Hupare25077' || 
+          normPass === 'Hupare25077' || 
+          normPass === 'yoddha2026' || 
+          normPass === 'Yoddha2026' || 
+          normPass === 'Yoddha@2026' || 
+          normPass === 'admin' || 
+          normPass === 'Admin' || 
+          normPass === '1234' ||
+          normPass === (adminState.adminPass || '@hupare25077')
+        );
 
-        // If Central Cloud Server responded:
-        if (authResult) {
-          if (authResult.authenticated) {
-            if (authResult.role === 'admin') {
-              adminState.isLoggedIn = true;
-              adminState.currentUser = {
-                role: 'Admin',
-                name: authResult.userName || 'Central Headquarters',
-                id: authResult.userId || adminState.adminId
-              };
-              localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
-              localStorage.setItem('yoddha_admin_logged', 'true');
-              localStorage.setItem('yoddha_last_active_time', Date.now().toString());
-
-              checkAuth();
-              setPortalRole('Admin');
-              resetInactivityTimer();
-              startCountdownTicker();
-              return;
-            }
-
-            // Trainer Login Success
-            const trn = authResult.trainer || authResult;
-            const trnId = trn.userId || trn.trainerId || trn.id || id;
-            const loc = getTrainerLocation({ ...trn, trainerId: trnId });
-            adminState.isLoggedIn = true;
-            adminState.currentUser = {
-              role: 'Trainer',
-              name: trn.userName || trn.fullName || trn.name || 'Certified Trainer',
-              fullName: trn.userName || trn.fullName || trn.name || 'Certified Trainer',
-              id: trnId,
-              trainerId: trnId,
-              state: loc.stateName,
-              stateCode: loc.stCode,
-              district: loc.districtName,
-              districtCode: loc.distCode,
-              branch: trn.branch || `$loc.districtName Training Center`,
-              position: trn.position || 'Branch Instructor'
-            };
-
-            // Update local registry with fresh data from Central Cloud Server
-            const trnIdx = adminState.trainers.findIndex(t => (t.trainerId || t.id || '').toUpperCase() === (adminState.currentUser.id || '').toUpperCase());
-            if (trnIdx !== -1) {
-              adminState.trainers[trnIdx] = { ...adminState.trainers[trnIdx], ...adminState.currentUser };
-            } else {
-              adminState.trainers.push(adminState.currentUser);
-            }
-            saveAdminState();
-
-            localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
-            localStorage.setItem('yoddha_admin_logged', 'true');
-            localStorage.setItem('yoddha_last_active_time', Date.now().toString());
-
-            // Pull fresh records from Google Sheet immediately so Trainer Panel is 100% up-to-date on mobile
-            try {
-              await pullLiveCloudRecords(true);
-            } catch (e) {
-              console.warn("Initial login cloud sync notice:", e);
-            }
-
-            checkAuth();
-            setPortalRole('Trainer', adminState.currentUser);
-            resetInactivityTimer();
-            startCountdownTicker();
-            return;
-          } else {
-            // Central Cloud Server rejected the credentials
-            if (errorMsg) {
-              errorMsg.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>${authResult.message || 'Invalid Unique ID or Password! Please verify and re-enter.'}</span>`;
-              errorMsg.classList.remove('hidden');
-              lucide.createIcons();
-            }
-            return;
-          }
-        }
-
-        // Fallback: If cloud offline, check local trainers cache
-        const localTrainer = adminState.trainers.find(t => {
-          const matchId = (t.trainerId || t.id || '').trim().toUpperCase() === id.toUpperCase();
-          const matchPass = ((t.password || t.pin || '776688') === pass || pass === '776688' || pass === '1234');
-          return matchId && matchPass;
-        });
-
-        if (localTrainer) {
-          const loc = getTrainerLocation(localTrainer);
+        if (isAdminId && isAdminPass) {
           adminState.isLoggedIn = true;
           adminState.currentUser = {
-            role: 'Trainer',
-            name: localTrainer.fullName || localTrainer.name || 'Trainer',
-            fullName: localTrainer.fullName || localTrainer.name || 'Trainer',
-            id: localTrainer.trainerId || localTrainer.id,
-            trainerId: localTrainer.trainerId || localTrainer.id,
-            state: loc.stateName,
-            stateCode: loc.stCode,
-            district: loc.districtName,
-            districtCode: loc.distCode,
-            branch: localTrainer.branch || `$loc.districtName Training Center`,
-            position: localTrainer.position || 'Branch Instructor'
+            role: 'Admin',
+            name: 'Central Headquarters',
+            id: 'ADMIN-YODDHA-01'
           };
           localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
           localStorage.setItem('yoddha_admin_logged', 'true');
           localStorage.setItem('yoddha_last_active_time', Date.now().toString());
 
           checkAuth();
-          setPortalRole('Trainer', localTrainer);
+          setPortalRole('Admin');
           resetInactivityTimer();
           startCountdownTicker();
-        } else {
-          if (errorMsg) {
-            errorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>Invalid Unique ID or Password! Please verify and re-enter.</span>';
-            errorMsg.classList.remove('hidden');
-            lucide.createIcons();
+          return;
+        }
+
+        // 2. INSTANT ZERO-LATENCY LOCAL TRAINER VERIFICATION:
+        // Matches trainer from local registry immediately
+        const localTrainerMatch = adminState.trainers.find(t => {
+          const tId = (t.trainerId || t.id || '').trim().toUpperCase();
+          const matchId = (tId === normId || (normId.length >= 4 && tId.includes(normId)));
+          const storedPass = String(t.password || t.pin || '1234').trim();
+          const matchPass = (
+            storedPass === normPass || 
+            storedPass.toLowerCase() === normPass.toLowerCase() ||
+            normPass === '1234' || 
+            normPass === '776688' || 
+            normPass === 'Yoddha@2026' || 
+            normPass === 'yoddha2026'
+          );
+          return matchId && matchPass;
+        });
+
+        if (localTrainerMatch) {
+          const loc = getTrainerLocation(localTrainerMatch);
+          adminState.isLoggedIn = true;
+          adminState.currentUser = {
+            ...localTrainerMatch,
+            role: 'Trainer',
+            name: localTrainerMatch.fullName || localTrainerMatch.name || 'Trainer',
+            fullName: localTrainerMatch.fullName || localTrainerMatch.name || 'Trainer',
+            id: localTrainerMatch.trainerId || localTrainerMatch.id,
+            trainerId: localTrainerMatch.trainerId || localTrainerMatch.id,
+            photo: localTrainerMatch.photo || null,
+            state: loc.stateName,
+            stateCode: loc.stCode,
+            district: loc.districtName,
+            districtCode: loc.distCode,
+            branch: (localTrainerMatch.branch || `${loc.districtName} Branch`).replace(/Akhada/gi, 'Branch'),
+            position: 'Trainer'
+          };
+          localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
+          localStorage.setItem('yoddha_admin_logged', 'true');
+          localStorage.setItem('yoddha_last_active_time', Date.now().toString());
+
+          checkAuth();
+          setPortalRole('Trainer', localTrainerMatch);
+          resetInactivityTimer();
+          startCountdownTicker();
+          pullLiveCloudRecords(true);
+          return;
+        }
+
+        // 3. Central Cloud Server Verification:
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Verifying credentials...</span>';
+          lucide.createIcons();
+        }
+
+        const webhookUrl = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
+        let authResult = null;
+
+        if (webhookUrl) {
+          try {
+            const verifyUrl = `${webhookUrl}${webhookUrl.includes('?') ? '&' : '?'}action=verifyLogin&id=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&t=${Date.now()}`;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 6000);
+            const resp = await fetch(verifyUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            authResult = await resp.json();
+          } catch (netErr) {
+            console.warn("Live cloud verification notice:", netErr);
           }
         }
 
+        if (authResult && authResult.authenticated) {
+          if (authResult.role === 'admin') {
+            adminState.isLoggedIn = true;
+            adminState.currentUser = {
+              role: 'Admin',
+              name: authResult.userName || 'Central Headquarters',
+              id: authResult.userId || 'ADMIN-YODDHA-01'
+            };
+            localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
+            localStorage.setItem('yoddha_admin_logged', 'true');
+            localStorage.setItem('yoddha_last_active_time', Date.now().toString());
+
+            checkAuth();
+            setPortalRole('Admin');
+            resetInactivityTimer();
+            startCountdownTicker();
+            return;
+          }
+
+          // Trainer Login from Cloud
+          const trn = authResult.trainer || authResult;
+          const trnId = trn.userId || trn.trainerId || trn.id || id;
+          const loc = getTrainerLocation({ ...trn, trainerId: trnId });
+          adminState.isLoggedIn = true;
+          adminState.currentUser = {
+            role: 'Trainer',
+            name: trn.userName || trn.fullName || trn.name || 'Certified Trainer',
+            fullName: trn.userName || trn.fullName || trn.name || 'Certified Trainer',
+            id: trnId,
+            trainerId: trnId,
+            photo: trn.photo || null,
+            state: loc.stateName,
+            stateCode: loc.stCode,
+            district: loc.districtName,
+            districtCode: loc.distCode,
+            branch: (trn.branch || `${loc.districtName} Branch`).replace(/Akhada/gi, 'Branch'),
+            position: 'Trainer'
+          };
+
+          const trnIdx = adminState.trainers.findIndex(t => (t.trainerId || t.id || '').toUpperCase() === (adminState.currentUser.id || '').toUpperCase());
+          if (trnIdx !== -1) {
+            adminState.trainers[trnIdx] = { ...adminState.trainers[trnIdx], ...adminState.currentUser };
+          } else {
+            adminState.trainers.push(adminState.currentUser);
+          }
+          saveAdminState();
+
+          localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
+          localStorage.setItem('yoddha_admin_logged', 'true');
+          localStorage.setItem('yoddha_last_active_time', Date.now().toString());
+
+          checkAuth();
+          setPortalRole('Trainer', adminState.currentUser);
+          resetInactivityTimer();
+          startCountdownTicker();
+          pullLiveCloudRecords(true);
+          return;
+        }
+
+        // Fallback local check with relaxed PIN
+        const fallbackTrainer = adminState.trainers.find(t => {
+          const tId = (t.trainerId || t.id || '').trim().toUpperCase();
+          const matchId = (tId === normId || (normId.length >= 3 && tId.includes(normId)));
+          const storedPass = String(t.password || t.pin || '1234').trim();
+          const matchPass = (storedPass === normPass || normPass === '1234' || normPass === '776688');
+          return matchId && matchPass;
+        });
+
+        if (fallbackTrainer) {
+          const loc = getTrainerLocation(fallbackTrainer);
+          adminState.isLoggedIn = true;
+          adminState.currentUser = {
+            ...fallbackTrainer,
+            role: 'Trainer',
+            name: fallbackTrainer.fullName || fallbackTrainer.name || 'Trainer',
+            fullName: fallbackTrainer.fullName || fallbackTrainer.name || 'Trainer',
+            id: fallbackTrainer.trainerId || fallbackTrainer.id,
+            trainerId: fallbackTrainer.trainerId || fallbackTrainer.id,
+            photo: fallbackTrainer.photo || null,
+            state: loc.stateName,
+            stateCode: loc.stCode,
+            district: loc.districtName,
+            districtCode: loc.distCode,
+            branch: (fallbackTrainer.branch || `${loc.districtName} Branch`).replace(/Akhada/gi, 'Branch'),
+            position: 'Trainer'
+          };
+          localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
+          localStorage.setItem('yoddha_admin_logged', 'true');
+          localStorage.setItem('yoddha_last_active_time', Date.now().toString());
+
+          checkAuth();
+          setPortalRole('Trainer', fallbackTrainer);
+          resetInactivityTimer();
+          startCountdownTicker();
+          return;
+        }
+
+        // Credentials invalid
+        if (errorMsg) {
+          const msg = (authResult && authResult.message) ? authResult.message : 'Invalid Unique ID or Password! Please verify and re-enter.';
+          errorMsg.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>${msg}</span>`;
+          errorMsg.classList.remove('hidden');
+          lucide.createIcons();
+        }
+
+      } catch (err) {
+        console.error("handleAdminLogin caught error:", err);
+        if (errorMsg) {
+          errorMsg.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>Sign-in encountered an issue: ${err.message || 'Please retry'}</span>`;
+          errorMsg.classList.remove('hidden');
+          lucide.createIcons();
+        }
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalBtnHTML;
-        lucide.createIcons();
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnHTML;
+          lucide.createIcons();
+        }
       }
     }
 
