@@ -2734,14 +2734,15 @@
           </div>
         </div>
 
+        <!-- DYNAMIC EVENT REGISTRATION STATUS NOTICE -->
+        <div id="tourn-event-notice" class="hidden"></div>
+
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-bold text-slate-700 mb-1">Fighting / Event Discipline *</label>
+            <label class="block font-bold text-slate-700 mb-1">Event Type / Discipline *</label>
             <select id="tourn-discipline" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
-              <option value="Single Lathi Combat">Single Lathi Combat</option>
-              <option value="Traditional Kata / Demo">Traditional Kata / Demo</option>
-              <option value="Pettebaji Sparring">Pettebaji Sparring</option>
-              <option value="Shield-Stick Combat">Shield-Stick Combat</option>
+              <option value="Single Event">Single Event</option>
+              <option value="General Event">General Event</option>
             </select>
           </div>
           <div>
@@ -12361,21 +12362,160 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     function handleTournStudentSelect(studentId) {
       const s = adminState.students.find(stu => (stu.studentId || stu.id) === studentId);
       const card = document.getElementById('tourn-student-detail-card');
+      const notice = document.getElementById('tourn-event-notice');
+      const discSelect = document.getElementById('tourn-discipline');
+      const submitBtn = document.querySelector('#modal-tournament-entry button[type="submit"]');
+
       if (!s) {
         if (card) card.classList.add('hidden');
+        if (notice) notice.classList.add('hidden');
+        if (discSelect) {
+          discSelect.innerHTML = `
+            <option value="Single Event">Single Event</option>
+            <option value="General Event">General Event</option>
+          `;
+        }
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          submitBtn.innerHTML = '<i data-lucide="check-circle-2" class="w-4 h-4"></i><span>Register Athlete</span>';
+          lucide.createIcons();
+        }
         return;
+      }
+
+      // Format DOB cleanly (e.g. "15 Nov 2015" instead of raw ISO timestamp)
+      let cleanDob = s.dob || '';
+      if (cleanDob) {
+        try {
+          const d = new Date(cleanDob);
+          if (!isNaN(d.getTime())) {
+            const day = String(d.getDate()).padStart(2, '0');
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            cleanDob = `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
+          }
+        } catch(e) {}
       }
 
       if (card) {
         card.classList.remove('hidden');
         document.getElementById('tourn-pop-name').innerText = s.studentName || s.name || 'Candidate';
         document.getElementById('tourn-pop-level').innerText = s.requestedLevel || s.level || 'Level 1';
-        document.getElementById('tourn-pop-age').innerText = (s.age ? s.age + ' Years' : '') + (s.dob ? ' (' + s.dob + ')' : '');
+        document.getElementById('tourn-pop-age').innerText = (s.age ? s.age + ' Years' : '') + (cleanDob ? ' (' + cleanDob + ')' : '');
         document.getElementById('tourn-pop-branch').innerText = (s.city ? s.city + ' Branch' : (s.state || 'Maharashtra'));
         document.getElementById('tourn-pop-trainer').innerText = s.trainerName || 'Certified Trainer';
         document.getElementById('tourn-pop-mobile').innerText = s.parentMobile || 'Not Provided';
-        lucide.createIcons();
       }
+
+      // CHECK PREVIOUS REGISTRATIONS IN THIS COMPETITION:
+      const compId = document.getElementById('tourn-comp-id')?.value;
+      const comp = adminState.competitions.find(c => c.id === compId);
+      const athletes = (comp && comp.athletes) ? comp.athletes : [];
+      
+      const studentEntries = athletes.filter(a => 
+        (a.studentId || '').toUpperCase() === studentId.toUpperCase()
+      );
+
+      const hasSingle = studentEntries.some(a => (a.discipline || '').toLowerCase().includes('single'));
+      const hasGeneral = studentEntries.some(a => (a.discipline || '').toLowerCase().includes('general'));
+
+      if (hasSingle && hasGeneral) {
+        // Both Single and General already registered!
+        if (notice) {
+          notice.innerHTML = `
+            <div class="p-3 bg-rose-50 border-2 border-rose-300 rounded-2xl text-rose-900 text-xs font-bold flex items-start gap-2.5 shadow-sm">
+              <i data-lucide="alert-octagon" class="w-5 h-5 flex-shrink-0 text-rose-600 mt-0.5"></i>
+              <div>
+                <p class="font-black text-rose-950">Registration Complete (2/2 Events Registered)</p>
+                <p class="text-[11px] text-rose-700 font-medium mt-0.5">Candidate ${s.studentName} is ALREADY registered for both <strong>Single Event</strong> and <strong>General Event</strong> in this championship. No further entries permitted.</p>
+              </div>
+            </div>
+          `;
+          notice.classList.remove('hidden');
+        }
+        if (discSelect) {
+          discSelect.innerHTML = `<option value="" disabled selected>Both Events Already Registered (Single & General)</option>`;
+        }
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          submitBtn.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i><span>Already Registered for All Events</span>';
+        }
+      } else if (hasSingle && !hasGeneral) {
+        // Single Event already registered, ONLY General Event is available now!
+        if (notice) {
+          notice.innerHTML = `
+            <div class="p-3 bg-amber-50 border-2 border-amber-300 rounded-2xl text-amber-950 text-xs font-bold flex items-start gap-2.5 shadow-sm">
+              <i data-lucide="check-circle" class="w-5 h-5 flex-shrink-0 text-emerald-600 mt-0.5"></i>
+              <div>
+                <p class="font-black text-amber-900">Single Event Registered ✓</p>
+                <p class="text-[11px] text-amber-800 font-medium mt-0.5">Candidate has already submitted for Single Event. You can now submit for <strong>General Event</strong>.</p>
+              </div>
+            </div>
+          `;
+          notice.classList.remove('hidden');
+        }
+        if (discSelect) {
+          discSelect.innerHTML = `
+            <option value="General Event" selected>General Event</option>
+            <option value="Single Event" disabled>Single Event (Already Registered)</option>
+          `;
+        }
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          submitBtn.innerHTML = '<i data-lucide="check-circle-2" class="w-4 h-4"></i><span>Register for General Event</span>';
+        }
+      } else if (!hasSingle && hasGeneral) {
+        // General Event already registered, ONLY Single Event is available now!
+        if (notice) {
+          notice.innerHTML = `
+            <div class="p-3 bg-amber-50 border-2 border-amber-300 rounded-2xl text-amber-950 text-xs font-bold flex items-start gap-2.5 shadow-sm">
+              <i data-lucide="check-circle" class="w-5 h-5 flex-shrink-0 text-emerald-600 mt-0.5"></i>
+              <div>
+                <p class="font-black text-amber-900">General Event Registered ✓</p>
+                <p class="text-[11px] text-amber-800 font-medium mt-0.5">Candidate has already submitted for General Event. You can now submit for <strong>Single Event</strong>.</p>
+              </div>
+            </div>
+          `;
+          notice.classList.remove('hidden');
+        }
+        if (discSelect) {
+          discSelect.innerHTML = `
+            <option value="Single Event" selected>Single Event</option>
+            <option value="General Event" disabled>General Event (Already Registered)</option>
+          `;
+        }
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          submitBtn.innerHTML = '<i data-lucide="check-circle-2" class="w-4 h-4"></i><span>Register for Single Event</span>';
+        }
+      } else {
+        // Neither registered yet: Default to Single Event, General Event also available
+        if (notice) {
+          notice.innerHTML = `
+            <div class="p-2.5 bg-blue-50 border border-blue-200 rounded-2xl text-blue-900 text-xs font-bold flex items-center gap-2">
+              <i data-lucide="info" class="w-4 h-4 flex-shrink-0 text-blue-600"></i>
+              <span class="text-[11px]">First submit for <strong>Single Event</strong>, then you can submit for <strong>General Event</strong>.</span>
+            </div>
+          `;
+          notice.classList.remove('hidden');
+        }
+        if (discSelect) {
+          discSelect.innerHTML = `
+            <option value="Single Event" selected>Single Event (Recommended First)</option>
+            <option value="General Event">General Event</option>
+          `;
+        }
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          submitBtn.innerHTML = '<i data-lucide="check-circle-2" class="w-4 h-4"></i><span>Register Athlete</span>';
+        }
+      }
+
+      lucide.createIcons();
     }
 
     function openTournamentEntryModal(compId) {
@@ -12396,6 +12536,27 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       document.getElementById('tourn-comp-meta').innerText = `Date: ${comp.date} | Venue: ${comp.location}${scopeInfo}`;
       document.getElementById('tourn-fee-amount').value = comp.fee || 300;
+
+      // Reset dynamic details card & notices
+      const card = document.getElementById('tourn-student-detail-card');
+      if (card) card.classList.add('hidden');
+      const notice = document.getElementById('tourn-event-notice');
+      if (notice) notice.classList.add('hidden');
+
+      const discSelect = document.getElementById('tourn-discipline');
+      if (discSelect) {
+        discSelect.innerHTML = `
+          <option value="Single Event">Single Event (Recommended First)</option>
+          <option value="General Event">General Event</option>
+        `;
+      }
+
+      const submitBtn = document.querySelector('#modal-tournament-entry button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        submitBtn.innerHTML = '<i data-lucide="check-circle-2" class="w-4 h-4"></i><span>Register Athlete</span>';
+      }
 
       // Populate student select dropdown with ONLY ELIGIBLE active verified students
       const select = document.getElementById('tourn-student-select');
@@ -12439,9 +12600,25 @@ const iconBox = document.getElementById('exam-banner-icon-box');
           select.innerHTML += `<option value="" disabled>🔒 No eligible athletes found for this championship scope (${comp.level === 'District Level' ? comp.allowedDistricts.join(', ') : (comp.level === 'State Level' ? comp.allowedStates.join(', ') : 'All India')}).</option>`;
         } else {
           activeStudents.forEach(s => {
+            const compAthletes = comp.athletes || [];
+            const sEntries = compAthletes.filter(a => (a.studentId || '').toUpperCase() === (s.studentId || '').toUpperCase());
+            const hasSingle = sEntries.some(a => (a.discipline || '').toLowerCase().includes('single'));
+            const hasGen = sEntries.some(a => (a.discipline || '').toLowerCase().includes('general'));
+
+            let tag = '';
+            if (hasSingle && hasGen) {
+              tag = ' • [✓ 2/2 Registered: Single & General]';
+            } else if (hasSingle) {
+              tag = ' • [Single Done → General Available]';
+            } else if (hasGen) {
+              tag = ' • [General Done → Single Available]';
+            } else {
+              tag = ' • [New Athlete]';
+            }
+
             const opt = document.createElement('option');
             opt.value = s.studentId;
-            opt.textContent = `${s.studentName} (${s.studentId}) • District: ${s.district || s.city || 'N/A'} • Trainer: ${s.trainerName || 'N/A'}`;
+            opt.textContent = `${s.studentName} (${s.studentId})${tag}`;
             select.appendChild(opt);
           });
         }
@@ -12455,7 +12632,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       e.preventDefault();
       const compId = document.getElementById('tourn-comp-id').value;
       const studentId = document.getElementById('tourn-student-select').value;
-      const discipline = document.getElementById('tourn-discipline').value;
+      const rawDiscipline = document.getElementById('tourn-discipline').value;
       const division = document.getElementById('tourn-division').value;
       const feeStatus = document.getElementById('tourn-fee-status').value;
       const feeAmount = parseInt(document.getElementById('tourn-fee-amount').value) || 300;
@@ -12472,15 +12649,25 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         return;
       }
 
-            // STRICT DUPLICATE VALIDATION: One student cannot register for the same event multiple times!
+      const discipline = rawDiscipline.toLowerCase().includes('general') ? 'General Event' : 'Single Event';
+
+      // STRICT DUPLICATE VALIDATION: One student cannot register for the same event multiple times!
       comp.athletes = comp.athletes || [];
-      const alreadyReg = comp.athletes.some(a => 
-        (a.studentId || '').toUpperCase() === studentId.toUpperCase() && 
-        (a.discipline || '').toLowerCase() === (discipline || '').toLowerCase()
+      const studentEntries = comp.athletes.filter(a => 
+        (a.studentId || '').toUpperCase() === studentId.toUpperCase()
+      );
+
+      const alreadyReg = studentEntries.some(a => 
+        (a.discipline || '').toLowerCase().includes(discipline.toLowerCase())
       );
 
       if (alreadyReg) {
         alert(`⚠️ DUPLICATE ENTRY RESTRICTED:\n\nCandidate ${student.studentName} (${studentId}) is ALREADY registered for event: "${discipline}".\n\nA student can only register once per event.`);
+        return;
+      }
+
+      if (studentEntries.length >= 2) {
+        alert(`⚠️ MAXIMUM REGISTRATIONS REACHED:\n\nCandidate ${student.studentName} has already registered for both Single Event and General Event in this competition.`);
         return;
       }
 
@@ -12519,16 +12706,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       closeModal('modal-tournament-entry');
       renderAdminCompetitions();
 
-      alert(`🎉 🥋 ATHLETE REGISTERED FOR CHAMPIONSHIP! 🥋 🎉
-----------------------------------------------------
-Student Athlete: ${student.studentName} (${student.studentId})
-Championship: ${comp.title}
-Level: ${comp.level || 'State Level'}
-Event: ${discipline}
-Division: ${division}
-Payment Status: ${feeStatus} (₹${feeAmount})
-
-Official Tournament Entry Pass Confirmed & Synced to Central Server!`);
+      alert(`🎉 🥋 ATHLETE REGISTERED FOR CHAMPIONSHIP! 🥋 🎉\n----------------------------------------------------\nStudent Athlete: ${student.studentName} (${student.studentId})\nChampionship: ${comp.title}\nLevel: ${comp.level || 'State Level'}\nEvent: ${discipline}\nDivision: ${division}\nPayment Status: ${feeStatus} (₹${feeAmount})\n\nOfficial Tournament Entry Pass Confirmed & Synced to Central Server!`);
     }
 
     // FORM 2: Trainer Submit (Complete 13 Points)
