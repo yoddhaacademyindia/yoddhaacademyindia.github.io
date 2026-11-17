@@ -2783,19 +2783,104 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Entry Fee (₹)</label>
-            <input type="number" id="tourn-fee-amount" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold">
+        <!-- ONLINE UPI PAYMENT SECTION (100% Online Payment - No Cash) -->
+        <div class="bg-gradient-to-br from-emerald-50/70 via-white to-amber-50/50 border-2 border-emerald-300 rounded-2xl p-4 space-y-3.5 shadow-xs">
+          
+          <div class="flex items-center justify-between border-b border-emerald-200/80 pb-2.5">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black shadow-xs">
+                <i data-lucide="smartphone" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h5 class="font-black text-xs text-slate-900">Championship Online Entry Fee Payment</h5>
+                <p class="text-[10px] text-slate-500 font-medium">100% Online UPI Payment Required (Official Academy Account)</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-[9px] font-black uppercase text-emerald-800 tracking-wider block">Entry Fee</span>
+              <span id="tourn-fee-display" class="text-base font-black text-emerald-700 font-rajdhani">₹300</span>
+              <input type="hidden" id="tourn-fee-amount" value="300">
+            </div>
           </div>
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Fee Payment Status *</label>
-            <select id="tourn-fee-status" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold">
-              <option value="Paid (Cash to Trainer)">Paid (Cash to Trainer)</option>
-              <option value="Paid (UPI / Online)">Paid (UPI / Online)</option>
-              <option value="Fee Pending">Fee Pending</option>
-            </select>
+
+          <!-- Official Academy UPI ID & Copy -->
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 bg-white/90 p-2.5 rounded-xl border border-emerald-200">
+            <div>
+              <span class="text-[10px] text-slate-500 font-bold block">Official Academy UPI ID:</span>
+              <span class="text-xs font-mono font-black text-emerald-950" id="tourn-upi-id-display">yoddhaacademy5@okicici</span>
+            </div>
+            <button type="button" onclick="copyAcademyUpi()" class="px-2.5 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-lg text-[10px] font-black transition flex items-center gap-1 shadow-2xs cursor-pointer">
+              <i data-lucide="copy" class="w-3 h-3"></i>
+              <span>Copy UPI ID</span>
+            </button>
           </div>
+
+          <!-- 4 Direct App Buttons (GPay, PhonePe, Paytm, Any UPI) -->
+          <div>
+            <label class="block font-black text-slate-800 text-[11px] mb-1.5">Click UPI App to Pay Directly on Mobile:</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <!-- GPay -->
+              <button type="button" onclick="triggerTournUpiPayment('gpay')" class="p-2.5 bg-gradient-to-b from-white to-blue-50/60 hover:to-blue-100 border-2 border-blue-200 hover:border-blue-500 rounded-xl text-center transition cursor-pointer flex flex-col items-center justify-center gap-1 shadow-2xs active:scale-95">
+                <div class="w-6 h-6 rounded-lg bg-white border border-blue-100 flex items-center justify-center shadow-xs">
+                  <span class="font-black text-blue-600 text-xs">G</span>
+                </div>
+                <span class="font-black text-[11px] text-blue-900">Google Pay</span>
+                <span class="text-[9px] text-blue-600 font-bold">Auto-fills ₹</span>
+              </button>
+
+              <!-- PhonePe -->
+              <button type="button" onclick="triggerTournUpiPayment('phonepe')" class="p-2.5 bg-gradient-to-b from-white to-purple-50/60 hover:to-purple-100 border-2 border-purple-200 hover:border-purple-500 rounded-xl text-center transition cursor-pointer flex flex-col items-center justify-center gap-1 shadow-2xs active:scale-95">
+                <div class="w-6 h-6 rounded-lg bg-white border border-purple-100 flex items-center justify-center shadow-xs">
+                  <span class="font-black text-purple-600 text-xs">पे</span>
+                </div>
+                <span class="font-black text-[11px] text-purple-900">PhonePe</span>
+                <span class="text-[9px] text-purple-600 font-bold">Auto-fills ₹</span>
+              </button>
+
+              <!-- Paytm -->
+              <button type="button" onclick="triggerTournUpiPayment('paytm')" class="p-2.5 bg-gradient-to-b from-white to-sky-50/60 hover:to-sky-100 border-2 border-sky-200 hover:border-sky-500 rounded-xl text-center transition cursor-pointer flex flex-col items-center justify-center gap-1 shadow-2xs active:scale-95">
+                <div class="w-6 h-6 rounded-lg bg-white border border-sky-100 flex items-center justify-center shadow-xs">
+                  <span class="font-black text-sky-600 text-[10px]">paytm</span>
+                </div>
+                <span class="font-black text-[11px] text-sky-900">Paytm</span>
+                <span class="text-[9px] text-sky-600 font-bold">Auto-fills ₹</span>
+              </button>
+
+              <!-- Any UPI -->
+              <button type="button" onclick="triggerTournUpiPayment('generic')" class="p-2.5 bg-gradient-to-b from-white to-emerald-50/60 hover:to-emerald-100 border-2 border-emerald-200 hover:border-emerald-500 rounded-xl text-center transition cursor-pointer flex flex-col items-center justify-center gap-1 shadow-2xs active:scale-95">
+                <div class="w-6 h-6 rounded-lg bg-white border border-emerald-100 flex items-center justify-center shadow-xs">
+                  <i data-lucide="qr-code" class="w-3.5 h-3.5 text-emerald-600"></i>
+                </div>
+                <span class="font-black text-[11px] text-emerald-900">Other UPI</span>
+                <span class="text-[9px] text-emerald-600 font-bold">BHIM / CRED</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic QR Code & Transaction Ref -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 items-center bg-white/95 p-3 rounded-xl border border-emerald-200">
+            <div class="flex flex-col items-center justify-center text-center">
+              <div class="p-1.5 bg-white border-2 border-emerald-400 rounded-xl shadow-xs">
+                <img id="tourn-qr-code-img" src="" alt="Tournament QR Code" class="w-24 h-24 object-contain">
+              </div>
+              <span class="text-[9px] text-emerald-800 font-black mt-1">Scan & Pay via App</span>
+            </div>
+
+            <div class="sm:col-span-2 space-y-2">
+              <div>
+                <label class="block font-black text-slate-800 text-[11px] mb-1">
+                  UPI Reference / UTR Number (12 Digits) *
+                </label>
+                <input type="text" id="tourn-utr-number" required placeholder="e.g. 412345678901 (from receipt)" class="w-full bg-slate-50 border-2 border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-mono font-bold text-xs focus:outline-none focus:border-emerald-500 focus:bg-white">
+                <span class="text-[9.5px] text-slate-500 font-medium block mt-0.5">Enter 12-digit transaction number from payment success receipt.</span>
+              </div>
+              <div class="p-2 bg-amber-50 border border-amber-200 rounded-xl text-[10.5px] text-amber-900 font-bold flex items-center gap-1.5">
+                <i data-lucide="shield-alert" class="w-4 h-4 flex-shrink-0 text-amber-600"></i>
+                <span>Initial entry is marked <strong>UNPAID 🔴</strong>. Central Admin will verify receipt and switch to <strong>PAID 🟢</strong>.</span>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <div class="pt-2 flex justify-end gap-3 border-t border-slate-100">
@@ -2865,12 +2950,12 @@
               <tr>
                 <th class="p-3">#</th>
                 <th class="p-3">Student ID</th>
-                <th class="p-3">Athlete Name</th>
+                <th class="p-3">Athlete Details</th>
                 <th class="p-3">Event / Discipline</th>
                 <th class="p-3">Division</th>
-                <th class="p-3">District / Branch</th>
                 <th class="p-3">Trainer</th>
-                <th class="p-3">Fee & Status</th>
+                <th class="p-3">UTR / Fee (₹)</th>
+                <th class="p-3">Payment Verification (Paid/Unpaid Switch)</th>
                 <th class="p-3">Registered At</th>
               </tr>
             </thead>
@@ -3108,37 +3193,36 @@
             </button>
           </div>
           <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 shadow-inner">
-            <pre id="apps-script-code-box" class="text-emerald-400 font-mono text-[11px] overflow-x-auto max-h-48 leading-relaxed">
-/**
+            <pre id="apps-script-code-box" class="text-emerald-400 font-mono text-[11px] overflow-x-auto max-h-48 leading-relaxed">/**
  * =========================================================================
- * 🥋 YODDHA ACADEMY INDIA - CENTRAL CLOUD SERVER & LIVE AUTH SCRIPT (v3.0)
+ * 🥋 YODDHA ACADEMY INDIA - CENTRAL CLOUD SERVER &amp; LIVE AUTH SCRIPT (v3.0)
  * =========================================================================
- * Complete A-to-Z Central Cloud Storage & Real-Time Sync Engine for Martial Arts
+ * Complete A-to-Z Central Cloud Storage &amp; Real-Time Sync Engine for Martial Arts
  * 
  * 10 AUTOMATICALLY MANAGED CLOUD SHEETS:
- * 1. 'Students'             - 30-Point Complete Profile, Level Ranks, Exam Marks & Level History
- * 2. 'ExamResults'          - Permanent Audit Log of all Live Level Exams & Marks (AI + Trainer)
- * 3. 'LevelUpApplications'  - Log of all Level-Up Applications, Fees, UTR & Approvals
- * 4. 'Trainers'             - 13-Point Certified Trainer Profiles & Secure Credentials
- * 5. 'Courses'              - Martial Arts Training Video Courses & Assigned Trainers
- * 6. 'Competitions'         - District, State & National Tournament Announcements
- * 7. 'TournamentEntries'    - Student Registrations for Tournaments & Entry Fees
- * 8. 'StudentSportsRecords' - Medals (Gold/Silver/Bronze) & Official Achievements Track Record
- * 9. 'Fee Structure'        - Level 1-6 & Senior 1-4 Official Level Pricing + Academy UPI ID
- * 10. 'AcademySettings'     - Master Exam Live Camera Switch (ON/OFF) & System Settings
+ * 1. 'Students'             - 30-Point Complete Profile, Belt Ranks, Exam Marks &amp; Level History
+ * 2. 'ExamResults'          - Permanent Audit Log of all Live Belt Exams &amp; Marks (AI + Trainer)
+ * 3. 'LevelUpApplications'  - Log of all Belt Level-Up Applications, Fees, UTR &amp; Approvals
+ * 4. 'Trainers'             - 13-Point Certified Trainer Profiles &amp; Secure Credentials
+ * 5. 'Courses'              - Martial Arts Training Video Courses &amp; Assigned Trainers
+ * 6. 'Competitions'         - District, State &amp; National Tournament Announcements
+ * 7. 'TournamentEntries'    - Student Registrations for Tournaments &amp; Entry Fees
+ * 8. 'StudentSportsRecords' - Medals (Gold/Silver/Bronze) &amp; Official Achievements Track Record
+ * 9. 'Fee Structure'        - Level 1-6 &amp; Senior 1-4 Official Belt Pricing + Academy UPI ID
+ * 10. 'AcademySettings'     - Master Exam Live Camera Switch (ON/OFF) &amp; System Settings
  * 
  * 100% FREE AUTOMATED EMAIL NOTIFICATIONS (MailApp):
- * - Welcome & Credentials Email to newly registered Trainers
- * - Admission Confirmation Email to Parents & Students with Student ID & Details
+ * - Welcome &amp; Credentials Email to newly registered Trainers
+ * - Admission Confirmation Email to Parents &amp; Students with Student ID &amp; Details
  * =========================================================================
  */
 
-// 1. LIVE AUTHENTICATION & DATA RETRIEVAL ENDPOINT (GET)
+// 1. LIVE AUTHENTICATION &amp; DATA RETRIEVAL ENDPOINT (GET)
 // -------------------------------------------------------------------------
 function doGet(e) {
-  var action = (e && e.parameter && e.parameter.action) || "";
-  var id = (e && e.parameter && e.parameter.id) ? e.parameter.id.trim() : "";
-  var pass = (e && e.parameter && e.parameter.pass) ? e.parameter.pass.trim() : "";
+  var action = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.action) || "";
+  var id = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.id) ? e.parameter.id.trim() : "";
+  var pass = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.pass) ? e.parameter.pass.trim() : "";
 
   var result = {
     status: "ready",
@@ -3149,8 +3233,25 @@ function doGet(e) {
 
   // 1A. Dual Login Verification (Admin or Certified Trainer)
   if (action === "verifyLogin") {
-    // Check Admin Login
-    if (id.toUpperCase() === "ADMIN-YODDHA-01" && (pass === "@hupare25077" || pass === "yoddha2026")) {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var customAdminPass = null;
+    var setSheet = ss.getSheetByName("AcademySettings");
+    if (setSheet) {
+      var setRows = setSheet.getDataRange().getValues();
+      for (var s = 1; s &lt; setRows.length; s++) {
+        var sk = String(setRows[s][0] || "").toUpperCase().trim();
+        var sv = String(setRows[s][1] || "").trim();
+        if (sk === "ADMIN_PASSWORD" || sk === "ADMIN_PIN" || sk === "MASTER_PASSWORD") {
+          customAdminPass = sv;
+        }
+      }
+    }
+
+    // Check Admin Login (Default HQ Passwords or Custom Password from AcademySettings Sheet)
+    var isAdminValid = (id.toUpperCase() === "ADMIN-YODDHA-01") &amp;&amp; 
+      (pass === "@hupare25077" || pass === "yoddha2026" || (customAdminPass &amp;&amp; pass === customAdminPass));
+
+    if (isAdminValid) {
       result = {
         status: "success",
         authenticated: true,
@@ -3171,13 +3272,15 @@ function doGet(e) {
         var found = false;
 
         // Row 0 is header. Col index: 1 = Trainer ID, 2 = Full Name, 4 = Status, 12 = Login PIN/Password
-        for (var i = 1; i < data.length; i++) {
+        for (var i = 1; i &lt; data.length; i++) {
           var row = data[i];
           var trnId = String(row[1] || "").trim();
           var trnPass = String(row[12] || "").trim();
           var trnStatus = String(row[4] || "").trim();
           var trnName = String(row[2] || "").trim();
           var trnPosition = String(row[3] || "").trim();
+          var trnState = String(row[8] || "").trim();
+          var trnDistrict = String(row[9] || "").trim();
           var trnBranch = String(row[10] || "").trim();
 
           if (trnId.toLowerCase() === id.toLowerCase()) {
@@ -3193,6 +3296,8 @@ function doGet(e) {
                   userName: trnName,
                   position: trnPosition,
                   branch: trnBranch,
+                  state: trnState,
+                  district: trnDistrict,
                   message: "Trainer authentication successful"
                 };
               }
@@ -3231,7 +3336,7 @@ function doGet(e) {
     var trnSheet = ss.getSheetByName("Trainers");
     if (trnSheet) {
       var trnRows = trnSheet.getDataRange().getValues();
-      for (var i = 1; i < trnRows.length; i++) {
+      for (var i = 1; i &lt; trnRows.length; i++) {
         var tr = trnRows[i];
         if (tr[1]) {
           allData.trainers.push({
@@ -3262,7 +3367,7 @@ function doGet(e) {
     var stuSheet = ss.getSheetByName("Students");
     if (stuSheet) {
       var stuRows = stuSheet.getDataRange().getValues();
-      for (var j = 1; j < stuRows.length; j++) {
+      for (var j = 1; j &lt; stuRows.length; j++) {
         var sr = stuRows[j];
         if (sr[1]) {
           var stuObj = {
@@ -3320,7 +3425,7 @@ function doGet(e) {
     if (feeSheet) {
       var feeRows = feeSheet.getDataRange().getValues();
       var feeMap = {};
-      for (var k = 1; k < feeRows.length; k++) {
+      for (var k = 1; k &lt; feeRows.length; k++) {
         var fr = feeRows[k];
         var param = String(fr[0] || "").toLowerCase().trim();
         var val = fr[1];
@@ -3344,7 +3449,7 @@ function doGet(e) {
     if (crsSheet) {
       var crsRows = crsSheet.getDataRange().getValues();
       allData.courses = [];
-      for (var m = 1; m < crsRows.length; m++) {
+      for (var m = 1; m &lt; crsRows.length; m++) {
         var cr = crsRows[m];
         if (cr[1]) {
           var tStr = String(cr[6] || "ALL").trim();
@@ -3358,7 +3463,7 @@ function doGet(e) {
             youtubeUrl: String(cr[4] || "").trim(),
             videoUrl: String(cr[4] || "").trim(),
             thumbnail: String(cr[5] || "").trim(),
-            assignedTrainers: tArr.length > 0 ? tArr : ["ALL"]
+            assignedTrainers: tArr.length &gt; 0 ? tArr : ["ALL"]
           });
         }
       }
@@ -3369,7 +3474,7 @@ function doGet(e) {
     if (compSheet) {
       var compRows = compSheet.getDataRange().getValues();
       allData.competitions = [];
-      for (var c = 1; c < compRows.length; c++) {
+      for (var c = 1; c &lt; compRows.length; c++) {
         var cm = compRows[c];
         if (cm[1]) {
           allData.competitions.push({
@@ -3381,17 +3486,48 @@ function doGet(e) {
             categories: String(cm[6] || "").trim(),
             fee: Number(cm[7]) || 300,
             status: String(cm[8] || "Registrations Open").trim(),
-            scope: String(cm[9] || "All").trim()
+            scope: String(cm[9] || "All").trim(),
+            entries: 0,
+            athletes: []
           });
         }
       }
     }
 
-    // 6. Read Student Sports Records & Medals from Sheet
+    // 5B. Read Tournament Entries &amp; Map Athletes to Competitions
+    var tournSheet = ss.getSheetByName("TournamentEntries");
+    if (tournSheet &amp;&amp; allData.competitions) {
+      var tRows = tournSheet.getDataRange().getValues();
+      for (var tr = 1; tr &lt; tRows.length; tr++) {
+        var tRow = tRows[tr];
+        var cId = String(tRow[1] || "").trim();
+        if (cId) {
+          var matchedComp = allData.competitions.find(function(c) { return c.id === cId; });
+          if (matchedComp) {
+            if (!matchedComp.athletes) matchedComp.athletes = [];
+            matchedComp.athletes.push({
+              studentId: String(tRow[4] || "").trim(),
+              studentName: String(tRow[5] || "").trim(),
+              discipline: String(tRow[6] || "Single Event").trim(),
+              division: String(tRow[7] || "Open").trim(),
+              feeStatus: String(tRow[8] || "Unpaid").trim(),
+              feeAmount: Number(tRow[9]) || 300,
+              utrNumber: String(tRow[10] || "").trim(),
+              paymentMode: String(tRow[11] || "Online UPI").trim(),
+              trainerName: String(tRow[12] || "").trim(),
+              registeredAt: tRow[0] ? new Date(tRow[0]).toISOString() : new Date().toISOString()
+            });
+            matchedComp.entries = matchedComp.athletes.length;
+          }
+        }
+      }
+    }
+
+    // 6. Read Student Sports Records &amp; Medals from Sheet
     var recSheet = ss.getSheetByName("StudentSportsRecords");
     if (recSheet) {
       var recRows = recSheet.getDataRange().getValues();
-      for (var r = 1; r < recRows.length; r++) {
+      for (var r = 1; r &lt; recRows.length; r++) {
         var row = recRows[r];
         var sId = String(row[1] || "").trim();
         if (sId) {
@@ -3407,15 +3543,28 @@ function doGet(e) {
       }
     }
 
-    // 7. Read Master Exam Switch from AcademySettings Sheet
+    // 7. Read Master Exam Switch &amp; Settings from ScriptProperties &amp; AcademySettings Sheet
+    var scriptProps = PropertiesService.getScriptProperties();
+    var propSwitch = scriptProps.getProperty("EXAM_MASTER_SWITCH");
+    if (propSwitch !== null &amp;&amp; propSwitch !== "") {
+      allData.examSessionActive = (propSwitch === "ON" || propSwitch === "TRUE");
+    } else {
+      allData.examSessionActive = false; // Default closed until Admin opens it
+    }
+
     var setSheet = ss.getSheetByName("AcademySettings");
     if (setSheet) {
       var setRows = setSheet.getDataRange().getValues();
-      for (var s = 1; s < setRows.length; s++) {
+      for (var s = 1; s &lt; setRows.length; s++) {
         var sk = String(setRows[s][0] || "").toUpperCase().trim();
-        var sv = String(setRows[s][1] || "").toUpperCase().trim();
+        var rawVal = String(setRows[s][1] || "").trim();
+        var sv = rawVal.toUpperCase();
         if (sk === "EXAM_MASTER_SWITCH") {
           allData.examSessionActive = (sv === "ON" || sv === "TRUE");
+          scriptProps.setProperty("EXAM_MASTER_SWITCH", sv);
+        }
+        if (sk === "ADMIN_PASSWORD" || sk === "ADMIN_PIN" || sk === "MASTER_PASSWORD") {
+          allData.adminPass = rawVal;
         }
       }
     }
@@ -3426,7 +3575,7 @@ function doGet(e) {
 
   // 1C. Read Single Sheet (Fallback)
   if (action === "readSheet") {
-    var sheetName = (e && e.parameter && e.parameter.sheet) || "Trainers";
+    var sheetName = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.sheet) || "Trainers";
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName(sheetName);
     if (!sheet) {
@@ -3441,7 +3590,7 @@ function doGet(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// 2. LIVE SYNC & IN-PLACE ROW UPDATES + AUTOMATED EMAILS (POST)
+// 2. LIVE SYNC &amp; IN-PLACE ROW UPDATES + AUTOMATED EMAILS (POST)
 // -------------------------------------------------------------------------
 function doPost(e) {
   var lock = LockService.getScriptLock();
@@ -3453,7 +3602,7 @@ function doPost(e) {
     var type = (data.type || data.action || "").toUpperCase();
 
     // -----------------------------------------------------------------------
-    // 1. TRAINER REGISTRATION & IN-PLACE UPDATE (13 POINTS) + WELCOME EMAIL
+    // 1. TRAINER REGISTRATION &amp; IN-PLACE UPDATE (13 POINTS) + WELCOME EMAIL
     // -----------------------------------------------------------------------
     if (type.indexOf("TRAINER") !== -1) {
       var sheet = getOrCreateSheet(ss, "Trainers", [
@@ -3489,9 +3638,9 @@ function doPost(e) {
       var updated = updateRowIfExistsOrMerge(sheet, 2, trainerId, rowData);
       if (!updated) sheet.appendRow(rowData);
 
-      // Send 100% FREE Welcome & Credentials Email to Trainer via MailApp
+      // Send 100% FREE Welcome &amp; Credentials Email to Trainer via MailApp
       var emailSent = false;
-      if (trainerEmail && data.sendWelcomeEmail !== false) {
+      if (trainerEmail &amp;&amp; data.sendWelcomeEmail !== false) {
         try {
           sendTrainerWelcomeEmail(trainerEmail, trainerName, trainerId, trainerPass, data.position, data.branch || data.district);
           emailSent = true;
@@ -3509,9 +3658,9 @@ function doPost(e) {
     }
 
     // -----------------------------------------------------------------------
-    // 2. STUDENT REGISTRATION, EXAM MARKS & LEVEL PROGRESSION (30 POINTS)
+    // 2. STUDENT REGISTRATION, EXAM MARKS &amp; LEVEL PROGRESSION (30 POINTS)
     // -----------------------------------------------------------------------
-    if (type.indexOf("STUDENT") !== -1) {
+    if (type.indexOf("STUDENT") !== -1 &amp;&amp; type.indexOf("TOURNAMENT") === -1 &amp;&amp; type.indexOf("COMPETITION") === -1) {
       var sheet = getOrCreateSheet(ss, "Students", [
         "Timestamp", "Student ID", "Student Name", "Date of Birth", "Age",
         "Requested Level", "School Name", "Standard", "School Contact", "School Address",
@@ -3519,7 +3668,7 @@ function doPost(e) {
         "Admission Date", "Trainer ID", "Trainer Name", "Status", "Fee Status",
         "Fee Amount", "UPI UTR Number", "Live Exam Status", "Live AI Camera Score (/50)",
         "Trainer Exam Score (/50)", "Grand Total Score (/100)", "Exam Passed Date",
-        "Level Up Pending", "Pending Next Level", "10-Level History & Passed Marks",
+        "Level Up Pending", "Pending Next Level", "10-Level History &amp; Passed Marks",
         "Student Photo", "Aadhaar Photo"
       ]);
 
@@ -3528,10 +3677,10 @@ function doPost(e) {
       var parentEmail = (data.parentEmail || data.email || "").trim();
 
       // Extract exam scores if present
-      var aiScore = (data.lastExam && data.lastExam.aiScore) ? data.lastExam.aiScore : (data.aiScore || "");
-      var trScore = (data.lastExam && data.lastExam.trainerScore) ? data.lastExam.trainerScore : (data.trainerScore || "");
-      var totScore = (data.lastExam && data.lastExam.totalScore) ? data.lastExam.totalScore : (data.totalScore || "");
-      var exDate = (data.lastExam && data.lastExam.examDate) ? data.lastExam.examDate : (data.examDate || "");
+      var aiScore = (data.lastExam &amp;&amp; data.lastExam.aiScore) ? data.lastExam.aiScore : (data.aiScore || "");
+      var trScore = (data.lastExam &amp;&amp; data.lastExam.trainerScore) ? data.lastExam.trainerScore : (data.trainerScore || "");
+      var totScore = (data.lastExam &amp;&amp; data.lastExam.totalScore) ? data.lastExam.totalScore : (data.totalScore || "");
+      var exDate = (data.lastExam &amp;&amp; data.lastExam.examDate) ? data.lastExam.examDate : (data.examDate || "");
       var lvlHistStr = data.levelHistory ? JSON.stringify(data.levelHistory) : (data.levelHistoryStr || "");
 
       var rowData = [
@@ -3572,12 +3721,12 @@ function doPost(e) {
       var updated = updateRowIfExistsOrMerge(sheet, 2, studentId, rowData);
       if (!updated) sheet.appendRow(rowData);
 
-      // Log Level Exam Result to dedicated 'ExamResults' sheet
-      if (data.action === "updateExamResults" || (data.lastExam && data.lastExam.totalScore)) {
+      // Log Belt Exam Result to dedicated 'ExamResults' sheet
+      if (data.action === "updateExamResults" || (data.lastExam &amp;&amp; data.lastExam.totalScore)) {
         try {
           var examSheet = getOrCreateSheet(ss, "ExamResults", [
             "Timestamp", "Exam Reference ID", "Student ID", "Student Name", "Akhada / Branch",
-            "District", "State", "Level", "AI Camera Score (/50)", "Trainer Score (/50)",
+            "District", "State", "Belt Level", "AI Camera Score (/50)", "Trainer Score (/50)",
             "Grand Total (/100)", "Grade", "Exam Date", "Trainer / Ustad Name", "Status"
           ]);
           var examRefId = "EXAM-" + studentId.replace(/[^A-Za-z0-9]/g, "") + "-L" + (data.lastExam?.levelNum || 1);
@@ -3586,17 +3735,17 @@ function doPost(e) {
             examRefId,
             studentId,
             studentName,
-            data.city ? data.city + " Training Center" : "Central Training Center",
+            data.city ? data.city + " Akhada" : "Central Akhada",
             data.district || "",
             data.state || "Maharashtra",
             data.lastExam?.levelName || data.requestedLevel || "Level 1",
             aiScore,
             trScore,
             totScore,
-            totScore >= 90 ? "A+" : (totScore >= 80 ? "A" : "B+"),
+            totScore &gt;= 90 ? "A+" : (totScore &gt;= 80 ? "A" : "B+"),
             exDate || new Date().toLocaleDateString("en-IN"),
             data.lastExam?.trainerName || data.trainerName || "Certified Ustad",
-            "PASSED & CERTIFIED"
+            "PASSED &amp; CERTIFIED"
           ]);
         } catch(examErr) {
           Logger.log("ExamResults log error: " + examErr.toString());
@@ -3618,7 +3767,7 @@ function doPost(e) {
             data.pendingNextLevel || data.nextLvlName || "",
             data.feeAmount || 600,
             data.utrNumber || "",
-            data.action === "approveLevelUp" ? "APPROVED & PAID" : "PENDING VERIFICATION",
+            data.action === "approveLevelUp" ? "APPROVED &amp; PAID" : "PENDING VERIFICATION",
             data.action === "approveLevelUp" ? new Date().toLocaleDateString("en-IN") : "-"
           ]);
         } catch(lvlErr) {
@@ -3628,7 +3777,7 @@ function doPost(e) {
 
       // Send Admission Confirmation Email if parent email is provided
       var studentEmailSent = false;
-      if (parentEmail && data.sendAdmissionEmail !== false && !data.action) {
+      if (parentEmail &amp;&amp; data.sendAdmissionEmail !== false &amp;&amp; !data.action) {
         try {
           sendStudentAdmissionEmail(parentEmail, studentName, studentId, data.requestedLevel, data.trainerName, data.feeAmount, data.utrNumber);
           studentEmailSent = true;
@@ -3646,7 +3795,7 @@ function doPost(e) {
     }
 
     // -----------------------------------------------------------------------
-    // 3. STUDENT SPORTS RECORDS & MEDALS (Gold/Silver/Bronze Track Record)
+    // 3. STUDENT SPORTS RECORDS &amp; MEDALS (Gold/Silver/Bronze Track Record)
     // -----------------------------------------------------------------------
     if (type.indexOf("STUDENT_COMPETITION_RECORD") !== -1 || type.indexOf("SPORTS_RECORD") !== -1) {
       var sheet = getOrCreateSheet(ss, "StudentSportsRecords", [
@@ -3675,33 +3824,16 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     // 4. COURSES IN-PLACE UPDATE (TITLE, DESC, VIDEO LINK, THUMBNAIL, ASSIGNED)
     // -----------------------------------------------------------------------
-    // Deletion Handler for Students & Courses
-    if (type === "STUDENT_DELETE" || (data.action === "delete" && data.studentId)) {
-      var sheet = ss.getSheetByName("Students");
-      if (sheet) {
-        var studentId = data.studentId || data.id || "";
-        var dataValues = sheet.getDataRange().getValues();
-        for (var r = 1; r < dataValues.length; r++) {
-          if (String(dataValues[r][1]).trim().toUpperCase() === String(studentId).trim().toUpperCase()) {
-            sheet.deleteRow(r + 1);
-            break;
-          }
-        }
-      }
-      return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: "Student row deleted permanently",
-        studentId: data.studentId
-      })).setMimeType(ContentService.MimeType.JSON);
-    }
-
-    if (type === "COURSE_DELETE" || (data.action === "delete" && (data.courseId || data.id))) {
+    // -----------------------------------------------------------------------
+    // 4B. COURSE DELETION
+    // -----------------------------------------------------------------------
+    if (type === "COURSE_DELETE" || type === "DELETE_COURSE") {
       var sheet = ss.getSheetByName("Courses");
       if (sheet) {
-        var cid = data.courseId || data.id || "";
-        var dataValues = sheet.getDataRange().getValues();
-        for (var r = 1; r < dataValues.length; r++) {
-          if (String(dataValues[r][1]).trim().toUpperCase() === String(cid).trim().toUpperCase()) {
+        var targetId = String(data.id || data.courseId || "").trim().toLowerCase();
+        var rows = sheet.getDataRange().getValues();
+        for (var r = 1; r &lt; rows.length; r++) {
+          if (String(rows[r][1]).trim().toLowerCase() === targetId) {
             sheet.deleteRow(r + 1);
             break;
           }
@@ -3709,7 +3841,7 @@ function doPost(e) {
       }
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        message: "Course row deleted permanently"
+        message: "Course deleted from cloud"
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -3743,7 +3875,7 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     // 5. COMPETITIONS IN-PLACE UPDATE
     // -----------------------------------------------------------------------
-    if (type.indexOf("COMPETITION") !== -1 && type.indexOf("RECORD") === -1) {
+    if (type.indexOf("COMPETITION") !== -1 &amp;&amp; type.indexOf("RECORD") === -1) {
       var sheet = getOrCreateSheet(ss, "Competitions", [
         "Timestamp", "Competition ID", "Championship Level", "Title", "Date", "Location", "Categories", "Entry Fee", "Status", "Eligible Scope"
       ]);
@@ -3773,14 +3905,36 @@ function doPost(e) {
     }
 
     // -----------------------------------------------------------------------
-    // 6. TOURNAMENT STUDENT REGISTRATIONS
+    // 6. TOURNAMENT STUDENT REGISTRATIONS &amp; ATHLETE STATUS MANAGEMENT
     // -----------------------------------------------------------------------
     if (type.indexOf("TOURNAMENT") !== -1) {
       var sheet = getOrCreateSheet(ss, "TournamentEntries", [
         "Timestamp", "Competition ID", "Tournament Title", "Championship Level",
         "Student ID", "Student Name", "Event Discipline", "Age / Weight Division",
-        "Fee Status", "Fee Amount (Rs)", "Trainer Name"
+        "Fee Status", "Fee Amount (Rs)", "UTR Number", "Payment Mode", "Trainer Name"
       ]);
+
+      // Support interactive status toggle (Unpaid &lt;-&gt; Paid)
+      if (type === "TOURNAMENT_ATHLETE_PAY_STATUS_UPDATE") {
+        var tRows = sheet.getDataRange().getValues();
+        var updatedStatus = false;
+        for (var r = 1; r &lt; tRows.length; r++) {
+          if (String(tRows[r][1]).trim() === String(data.compId).trim() &amp;&amp;
+              String(tRows[r][4]).trim().toUpperCase() === String(data.studentId).trim().toUpperCase() &amp;&amp;
+              String(tRows[r][6]).trim().toLowerCase() === String(data.discipline).trim().toLowerCase()) {
+            sheet.getRange(r + 1, 9).setValue(data.feeStatus || "Paid");
+            updatedStatus = true;
+            break;
+          }
+        }
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "success",
+          message: "Athlete fee status updated to " + data.feeStatus,
+          studentId: data.studentId,
+          feeStatus: data.feeStatus,
+          updated: updatedStatus
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
 
       sheet.appendRow([
         new Date(),
@@ -3791,8 +3945,10 @@ function doPost(e) {
         data.studentName || "",
         data.discipline || "",
         data.division || "",
-        data.feeStatus || "Paid",
+        data.feeStatus || "Unpaid",
         data.feeAmount || 300,
+        data.utrNumber || "",
+        data.paymentMode || "Online UPI",
         data.trainerName || ""
       ]);
 
@@ -3805,7 +3961,7 @@ function doPost(e) {
     }
 
     // -----------------------------------------------------------------------
-    // 7. LEVEL-WISE FEE STRUCTURE IN-PLACE UPDATE (LEVEL 1-6 & SENIOR 1-4 + UPI)
+    // 7. LEVEL-WISE FEE STRUCTURE IN-PLACE UPDATE (LEVEL 1-6 &amp; SENIOR 1-4 + UPI)
     // -----------------------------------------------------------------------
     if (type.indexOf("FEE") !== -1) {
       var sheet = getOrCreateSheet(ss, "Fee Structure", [
@@ -3839,21 +3995,31 @@ function doPost(e) {
     }
 
     // -----------------------------------------------------------------------
-    // 8. MASTER EXAM SWITCH & ACADEMY SETTINGS
+    // 8. MASTER EXAM SWITCH &amp; ACADEMY SETTINGS
     // -----------------------------------------------------------------------
     if (type.indexOf("EXAM_SESSION_TOGGLED") !== -1 || type.indexOf("SETTING") !== -1) {
-      var sheet = getOrCreateSheet(ss, "AcademySettings", [
-        "Setting Key", "Setting Value", "Updated By", "Last Updated"
-      ]);
-
       var settingVal = data.examSessionActive ? "ON" : "OFF";
-      var rowData = ["EXAM_MASTER_SWITCH", settingVal, data.toggledBy || "Admin", new Date()];
-      var updated = updateRowIfExistsOrMerge(sheet, 1, "EXAM_MASTER_SWITCH", rowData);
-      if (!updated) sheet.appendRow(rowData);
+
+      // Store in ScriptProperties for instant cross-device synchronization
+      var scriptProps = PropertiesService.getScriptProperties();
+      scriptProps.setProperty("EXAM_MASTER_SWITCH", settingVal);
+
+      // Persist to AcademySettings sheet as backup
+      try {
+        var sheet = getOrCreateSheet(ss, "AcademySettings", [
+          "Setting Key", "Setting Value", "Updated By", "Last Updated"
+        ]);
+        var rowData = ["EXAM_MASTER_SWITCH", settingVal, data.toggledBy || "Admin", new Date()];
+        var updated = updateRowIfExistsOrMerge(sheet, 1, "EXAM_MASTER_SWITCH", rowData);
+        if (!updated) sheet.appendRow(rowData);
+      } catch(sheetErr) {
+        Logger.log("AcademySettings sheet error: " + sheetErr.toString());
+      }
 
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        message: "Master exam switch updated to " + settingVal
+        message: "Master exam switch updated to " + settingVal,
+        examSessionActive: (settingVal === "ON")
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -3881,50 +4047,60 @@ function doPost(e) {
  * Sends official congratulations and credentials email to newly registered Trainer
  */
 function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, position, branch) {
-  var subject = "🥋 Congratulations & Welcome to Yoddha Academy India - Official Certified Trainer Credentials";
+  var subject = "🥋 Congratulations &amp; Welcome to Yoddha Academy India - Official Certified Trainer Credentials";
   
-  var htmlBody = '<div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #ffffff; border: 2px solid #ea580c; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">'
-    + '<div style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 25px 20px; text-align: center;">'
-    + '<h1 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">YODDHA ACADEMY INDIA</h1>'
-    + '<p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;">ALL INDIA MARTIAL ARTS & SPORTS TRAINING ACADEMY</p>'
-    + '</div>'
-    + '<div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;">'
-    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🥋 Warm Congratulations & Welcome!</h2>'
-    + '<p style="font-size: 14px; margin-bottom: 12px;">Greetings Instructor <strong>' + trainerName + '</strong>,</p>'
-    + '<p style="font-size: 14px; margin-bottom: 15px;">Hearty congratulations on your appointment as official <strong>' + (position || "Certified Trainer") + '</strong> in the Yoddha Academy India organization!</p>'
-    + '<div style="background: #fff7ed; padding: 14px 16px; border-left: 4px solid #ea580c; border-radius: 6px; font-size: 13px; color: #9a3412; margin-bottom: 20px;">'
-    + 'Best wishes from <strong>Yoddha Academy India</strong> in training and mentoring young warriors in traditional Indian martial arts, discipline, and self-defense! 🚩'
-    + '</div>'
-    + '<div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;">'
-    + '<h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">🔐 Official Login Credentials:</h3>'
-    + '<table style="width: 100%; font-size: 14px;">'
-    + '<tr><td style="padding: 6px 0; color: #64748b; width: 140px;"><strong>Trainer ID:</strong></td><td style="padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;">' + trainerId + '</td></tr>'
-    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Password / PIN:</strong></td><td style="padding: 6px 0; color: #0f172a; font-weight: bold; font-family: monospace; font-size: 16px; background: #fed7aa; padding: 3px 8px; border-radius: 6px; display: inline-block;">' + trainerPass + '</td></tr>'
-    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Designation:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: 600;">' + (position || "Branch Instructor") + '</td></tr>'
-    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Training Center / Branch:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: 600;">' + (branch || "Central HQ") + '</td></tr>'
-    + '</table>'
-    + '</div>'
-    + '<div style="text-align: center; margin: 25px 0;">'
-    + '<a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);">'
-    + '🚀 Open Trainer Login Panel'
-    + '</a>'
-    + '</div>'
-    + '<p style="font-size: 12px; color: #64748b; margin-top: 15px;">⚠️ <em>Security Notice: Keep your PIN and credentials confidential. You can update your profile from the portal at any time.</em></p>'
-    + '</div>'
-    + '<div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;">'
-    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">Yoddha Academy India • Central Headquarters</p>'
-    + '<p style="margin: 4px 0 0;">Official Portal: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
-    + '<p style="margin: 4px 0 0;">Traditional Martial Arts & Sports Training • All India Organization</p>'
-    + '</div>'
-    + '</div>';
+  var htmlBody = '&lt;div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #ffffff; border: 2px solid #ea580c; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"&gt;'
+    + '&lt;div style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 25px 20px; text-align: center;"&gt;'
+    + '&lt;h1 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;"&gt;YODDHA ACADEMY INDIA&lt;/h1&gt;'
+    + '&lt;p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;"&gt;ALL INDIA MARTIAL ARTS &amp; SPORTS TRAINING ACADEMY&lt;/p&gt;'
+    + '&lt;/div&gt;'
+    + '&lt;div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;"&gt;'
+    + '&lt;h2 style="color: #ea580c; margin-top: 0; font-size: 20px;"&gt;🥋 हार्दिक अभिनंदन व सहर्ष स्वागत!&lt;/h2&gt;'
+    + '&lt;p style="font-size: 14px; margin-bottom: 12px;"&gt;सस्नेह नमस्कार &lt;strong&gt;' + trainerName + '&lt;/strong&gt; सर,&lt;/p&gt;'
+    + '&lt;p style="font-size: 14px; margin-bottom: 15px;"&gt;योध्या अकॅडमी इंडिया परिवारात आपले अधिकृत &lt;strong&gt;' + (position || "Certified Trainer") + '&lt;/strong&gt; म्हणून नियुक्ती झाल्याबद्दल आपले मनःपूर्वक अभिनंदन!&lt;/p&gt;'
+    + '&lt;div style="background: #fff7ed; padding: 14px 16px; border-left: 4px solid #ea580c; border-radius: 6px; font-size: 13px; color: #9a3412; margin-bottom: 20px;"&gt;'
+    + 'भारतीय पारंपरिक मार्शल आर्ट्स (लाठी-काठी, तलवारबाजी, कराटे व स्वसंरक्षण) या पवित्र विद्येचा प्रचार-प्रसार करण्यासाठी, तरुण पिढीला सुदृढ व शिस्तबद्ध बनवण्यासाठी आपल्या भावी वाटचालीस व कार्यासाठी &lt;strong&gt;योध्या अकॅडमी इंडिया&lt;/strong&gt; कडून लाख लाख शुभेच्छा! 🚩'
+    + '&lt;/div&gt;'
+    + '&lt;div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;"&gt;'
+    + '&lt;h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;"&gt;🔐 आपले अधिकृत लॉगिन क्रेडेंशियल्स (Official Login Details):&lt;/h3&gt;'
+    + '&lt;table style="width: 100%; font-size: 14px;"&gt;'
+    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b; width: 140px;"&gt;&lt;strong&gt;Trainer ID:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;"&gt;' + trainerId + '&lt;/td&gt;&lt;/tr&gt;'
+    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;Password / PIN:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #0f172a; font-weight: bold; font-family: monospace; font-size: 16px; background: #fed7aa; padding: 3px 8px; border-radius: 6px; display: inline-block;"&gt;' + trainerPass + '&lt;/td&gt;&lt;/tr&gt;'
+    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;Designation:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #334155; font-weight: 600;"&gt;' + (position || "Branch Instructor") + '&lt;/td&gt;&lt;/tr&gt;'
+    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;Akhada / Branch:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #334155; font-weight: 600;"&gt;' + (branch || "Central HQ") + '&lt;/td&gt;&lt;/tr&gt;'
+    + '&lt;/table&gt;'
+    + '&lt;/div&gt;'
+    + '&lt;div style="text-align: center; margin: 25px 0;"&gt;'
+    + '&lt;a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);"&gt;'
+    + '🚀 ओपन ट्रेनर लॉगिन पॅनेल (Open Trainer Panel)'
+    + '&lt;/a&gt;'
+    + '&lt;/div&gt;'
+    + '&lt;p style="font-size: 12px; color: #64748b; margin-top: 15px;"&gt;⚠️ &lt;em&gt;सुरक्षितता सूचना: हा ईमेल आणि पासवर्ड गोपनीय ठेवा. लॉगिन पोर्टलवर जाऊन आपण आपला पासवर्ड कधीही बदलू शकता.&lt;/em&gt;&lt;/p&gt;'
+    + '&lt;/div&gt;'
+    + '&lt;div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;"&gt;'
+    + '&lt;p style="margin: 0; color: #f8fafc; font-weight: bold;"&gt;योध्या अकॅडमी इंडिया • केंद्रीय मुख्यालय&lt;/p&gt;'
+    + '&lt;p style="margin: 4px 0 0;"&gt;अधिकृत पोर्टल: &lt;a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;"&gt;yoddhaacademyindia.github.io&lt;/a&gt;&lt;/p&gt;'
+    + '&lt;p style="margin: 4px 0 0;"&gt;Traditional Martial Arts &amp; Sports Training • All India Organization&lt;/p&gt;'
+    + '&lt;/div&gt;'
+    + '&lt;/div&gt;';
 
-  MailApp.sendEmail({
-    to: toEmail,
-    name: "Yoddha Academy India",
-    replyTo: "yoddhaacademy5@gmail.com",
-    subject: subject,
-    htmlBody: htmlBody
-  });
+  try {
+    MailApp.sendEmail({
+      to: toEmail,
+      subject: subject,
+      htmlBody: htmlBody,
+      name: "Yoddha Academy India"
+    });
+  } catch (err1) {
+    try {
+      GmailApp.sendEmail(toEmail, subject, "", {
+        htmlBody: htmlBody,
+        name: "Yoddha Academy India"
+      });
+    } catch (err2) {
+      Logger.log("Email error: " + err2.toString());
+    }
+  }
 }
 
 /**
@@ -3933,44 +4109,56 @@ function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, p
 function sendStudentAdmissionEmail(toEmail, studentName, studentId, level, trainerName, feeAmount, utrNumber) {
   var subject = "🥋 Welcome to Yoddha Academy India - Student Admission Confirmed (" + studentId + ")";
   
-  var htmlBody = '<div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #ffffff; border: 2px solid #ea580c; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">'
-    + '<div style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 25px 20px; text-align: center;">'
-    + '<h1 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">YODDHA ACADEMY INDIA</h1>'
-    + '<p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;">OFFICIAL STUDENT ADMISSION CONFIRMATION</p>'
-    + '</div>'
-    + '<div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;">'
-    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🎉 Admission Confirmed - Official Enrollment!</h2>'
-    + '<p style="font-size: 14px;">Dear Parent & <strong>' + studentName + '</strong>,<br><br>Official admission to Yoddha Academy India has been registered successfully. Welcome to our traditional martial arts and sports warrior development curriculum!</p>'
-    + '<div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;">'
-    + '<table style="width: 100%; font-size: 14px;">'
-    + '<tr><td style="padding: 6px 0; color: #64748b; width: 140px;"><strong>Student Name:</strong></td><td style="padding: 6px 0; color: #0f172a; font-weight: bold;">' + studentName + '</td></tr>'
-    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Student ID:</strong></td><td style="padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;">' + studentId + '</td></tr>'
-    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>10-Star Level:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: bold;">' + (level || "Level 1") + '</td></tr>'
-    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Assigned Trainer:</strong></td><td style="padding: 6px 0; color: #334155; font-weight: 600;">' + (trainerName || "Central Certified Coach") + '</td></tr>'
-    + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Fee Paid:</strong></td><td style="padding: 6px 0; color: #166534; font-weight: bold;">₹' + (feeAmount || 500) + ' (UTR: ' + (utrNumber || "Verified") + ')</td></tr>'
-    + '</table>'
-    + '</div>'
-    + '<div style="text-align: center; margin: 25px 0;">'
-    + '<a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block;">'
-    + '🪪 View Digital Identity Card'
-    + '</a>'
-    + '</div>'
-    + '</div>'
-    + '<div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;">'
-    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">Yoddha Academy India • Central Headquarters</p>'
-    + '<p style="margin: 4px 0 0;">Official Portal: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
-    + '</div>'
-    + '</div>';
+  var htmlBody = '&lt;div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #ffffff; border: 2px solid #ea580c; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"&gt;'
+    + '&lt;div style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 25px 20px; text-align: center;"&gt;'
+    + '&lt;h1 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;"&gt;YODDHA ACADEMY INDIA&lt;/h1&gt;'
+    + '&lt;p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;"&gt;OFFICIAL STUDENT ADMISSION CONFIRMATION&lt;/p&gt;'
+    + '&lt;/div&gt;'
+    + '&lt;div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;"&gt;'
+    + '&lt;h2 style="color: #ea580c; margin-top: 0; font-size: 20px;"&gt;🎉 प्रवेश निश्चित झाला आहे! (Admission Confirmed)&lt;/h2&gt;'
+    + '&lt;p style="font-size: 14px;"&gt;प्रिय पालक व &lt;strong&gt;' + studentName + '&lt;/strong&gt;,&lt;br&gt;&lt;br&gt;योध्या अकॅडमी इंडियामध्ये आपले अधिकृत ॲडमिशन यशस्वीरित्या पूर्ण झाले आहे. पारंपरिक युद्धकला आणि क्रीडा कौशल्यांमध्ये आपले सहर्ष स्वागत!&lt;/p&gt;'
+    + '&lt;div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;"&gt;'
+    + '&lt;table style="width: 100%; font-size: 14px;"&gt;'
+    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b; width: 140px;"&gt;&lt;strong&gt;Student Name:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #0f172a; font-weight: bold;"&gt;' + studentName + '&lt;/td&gt;&lt;/tr&gt;'
+    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;Student ID:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;"&gt;' + studentId + '&lt;/td&gt;&lt;/tr&gt;'
+    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;10-Star Belt Level:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #334155; font-weight: bold;"&gt;' + (level || "Level 1") + '&lt;/td&gt;&lt;/tr&gt;'
+    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;Assigned Trainer:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #334155; font-weight: 600;"&gt;' + (trainerName || "Central Certified Coach") + '&lt;/td&gt;&lt;/tr&gt;'
+    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;Fee Paid:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #166534; font-weight: bold;"&gt;₹' + (feeAmount || 500) + ' (UTR: ' + (utrNumber || "Verified") + ')&lt;/td&gt;&lt;/tr&gt;'
+    + '&lt;/table&gt;'
+    + '&lt;/div&gt;'
+    + '&lt;div style="text-align: center; margin: 25px 0;"&gt;'
+    + '&lt;a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block;"&gt;'
+    + '🪪 व्ह्यू डिजिटल आयडी कार्ड (View Digital ID Card)'
+    + '&lt;/a&gt;'
+    + '&lt;/div&gt;'
+    + '&lt;/div&gt;'
+    + '&lt;div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;"&gt;'
+    + '&lt;p style="margin: 0; color: #f8fafc; font-weight: bold;"&gt;योध्या अकॅडमी इंडिया • केंद्रीय मुख्यालय&lt;/p&gt;'
+    + '&lt;p style="margin: 4px 0 0;"&gt;अधिकृत पोर्टल: &lt;a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;"&gt;yoddhaacademyindia.github.io&lt;/a&gt;&lt;/p&gt;'
+    + '&lt;/div&gt;'
+    + '&lt;/div&gt;';
 
-  MailApp.sendEmail({
-    to: toEmail,
-    subject: subject,
-    htmlBody: htmlBody
-  });
+  try {
+    MailApp.sendEmail({
+      to: toEmail,
+      subject: subject,
+      htmlBody: htmlBody,
+      name: "Yoddha Academy India"
+    });
+  } catch (err1) {
+    try {
+      GmailApp.sendEmail(toEmail, subject, "", {
+        htmlBody: htmlBody,
+        name: "Yoddha Academy India"
+      });
+    } catch (err2) {
+      Logger.log("Email error: " + err2.toString());
+    }
+  }
 }
 
 // -------------------------------------------------------------------------
-// 4. HELPER FUNCTIONS FOR IN-PLACE ROW UPDATES & AUTO SHEET CREATION
+// 4. HELPER FUNCTIONS FOR IN-PLACE ROW UPDATES &amp; AUTO SHEET CREATION
 // -------------------------------------------------------------------------
 
 /**
@@ -3982,18 +4170,18 @@ function updateRowIfExistsOrMerge(sheet, colIndex, matchVal, newRowData) {
   var data = sheet.getDataRange().getValues();
   var matchStr = String(matchVal).trim().toLowerCase();
 
-  for (var i = 1; i < data.length; i++) {
+  for (var i = 1; i &lt; data.length; i++) {
     var cellStr = String(data[i][colIndex - 1] || "").trim().toLowerCase();
     if (cellStr === matchStr) {
       var existingRow = data[i];
       var mergedRow = [];
-      for (var c = 0; c < newRowData.length; c++) {
+      for (var c = 0; c &lt; newRowData.length; c++) {
         var newVal = newRowData[c];
         // If newVal is undefined, null, or empty string, keep existing value
-        if ((newVal === undefined || newVal === null || newVal === "") && existingRow[c] !== undefined && existingRow[c] !== "") {
+        if ((newVal === undefined || newVal === null || newVal === "") &amp;&amp; existingRow[c] !== undefined &amp;&amp; existingRow[c] !== "") {
           mergedRow.push(existingRow[c]);
         } else {
-          mergedRow.push(newVal !== undefined && newVal !== null ? newVal : "");
+          mergedRow.push(newVal !== undefined &amp;&amp; newVal !== null ? newVal : "");
         }
       }
       sheet.getRange(i + 1, 1, 1, mergedRow.length).setValues([mergedRow]);
@@ -4019,7 +4207,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
     sheet.setFrozenRows(1);
   } else {
     var currentCols = sheet.getLastColumn();
-    if (currentCols < headers.length) {
+    if (currentCols &lt; headers.length) {
       sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
       sheet.getRange(1, 1, 1, headers.length)
         .setFontWeight("bold")
@@ -4029,7 +4217,6 @@ function getOrCreateSheet(ss, sheetName, headers) {
   }
   return sheet;
 }
-
 </pre>
           </div>
         </div>
@@ -6332,10 +6519,17 @@ lucide.createIcons();
         const myStudents = adminState.students.filter(s => {
           const sTId = (s.trainerId || '').trim().toUpperCase();
           const sTName = (s.trainerName || '').trim().toLowerCase();
+          const sId = (s.studentId || s.id || '').toUpperCase();
           return (
             (sTId && myTId && sTId === myTId) ||
             (sTName && myTName && (sTName === myTName || sTName.includes(myTName) || myTName.includes(sTName))) ||
-            (s.trainerId && user.trainerId && s.trainerId.toUpperCase() === user.trainerId.toUpperCase())
+            (s.trainerId && user.trainerId && s.trainerId.toUpperCase() === user.trainerId.toUpperCase()) ||
+            (myTId.includes('-CSN-') && sId.includes('-CSN-')) ||
+            (myTId.includes('-KOP-') && sId.includes('-KOP-')) ||
+            (myTId.includes('-PUN-') && sId.includes('-PUN-')) ||
+            (myTId.includes('-NSK-') && sId.includes('-NSK-')) ||
+            (myTId.includes('-SAT-') && sId.includes('-SAT-')) ||
+            (myTId.includes('-BGM-') && sId.includes('-BGM-'))
           );
         });
         document.getElementById('stat-top-students').innerText = myStudents.length;
@@ -7147,6 +7341,7 @@ lucide.createIcons();
       }
 
       renderAdminStudents();
+      updateTopMetrics();
       e.target.reset();
       closeFormModal('student');
 
@@ -7529,10 +7724,17 @@ lucide.createIcons();
           const stuTrainerId = (s.trainerId || '').trim().toUpperCase();
           const stuTrainerName = (s.trainerName || '').trim().toLowerCase();
 
+          const sId = (s.studentId || s.id || '').toUpperCase();
           const isMyStudent = (
             (stuTrainerId && myId && stuTrainerId === myId) ||
             (stuTrainerName && myName && (stuTrainerName === myName || stuTrainerName.includes(myName) || myName.includes(stuTrainerName))) ||
-            (s.trainerId && user.trainerId && s.trainerId.toUpperCase() === user.trainerId.toUpperCase())
+            (s.trainerId && user.trainerId && s.trainerId.toUpperCase() === user.trainerId.toUpperCase()) ||
+            (myId.includes('-CSN-') && sId.includes('-CSN-')) ||
+            (myId.includes('-KOP-') && sId.includes('-KOP-')) ||
+            (myId.includes('-PUN-') && sId.includes('-PUN-')) ||
+            (myId.includes('-NSK-') && sId.includes('-NSK-')) ||
+            (myId.includes('-SAT-') && sId.includes('-SAT-')) ||
+            (myId.includes('-BGM-') && sId.includes('-BGM-'))
           );
           if (!isMyStudent) return false;
         } else {
@@ -12361,23 +12563,48 @@ const iconBox = document.getElementById('exam-banner-icon-box');
             </tr>
           `;
         } else {
-          tbody.innerHTML = athletes.map((a, i) => `
-            <tr class="hover:bg-slate-50 transition">
+          const paidCount = athletes.filter(a => (a.feeStatus || '').toLowerCase() === 'paid').length;
+          const unpaidCount = athletes.length - paidCount;
+          document.getElementById('comp-excel-stat-count').innerText = `${athletes.length} Total (${paidCount} Paid, ${unpaidCount} Unpaid)`;
+
+          tbody.innerHTML = athletes.map((a, i) => {
+            const isPaid = (a.feeStatus || '').toLowerCase() === 'paid';
+            return `
+            <tr class="hover:bg-slate-50 transition border-b border-slate-100">
               <td class="p-3 font-bold text-slate-400">${i + 1}</td>
               <td class="p-3 font-mono font-bold text-orange-700">${a.studentId}</td>
-              <td class="p-3 font-bold text-slate-900">${a.studentName}</td>
-              <td class="p-3 font-semibold text-slate-800">${a.discipline || 'Single Lathi'}</td>
-              <td class="p-3 text-slate-600">${a.division || 'Open'}</td>
-              <td class="p-3 text-slate-600">${a.branch || a.district || 'Branch'}</td>
-              <td class="p-3 text-slate-600">${a.trainerName || 'Trainer'}</td>
               <td class="p-3">
-                <span class="inline-block px-2 py-0.5 rounded text-[10px] font-black ${a.feeStatus?.includes('Paid') ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                  ₹${a.feeAmount || 300} (${a.feeStatus || 'Paid'})
-                </span>
+                <strong class="font-black text-slate-900 block text-xs">${a.studentName}</strong>
+                <span class="text-[10px] text-slate-500 font-medium">${a.branch || a.district || 'Branch'}</span>
               </td>
-              <td class="p-3 text-[10px] text-slate-500">${new Date(a.registeredAt || Date.now()).toLocaleDateString('en-IN')}</td>
+              <td class="p-3">
+                <span class="font-bold text-xs ${a.discipline?.toLowerCase().includes('general') ? 'text-blue-700' : 'text-orange-700'}">${a.discipline || 'Single Event'}</span>
+              </td>
+              <td class="p-3 text-xs text-slate-700 font-medium">${a.division || 'Open'}</td>
+              <td class="p-3 text-xs text-slate-600">${a.trainerName || 'Trainer'}</td>
+              <td class="p-3">
+                <span class="font-mono text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 block w-fit">
+                  ${a.utrNumber || 'N/A'}
+                </span>
+                <span class="text-[10px] text-slate-400 font-semibold block mt-0.5">₹${a.feeAmount || 300} (Online UPI)</span>
+              </td>
+              <td class="p-3">
+                <!-- INTERACTIVE PAID / UNPAID SWITCH FOR ADMIN -->
+                <div class="flex items-center gap-2">
+                  <label class="relative inline-flex items-center cursor-pointer select-none" title="Toggle Paid / Unpaid Status">
+                    <input type="checkbox" ${isPaid ? 'checked' : ''} onchange="toggleAthletePaidStatus('${comp.id}', '${a.studentId}', '${a.discipline}', this.checked)" class="sr-only peer">
+                    <div class="w-10 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                  </label>
+                  <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${isPaid ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-rose-100 text-rose-800 border border-rose-300'}">
+                    ${isPaid ? 'PAID 🟢' : 'UNPAID 🔴'}
+                  </span>
+                </div>
+              </td>
+              <td class="p-3 text-[10.5px] text-slate-400 font-mono">
+                ${a.registeredAt ? new Date(a.registeredAt).toLocaleDateString('en-IN') : 'Today'}
+              </td>
             </tr>
-          `).join('');
+          `;}).join('');
         }
       }
 
@@ -12390,9 +12617,9 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       if (!comp) return;
       const athletes = comp.athletes || [];
 
-      let csv = "SNo,StudentID,StudentName,EventDiscipline,Division,DistrictBranch,TrainerName,FeeAmount,FeeStatus,RegisteredDate\n";
+      let csv = "SNo,StudentID,StudentName,EventDiscipline,Division,DistrictBranch,TrainerName,FeeAmount,FeeStatus,UTR_Number,PaymentMode,RegisteredDate\n";
       athletes.forEach((a, i) => {
-        csv += `${i + 1},"${a.studentId}","${a.studentName}","${a.discipline || ''}","${a.division || ''}","${a.branch || a.district || ''}","${a.trainerName || ''}",${a.feeAmount || 0},"${a.feeStatus || 'Paid'}","${a.registeredAt || ''}"\n`;
+        csv += `${i + 1},"${a.studentId}","${a.studentName}","${a.discipline || ''}","${a.division || ''}","${a.branch || a.district || ''}","${a.trainerName || ''}",${a.feeAmount || 0},"${a.feeStatus || 'Unpaid'}","${a.utrNumber || 'N/A'}","Online UPI","${a.registeredAt || ''}"\n`;
       });
 
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -12582,6 +12809,61 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       lucide.createIcons();
     }
 
+    
+    function triggerTournUpiPayment(app) {
+      const upiId = adminState.feeStructure?.upi || 'yoddhaacademy5@okicici';
+      const feeAmount = document.getElementById('tourn-fee-amount')?.value || '300';
+      const compTitle = (document.getElementById('tourn-comp-title')?.innerText || 'Tournament').trim();
+      const stuSelect = document.getElementById('tourn-student-select');
+      const stuText = stuSelect ? stuSelect.options[stuSelect.selectedIndex]?.text || '' : '';
+      const stuName = stuText.split('(')[0]?.trim() || 'Athlete';
+      const note = encodeURIComponent(`YAI Comp - ${stuName} - ${compTitle}`.substring(0, 40));
+      const payee = encodeURIComponent('Yoddha Academy India');
+
+      const genericUri = `upi://pay?pa=${upiId}&pn=${payee}&am=${feeAmount}&cu=INR&tn=${note}`;
+
+      if (app === 'gpay') {
+        window.location.href = `gpay://upi/pay?pa=${upiId}&pn=${payee}&am=${feeAmount}&cu=INR&tn=${note}`;
+        setTimeout(() => { window.location.href = genericUri; }, 800);
+      } else if (app === 'phonepe') {
+        window.location.href = `phonepe://pay?pa=${upiId}&pn=${payee}&am=${feeAmount}&cu=INR&tn=${note}`;
+        setTimeout(() => { window.location.href = genericUri; }, 800);
+      } else if (app === 'paytm') {
+        window.location.href = `paytmmp://pay?pa=${upiId}&pn=${payee}&am=${feeAmount}&cu=INR&tn=${note}`;
+        setTimeout(() => { window.location.href = genericUri; }, 800);
+      } else {
+        window.location.href = genericUri;
+      }
+    }
+
+    function toggleAthletePaidStatus(compId, studentId, discipline, isPaid) {
+      const comp = adminState.competitions.find(c => c.id === compId);
+      if (!comp || !comp.athletes) return;
+
+      const athlete = comp.athletes.find(a => 
+        (a.studentId || '').toUpperCase() === studentId.toUpperCase() &&
+        (a.discipline || '').toLowerCase() === (discipline || '').toLowerCase()
+      );
+
+      if (!athlete) return;
+
+      const newStatus = isPaid ? 'Paid' : 'Unpaid';
+      athlete.feeStatus = newStatus;
+      saveAdminState();
+
+      // Live Sync payment status toggle to Central Cloud Server
+      syncToCloudServer({
+        type: "TOURNAMENT_ATHLETE_PAY_STATUS_UPDATE",
+        compId: comp.id,
+        studentId,
+        discipline: athlete.discipline,
+        feeStatus: newStatus
+      });
+
+      // Re-render Excel view & quick stats immediately
+      openCompetitionExcelModal(compId);
+    }
+
     function openTournamentEntryModal(compId) {
       const comp = adminState.competitions.find(c => c.id === compId);
       if (!comp) return;
@@ -12599,7 +12881,22 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       }
 
       document.getElementById('tourn-comp-meta').innerText = `Date: ${comp.date} | Venue: ${comp.location}${scopeInfo}`;
-      document.getElementById('tourn-fee-amount').value = comp.fee || 300;
+      const fee = comp.fee || 300;
+      document.getElementById('tourn-fee-amount').value = fee;
+      const feeDisp = document.getElementById('tourn-fee-display');
+      if (feeDisp) feeDisp.innerText = '₹' + fee;
+
+      const upiId = adminState.feeStructure?.upi || 'yoddhaacademy5@okicici';
+      const upiDisp = document.getElementById('tourn-upi-id-display');
+      if (upiDisp) upiDisp.innerText = upiId;
+
+      const upiUri = `upi://pay?pa=${upiId}&pn=Yoddha%20Academy%20India&am=${fee}&cu=INR&tn=YAI%20Championship%20Entry`;
+      const qrImg = document.getElementById('tourn-qr-code-img');
+      if (qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiUri)}`;
+      }
+      const utrInp = document.getElementById('tourn-utr-number');
+      if (utrInp) utrInp.value = '';
 
       // Reset dynamic details card & notices
       const card = document.getElementById('tourn-student-detail-card');
@@ -12698,8 +12995,14 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const studentId = document.getElementById('tourn-student-select').value;
       const rawDiscipline = document.getElementById('tourn-discipline').value;
       const division = document.getElementById('tourn-division').value;
-      const feeStatus = document.getElementById('tourn-fee-status').value;
+      const utrNumber = (document.getElementById('tourn-utr-number')?.value || '').trim();
       const feeAmount = parseInt(document.getElementById('tourn-fee-amount').value) || 300;
+      const feeStatus = "Unpaid"; // Initial status is ALWAYS Unpaid until Central Admin verifies receipt!
+
+      if (!utrNumber || utrNumber.length < 4) {
+        alert("Please complete online UPI payment and enter valid UPI UTR / Reference Number from your payment receipt!");
+        return;
+      }
 
       if (!studentId) {
         alert("Please select a valid active student athlete to register!");
@@ -12741,8 +13044,10 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         studentName: student.studentName,
         discipline,
         division,
-        feeStatus,
+        feeStatus: "Unpaid",
         feeAmount,
+        utrNumber,
+        paymentMode: "Online UPI",
         district: student.district || student.city || '',
         branch: student.city ? student.city + ' Branch' : (student.state || 'Maharashtra'),
         trainerName: student.trainerName || '',
@@ -12751,9 +13056,9 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       saveAdminState();
 
-      // Live sync tournament entry to Central Cloud Server
+      // Live sync tournament entry to Central Cloud Server (ISOLATED TYPE: Will NOT touch Students sheet)
       syncToCloudServer({
-        type: "TOURNAMENT_STUDENT_ENTRY",
+        type: "TOURNAMENT_ATHLETE_ENTRY",
         compId: comp.id,
         compTitle: comp.title,
         compLevel: comp.level || 'State Level',
@@ -12761,8 +13066,10 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         studentName: student.studentName,
         discipline,
         division,
-        feeStatus,
+        feeStatus: "Unpaid",
         feeAmount,
+        utrNumber,
+        paymentMode: "Online UPI",
         trainerName: student.trainerName || '',
         registeredAt: new Date().toISOString()
       });
@@ -13596,6 +13903,17 @@ function handleAdminCreateCompetition(e) {
                 levelHistory: stu.levelHistory || existing.levelHistory || {},
                 lastExam: stu.lastExam || existing.lastExam || null
               };
+              // Resilient backfill: If cloud row had empty trainerId but has trainerName or district
+              if (!freshStu.trainerId && freshStu.trainerName) {
+                const matchedTrn = adminState.trainers.find(t => 
+                  (t.fullName || t.name || '').toLowerCase().trim() === freshStu.trainerName.toLowerCase().trim()
+                );
+                if (matchedTrn) {
+                  freshStu.trainerId = matchedTrn.trainerId || matchedTrn.id;
+                  if (!freshStu.district) freshStu.district = matchedTrn.district || freshStu.district;
+                  if (!freshStu.city) freshStu.city = matchedTrn.district || freshStu.city;
+                }
+              }
               cloudStudentList.push(freshStu);
               updatedStudents++;
             });

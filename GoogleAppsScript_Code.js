@@ -291,8 +291,39 @@ function doGet(e) {
             categories: String(cm[6] || "").trim(),
             fee: Number(cm[7]) || 300,
             status: String(cm[8] || "Registrations Open").trim(),
-            scope: String(cm[9] || "All").trim()
+            scope: String(cm[9] || "All").trim(),
+            entries: 0,
+            athletes: []
           });
+        }
+      }
+    }
+
+    // 5B. Read Tournament Entries & Map Athletes to Competitions
+    var tournSheet = ss.getSheetByName("TournamentEntries");
+    if (tournSheet && allData.competitions) {
+      var tRows = tournSheet.getDataRange().getValues();
+      for (var tr = 1; tr < tRows.length; tr++) {
+        var tRow = tRows[tr];
+        var cId = String(tRow[1] || "").trim();
+        if (cId) {
+          var matchedComp = allData.competitions.find(function(c) { return c.id === cId; });
+          if (matchedComp) {
+            if (!matchedComp.athletes) matchedComp.athletes = [];
+            matchedComp.athletes.push({
+              studentId: String(tRow[4] || "").trim(),
+              studentName: String(tRow[5] || "").trim(),
+              discipline: String(tRow[6] || "Single Event").trim(),
+              division: String(tRow[7] || "Open").trim(),
+              feeStatus: String(tRow[8] || "Unpaid").trim(),
+              feeAmount: Number(tRow[9]) || 300,
+              utrNumber: String(tRow[10] || "").trim(),
+              paymentMode: String(tRow[11] || "Online UPI").trim(),
+              trainerName: String(tRow[12] || "").trim(),
+              registeredAt: tRow[0] ? new Date(tRow[0]).toISOString() : new Date().toISOString()
+            });
+            matchedComp.entries = matchedComp.athletes.length;
+          }
         }
       }
     }
@@ -434,7 +465,7 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     // 2. STUDENT REGISTRATION, EXAM MARKS & LEVEL PROGRESSION (30 POINTS)
     // -----------------------------------------------------------------------
-    if (type.indexOf("STUDENT") !== -1) {
+    if (type.indexOf("STUDENT") !== -1 && type.indexOf("TOURNAMENT") === -1 && type.indexOf("COMPETITION") === -1) {
       var sheet = getOrCreateSheet(ss, "Students", [
         "Timestamp", "Student ID", "Student Name", "Date of Birth", "Age",
         "Requested Level", "School Name", "Standard", "School Contact", "School Address",
@@ -679,14 +710,36 @@ function doPost(e) {
     }
 
     // -----------------------------------------------------------------------
-    // 6. TOURNAMENT STUDENT REGISTRATIONS
+    // 6. TOURNAMENT STUDENT REGISTRATIONS & ATHLETE STATUS MANAGEMENT
     // -----------------------------------------------------------------------
     if (type.indexOf("TOURNAMENT") !== -1) {
       var sheet = getOrCreateSheet(ss, "TournamentEntries", [
         "Timestamp", "Competition ID", "Tournament Title", "Championship Level",
         "Student ID", "Student Name", "Event Discipline", "Age / Weight Division",
-        "Fee Status", "Fee Amount (Rs)", "Trainer Name"
+        "Fee Status", "Fee Amount (Rs)", "UTR Number", "Payment Mode", "Trainer Name"
       ]);
+
+      // Support interactive status toggle (Unpaid <-> Paid)
+      if (type === "TOURNAMENT_ATHLETE_PAY_STATUS_UPDATE") {
+        var tRows = sheet.getDataRange().getValues();
+        var updatedStatus = false;
+        for (var r = 1; r < tRows.length; r++) {
+          if (String(tRows[r][1]).trim() === String(data.compId).trim() &&
+              String(tRows[r][4]).trim().toUpperCase() === String(data.studentId).trim().toUpperCase() &&
+              String(tRows[r][6]).trim().toLowerCase() === String(data.discipline).trim().toLowerCase()) {
+            sheet.getRange(r + 1, 9).setValue(data.feeStatus || "Paid");
+            updatedStatus = true;
+            break;
+          }
+        }
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "success",
+          message: "Athlete fee status updated to " + data.feeStatus,
+          studentId: data.studentId,
+          feeStatus: data.feeStatus,
+          updated: updatedStatus
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
 
       sheet.appendRow([
         new Date(),
@@ -697,8 +750,10 @@ function doPost(e) {
         data.studentName || "",
         data.discipline || "",
         data.division || "",
-        data.feeStatus || "Paid",
+        data.feeStatus || "Unpaid",
         data.feeAmount || 300,
+        data.utrNumber || "",
+        data.paymentMode || "Online UPI",
         data.trainerName || ""
       ]);
 
