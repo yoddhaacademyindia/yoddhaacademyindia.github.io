@@ -204,7 +204,9 @@ function doGet(e) {
             examDate: String(sr[26] || "").trim(),
             levelUpPending: String(sr[27] || "").toUpperCase() === "YES" || sr[27] === true,
             pendingNextLevel: String(sr[28] || "").trim(),
-            levelHistoryStr: String(sr[29] || "").trim()
+            levelHistoryStr: String(sr[29] || "").trim(),
+            photo: String(sr[30] || "").trim(),
+            aadharPhoto: String(sr[31] || "").trim()
           };
 
           if (stuObj.aiScore || stuObj.totalScore) {
@@ -435,7 +437,8 @@ function doPost(e) {
         "Admission Date", "Trainer ID", "Trainer Name", "Status", "Fee Status",
         "Fee Amount", "UPI UTR Number", "Live Exam Status", "Live AI Camera Score (/50)",
         "Trainer Exam Score (/50)", "Grand Total Score (/100)", "Exam Passed Date",
-        "Level Up Pending", "Pending Next Level", "10-Level History & Passed Marks"
+        "Level Up Pending", "Pending Next Level", "10-Level History & Passed Marks",
+        "Student Photo", "Aadhaar Photo"
       ]);
 
       var studentId = data.studentId || data.id || "";
@@ -479,7 +482,9 @@ function doPost(e) {
         exDate,
         data.levelUpPending ? "YES" : "NO",
         data.pendingNextLevel || "",
-        lvlHistStr
+        lvlHistStr,
+        data.photo || "",
+        data.aadharPhoto || ""
       ];
 
       var updated = updateRowIfExistsOrMerge(sheet, 2, studentId, rowData);
