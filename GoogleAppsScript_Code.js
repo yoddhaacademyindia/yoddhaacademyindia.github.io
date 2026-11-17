@@ -160,7 +160,9 @@ function doGet(e) {
             branch: String(tr[10] || "").trim(),
             address: String(tr[11] || "").trim(),
             password: String(tr[12] || "").trim(),
-            pin: String(tr[12] || "").trim()
+            pin: String(tr[12] || "").trim(),
+            photo: String(tr[13] || "").trim(),
+            aadharPhoto: String(tr[14] || "").trim()
           });
         }
       }
@@ -380,7 +382,8 @@ function doPost(e) {
       var sheet = getOrCreateSheet(ss, "Trainers", [
         "Timestamp", "Trainer ID", "Full Name", "Position", "Status",
         "Calling Mobile", "WhatsApp Mobile", "Official Email", "State",
-        "District", "Akhada / Branch", "Full Address", "Login PIN / Password"
+        "District", "Branch", "Full Address", "Login PIN / Password",
+        "Trainer Photo", "Aadhaar Photo"
       ]);
 
       var trainerId = data.trainerId || data.id || "";
@@ -401,7 +404,9 @@ function doPost(e) {
         data.district || "",
         data.branch || "",
         data.address || "",
-        trainerPass
+        trainerPass,
+        data.photo || "",
+        data.aadharPhoto || ""
       ];
 
       var updated = updateRowIfExistsOrMerge(sheet, 2, trainerId, rowData);

@@ -1623,11 +1623,19 @@
           </h4>
           
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
-            <!-- 12. Photo Upload -->
+            <!-- 12. Photo Upload with Live Preview -->
             <div>
               <label class="block font-bold text-slate-700 mb-1">Trainer Photo (Passport Size) *</label>
-              <input type="file" id="adm-trn-photo" accept="image/*" class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-[11px] text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-amber-100 file:text-amber-800">
-              <p class="text-[10px] text-slate-400 mt-1">Uploaded image will be printed on Trainer ID badge</p>
+              <div class="flex items-center gap-3">
+                <div id="adm-trn-photo-preview-wrap" class="w-12 h-12 rounded-2xl bg-amber-100 border-2 border-amber-300 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-xs">
+                  <img id="adm-trn-photo-preview" src="" alt="Trainer Preview" class="w-full h-full object-cover hidden">
+                  <i data-lucide="camera" id="adm-trn-photo-icon" class="w-5 h-5 text-amber-600"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <input type="file" id="adm-trn-photo" accept="image/*" onchange="previewTrainerFormPhoto(event)" class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-[11px] text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-amber-100 file:text-amber-800 cursor-pointer">
+                  <p class="text-[10px] text-slate-400 mt-0.5">Uploaded photo will appear in Admin Trainer List & Trainer Profile</p>
+                </div>
+              </div>
             </div>
 
             <!-- 13. Aadhar Card Photo Upload -->
@@ -1799,6 +1807,25 @@
             <div class="sm:col-span-2 lg:col-span-3">
               <label class="block font-bold text-slate-700 mb-1">Complete Branch / Training Center Address *</label>
               <input type="text" id="edit-trn-address" required placeholder="Full Address" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-semibold focus:outline-none focus:border-orange-500">
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: TRAINER PROFILE PHOTO UPDATE -->
+        <div class="bg-orange-50/40 border border-orange-200/70 p-4 sm:p-5 rounded-2xl space-y-3">
+          <h4 class="text-xs font-black uppercase tracking-wider text-orange-900 flex items-center gap-1.5 border-b border-orange-200 pb-2">
+            <i data-lucide="image" class="w-4 h-4 text-orange-600"></i>
+            <span>3. Trainer Profile Photo</span>
+          </h4>
+          <div class="flex items-center gap-3.5 pt-1">
+            <div id="edit-trn-photo-preview-wrap" class="w-14 h-14 rounded-2xl bg-orange-100 border-2 border-orange-300 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
+              <img id="edit-trn-photo-preview" src="" alt="Trainer Photo" class="w-full h-full object-cover hidden">
+              <i data-lucide="user" id="edit-trn-photo-icon" class="w-6 h-6 text-orange-400"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <label class="block font-bold text-slate-700 mb-1">Upload / Change Trainer Photo</label>
+              <input type="file" id="edit-trn-photo" accept="image/*" onchange="previewTrainerEditPhoto(event)" class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-[11px] text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-orange-100 file:text-orange-800 cursor-pointer">
+              <p class="text-[10px] text-slate-400 mt-0.5">Select image from camera or gallery to update trainer badge.</p>
             </div>
           </div>
         </div>
@@ -3223,7 +3250,9 @@ function doGet(e) {
             branch: String(tr[10] || "").trim(),
             address: String(tr[11] || "").trim(),
             password: String(tr[12] || "").trim(),
-            pin: String(tr[12] || "").trim()
+            pin: String(tr[12] || "").trim(),
+            photo: String(tr[13] || "").trim(),
+            aadharPhoto: String(tr[14] || "").trim()
           });
         }
       }
@@ -3430,7 +3459,8 @@ function doPost(e) {
       var sheet = getOrCreateSheet(ss, "Trainers", [
         "Timestamp", "Trainer ID", "Full Name", "Position", "Status",
         "Calling Mobile", "WhatsApp Mobile", "Official Email", "State",
-        "District", "Akhada / Branch", "Full Address", "Login PIN / Password"
+        "District", "Branch", "Full Address", "Login PIN / Password",
+        "Trainer Photo", "Aadhaar Photo"
       ]);
 
       var trainerId = data.trainerId || data.id || "";
@@ -3451,7 +3481,9 @@ function doPost(e) {
         data.district || "",
         data.branch || "",
         data.address || "",
-        trainerPass
+        trainerPass,
+        data.photo || "",
+        data.aadharPhoto || ""
       ];
 
       var updated = updateRowIfExistsOrMerge(sheet, 2, trainerId, rowData);
@@ -10891,11 +10923,20 @@ const iconBox = document.getElementById('exam-banner-icon-box');
             <!-- TOP SECTION: Photo (top-left) + Name + Unique ID + Position (stacked) | Active/Inactive Switch (top-right) -->
             <div class="flex items-start justify-between gap-2.5">
               <div class="flex items-start gap-3 min-w-0 flex-1">
-                <!-- 1. Photo / Avatar in top corner -->
-                ${photo && !photo.startsWith('data:image/svg')
-                  ? `<img src="${photo}" alt="${name}" class="w-14 h-14 rounded-2xl object-cover shadow-sm border border-orange-200 flex-shrink-0">`
-                  : `<div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white font-black flex items-center justify-center text-base shadow-md flex-shrink-0">${initials}</div>`
-                }
+                <!-- 1. Photo / Avatar in top corner with 1-click photo update -->
+                <div class="relative group cursor-pointer flex-shrink-0" onclick="openEditTrainerModal('${trnId}')" title="Click to view / update trainer photo">
+                  ${(photo && photo.length > 20)
+                    ? `<div class="w-14 h-14 rounded-2xl overflow-hidden shadow-md border-2 border-orange-400 flex-shrink-0 bg-orange-50">
+                         <img src="${photo}" alt="${name}" class="w-full h-full object-cover">
+                       </div>`
+                    : `<div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white font-black flex items-center justify-center text-base shadow-md flex-shrink-0 border-2 border-orange-300">
+                         ${initials}
+                       </div>`
+                  }
+                  <div class="absolute -bottom-1 -right-1 bg-white p-1 rounded-full border border-orange-300 text-orange-600 shadow-xs hover:bg-orange-50" title="Upload Photo">
+                    <i data-lucide="camera" class="w-3 h-3"></i>
+                  </div>
+                </div>
                 
                 <!-- 2. Full Name + 3. Unique ID + 4. Designation / Position -->
                 <div class="flex flex-col gap-1 min-w-0 flex-1">
@@ -11049,6 +11090,18 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       document.getElementById('edit-trn-pass').value = trn.password || trn.pin || '1234';
       document.getElementById('edit-trn-address').value = trn.address || '';
 
+      // Populate trainer photo preview in edit modal
+      uploadedTrainerEditPhotoData = trn.photo || null;
+      const previewImg = document.getElementById('edit-trn-photo-preview');
+      const previewIcon = document.getElementById('edit-trn-photo-icon');
+      if (trn.photo && trn.photo.length > 20) {
+        if (previewImg) { previewImg.src = trn.photo; previewImg.classList.remove('hidden'); }
+        if (previewIcon) previewIcon.classList.add('hidden');
+      } else {
+        if (previewImg) previewImg.classList.add('hidden');
+        if (previewIcon) previewIcon.classList.remove('hidden');
+      }
+
       // Populate States in Edit Modal
       const stateSelect = document.getElementById('edit-trn-state');
       stateSelect.innerHTML = '<option value="">-- Select State --</option>';
@@ -11092,7 +11145,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       });
     }
 
-    function handleEditTrainerSubmit(e) {
+    async function handleEditTrainerSubmit(e) {
       e.preventDefault();
 
       if (!validateFormField(document.getElementById('edit-trn-name'), 'Trainer Full Name', v => v.length >= 2 || 'Name must be at least 2 characters.')) return;
@@ -11124,6 +11177,15 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const districtName = distObj ? distObj.name : distCode;
       const address = document.getElementById('edit-trn-address').value.trim();
 
+      // Read or retain trainer photo
+      let photo = uploadedTrainerEditPhotoData || adminState.trainers[trnIndex].photo || null;
+      const editPhotoFile = document.getElementById('edit-trn-photo')?.files[0];
+      if (editPhotoFile) {
+        try {
+          photo = await compressImageFile(editPhotoFile, 240, 0.68);
+        } catch(e) {}
+      }
+
       // Update trainer object in state
       const updatedTrainer = {
         ...adminState.trainers[trnIndex],
@@ -11133,7 +11195,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         mobile,
         phone: mobile,
         whatsapp,
-        position,
+        position: 'Trainer',
         status,
         password,
         pin: password,
@@ -11142,8 +11204,10 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         district: districtName,
         districtCode: distCode,
         address,
-        branch: `${districtName} Training Center`
+        photo: photo || null,
+        branch: `${districtName} Branch`
       };
+      uploadedTrainerEditPhotoData = null;;
 
       adminState.trainers[trnIndex] = updatedTrainer;
       saveAdminState();
@@ -12710,7 +12774,51 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     }
 
     // FORM 2: Trainer Submit (Complete 13 Points)
-    function handleAdminTrainerSubmit(e) {
+    
+    let uploadedTrainerRegPhotoData = null;
+    let uploadedTrainerEditPhotoData = null;
+
+    async function previewTrainerFormPhoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const compressed = await compressImageFile(file, 240, 0.68);
+        if (compressed) {
+          uploadedTrainerRegPhotoData = compressed;
+          const imgEl = document.getElementById('adm-trn-photo-preview');
+          const iconEl = document.getElementById('adm-trn-photo-icon');
+          if (imgEl) {
+            imgEl.src = compressed;
+            imgEl.classList.remove('hidden');
+          }
+          if (iconEl) iconEl.classList.add('hidden');
+        }
+      } catch(e) {
+        console.warn("Trainer reg photo compression notice:", e);
+      }
+    }
+
+    async function previewTrainerEditPhoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const compressed = await compressImageFile(file, 240, 0.68);
+        if (compressed) {
+          uploadedTrainerEditPhotoData = compressed;
+          const imgEl = document.getElementById('edit-trn-photo-preview');
+          const iconEl = document.getElementById('edit-trn-photo-icon');
+          if (imgEl) {
+            imgEl.src = compressed;
+            imgEl.classList.remove('hidden');
+          }
+          if (iconEl) iconEl.classList.add('hidden');
+        }
+      } catch(e) {
+        console.warn("Trainer edit photo compression notice:", e);
+      }
+    }
+
+    async function handleAdminTrainerSubmit(e) {
       e.preventDefault();
 
       if (!validateFormField(document.getElementById('adm-trn-name'), 'Trainer Full Name', v => v.length >= 2 || 'Name must be at least 2 characters.')) return;
@@ -12740,6 +12848,14 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const position = document.getElementById('adm-trn-position').value;
       const password = document.getElementById('adm-trn-pass').value.trim() || '1234';
 
+      let photo = uploadedTrainerRegPhotoData || null;
+      const photoFile = document.getElementById('adm-trn-photo')?.files[0];
+      if (photoFile && !photo) {
+        try {
+          photo = await compressImageFile(photoFile, 240, 0.68);
+        } catch(e) {}
+      }
+
       const trainerObj = {
         trainerId,
         id: trainerId,
@@ -12753,16 +12869,17 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         stateCode: stCode,
         district: districtName,
         districtCode: distCode,
-        branch: `${districtName} Training Center`,
+        branch: `${districtName} Branch`,
         address,
         status,
-        position,
+        position: 'Trainer',
         password,
         pin: password,
-        photo: null,
+        photo: photo || null,
         aadharPhoto: null,
         studentsCount: 0
       };
+      uploadedTrainerRegPhotoData = null;
 
       adminState.trainers.push(trainerObj);
       saveAdminState();
@@ -13415,8 +13532,10 @@ function handleAdminCreateCompetition(e) {
                 whatsapp: trn.whatsapp || trn.mobile || existing.whatsapp || '',
                 state: trn.state || existing.state || 'Maharashtra',
                 district: trn.district || existing.district || 'Kolhapur',
-                branch: trn.branch || existing.branch || '',
-                address: trn.address || existing.address || ''
+                branch: (trn.branch || existing.branch || `${trn.district || 'Kolhapur'} Branch`).replace(/Akhada/gi, 'Branch'),
+                address: trn.address || existing.address || '',
+                photo: (trn.photo && trn.photo.length > 20) ? trn.photo : (existing.photo || null),
+                aadharPhoto: (trn.aadharPhoto && trn.aadharPhoto.length > 20) ? trn.aadharPhoto : (existing.aadharPhoto || null)
               };
               cloudTrainerList.push(freshTrn);
 
