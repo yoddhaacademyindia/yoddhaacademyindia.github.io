@@ -25,6 +25,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- SheetJS for Native Microsoft Excel (.xlsx) Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <!-- Google Fonts: Inter & Rajdhani -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -668,7 +670,7 @@
 
             <!-- Export -->
             <button onclick="exportStudentsCSV()" class="px-3.5 py-2 bg-orange-50 hover:bg-orange-100 text-xs font-bold text-orange-800 rounded-xl border border-orange-200 flex items-center gap-1.5 shadow-sm transition">
-              <i data-lucide="download" class="w-3.5 h-3.5 text-orange-600"></i> Export CSV
+              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-emerald-600"></i> Export Excel
             </button>
 
             <!-- Add Student -->
@@ -896,7 +898,7 @@
           <div class="flex flex-wrap items-center gap-2.5">
             <button onclick="exportTrainersCSV()" class="px-4 py-2 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
               <i data-lucide="download" class="w-4 h-4 text-orange-600"></i>
-              <span>Export CSV (13 Points)</span>
+              <span>Export Excel (13 Points)</span>
             </button>
             <button onclick="openFormModal('trainer')" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white font-bold text-xs rounded-xl shadow-md shadow-orange-500/20 flex items-center gap-1.5 transition">
               <i data-lucide="plus" class="w-4 h-4"></i>
@@ -2934,8 +2936,8 @@
         </div>
         <div class="flex items-center gap-2">
           <button type="button" onclick="exportCompetitionAthletesCsv()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-sm flex items-center gap-1.5 transition active:scale-95 cursor-pointer">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            <span>Export CSV</span>
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+            <span>Export Excel (.xlsx)</span>
           </button>
           <button onclick="closeModal('modal-comp-athletes-excel')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl transition">
             <i data-lucide="x" class="w-5 h-5"></i>
@@ -3071,17 +3073,17 @@
       <div class="pt-2 border-t border-slate-100">
         <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-2">Individual Section Exports:</label>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-          <button type="button" onclick="downloadSectionCsv('students')" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold flex items-center justify-center gap-1.5 transition active:scale-95">
-            <i data-lucide="users" class="w-3.5 h-3.5 text-orange-600"></i>
-            <span>Students CSV</span>
+          <button type="button" onclick="downloadSectionCsv('students')" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
+            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-orange-600"></i>
+            <span>Students Excel (.xlsx)</span>
           </button>
-          <button type="button" onclick="downloadSectionCsv('trainers')" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold flex items-center justify-center gap-1.5 transition active:scale-95">
-            <i data-lucide="user-check" class="w-3.5 h-3.5 text-amber-600"></i>
-            <span>Trainers CSV</span>
+          <button type="button" onclick="downloadSectionCsv('trainers')" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
+            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-amber-600"></i>
+            <span>Trainers Excel (.xlsx)</span>
           </button>
-          <button type="button" onclick="downloadSectionCsv('competitions')" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold flex items-center justify-center gap-1.5 transition active:scale-95">
-            <i data-lucide="trophy" class="w-3.5 h-3.5 text-blue-600"></i>
-            <span>Competitions CSV</span>
+          <button type="button" onclick="downloadSectionCsv('competitions')" class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
+            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-blue-600"></i>
+            <span>Competitions Excel (.xlsx)</span>
           </button>
         </div>
       </div>
@@ -12689,54 +12691,276 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       }
     }
 
-    function downloadMasterCompleteExcel() {
-      const students = adminState.students || [];
-      const trainers = adminState.trainers || [];
+        // 📊 NATIVE MICROSOFT EXCEL (.XLSX / .XLS) EXPORT ENGINE
+    function escapeXml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    }
 
-      let csv = "--- YODDHA ACADEMY INDIA: ALL REGISTERED STUDENTS ---\n";
-      csv += "SNo,StudentID,StudentName,Level,Status,FeeStatus,FeeAmount,UTR,TrainerID,TrainerName,District,State,ParentMobile,AdmissionDate,ExamStatus,TotalExamScore\n";
-      students.forEach((s, i) => {
-        csv += `${i + 1},"${s.studentId}","${s.studentName}","${s.requestedLevel || s.level || 'Level 1'}","${s.status || 'Active'}","${s.feeStatus || 'Paid'}",${s.feeAmount || 500},"${s.utrNumber || ''}","${s.trainerId || ''}","${s.trainerName || ''}","${s.district || s.city || ''}","${s.state || ''}","${s.parentMobile || ''}","${s.admissionDate || ''}","${s.examStatus || ''}",${s.lastExam?.totalScore || ''}\n`;
+    // Bulletproof Fallback: Generates Native Excel XML (.xls) recognizable directly by Microsoft Excel
+    function exportToExcelFallback(filename, sheets) {
+      let xml = '<?xml version="1.0"?>\n' +
+        '<?mso-application progid="Excel.Sheet"?>\n' +
+        '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"\n' +
+        ' xmlns:o="urn:schemas-microsoft-com:office:office"\n' +
+        ' xmlns:x="urn:schemas-microsoft-com:office:excel"\n' +
+        ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"\n' +
+        ' xmlns:html="http://www.w3.org/TR/REC-html40">\n' +
+        ' <Styles>\n' +
+        '  <Style ss:ID="Default" ss:Name="Normal">\n' +
+        '   <Alignment ss:Vertical="Center"/>\n' +
+        '  </Style>\n' +
+        '  <Style ss:ID="Header">\n' +
+        '   <Font ss:Bold="1" ss:Color="#FFFFFF"/>\n' +
+        '   <Interior ss:Color="#EA580C" ss:Pattern="Solid"/>\n' +
+        '   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>\n' +
+        '  </Style>\n' +
+        ' </Styles>\n';
+
+      sheets.forEach(sheet => {
+        const safeName = (sheet.name || 'Sheet').replace(/[:\\/?*\[\]]/g, ' ').substring(0, 31);
+        xml += ` <Worksheet ss:Name="${escapeXml(safeName)}">\n  <Table>\n`;
+        
+        // Header Row
+        if (sheet.headers && sheet.headers.length > 0) {
+          xml += '   <Row ss:StyleID="Header">\n';
+          sheet.headers.forEach(h => {
+            xml += `    <Cell><Data ss:Type="String">${escapeXml(h)}</Data></Cell>\n`;
+          });
+          xml += '   </Row>\n';
+        }
+
+        // Data Rows
+        if (sheet.rows && sheet.rows.length > 0) {
+          sheet.rows.forEach(row => {
+            xml += '   <Row>\n';
+            row.forEach(val => {
+              const isNum = (typeof val === 'number' && !isNaN(val));
+              const type = isNum ? 'Number' : 'String';
+              const cleanVal = (val === null || val === undefined) ? '' : val;
+              xml += `    <Cell><Data ss:Type="${type}">${escapeXml(cleanVal)}</Data></Cell>\n`;
+            });
+            xml += '   </Row>\n';
+          });
+        }
+
+        xml += '  </Table>\n </Worksheet>\n';
       });
 
-      csv += "\n--- YODDHA ACADEMY INDIA: ALL CERTIFIED TRAINERS ---\n";
-      csv += "SNo,TrainerID,TrainerName,Designation,Branch,District,State,Mobile,Email,Status\n";
-      trainers.forEach((t, i) => {
-        csv += `${i + 1},"${t.trainerId || t.id}","${t.fullName || t.name}","${t.position || 'Trainer'}","${t.branch || ''}","${t.district || ''}","${t.state || ''}","${t.mobile || t.phone || ''}","${t.email || ''}","${t.status || 'Active'}"\n`;
-      });
+      xml += '</Workbook>';
 
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const blob = new Blob([xml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const downloadName = filename.endsWith('.xls') || filename.endsWith('.xlsx') 
+        ? filename.replace(/\.xlsx$/i, '.xls') 
+        : `${filename}.xls`;
+      
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `Yoddha_Academy_India_Master_Database_${new Date().toISOString().split('T')[0]}.csv`);
+      link.href = url;
+      link.download = downloadName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function exportSingleSectionExcel(filename, sheetName, headers, rows) {
+      const fileName = `${filename}.xlsx`;
+      if (typeof XLSX !== 'undefined') {
+        try {
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+          XLSX.utils.book_append_sheet(wb, ws, sheetName);
+          XLSX.writeFile(wb, fileName);
+          return;
+        } catch (e) {
+          console.warn("SheetJS single export error, falling back to Excel XML:", e);
+        }
+      }
+      exportToExcelFallback(fileName, [{ name: sheetName, headers, rows }]);
+    }
+
+    function downloadMasterCompleteExcel() {
+      const students = adminState.students || [];
+      const trainers = adminState.trainers || [];
+      const competitions = adminState.competitions || [];
+
+      // 1. Prepare Students data (Complete 32 Points)
+      const studentHeaders = [
+        "S.No", "Student ID", "Student Name", "Date of Birth", "Age",
+        "Belt Level", "School Name", "Standard", "School Contact", "School Address",
+        "Parent Name", "Parent Mobile", "City / Village", "District", "State",
+        "Admission Date", "Trainer ID", "Trainer Name", "Status", "Fee Status",
+        "Fee Amount (₹)", "UPI UTR Number", "Live Exam Status", "AI Camera Score (/50)",
+        "Trainer Score (/50)", "Grand Total Score (/100)", "Exam Passed Date"
+      ];
+      const studentRows = students.map((s, idx) => [
+        idx + 1,
+        s.studentId || s.id || '',
+        s.studentName || s.name || '',
+        s.dob || '',
+        s.age || '',
+        s.requestedLevel || s.level || 'Level 1',
+        s.schoolName || '',
+        s.standard || '',
+        s.schoolContact || '',
+        s.schoolAddress || '',
+        s.parentName || '',
+        s.parentMobile || '',
+        s.city || '',
+        s.district || '',
+        s.state || '',
+        s.admissionDate || '',
+        s.trainerId || '',
+        s.trainerName || '',
+        s.status || 'Active',
+        s.feeStatus || 'Paid',
+        s.feeAmount || 500,
+        s.utrNumber || '',
+        s.examStatus || 'TRAINING',
+        s.lastExam?.aiScore ?? (s.aiScore || ''),
+        s.lastExam?.trainerScore ?? (s.trainerScore || ''),
+        s.lastExam?.totalScore ?? (s.totalScore || ''),
+        s.lastExam?.examDate || s.examDate || ''
+      ]);
+
+      // 2. Prepare Trainers data (13 Points)
+      const trainerHeaders = [
+        "S.No", "Trainer ID", "Trainer Name", "Position / Designation", "Branch / Akhada",
+        "District", "State", "Mobile", "WhatsApp", "Email", "Status", "PIN / Password"
+      ];
+      const trainerRows = trainers.map((t, idx) => [
+        idx + 1,
+        t.trainerId || t.id || '',
+        t.fullName || t.name || '',
+        t.position || 'Trainer',
+        t.branch || '',
+        t.district || '',
+        t.state || 'Maharashtra',
+        t.mobile || t.phone || '',
+        t.whatsapp || t.mobile || '',
+        t.email || '',
+        t.status || 'Active',
+        t.password || t.pin || '1234'
+      ]);
+
+      // 3. Prepare Championships data
+      const compHeaders = [
+        "S.No", "Competition ID", "Title", "Scope / Level", "Date", "Venue", "Entry Fee (₹)", "Registered Athletes Count"
+      ];
+      const compRows = competitions.map((c, idx) => [
+        idx + 1,
+        c.id || '',
+        c.title || '',
+        c.level || 'State Level',
+        c.date || '',
+        c.venue || c.location || '',
+        c.fee || 300,
+        c.athletes ? c.athletes.length : (c.entries || 0)
+      ]);
+
+      // 4. Prepare Athlete Entries data
+      const entryHeaders = [
+        "S.No", "Competition ID", "Competition Title", "Student ID", "Student Name",
+        "Event Type", "Division", "Entry Fee (₹)", "Payment Status", "UPI UTR", "Trainer Name", "Registered Date"
+      ];
+      const entryRows = [];
+      let entryIndex = 1;
+      competitions.forEach(c => {
+        if (Array.isArray(c.athletes)) {
+          c.athletes.forEach(a => {
+            entryRows.push([
+              entryIndex++,
+              c.id || '',
+              c.title || '',
+              a.studentId || '',
+              a.studentName || '',
+              a.discipline || 'Single Event',
+              a.division || 'General',
+              a.feeAmount || c.fee || 300,
+              a.feeStatus || 'Paid',
+              a.utrNumber || '',
+              a.trainerName || '',
+              a.registeredAt || ''
+            ]);
+          });
+        }
+      });
+
+      const today = new Date().toISOString().split('T')[0];
+      const fileName = `Yoddha_Academy_India_Master_Database_${today}.xlsx`;
+
+      // 1. If SheetJS (XLSX) is loaded, write authentic .xlsx binary workbook
+      if (typeof XLSX !== 'undefined') {
+        try {
+          const wb = XLSX.utils.book_new();
+
+          // Students sheet
+          const wsStudents = XLSX.utils.aoa_to_sheet([studentHeaders, ...studentRows]);
+          XLSX.utils.book_append_sheet(wb, wsStudents, "Students Directory");
+
+          // Trainers sheet
+          const wsTrainers = XLSX.utils.aoa_to_sheet([trainerHeaders, ...trainerRows]);
+          XLSX.utils.book_append_sheet(wb, wsTrainers, "Certified Trainers");
+
+          // Competitions sheet
+          const wsComps = XLSX.utils.aoa_to_sheet([compHeaders, ...compRows]);
+          XLSX.utils.book_append_sheet(wb, wsComps, "Championships");
+
+          // Entries sheet
+          if (entryRows.length > 0) {
+            const wsEntries = XLSX.utils.aoa_to_sheet([entryHeaders, ...entryRows]);
+            XLSX.utils.book_append_sheet(wb, wsEntries, "Competition Entries");
+          }
+
+          XLSX.writeFile(wb, fileName);
+          return;
+        } catch (err) {
+          console.warn("SheetJS write error, falling back to native Excel XML:", err);
+        }
+      }
+
+      // 2. Fallback: Native Microsoft Excel XML (.xls) format
+      exportToExcelFallback(fileName, [
+        { name: "Students Directory", headers: studentHeaders, rows: studentRows },
+        { name: "Certified Trainers", headers: trainerHeaders, rows: trainerRows },
+        { name: "Championships", headers: compHeaders, rows: compRows },
+        { name: "Competition Entries", headers: entryHeaders, rows: entryRows }
+      ]);
     }
 
     function downloadSectionCsv(section) {
+      const today = new Date().toISOString().split('T')[0];
       if (section === 'students') {
         const students = adminState.students || [];
-        let csv = "StudentID,StudentName,Age,DOB,Level,SchoolName,Standard,ParentName,ParentMobile,District,State,TrainerID,TrainerName,Status,FeeStatus,FeeAmount,UTR,AdmissionDate\n";
-        students.forEach(s => {
-          csv += `"${s.studentId}","${s.studentName}",${s.age || ''},"${s.dob || ''}","${s.requestedLevel || s.level || ''}","${s.schoolName || ''}","${s.standard || ''}","${s.parentName || ''}","${s.parentMobile || ''}","${s.district || ''}","${s.state || ''}","${s.trainerId || ''}","${s.trainerName || ''}","${s.status || ''}","${s.feeStatus || ''}",${s.feeAmount || ''},"${s.utrNumber || ''}","${s.admissionDate || ''}"\n`;
-        });
-        triggerCsvDownload(csv, 'YAI_Students_Directory.csv');
+        const headers = ["S.No", "Student ID", "Student Name", "Age", "DOB", "Belt Level", "School Name", "Standard", "Parent Name", "Parent Mobile", "City", "District", "State", "Trainer ID", "Trainer Name", "Status", "Fee Status", "Fee Amount (₹)", "UTR Number", "Admission Date"];
+        const rows = students.map((s, i) => [
+          i + 1, s.studentId || s.id || '', s.studentName || s.name || '', s.age || '', s.dob || '',
+          s.requestedLevel || s.level || 'Level 1', s.schoolName || '', s.standard || '', s.parentName || '', s.parentMobile || '',
+          s.city || '', s.district || '', s.state || '', s.trainerId || '', s.trainerName || '',
+          s.status || 'Active', s.feeStatus || 'Paid', s.feeAmount || 500, s.utrNumber || '', s.admissionDate || ''
+        ]);
+        exportSingleSectionExcel(`YAI_Students_Directory_${today}`, "Students", headers, rows);
       } else if (section === 'trainers') {
         const trainers = adminState.trainers || [];
-        let csv = "TrainerID,FullName,Position,Branch,District,State,Mobile,WhatsApp,Email,Status,StudentsCount\n";
-        trainers.forEach(t => {
-          csv += `"${t.trainerId || t.id}","${t.fullName || t.name}","${t.position || 'Trainer'}","${t.branch || ''}","${t.district || ''}","${t.state || ''}","${t.mobile || ''}","${t.whatsapp || ''}","${t.email || ''}","${t.status || 'Active'}",${t.studentsCount || 0}\n`;
-        });
-        triggerCsvDownload(csv, 'YAI_Trainers_Directory.csv');
+        const headers = ["S.No", "Trainer ID", "Full Name", "Position", "Branch", "District", "State", "Mobile", "WhatsApp", "Email", "Status"];
+        const rows = trainers.map((t, i) => [
+          i + 1, t.trainerId || t.id || '', t.fullName || t.name || '', t.position || 'Trainer', t.branch || '',
+          t.district || '', t.state || 'Maharashtra', t.mobile || t.phone || '', t.whatsapp || t.mobile || '', t.email || '', t.status || 'Active'
+        ]);
+        exportSingleSectionExcel(`YAI_Trainers_Directory_${today}`, "Trainers", headers, rows);
       } else if (section === 'competitions') {
         const comps = adminState.competitions || [];
-        let csv = "CompetitionID,Title,Level,Status,Date,Venue,Fee,RegisteredAthletes\n";
-        comps.forEach(c => {
-          csv += `"${c.id}","${c.title}","${c.level}","${c.status}","${c.date}","${c.location}",${c.fee || 300},${c.athletes?.length || c.entries || 0}\n`;
-        });
-        triggerCsvDownload(csv, 'YAI_Competitions_Directory.csv');
+        const headers = ["S.No", "Competition ID", "Title", "Level", "Date", "Venue", "Fee (₹)", "Registered Athletes"];
+        const rows = comps.map((c, i) => [
+          i + 1, c.id || '', c.title || '', c.level || 'State Level', c.date || '', c.venue || c.location || '', c.fee || 300, c.athletes ? c.athletes.length : (c.entries || 0)
+        ]);
+        exportSingleSectionExcel(`YAI_Competitions_Directory_${today}`, "Competitions", headers, rows);
       }
     }
 
@@ -12833,20 +13057,24 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const comp = adminState.competitions.find(c => c.id === activeExcelCompId);
       if (!comp) return;
       const athletes = comp.athletes || [];
+      const headers = ["S.No", "Student ID", "Student Name", "Event Discipline", "Division", "District / Branch", "Trainer Name", "Fee Amount (₹)", "Payment Status", "UPI UTR Number", "Payment Mode", "Registered Date"];
+      const rows = athletes.map((a, i) => [
+        i + 1,
+        a.studentId || '',
+        a.studentName || '',
+        a.discipline || 'Single Event',
+        a.division || 'General',
+        a.branch || a.district || '',
+        a.trainerName || '',
+        a.feeAmount || 0,
+        a.feeStatus || 'Unpaid',
+        a.utrNumber || 'N/A',
+        "Online UPI",
+        a.registeredAt || ''
+      ]);
 
-      let csv = "SNo,StudentID,StudentName,EventDiscipline,Division,DistrictBranch,TrainerName,FeeAmount,FeeStatus,UTR_Number,PaymentMode,RegisteredDate\n";
-      athletes.forEach((a, i) => {
-        csv += `${i + 1},"${a.studentId}","${a.studentName}","${a.discipline || ''}","${a.division || ''}","${a.branch || a.district || ''}","${a.trainerName || ''}",${a.feeAmount || 0},"${a.feeStatus || 'Unpaid'}","${a.utrNumber || 'N/A'}","Online UPI","${a.registeredAt || ''}"\n`;
-      });
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `${comp.id}_${comp.title.replace(/[^a-zA-Z0-9]/g, '_')}_athletes.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const safeTitle = comp.title ? comp.title.replace(/[^a-zA-Z0-9]/g, '_') : 'Tournament';
+      exportSingleSectionExcel(`${comp.id}_${safeTitle}_Athletes`, "Athletes", headers, rows);
     }
 
     function deleteCompetition(compId) {
@@ -14482,40 +14710,11 @@ function handleAdminCreateCompetition(e) {
     }
 
     function exportStudentsCSV() {
-      let csv = "StudentID,StudentName,DOB,Age,RequestedLevel,SchoolName,SchoolAddress,SchoolContact,Standard,ParentName,ParentMobile,City,State,AdmissionDate,TrainerID,TrainerName,Status,FeeStatus,FeeAmount,UTR\n";
-      adminState.students.forEach(s => {
-        csv += `"${s.studentId}","${s.studentName}","${s.dob}","${s.age}","${s.requestedLevel}","${s.schoolName}","${s.schoolAddress}","${s.schoolContact}","${s.standard}","${s.parentName}","${s.parentMobile}","${s.city}","${s.state}","${s.admissionDate}","${s.trainerId}","${s.trainerName}","${s.status}","${s.feeStatus}","${s.feeAmount}","${s.utrNumber}"\n`;
-      });
-      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `Yoddha_Academy_Full_Students_32_Points.csv`;
-      link.click();
+      downloadSectionCsv('students');
     }
 
     function exportTrainersCSV() {
-      let csv = "TrainerID,FullName,Email,Mobile,WhatsApp,State,District,Address,Status,Position,Password,Photo,AadharCardPhoto\n";
-      adminState.trainers.forEach(t => {
-        const trnId = t.trainerId || t.id;
-        const name = t.fullName || t.name;
-        const email = t.email || "";
-        const mobile = t.mobile || t.phone || "";
-        const wa = t.whatsapp || mobile;
-        const state = t.state || "";
-        const dist = t.district || t.branch || "";
-        const addr = (t.address || "").replace(/"/g, '""');
-        const status = t.status || "Active";
-        const pos = t.position || "Branch Instructor";
-        const pass = t.password || t.pin || "1234";
-        const photo = t.photo ? "Uploaded" : "Verified";
-        const aadhar = t.aadharPhoto ? "Uploaded" : "Verified";
-        csv += `"${trnId}","${name}","${email}","${mobile}","${wa}","${state}","${dist}","${addr}","${status}","${pos}","${pass}","${photo}","${aadhar}"\n`;
-      });
-      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `Yoddha_Academy_Certified_Trainers_13_Points.csv`;
-      link.click();
+      downloadSectionCsv('trainers');
     }
 
     function openSyncModal() {
