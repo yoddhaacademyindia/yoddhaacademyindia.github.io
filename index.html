@@ -7473,6 +7473,8 @@ lucide.createIcons();
       });
       
       renderAdminStudents();
+      renderVerificationQueue();
+      updateTopMetrics();
     }
 
     // Quick 1-click toggle for Student Active Status (Active / Inactive) with Live Cloud Sync
@@ -7482,6 +7484,10 @@ lucide.createIcons();
       const current = adminState.students[idx].status || 'Active';
       const newStatus = (current === 'Active') ? 'Inactive' : 'Active';
       adminState.students[idx].status = newStatus;
+      if (newStatus === 'Active') {
+        adminState.students[idx].feeStatus = 'Paid';
+        adminState.students[idx].verifiedAt = new Date().toISOString();
+      }
       saveAdminState();
       
       // In-place sync to Central Cloud Server with ALL 32 points preserved!
@@ -7494,6 +7500,8 @@ lucide.createIcons();
       });
       
       renderAdminStudents();
+      renderVerificationQueue();
+      updateTopMetrics();
     }
 
     // Store last registered student for 1-click WhatsApp & Print actions
@@ -10921,8 +10929,10 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const tbody = document.getElementById('verif-students-tbody');
       if (!tbody) return;
 
-      const pendingCount = adminState.students.filter(s => s.status !== 'Active' || s.feeStatus !== 'Paid').length;
-      const verifiedCount = adminState.students.filter(s => s.status === 'Active' && s.feeStatus === 'Paid').length;
+      const isPendingStudent = (s) => (s.status === 'Pending Approval' || s.status === 'Pending' || s.levelUpPending === true);
+
+      const pendingCount = adminState.students.filter(isPendingStudent).length;
+      const verifiedCount = adminState.students.filter(s => s.status === 'Active' && !s.levelUpPending).length;
       const utrCount = adminState.students.filter(s => s.utrNumber && s.utrNumber !== 'N/A').length;
       const trnCount = adminState.trainers.length;
 
@@ -10939,11 +10949,11 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       
       // Filter logic: Default shows ONLY pending students waiting for verification!
       let filtered = adminState.students.filter(s => {
-        const isApproved = (s.status === 'Active') && (s.feeStatus === 'Paid');
+        const pending = isPendingStudent(s);
         if (filter === 'PENDING') {
-          return !isApproved; // Show ONLY unapproved / unpaid students!
+          return pending; // Show ONLY unapproved / pending students!
         } else if (filter === 'VERIFIED') {
-          return isApproved;  // Show already approved history
+          return !pending;  // Show already approved history
         }
         return true; // ALL
       });
@@ -10981,7 +10991,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       filtered.forEach(s => {
         const tr = document.createElement('tr');
         tr.className = "hover:bg-orange-50/50 transition border-b border-slate-100";
-        const isVerified = (s.status === 'Active') && (s.feeStatus === 'Paid');
+        const isVerified = (s.status === 'Active') && (!s.levelUpPending);
 
         tr.innerHTML = `
           <td class="py-3.5 px-4">
