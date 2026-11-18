@@ -5666,226 +5666,8 @@ function getOrCreateSheet(ss, sheetName, headers) {
     };
 
     const INITIAL_COURSES = [];
-
-    const INITIAL_TRAINERS = [
-      {
-        trainerId: "YAI-TR-MH-KOP-001",
-        id: "YAI-TR-MH-KOP-001",
-        fullName: "Ustad Rahul Shinde",
-        name: "Ustad Rahul Shinde",
-        email: "rahul.shinde@yoddha.org",
-        mobile: "9822001122",
-        phone: "9822001122",
-        whatsapp: "9822001122",
-        state: "Maharashtra",
-        stateCode: "MH",
-        district: "Kolhapur",
-        districtCode: "KOP",
-        branch: "Kolhapur Training Center",
-        address: "Near Mahalaxmi Temple Training Center, Kolhapur - 416012",
-        status: "Active",
-        position: "Head Trainer & Chief Instructor",
-        password: "776688",
-        pin: "776688",
-        photo: null,
-        aadharPhoto: null,
-        studentsCount: 28
-      },
-      {
-        trainerId: "YAI-TR-MH-NSK-001",
-        id: "YAI-TR-MH-NSK-001",
-        fullName: "Ustad Sachin Patil",
-        name: "Ustad Sachin Patil",
-        email: "sachin.patil@yoddha.org",
-        mobile: "9822334455",
-        phone: "9822334455",
-        whatsapp: "9822334455",
-        state: "Maharashtra",
-        stateCode: "MH",
-        district: "Nashik",
-        districtCode: "NSK",
-        branch: "Nashik Road Training Center",
-        address: "Nashik Road Training Center, Nashik - 422101",
-        status: "Active",
-        position: "Senior Coach",
-        password: "1234",
-        pin: "1234",
-        photo: null,
-        aadharPhoto: null,
-        studentsCount: 20
-      },
-      {
-        trainerId: "YAI-TR-MH-PUN-001",
-        id: "YAI-TR-MH-PUN-001",
-        fullName: "Ustad Amit Kulkarni",
-        name: "Ustad Amit Kulkarni",
-        email: "amit.kulkarni@yoddha.org",
-        mobile: "9822998877",
-        phone: "9822998877",
-        whatsapp: "9822998877",
-        state: "Maharashtra",
-        stateCode: "MH",
-        district: "Pune",
-        districtCode: "PUN",
-        branch: "Pune Kothrud Training Center",
-        address: "Near MIT College, Kothrud, Pune - 411038",
-        status: "Active",
-        position: "Senior Coach",
-        password: "1234",
-        pin: "1234",
-        photo: null,
-        aadharPhoto: null,
-        studentsCount: 22
-      },
-      {
-        trainerId: "YAI-TR-KA-BGM-001",
-        id: "YAI-TR-KA-BGM-001",
-        fullName: "Ustad Basavaraj Patil",
-        name: "Ustad Basavaraj Patil",
-        email: "basavaraj.patil@yoddha.org",
-        mobile: "9480112233",
-        phone: "9480112233",
-        whatsapp: "9480112233",
-        state: "Karnataka",
-        stateCode: "KA",
-        district: "Belagavi",
-        districtCode: "BGM",
-        branch: "Belagavi Training Center",
-        address: "Camp Road Training Center, Belagavi - 590001",
-        status: "Active",
-        position: "Branch Instructor",
-        password: "1234",
-        pin: "1234",
-        photo: null,
-        aadharPhoto: null,
-        studentsCount: 15
-      }
-    ];
-
-    // Seed Data with Complete 32 Points and Unique State-District ID
-    const INITIAL_STUDENTS = [
-      {
-        studentId: "YAI-STU-26-MH-KOP-000001",
-        id: "YAI-STU-26-MH-KOP-000001",
-        studentName: "Onkar Sachin Sawant",
-        dob: "2012-05-14",
-        age: 14,
-        levels: { l1: true, l2: false, l3: false, l4: false, l5: false, l6: false, s1: false, s2: false, s3: false, s4: false },
-        schoolName: "Shivaji Vidyalaya High School",
-        schoolAddress: "Tarabai Park, Kolhapur",
-        schoolContact: "0231-24451122",
-        standard: "8th Standard",
-        parentName: "Sachin Sawant",
-        parentMobile: "9822001122",
-        city: "Kolhapur",
-        district: "Kolhapur",
-        districtCode: "KOP",
-        state: "Maharashtra",
-        stateCode: "MH",
-        admissionDate: "2026-11-09",
-        requestedLevel: "Level 1",
-        trainerId: "YAI-TR-MH-KOP-001",
-        trainerName: "Ustad Rahul Shinde",
-        status: "Active",
-        feeStatus: "Paid",
-        feeAmount: 500,
-        utrNumber: "412984712093",
-        photo: null,
-        aadharPhoto: null
-      },
-      {
-        studentId: "YAI-STU-26-MH-PUN-000001",
-        id: "YAI-STU-26-MH-PUN-000001",
-        studentName: "Pratik Vilas More",
-        dob: "2011-08-20",
-        age: 15,
-        levels: { l1: true, l2: false, l3: false, l4: false, l5: false, l6: false, s1: false, s2: false, s3: false, s4: false },
-        schoolName: "Modern High School",
-        schoolAddress: "Kothrud, Pune",
-        schoolContact: "020-25441100",
-        standard: "9th Standard",
-        parentName: "Vilas More",
-        parentMobile: "9822998877",
-        city: "Pune",
-        district: "Pune",
-        districtCode: "PUN",
-        state: "Maharashtra",
-        stateCode: "MH",
-        admissionDate: "2026-11-08",
-        requestedLevel: "Level 1",
-        trainerId: "YAI-TR-MH-PUN-001",
-        trainerName: "Ustad Amit Kulkarni",
-        status: "Active",
-        feeStatus: "Paid",
-        feeAmount: 500,
-        utrNumber: "412999012384",
-        photo: null,
-        aadharPhoto: null
-      },
-      {
-        studentId: "YAI-STU-26-MH-KOP-000004",
-        id: "YAI-STU-26-MH-KOP-000004",
-        studentName: "Rohan Deshmukh",
-        dob: "2012-10-15",
-        age: 14,
-        levels: { l1: false, l2: false, l3: false, l4: false, l5: false, l6: false, s1: false, s2: false, s3: false, s4: false },
-        schoolName: "Rajaram High School, Kolhapur",
-        schoolAddress: "Bhavani Mandap, Kolhapur",
-        schoolContact: "0231-2554433",
-        standard: "8th Standard",
-        parentName: "Sanjay Deshmukh",
-        parentMobile: "9822776655",
-        city: "Kolhapur",
-        district: "Kolhapur",
-        districtCode: "KOP",
-        state: "Maharashtra",
-        stateCode: "MH",
-        admissionDate: "2026-11-10",
-        requestedLevel: "Level 1",
-        trainerId: "YAI-TR-MH-KOP-001",
-        trainerName: "Ustad Rahul Shinde",
-        status: "Pending Approval",
-        feeStatus: "Unpaid",
-        feeAmount: 500,
-        utrNumber: "412999554433",
-        photo: null,
-        aadharPhoto: null
-      },
-      {
-        studentId: "YAI-STU-26-MH-NSK-000001",
-        id: "YAI-STU-26-MH-NSK-000001",
-        studentName: "Anushka Ganesh Tambade",
-        dob: "2013-03-12",
-        age: 13,
-        levels: { l1: true, l2: true, l3: false, l4: false, l5: false, l6: false, s1: false, s2: false, s3: false, s4: false },
-        schoolName: "Adarsh Kanya Vidyalaya",
-        schoolAddress: "Gangapur Road, Nashik",
-        schoolContact: "0253-2311223",
-        standard: "7th Standard",
-        parentName: "Ganesh Tambade",
-        parentMobile: "9822110099",
-        city: "Nashik",
-        district: "Nashik",
-        districtCode: "NSK",
-        state: "Maharashtra",
-        stateCode: "MH",
-        admissionDate: "2026-11-07",
-        requestedLevel: "Level 2",
-        level: "Level 2",
-        trainerId: "YAI-TR-MH-NSK-001",
-        trainerName: "Ustad Sachin Patil",
-        status: "Active",
-        feeStatus: "Paid",
-        feeAmount: 800,
-        utrNumber: "412888123901",
-        photo: null,
-        aadharPhoto: null,
-        levelHistory: {
-          1: { levelNum: 1, levelName: "Level 1", status: "Passed", totalScore: 88, aiScore: 44, trainerScore: 44, examDate: "07 Nov 2026" }
-        }
-      }
-    ];
-
+    const INITIAL_TRAINERS = [];
+    const INITIAL_STUDENTS = [];
     const INITIAL_COMPETITIONS = [];
 
     let adminState = {
@@ -5894,13 +5676,9 @@ function getOrCreateSheet(ss, sheetName, headers) {
       adminId: 'ADMIN-YODDHA-01',
       adminPass: localStorage.getItem('yoddha_admin_pass') || '@hupare25077',
       students: (() => {
-        // Migration and district integrity sanitizer
-        let raw = localStorage.getItem('yoddha_admin_students_v8');
-        if (!raw) {
-          raw = localStorage.getItem('yoddha_admin_students_v8') || localStorage.getItem('yoddha_admin_students_v8');
-        }
-        let list = raw ? JSON.parse(raw) : INITIAL_STUDENTS;
-        if (!Array.isArray(list) || list.length === 0) list = INITIAL_STUDENTS;
+        let raw = localStorage.getItem('yoddha_admin_students_v8') || localStorage.getItem('yoddha_admin_students');
+        let list = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(list)) list = [];
 
         // SANITIZATION: Strict District & Trainer Alignment & Dummy Removal
         list = list.filter(s => {
@@ -5908,60 +5686,39 @@ function getOrCreateSheet(ss, sheetName, headers) {
           const sName = (s.studentName || s.name || '').trim();
           if (sId.includes('999999') || sId.includes('TEST')) return false;
           if (sName.toLowerCase() === 'student' && !s.dob) return false;
+          if (sId === 'YAI-STU-26-MH-KOP-000001' || sId === 'YAI-STU-26-MH-PUN-000001' || sId === 'YAI-STU-26-MH-KOP-000004' || sId === 'YAI-STU-26-MH-NSK-000001') {
+            if (sName === 'Onkar Sachin Sawant' || sName === 'Pratik Vilas More' || sName === 'Rohan Deshmukh' || sName === 'Anushka Ganesh Tambade') return false;
+          }
           return true;
-        });
-        list.forEach(s => {
-          const sId = (s.studentId || '').toUpperCase();
-          // If student is Pune (PUN), they must NEVER belong to Kolhapur trainer
-          if (sId.includes('-PUN-') || s.districtCode === 'PUN' || s.district === 'Pune') {
-            s.district = 'Pune';
-            s.districtCode = 'PUN';
-            s.city = 'Pune';
-            if (s.trainerId === 'YAI-TR-MH-KOP-001') {
-              s.trainerId = 'YAI-TR-MH-PUN-001';
-              s.trainerName = 'Ustad Amit Kulkarni';
-            }
-          }
-          // If student is Nashik (NSK), they must NEVER belong to Kolhapur trainer
-          if (sId.includes('-NSK-') || s.districtCode === 'NSK' || s.district === 'Nashik') {
-            s.district = 'Nashik';
-            s.districtCode = 'NSK';
-            s.city = 'Nashik';
-            if (s.trainerId === 'YAI-TR-MH-KOP-001') {
-              s.trainerId = 'YAI-TR-MH-NSK-001';
-              s.trainerName = 'Ustad Sachin Patil';
-            }
-          }
         });
 
         try {
           localStorage.setItem('yoddha_admin_students_v8', JSON.stringify(list));
+          localStorage.setItem('yoddha_admin_students', JSON.stringify(list));
         } catch(e) {}
         return list;
       })(),
-      trainers: (JSON.parse(localStorage.getItem('yoddha_admin_trainers_v5')) || INITIAL_TRAINERS).map(t => ({
-        trainerId: t.trainerId || t.id,
-        id: t.trainerId || t.id,
-        fullName: t.fullName || t.name,
-        name: t.fullName || t.name,
-        email: t.email || `${(t.fullName || t.name || 'trainer').toLowerCase().replace(/[^a-z0-9]/g, '.')}@yoddha.org`,
-        mobile: t.mobile || t.phone || '9822001122',
-        phone: t.mobile || t.phone || '9822001122',
-        whatsapp: t.whatsapp || t.mobile || t.phone || '9822001122',
-        state: t.state || 'Maharashtra',
-        stateCode: t.stateCode || 'MH',
-        district: t.district || 'Kolhapur',
-        districtCode: t.districtCode || 'KOP',
-        branch: t.branch || `${t.district || 'Kolhapur'} Akhada`,
-        address: t.address || `${t.branch || t.district || 'Kolhapur Training Center'}, ${t.state || 'Maharashtra'}`,
-        status: t.status || 'Active',
-        position: t.position || 'Branch Instructor',
-        password: t.password || t.pin || '1234',
-        pin: t.password || t.pin || '1234',
-        photo: t.photo || null,
-        aadharPhoto: t.aadharPhoto || null,
-        studentsCount: t.studentsCount || 0
-      })),
+      trainers: (() => {
+        let raw = localStorage.getItem('yoddha_admin_trainers_v5') || localStorage.getItem('yoddha_admin_trainers');
+        let list = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(list)) list = [];
+        // Filter out legacy hardcoded demo trainers so deleted trainers stay deleted
+        list = list.filter(t => {
+          const id = (t.trainerId || t.id || '').toUpperCase();
+          const name = (t.fullName || t.name || '').trim();
+          if (id === 'YAI-TR-MH-KOP-001' && name.includes('Rahul Shinde')) return false;
+          if (id === 'YAI-TR-MH-NSK-001' && name.includes('Sachin Patil')) return false;
+          if (id === 'YAI-TR-MH-PUN-001' && name.includes('Amit Kulkarni')) return false;
+          if (id === 'YAI-TR-KA-BGM-001' && name.includes('Basavaraj Patil')) return false;
+          if (id === 'YAI-TR-GA-PNJ-001' && name.includes('Vikram Singh')) return false;
+          return true;
+        });
+        try {
+          localStorage.setItem('yoddha_admin_trainers_v5', JSON.stringify(list));
+          localStorage.setItem('yoddha_admin_trainers', JSON.stringify(list));
+        } catch(e) {}
+        return list;
+      })(),
       courses: JSON.parse(localStorage.getItem('yoddha_admin_courses')) || INITIAL_COURSES,
       competitions: JSON.parse(localStorage.getItem('yoddha_admin_comps')) || INITIAL_COMPETITIONS,
       DEFAULT_LEVEL_FEES: {
@@ -6269,7 +6026,88 @@ function getOrCreateSheet(ss, sheetName, headers) {
           }
         }
 
-        // 2. STRICT TRAINER AUTHENTICATION
+        // 2. CENTRAL CLOUD TRAINER VERIFICATION (Authoritative Source of Truth)
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Verifying with Central Cloud...</span>';
+          lucide.createIcons();
+        }
+
+        const webhookUrl = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
+        let authResult = null;
+        let cloudAttempted = false;
+
+        if (webhookUrl && navigator.onLine !== false) {
+          try {
+            cloudAttempted = true;
+            const verifyUrl = webhookUrl + (webhookUrl.includes('?') ? '&' : '?') + 'action=verifyLogin&id=' + encodeURIComponent(id) + '&pass=' + encodeURIComponent(pass) + '&t=' + Date.now();
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 6500);
+            const resp = await fetch(verifyUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            authResult = await resp.json();
+          } catch (netErr) {
+            console.warn('Live cloud verification network notice:', netErr);
+          }
+        }
+
+        // A. CLOUD DECISION: If Central Cloud Server responded, obey cloud result strictly!
+        if (cloudAttempted && authResult) {
+          if (authResult.authenticated === true) {
+            const trn = authResult.trainer || authResult;
+            const trnId = trn.userId || trn.trainerId || trn.id || id;
+            const loc = getTrainerLocation({ ...trn, trainerId: trnId });
+            adminState.isLoggedIn = true;
+            adminState.currentUser = {
+              role: 'Trainer',
+              name: trn.userName || trn.fullName || trn.name || 'Certified Trainer',
+              fullName: trn.userName || trn.fullName || trn.name || 'Certified Trainer',
+              id: trnId,
+              trainerId: trnId,
+              photo: trn.photo || null,
+              state: loc.stateName,
+              stateCode: loc.stCode,
+              district: loc.districtName,
+              districtCode: loc.distCode,
+              branch: (trn.branch || (loc.districtName + ' Branch')).replace(/Akhada/gi, 'Branch'),
+              position: trn.position || 'Trainer'
+            };
+
+            const trnIdx = adminState.trainers.findIndex(t => (t.trainerId || t.id || '').toUpperCase() === (adminState.currentUser.id || '').toUpperCase());
+            if (trnIdx !== -1) {
+              adminState.trainers[trnIdx] = { ...adminState.trainers[trnIdx], ...adminState.currentUser };
+            } else {
+              adminState.trainers.push(adminState.currentUser);
+            }
+            saveAdminState();
+
+            localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
+            localStorage.setItem('yoddha_admin_logged', 'true');
+            localStorage.setItem('yoddha_last_active_time', Date.now().toString());
+
+            checkAuth();
+            setPortalRole('Trainer', adminState.currentUser);
+            resetInactivityTimer();
+            startCountdownTicker();
+            pullLiveCloudRecords(true);
+            return;
+          } else {
+            // Cloud explicitly rejected this login (Trainer was deleted from Sheet or password wrong)
+            if (errorMsg) {
+              const msg = authResult.message || 'Unique ID not found or account removed from Central Cloud Server!';
+              errorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>' + msg + '</span>';
+              errorMsg.classList.remove('hidden');
+              lucide.createIcons();
+            }
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = originalBtnHTML;
+            }
+            return;
+          }
+        }
+
+        // B. OFFLINE FALLBACK: Only if Cloud server is completely unreachable due to offline network
         const cleanDigitsOnly = normId.replace(/[^0-9]/g, '');
         const localTrainerMatch = adminState.trainers.find(t => {
           const tId = (t.trainerId || t.id || '').trim().toUpperCase();
@@ -6283,7 +6121,6 @@ function getOrCreateSheet(ss, sheetName, headers) {
           if (!(matchId || matchPhone || matchEmail)) return false;
 
           const storedPass = String(t.password || t.pin || '').trim();
-          // STRICT MATCH: Password must match trainer's stored password / PIN exactly!
           return (storedPass && normPass === storedPass);
         });
 
@@ -6302,7 +6139,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
             stateCode: loc.stCode,
             district: loc.districtName,
             districtCode: loc.distCode,
-            branch: (localTrainerMatch.branch || `${loc.districtName} Branch`).replace(/Akhada/gi, 'Branch'),
+            branch: (localTrainerMatch.branch || (loc.districtName + ' Branch')).replace(/Akhada/gi, 'Branch'),
             position: 'Trainer'
           };
           localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
@@ -6317,94 +6154,15 @@ function getOrCreateSheet(ss, sheetName, headers) {
           return;
         }
 
-        // 3. Central Cloud Server Verification (if not found in local cache or updated on cloud)
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Verifying credentials...</span>';
-          lucide.createIcons();
-        }
-
-        const webhookUrl = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
-        let authResult = null;
-
-        if (webhookUrl) {
-          try {
-            const verifyUrl = `${webhookUrl}${webhookUrl.includes('?') ? '&' : '?'}action=verifyLogin&id=${encodeURIComponent(id)}&pass=${encodeURIComponent(pass)}&t=${Date.now()}`;
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 6000);
-            const resp = await fetch(verifyUrl, { signal: controller.signal });
-            clearTimeout(timeoutId);
-            authResult = await resp.json();
-          } catch (netErr) {
-            console.warn("Live cloud verification notice:", netErr);
-          }
-        }
-
-        if (authResult && authResult.authenticated === true) {
-          if (authResult.role === 'admin') {
-            adminState.isLoggedIn = true;
-            adminState.currentUser = {
-              role: 'Admin',
-              name: authResult.userName || 'Central Headquarters',
-              id: authResult.userId || 'ADMIN-YODDHA-01'
-            };
-            localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
-            localStorage.setItem('yoddha_admin_logged', 'true');
-            localStorage.setItem('yoddha_last_active_time', Date.now().toString());
-
-            checkAuth();
-            setPortalRole('Admin');
-            resetInactivityTimer();
-            startCountdownTicker();
-            return;
-          }
-
-          // Trainer Login from Cloud
-          const trn = authResult.trainer || authResult;
-          const trnId = trn.userId || trn.trainerId || trn.id || id;
-          const loc = getTrainerLocation({ ...trn, trainerId: trnId });
-          adminState.isLoggedIn = true;
-          adminState.currentUser = {
-            role: 'Trainer',
-            name: trn.userName || trn.fullName || trn.name || 'Certified Trainer',
-            fullName: trn.userName || trn.fullName || trn.name || 'Certified Trainer',
-            id: trnId,
-            trainerId: trnId,
-            photo: trn.photo || null,
-            state: loc.stateName,
-            stateCode: loc.stCode,
-            district: loc.districtName,
-            districtCode: loc.distCode,
-            branch: (trn.branch || `${loc.districtName} Branch`).replace(/Akhada/gi, 'Branch'),
-            position: 'Trainer'
-          };
-
-          const trnIdx = adminState.trainers.findIndex(t => (t.trainerId || t.id || '').toUpperCase() === (adminState.currentUser.id || '').toUpperCase());
-          if (trnIdx !== -1) {
-            adminState.trainers[trnIdx] = { ...adminState.trainers[trnIdx], ...adminState.currentUser };
-          } else {
-            adminState.trainers.push(adminState.currentUser);
-          }
-          saveAdminState();
-
-          localStorage.setItem('yoddha_current_user', JSON.stringify(adminState.currentUser));
-          localStorage.setItem('yoddha_admin_logged', 'true');
-          localStorage.setItem('yoddha_last_active_time', Date.now().toString());
-
-          checkAuth();
-          setPortalRole('Trainer', adminState.currentUser);
-          resetInactivityTimer();
-          startCountdownTicker();
-          pullLiveCloudRecords(true);
-          return;
-        }
-
-        // Credentials strictly invalid - NEVER allow unauthorized login!
+        // If neither cloud nor local match
         if (errorMsg) {
-          const msg = (authResult && authResult.message) ? authResult.message : 'Invalid Unique ID or Password! Please verify and re-enter.';
-          errorMsg.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>${msg}</span>`;
+          errorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>Invalid Unique ID or Password! Please verify and re-enter.</span>';
           errorMsg.classList.remove('hidden');
           lucide.createIcons();
+        }
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnHTML;
         }
 
       } catch (err) {
@@ -14476,7 +14234,7 @@ function handleAdminCreateCompetition(e) {
           let updatedStudents = 0;
 
           // 1. Live Sync Trainers from Google Sheet (Authoritative Single Source of Truth & Mirror)
-          if (Array.isArray(data.trainers) && data.trainers.length > 0) {
+          if (Array.isArray(data.trainers)) {
             const cloudTrainerList = [];
             data.trainers.forEach(trn => {
               const trnId = (trn.trainerId || trn.id || '').toUpperCase();
@@ -14498,7 +14256,7 @@ function handleAdminCreateCompetition(e) {
                 whatsapp: trn.whatsapp || trn.mobile || existing.whatsapp || '',
                 state: trn.state || existing.state || 'Maharashtra',
                 district: trn.district || existing.district || 'Kolhapur',
-                branch: (trn.branch || existing.branch || `${trn.district || 'Kolhapur'} Branch`).replace(/Akhada/gi, 'Branch'),
+                branch: (trn.branch || existing.branch || (trn.district || 'Kolhapur') + ' Branch').replace(/Akhada/gi, 'Branch'),
                 address: trn.address || existing.address || '',
                 photo: (trn.photo && trn.photo.length > 20) ? trn.photo : (existing.photo || null),
                 aadharPhoto: (trn.aadharPhoto && trn.aadharPhoto.length > 20) ? trn.aadharPhoto : (existing.aadharPhoto || null)
@@ -14517,6 +14275,17 @@ function handleAdminCreateCompetition(e) {
             // Prune trainers deleted from Google Sheet so local state mirrors sheet
             adminState.trainers = cloudTrainerList;
             localStorage.setItem('yoddha_admin_trainers', JSON.stringify(adminState.trainers));
+            localStorage.setItem('yoddha_admin_trainers_v5', JSON.stringify(adminState.trainers));
+
+            // AUTO-TERMINATE SESSION IF ACTIVE TRAINER WAS REMOVED FROM GOOGLE SHEET
+            if (adminState.currentUser && adminState.currentUser.role === 'Trainer') {
+              const curTrnId = (adminState.currentUser.trainerId || adminState.currentUser.id || '').toUpperCase();
+              const isStillAuthorized = cloudTrainerList.some(t => (t.trainerId || t.id || '').toUpperCase() === curTrnId);
+              if (!isStillAuthorized) {
+                console.warn('Active trainer session terminated: Account was removed from Central Cloud Sheet.');
+                try { handleLogout(); } catch(e) {}
+              }
+            }
           }
 
           // 2. Live Sync Students from Google Sheet (Authoritative Single Source of Truth & Mirror)
@@ -14581,6 +14350,7 @@ function handleAdminCreateCompetition(e) {
             // Prune students that were deleted from Google Sheet so Trainer Panel mirrors Sheet perfectly!
             adminState.students = cloudStudentList;
             localStorage.setItem('yoddha_admin_students', JSON.stringify(adminState.students));
+            localStorage.setItem('yoddha_admin_students_v8', JSON.stringify(adminState.students));
           }
 
           // 3. Live Sync Admin Password from Google Sheet (if configured in AcademySettings)
