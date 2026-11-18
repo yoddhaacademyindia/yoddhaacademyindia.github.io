@@ -952,7 +952,41 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    return ContentService.createTextOutput(JSON.stringify({
+        // -----------------------------------------------------------------------
+    // 8B. ACADEMY INFO & ADMIN SETTINGS UPDATE
+    // -----------------------------------------------------------------------
+    if (type.indexOf("ACADEMY") !== -1 || type.indexOf("ADMIN_SETTING") !== -1 || type.indexOf("ADMIN_PROFILE") !== -1) {
+      var sheet = getOrCreateSheet(ss, "AcademySettings", [
+        "Setting Key", "Setting Value", "Updated By", "Last Updated"
+      ]);
+      
+      var settingMap = {
+        "ACADEMY_NAME": data.academyName || "Yoddha Academy India",
+        "DIRECTORATE": data.directorate || "Central Directorate of Traditional Martial Arts & Defence",
+        "ADMIN_ID": data.adminId || "ADMIN-YODDHA-01",
+        "ADMIN_PASSWORD": data.adminPass || data.password || "",
+        "ADMIN_NAME": data.adminName || "Central Headquarters",
+        "CONTACT_MOBILE": data.mobile || data.phone || "",
+        "CONTACT_EMAIL": data.email || "",
+        "OFFICIAL_UPI": data.upi || "",
+        "HQ_ADDRESS": data.address || ""
+      };
+
+      for (var k in settingMap) {
+        if (settingMap[k]) {
+          var row = [k, String(settingMap[k]).trim(), data.updatedBy || "Admin", new Date()];
+          var updated = updateRowIfExistsOrMerge(sheet, 1, k, row);
+          if (!updated) sheet.appendRow(row);
+        }
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Academy & Admin settings saved successfully in AcademySettings sheet"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+return ContentService.createTextOutput(JSON.stringify({
       status: "error",
       message: "Unrecognized action type: " + type
     })).setMimeType(ContentService.MimeType.JSON);
