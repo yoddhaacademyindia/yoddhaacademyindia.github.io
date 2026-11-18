@@ -762,6 +762,46 @@ function doPost(e) {
     }
 
     // -----------------------------------------------------------------------
+    // 4B. FEE STRUCTURE UPDATE (Standardized Belt Pricing & UPI ID)
+    // -----------------------------------------------------------------------
+    if (type.indexOf("FEE") !== -1) {
+      var sheet = getOrCreateSheet(ss, "Fee Structure", ["Fee Parameter", "Amount (₹) / Value"]);
+      sheet.clearContents();
+      sheet.appendRow(["Fee Parameter", "Amount (₹) / Value"]);
+      sheet.appendRow(["Level 1", Number(data.level1) || 500]);
+      sheet.appendRow(["Level 2", Number(data.level2) || 600]);
+      sheet.appendRow(["Level 3", Number(data.level3) || 700]);
+      sheet.appendRow(["Level 4", Number(data.level4) || 800]);
+      sheet.appendRow(["Level 5", Number(data.level5) || 900]);
+      sheet.appendRow(["Level 6", Number(data.level6) || 1000]);
+      sheet.appendRow(["Senior 1", Number(data.senior1) || 1200]);
+      sheet.appendRow(["Senior 2", Number(data.senior2) || 1400]);
+      sheet.appendRow(["Senior 3", Number(data.senior3) || 1600]);
+      sheet.appendRow(["Senior 4", Number(data.senior4) || 1800]);
+      sheet.appendRow(["Official UPI ID", String(data.upi || "yoddhaacademy5@okicici").trim()]);
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Fee structure updated successfully in Fee Structure sheet"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // -----------------------------------------------------------------------
+    // 4C. COMPETITION DELETION
+    // -----------------------------------------------------------------------
+    if (type.indexOf("COMPETITION_DELETE") !== -1 || type.indexOf("COMPETITION_DELETED") !== -1) {
+      var sheet = ss.getSheetByName("Competitions");
+      if (sheet) {
+        var compId = data.compId || data.id || "";
+        deleteRowByMatch(sheet, 2, compId);
+      }
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Competition deleted from Central Cloud Server"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // -----------------------------------------------------------------------
     // 5. COMPETITIONS IN-PLACE UPDATE
     // -----------------------------------------------------------------------
     if (type.indexOf("COMPETITION") !== -1 && type.indexOf("RECORD") === -1) {

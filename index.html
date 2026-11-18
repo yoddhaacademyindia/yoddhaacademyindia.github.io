@@ -3965,6 +3965,46 @@ function doPost(e) {
     }
 
     // -----------------------------------------------------------------------
+    // 4B. FEE STRUCTURE UPDATE (Standardized Belt Pricing & UPI ID)
+    // -----------------------------------------------------------------------
+    if (type.indexOf("FEE") !== -1) {
+      var sheet = getOrCreateSheet(ss, "Fee Structure", ["Fee Parameter", "Amount (₹) / Value"]);
+      sheet.clearContents();
+      sheet.appendRow(["Fee Parameter", "Amount (₹) / Value"]);
+      sheet.appendRow(["Level 1", Number(data.level1) || 500]);
+      sheet.appendRow(["Level 2", Number(data.level2) || 600]);
+      sheet.appendRow(["Level 3", Number(data.level3) || 700]);
+      sheet.appendRow(["Level 4", Number(data.level4) || 800]);
+      sheet.appendRow(["Level 5", Number(data.level5) || 900]);
+      sheet.appendRow(["Level 6", Number(data.level6) || 1000]);
+      sheet.appendRow(["Senior 1", Number(data.senior1) || 1200]);
+      sheet.appendRow(["Senior 2", Number(data.senior2) || 1400]);
+      sheet.appendRow(["Senior 3", Number(data.senior3) || 1600]);
+      sheet.appendRow(["Senior 4", Number(data.senior4) || 1800]);
+      sheet.appendRow(["Official UPI ID", String(data.upi || "yoddhaacademy5@okicici").trim()]);
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Fee structure updated successfully in Fee Structure sheet"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // -----------------------------------------------------------------------
+    // 4C. COMPETITION DELETION
+    // -----------------------------------------------------------------------
+    if (type.indexOf("COMPETITION_DELETE") !== -1 || type.indexOf("COMPETITION_DELETED") !== -1) {
+      var sheet = ss.getSheetByName("Competitions");
+      if (sheet) {
+        var compId = data.compId || data.id || "";
+        deleteRowByMatch(sheet, 2, compId);
+      }
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Competition deleted from Central Cloud Server"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // -----------------------------------------------------------------------
     // 5. COMPETITIONS IN-PLACE UPDATE
     // -----------------------------------------------------------------------
     if (type.indexOf("COMPETITION") !== -1 &amp;&amp; type.indexOf("RECORD") === -1) {
@@ -5625,13 +5665,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
       }
     };
 
-    const INITIAL_COURSES = [
-      { id: "CRS-01", name: "Traditional Lathi-Kathi Fundamental Course", duration: "4 Months", fee: 500, levels: "Level 1 to 3", desc: "Basic stances, grips, single-hand spins & defensive postures.", youtubeUrl: "https://www.youtube.com/watch?v=kXYiU_JCYtU" },
-      { id: "CRS-02", name: "Advanced Pettebaji & Strike Combinations", duration: "4 Months", fee: 800, levels: "Level 4 to 6", desc: "Traditional footwork, tiger stance, jump spins & 1-on-1 sparring.", youtubeUrl: "https://www.youtube.com/watch?v=eBGIQ7ZuuiU" },
-      { id: "CRS-03", name: "Shield-Stick Combat & Speed Drills", duration: "6 Months", fee: 1200, levels: "Senior 1 to 2", desc: "Shield defense, fire stick demonstrations & historical Maratha combat.", youtubeUrl: "https://www.youtube.com/watch?v=kJQP7kiw5Fk" },
-      { id: "CRS-04", name: "Grandmaster Yoddha & Senior Trainer Degree", duration: "1 Year", fee: 2500, levels: "Senior 3 to 4", desc: "National referee rules, scoring criteria & Grandmaster title.", youtubeUrl: "https://www.youtube.com/watch?v=JGwWNGJdvx8" },
-      { id: "CRS-05", name: "Women & Youth Self-Defense Program", duration: "4 Months", fee: 500, levels: "Level 1 to 4", desc: "Rapid reflexes, threat neutralization & practical stick self-defense.", youtubeUrl: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ" }
-    ];
+    const INITIAL_COURSES = [];
 
     const INITIAL_TRAINERS = [
       {
@@ -5852,11 +5886,7 @@ function getOrCreateSheet(ss, sheetName, headers) {
       }
     ];
 
-    const INITIAL_COMPETITIONS = [
-      { id: "COMP-DIST-2026", level: "District Level", title: "Kolhapur District Traditional Lathi Championship", date: "24 Oct 2026", location: "Khashaba Jadhav Wrestling Complex, Kolhapur", categories: "Sub-Junior (8-12), Junior (13-16), Senior (17+)", entries: 18, fee: 250, status: "Registrations Open" },
-      { id: "COMP-STATE-2026", level: "State Level", title: "Maharashtra State Warrior Cup Championship", date: "15 Nov 2026", location: "Balewadi Sports Complex, Pune", categories: "Junior, Senior Ranks", entries: 28, fee: 350, status: "Preparations Active" },
-      { id: "COMP-NAT-2026", level: "National Championship", title: "All India National Martial Arts & Lathi Mahakumbh", date: "25-26 Dec 2026", location: "Chhatrapati Sambhajinagar, MH", categories: "Open National Division", entries: 54, fee: 500, status: "Official Championship" }
-    ];
+    const INITIAL_COMPETITIONS = [];
 
     let adminState = {
       isLoggedIn: localStorage.getItem('yoddha_admin_logged') === 'true',
@@ -9997,6 +10027,9 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     }
 
     // 7. Ultra-Lightweight AI Motion Engine (Offscreen 48x48 @ 5 FPS - Battery & Thermal Safe)
+    let examMediaStream = null;
+    let aiSimInterval = null;
+    let examTimerInterval = null;
     let examMotionInterval = null;
     let examMotionSamples = [];
     let examPrevFrameGray = null;
@@ -10100,57 +10133,61 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
     // 9. Stop Camera Hardware & Fully Release Sensors (Zero Phone Heat)
     function stopExamCamera() {
-      if (examMotionInterval) {
-        clearInterval(examMotionInterval);
-        examMotionInterval = null;
-      }
+      try {
+        if (typeof examMotionInterval !== 'undefined' && examMotionInterval) {
+          clearInterval(examMotionInterval);
+          examMotionInterval = null;
+        }
+      } catch(e) {}
       examMotionSamples = [];
       examPrevFrameGray = null;
 
-      if (examMediaStream) {
-        examMediaStream.getTracks().forEach(t => {
-          try { t.stop(); } catch(e) {}
-        });
-        examMediaStream = null;
-      }
+      try {
+        if (typeof examMediaStream !== 'undefined' && examMediaStream) {
+          examMediaStream.getTracks().forEach(t => {
+            try { t.stop(); } catch(e) {}
+          });
+          examMediaStream = null;
+        }
+      } catch(e) {}
 
-      const video = document.getElementById('exam-camera-video');
-      if (video) {
-        try {
+      try {
+        const video = document.getElementById('exam-camera-video');
+        if (video) {
           video.pause();
           video.srcObject = null;
-        } catch(e) {}
-      }
+        }
+      } catch(e) {}
 
-      if (examTimerInterval) {
-        clearInterval(examTimerInterval);
-        examTimerInterval = null;
-      }
-      if (aiSimInterval) {
-        clearInterval(aiSimInterval);
-        aiSimInterval = null;
-      }
-      if (examClockInterval) {
-        clearInterval(examClockInterval);
-        examClockInterval = null;
-      }
+      try {
+        if (typeof examTimerInterval !== 'undefined' && examTimerInterval) {
+          clearInterval(examTimerInterval);
+          examTimerInterval = null;
+        }
+        if (typeof aiSimInterval !== 'undefined' && aiSimInterval) {
+          clearInterval(aiSimInterval);
+          aiSimInterval = null;
+        }
+        if (typeof examClockInterval !== 'undefined' && examClockInterval) {
+          clearInterval(examClockInterval);
+          examClockInterval = null;
+        }
+      } catch(e) {}
       examIsRunning = false;
     }
 
     function closeBeltExamModal() {
-      stopExamCamera();
-      if (examTimerInterval) {
-        clearInterval(examTimerInterval);
-        examTimerInterval = null;
+      try {
+        stopExamCamera();
+      } catch(err) {
+        console.warn("stopExamCamera error suppressed:", err);
       }
-      if (examClockInterval) {
-        clearInterval(examClockInterval);
-        examClockInterval = null;
-      }
-      if (examMotionInterval) {
-        clearInterval(examMotionInterval);
-        examMotionInterval = null;
-      }
+      try {
+        if (typeof examTimerInterval !== 'undefined' && examTimerInterval) clearInterval(examTimerInterval);
+        if (typeof examClockInterval !== 'undefined' && examClockInterval) clearInterval(examClockInterval);
+        if (typeof examMotionInterval !== 'undefined' && examMotionInterval) clearInterval(examMotionInterval);
+        if (typeof aiSimInterval !== 'undefined' && aiSimInterval) clearInterval(aiSimInterval);
+      } catch(e) {}
       examIsRunning = false;
       activeExamAiScore = null;
       closeModal('modal-belt-exam');
@@ -10506,7 +10543,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, W, H);
 
-      // 2. Double Royal Border
+      // 2. Double Royal Border Frame (Wide and Balanced)
       ctx.strokeStyle = '#c2410c';
       ctx.lineWidth = 16;
       ctx.strokeRect(36, 36, W - 72, H - 72);
@@ -10521,109 +10558,142 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       ctx.strokeRect(66, 66, W - 132, H - 132);
       ctx.setLineDash([]);
 
+      // Corner Ornaments
+      const cornerSize = 46;
+      const drawCorner = (cx, cy, flipX, flipY) => {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(flipX, flipY);
+        ctx.fillStyle = '#b45309';
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(cornerSize, 0);
+        ctx.lineTo(0, cornerSize);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      };
+      drawCorner(70, 70, 1, 1);
+      drawCorner(W - 70, 70, -1, 1);
+      drawCorner(70, H - 70, 1, -1);
+      drawCorner(W - 70, H - 70, -1, -1);
+
       // 3. Watermark
       ctx.save();
-      ctx.fillStyle = 'rgba(194, 65, 12, 0.04)';
-      ctx.font = '900 180px Rajdhani, Arial, sans-serif';
+      ctx.fillStyle = 'rgba(194, 65, 12, 0.035)';
+      ctx.font = '900 240px Rajdhani, Arial, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('YODDHA', W / 2, H / 2);
       ctx.restore();
 
-      // 4. Header Badge Pill
+      // 4. Header Badge Pill (Wide & Elegant)
       ctx.fillStyle = '#ea580c';
-      drawCanvasRoundRect(ctx, W / 2 - 270, 110, 540, 38, 19, true, false);
+      drawCanvasRoundRect(ctx, W / 2 - 380, 105, 760, 42, 21, true, false);
       ctx.fillStyle = '#ffffff';
-      ctx.font = '900 13px Rajdhani, Arial, sans-serif';
+      ctx.font = '900 15px Rajdhani, Arial, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('GOVT. REGD. NATIONAL MARTIAL ARTS TRAINING COUNCIL', W / 2, 129);
+      ctx.fillText('GOVT. REGD. NATIONAL MARTIAL ARTS TRAINING COUNCIL', W / 2, 126);
 
-      // 5. Academy Master Title
+      // 5. Academy Master Title (Grand & Wide)
       ctx.fillStyle = '#431407';
-      ctx.font = '900 58px Rajdhani, Arial, sans-serif';
+      ctx.font = '900 78px Rajdhani, Arial, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('YODDHA ACADEMY INDIA', W / 2, 210);
+      ctx.fillText('YODDHA ACADEMY INDIA', W / 2, 212);
 
       ctx.fillStyle = '#9a3412';
-      ctx.font = '700 17px Arial, sans-serif';
-      ctx.fillText('ALL INDIA TRADITIONAL MARTIAL ARTS & SPORTS TRAINING ACADEMY', W / 2, 250);
+      ctx.font = '800 21px Arial, sans-serif';
+      ctx.fillText('ALL INDIA TRADITIONAL MARTIAL ARTS & SPORTS TRAINING ACADEMY', W / 2, 252);
 
-      // Gold Accent Divider
+      // Gold Accent Divider Line
       ctx.strokeStyle = '#d97706';
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(W / 2 - 250, 280);
-      ctx.lineTo(W / 2 + 250, 280);
+      ctx.moveTo(W / 2 - 500, 278);
+      ctx.lineTo(W / 2 + 500, 278);
       ctx.stroke();
 
-      // 6. Certificate Title Pill
-      ctx.fillStyle = '#c2410c';
-      ctx.font = '900 34px Rajdhani, Arial, sans-serif';
-      ctx.fillText('CERTIFICATE OF LEVEL PROMOTION & SKILL EXCELLENCE', W / 2, 345);
+      // Diamond ornament in divider
+      ctx.fillStyle = '#b45309';
+      ctx.beginPath();
+      ctx.arc(W / 2, 278, 6.5, 0, Math.PI * 2);
+      ctx.fill();
 
-      // 7. Student Name
+      // 6. Certificate Title Banner Pill (Broad, Beautiful, Fills Page)
+      ctx.fillStyle = '#fff7ed';
+      drawCanvasRoundRect(ctx, W / 2 - 700, 310, 1400, 56, 28, true, true, '#fdba74', 2.5);
+      ctx.fillStyle = '#c2410c';
+      ctx.font = '900 36px Rajdhani, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('CERTIFICATE OF LEVEL PROMOTION & SKILL EXCELLENCE', W / 2, 338);
+
+      // 7. Student Name Section
       ctx.fillStyle = '#64748b';
-      ctx.font = 'italic 20px Georgia, serif';
-      ctx.fillText('This is to officially certify that', W / 2, 420);
+      ctx.font = 'italic 24px Georgia, serif';
+      ctx.fillText('This is to officially certify that', W / 2, 415);
 
       ctx.fillStyle = '#0f172a';
-      ctx.font = '900 62px Rajdhani, Arial, sans-serif';
-      ctx.fillText(s.studentName.toUpperCase(), W / 2, 500);
+      ctx.font = '900 76px Rajdhani, Arial, sans-serif';
+      ctx.fillText(s.studentName.toUpperCase(), W / 2, 492);
 
-      // Gold Underline
+      // Wide Golden Underline
       ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 4.5;
       const sWidth = ctx.measureText(s.studentName.toUpperCase()).width;
       ctx.beginPath();
-      ctx.moveTo(W / 2 - (sWidth / 2) - 30, 516);
-      ctx.lineTo(W / 2 + (sWidth / 2) + 30, 516);
+      ctx.moveTo(W / 2 - (sWidth / 2) - 50, 508);
+      ctx.lineTo(W / 2 + (sWidth / 2) + 50, 508);
       ctx.stroke();
 
-      // Student Meta
+      // Student Meta Line
       ctx.fillStyle = '#9a3412';
-      ctx.font = '800 22px Rajdhani, Arial, sans-serif';
-      ctx.fillText('STUDENT ID: ' + s.studentId + '   •   BRANCH: ' + branch.toUpperCase(), W / 2, 560);
+      ctx.font = '800 26px Rajdhani, Arial, sans-serif';
+      ctx.fillText('STUDENT ID: ' + s.studentId + '   •   BRANCH: ' + branch.toUpperCase(), W / 2, 552);
 
-      // Paragraph
+      // Description Paragraph (Broad line length spanning 1650px)
       ctx.fillStyle = '#334155';
-      ctx.font = '500 18px Arial, sans-serif';
-      ctx.fillText('has successfully fulfilled all Traditional Training requirements and cleared the Official Level Practical Examination', W / 2, 625);
-      ctx.fillText('with distinguished merit under the syllabus and testing standards of Yoddha Academy India.', W / 2, 660);
+      ctx.font = '600 24px Arial, sans-serif';
+      ctx.fillText('has successfully fulfilled all Traditional Training requirements and cleared the Official Level Practical Examination', W / 2, 616);
+      ctx.fillText('with distinguished merit under the syllabus and testing standards of Yoddha Academy India.', W / 2, 652);
 
-      // 8. Exam Score Matrix (3 Rounded Cards)
-      const scoreBoxY = 730;
-      const scoreBoxW = 340;
-      const scoreBoxH = 110;
+      // 8. Exam Score Matrix (3 Wide & Spacious Rounded Cards - Spanning 1540px!)
+      const scoreBoxY = 708;
+      const scoreBoxW = 490;
+      const scoreBoxH = 135;
+      const gap = 35;
 
       const drawScoreBox = (x, label, scoreVal, scoreColor) => {
         ctx.fillStyle = '#fffbeb';
-        drawCanvasRoundRect(ctx, x, scoreBoxY, scoreBoxW, scoreBoxH, 16, true, true, '#fde68a', 2);
+        drawCanvasRoundRect(ctx, x, scoreBoxY, scoreBoxW, scoreBoxH, 18, true, true, '#fde68a', 2.5);
         ctx.fillStyle = '#64748b';
-        ctx.font = '800 13px Arial, sans-serif';
+        ctx.font = '800 16px Arial, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(label.toUpperCase(), x + scoreBoxW / 2, scoreBoxY + 36);
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText(label.toUpperCase(), x + scoreBoxW / 2, scoreBoxY + 42);
         ctx.fillStyle = scoreColor;
-        ctx.font = '900 36px Rajdhani, Arial, sans-serif';
-        ctx.fillText(scoreVal, x + scoreBoxW / 2, scoreBoxY + 84);
+        ctx.font = '900 48px Rajdhani, Arial, sans-serif';
+        ctx.fillText(scoreVal, x + scoreBoxW / 2, scoreBoxY + 104);
       };
 
-      drawScoreBox(W / 2 - scoreBoxW * 1.5 - 20, 'AI Practical Score', aiScore + ' / 50', '#ea580c');
-      drawScoreBox(W / 2 - scoreBoxW / 2, 'Certified Trainer Score', trainerScore + ' / 50', '#b45309');
-      drawScoreBox(W / 2 + scoreBoxW * 0.5 + 20, 'Grand Total Score', totalScore + ' / 100', '#047857');
+      const startX = W / 2 - (scoreBoxW * 1.5 + gap);
+      drawScoreBox(startX, 'AI Practical Score', aiScore + ' / 50', '#ea580c');
+      drawScoreBox(startX + scoreBoxW + gap, 'Certified Trainer Score', trainerScore + ' / 50', '#b45309');
+      drawScoreBox(startX + (scoreBoxW + gap) * 2, 'Grand Total Score', totalScore + ' / 100', '#047857');
 
-      // 9. Official Promotion Pill
+      // 9. Official Promotion Pill (Wide & Striking)
       ctx.fillStyle = '#ea580c';
-      drawCanvasRoundRect(ctx, W / 2 - 320, 885, 640, 54, 27, true, false);
+      drawCanvasRoundRect(ctx, W / 2 - 500, 875, 1000, 60, 30, true, false);
       ctx.fillStyle = '#ffffff';
-      ctx.font = '900 24px Rajdhani, Arial, sans-serif';
+      ctx.font = '900 28px Rajdhani, Arial, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('OFFICIALLY PROMOTED & CERTIFIED: ' + targetLvlName.toUpperCase(), W / 2, 912);
+      ctx.fillText('OFFICIALLY PROMOTED & CERTIFIED: ' + targetLvlName.toUpperCase(), W / 2, 905);
 
-      // 10. Central Signature & Authorization Footer (Large Middle Signature Area)
-      const sigLineY = 1080;
-      const sigLineW = 380;
+      // 10. Central Signature & Authorization Footer (Spacious & Regal)
+      const sigLineY = 1070;
+      const sigLineW = 540;
       const sigLineX = (W - sigLineW) / 2;
 
       // Draw horizontal signature line
@@ -10638,110 +10708,60 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const sigImgEl = document.getElementById('stu-cert-signature-img');
       if (sigImgEl && sigImgEl.src && !sigImgEl.classList.contains('hidden') && sigImgEl.complete) {
         try {
-          ctx.drawImage(sigImgEl, W / 2 - 120, sigLineY - 90, 240, 80);
+          ctx.drawImage(sigImgEl, W / 2 - 140, sigLineY - 100, 280, 90);
         } catch(e) {
           ctx.fillStyle = '#1e293b';
-          ctx.font = 'italic bold 32px Georgia, serif';
+          ctx.font = 'italic bold 36px Georgia, serif';
           ctx.textAlign = 'center';
-          ctx.fillText('Authorized Signatory', W / 2, sigLineY - 20);
+          ctx.fillText('Authorized Signatory', W / 2, sigLineY - 22);
         }
       } else {
         ctx.fillStyle = '#1e293b';
-        ctx.font = 'italic bold 32px Georgia, serif';
+        ctx.font = 'italic bold 36px Georgia, serif';
         ctx.textAlign = 'center';
-        ctx.fillText('Authorized Signatory', W / 2, sigLineY - 20);
+        ctx.fillText('Authorized Signatory', W / 2, sigLineY - 22);
       }
 
       // Title & Authority below signature line
       ctx.textAlign = 'center';
       ctx.fillStyle = '#451a03';
-      ctx.font = '900 30px Rajdhani, Arial, sans-serif';
-      ctx.fillText('YODDHA ACADEMY INDIA AUTHORIZED', W / 2, sigLineY + 40);
+      ctx.font = '900 34px Rajdhani, Arial, sans-serif';
+      ctx.fillText('YODDHA ACADEMY INDIA AUTHORIZED', W / 2, sigLineY + 44);
 
       ctx.fillStyle = '#9a3412';
-      ctx.font = '800 17px Arial, sans-serif';
-      ctx.fillText('Founder & Grandmaster • Central Directorate of Traditional Martial Arts & Defence', W / 2, sigLineY + 68);
+      ctx.font = '800 19px Arial, sans-serif';
+      ctx.fillText('Founder & Grandmaster • Central Directorate of Traditional Martial Arts & Defence', W / 2, sigLineY + 76);
 
       ctx.fillStyle = '#64748b';
-      ctx.font = '700 14px Arial, sans-serif';
-      ctx.fillText('Date: ' + examDate + '   •   Accredited Examination & Belt Promotion Authority', W / 2, sigLineY + 95);
+      ctx.font = '700 16px Arial, sans-serif';
+      ctx.fillText('Date: ' + examDate + '   •   Accredited Examination & Belt Promotion Authority', W / 2, sigLineY + 106);
 
       // Bottom Authenticity Strip
       ctx.fillStyle = '#94a3b8';
-      ctx.font = '600 13px Arial, sans-serif';
+      ctx.font = '600 15px Arial, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('Certified Official Level Promotion Document • Issued by Yoddha Academy India • Verify at https://yoddhaacademyindia.github.io/', W / 2, 1390);
+      ctx.fillText('Certified Official Level Promotion Document • Issued by Yoddha Academy India • Verify at https://yoddhaacademyindia.github.io/', W / 2, 1395);
 
-      // Convert to PNG and Trigger Direct Download
-      canvas.toBlob((blob) => {
+      // 11. Trigger High-Res Download
+      canvas.toBlob(blob => {
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = '<i data-lucide="download" class="w-4 h-4"></i><span>Download Certificate (PNG Image)</span>';
+          btn.innerHTML = '<i data-lucide="download" class="w-4 h-4"></i><span>Download Certificate (PNG)</span>';
           if (window.lucide) lucide.createIcons();
         }
-
         if (!blob) {
           alert("Could not generate certificate image.");
           return;
         }
-
-        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        const cleanId = (s.studentId || 'YAI_STUDENT').replace(/[^a-zA-Z0-9\-]/g, '_');
-        a.href = url;
-        a.download = 'YAI_Level_' + targetLvl + '_Certificate_' + cleanId + '.png';
+        a.href = URL.createObjectURL(blob);
+        a.download = 'YAI_Level_' + targetLvl + '_Certificate_' + s.studentId + '.png';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
       }, 'image/png');
     }
 
-    // 14. Print Level Certificate
-    function printBeltCertificate() {
-      window.print();
-    }
-
-    // 15. Send Certificate to WhatsApp
-    function shareCertificateWhatsApp() {
-      if (!lastGeneratedCertStudent) return;
-      const s = lastGeneratedCertStudent;
-      const exam = s.lastExam || {};
-      const parentPhone = (s.parentMobile || '').replace(/\D/g, '');
-      const text = `🥋 *YODDHA ACADEMY INDIA - OFFICIAL LEVEL PROMOTION CERTIFICATE*\n\n` +
-        `Hearty Congratulations!\n` +
-        `Candidate: *${s.studentName}*\n` +
-        `Student ID: *${s.studentId}*\n` +
-        `Examination Result: *PASSED (Grade ${exam.grade || 'A+'})*\n` +
-        `-----------------------------------------\n` +
-        `🤖 AI Lathi Skill Score: *${exam.aiScore || 45} / 50*\n` +
-        `🥋 Certified Ustad Score: *${exam.trainerScore || 46} / 50*\n` +
-        `🏆 Grand Total: *${exam.totalScore || 91} / 100 Marks*\n` +
-        `⭐ Official Promotion: *LEVEL ${exam.nextLevelNum || 2}*\n` +
-        `-----------------------------------------\n` +
-        `Certified by: ${exam.trainerName || 'Chief Ustad'}\n` +
-        `Portal Verification: https://yoddhaacademyindia.github.io/\n\n` +
-        `Jai Hind! Jai Maharashtra! 🚩`;
-
-      const url = parentPhone.length >= 10 
-        ? `https://wa.me/91${parentPhone.slice(-10)}?text=${encodeURIComponent(text)}`
-        : `https://wa.me/?text=${encodeURIComponent(text)}`;
-
-      window.open(url, '_blank');
-    }
-
-    // 16. Apply Level Up (Open Level Up Application Form)
-    function applyStudentLevelUp(studentId) {
-      openLevelUpFormModal(studentId);
-    }
-
-    function applyStudentLevelUpFromCert() {
-      if (!lastGeneratedCertStudent) return;
-      closeModal('modal-belt-certificate');
-      openLevelUpFormModal(lastGeneratedCertStudent.studentId);
-    }
-
-    // Open Official Level Up Application Form Modal
     function openLevelUpFormModal(studentId) {
       const s = adminState.students.find(stu => stu.studentId === studentId);
       if (!s) return;
@@ -12110,12 +12130,10 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       ctx.lineWidth = 16;
       ctx.strokeRect(36, 36, W - 72, H - 72);
 
-      // Gold Secondary Border
       ctx.strokeStyle = '#d97706';
       ctx.lineWidth = 4;
       ctx.strokeRect(54, 54, W - 108, H - 108);
 
-      // Inner Dashed Gold Line
       ctx.strokeStyle = '#f59e0b';
       ctx.lineWidth = 2;
       ctx.setLineDash([10, 8]);
@@ -12123,7 +12141,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       ctx.setLineDash([]);
 
       // Corner Corner Accent Ornaments
-      const cornerSize = 42;
+      const cornerSize = 46;
       const drawCorner = (cx, cy, flipX, flipY) => {
         ctx.save();
         ctx.translate(cx, cy);
@@ -12144,130 +12162,125 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       // 3. Subtle Watermark Text in Center
       ctx.save();
-      ctx.fillStyle = 'rgba(124, 45, 18, 0.04)';
-      ctx.font = '900 180px Rajdhani, Arial, sans-serif';
+      ctx.fillStyle = 'rgba(124, 45, 18, 0.035)';
+      ctx.font = '900 240px Rajdhani, Arial, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('YODDHA', W / 2, H / 2);
       ctx.restore();
 
-      // 4. Header Badge Pill
+      // 4. Header Badge Pill (Wide & Centered)
       ctx.fillStyle = '#ea580c';
-      drawCanvasRoundRect(ctx, W / 2 - 270, 100, 540, 38, 19, true, false);
+      drawCanvasRoundRect(ctx, W / 2 - 380, 100, 760, 42, 21, true, false);
       ctx.fillStyle = '#ffffff';
-      ctx.font = '900 13px Rajdhani, Arial, sans-serif';
+      ctx.font = '900 15px Rajdhani, Arial, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('GOVT. REGD. NATIONAL MARTIAL ARTS TRAINING COUNCIL', W / 2, 119);
+      ctx.fillText('GOVT. REGD. NATIONAL MARTIAL ARTS TRAINING COUNCIL', W / 2, 121);
 
-      // 5. Academy Master Title
+      // 5. Academy Master Title (Grand & Wide)
       ctx.fillStyle = '#431407';
-      ctx.font = '900 56px Rajdhani, Arial, sans-serif';
+      ctx.font = '900 76px Rajdhani, Arial, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('YODDHA ACADEMY INDIA', W / 2, 195);
+      ctx.fillText('YODDHA ACADEMY INDIA', W / 2, 206);
 
       ctx.fillStyle = '#9a3412';
-      ctx.font = '700 16px Arial, sans-serif';
-      ctx.fillText('CENTRAL HEADQUARTERS • DIRECTORATE OF TRADITIONAL MARTIAL ARTS & DEFENCE', W / 2, 230);
+      ctx.font = '800 21px Arial, sans-serif';
+      ctx.fillText('CENTRAL HEADQUARTERS • DIRECTORATE OF TRADITIONAL MARTIAL ARTS & DEFENCE', W / 2, 246);
 
-      // Gold Accent Divider
+      // Gold Accent Divider Line
       ctx.strokeStyle = '#d97706';
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(W / 2 - 250, 255);
-      ctx.lineTo(W / 2 + 250, 255);
+      ctx.moveTo(W / 2 - 500, 272);
+      ctx.lineTo(W / 2 + 500, 272);
       ctx.stroke();
 
       // Diamond ornament in divider
       ctx.fillStyle = '#b45309';
       ctx.beginPath();
-      ctx.arc(W / 2, 255, 6, 0, Math.PI * 2);
+      ctx.arc(W / 2, 272, 6.5, 0, Math.PI * 2);
       ctx.fill();
 
-      // 6. Certificate Title
-      ctx.fillStyle = '#64748b';
-      ctx.font = '800 14px Arial, sans-serif';
-      ctx.fillText('OFFICIAL ACCREDITATION', W / 2, 305);
-
+      // 6. Certificate Title Banner Pill (Broad, Beautiful, Fills Page)
+      ctx.fillStyle = '#fff7ed';
+      drawCanvasRoundRect(ctx, W / 2 - 700, 305, 1400, 56, 28, true, true, '#fdba74', 2.5);
       ctx.fillStyle = '#c2410c';
       ctx.font = '900 36px Rajdhani, Arial, sans-serif';
-      ctx.fillText('CERTIFICATE OF OFFICIAL AFFILIATION & TRAINER RECOGNITION', W / 2, 350);
-
-      ctx.fillStyle = '#78350f';
-      ctx.font = '700 20px Arial, sans-serif';
-      ctx.fillText('Official Branch Training Center Accreditation & Recognition', W / 2, 388);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('CERTIFICATE OF OFFICIAL AFFILIATION & TRAINER RECOGNITION', W / 2, 333);
 
       // 7. Recipient Introduction & Name
       ctx.fillStyle = '#475569';
-      ctx.font = 'italic 20px Georgia, serif';
-      ctx.fillText('This official credential is proud recognition of authorization granted to', W / 2, 455);
+      ctx.font = 'italic 24px Georgia, serif';
+      ctx.fillText('This official credential is proud recognition of authorization granted to', W / 2, 412);
 
-      // Recipient Full Name (Calligraphic Style)
+      // Recipient Full Name (Large & Regal)
       ctx.fillStyle = '#1e293b';
-      ctx.font = '900 58px Rajdhani, Arial, sans-serif';
-      ctx.fillText(trainerName, W / 2, 530);
+      ctx.font = '900 76px Rajdhani, Arial, sans-serif';
+      ctx.fillText(trainerName, W / 2, 490);
 
       // Golden Underline
       ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 4.5;
       const textWidth = ctx.measureText(trainerName).width;
       ctx.beginPath();
-      ctx.moveTo(W / 2 - (textWidth / 2) - 30, 545);
-      ctx.lineTo(W / 2 + (textWidth / 2) + 30, 545);
+      ctx.moveTo(W / 2 - (textWidth / 2) - 50, 506);
+      ctx.lineTo(W / 2 + (textWidth / 2) + 50, 506);
       ctx.stroke();
 
       // Designation & Akhada
       ctx.fillStyle = '#9a3412';
-      ctx.font = '800 24px Rajdhani, Arial, sans-serif';
-      ctx.fillText(`${position} • ${branch}`, W / 2, 590);
+      ctx.font = '800 28px Rajdhani, Arial, sans-serif';
+      ctx.fillText(`${position} • ${branch}`, W / 2, 552);
 
-      // 8. Legal Empowerment & Authorization Text
+      // 8. Legal Empowerment & Authorization Text (Broad & Legible Spanning 1650px)
       ctx.fillStyle = '#334155';
-      ctx.font = '500 17px Arial, sans-serif';
-      const legalLine1 = `This is to officially certify that the above-named Master Instructor is recognized and accredited by Yoddha Academy India`;
-      const legalLine2 = `for the official branch at ${branch}, ${district} (${state}).`;
-      const legalLine3 = `He/She is fully empowered and authorized to impart authentic martial arts training, conduct student enrollments,`;
-      const legalLine4 = `and administer official 10-Star Level Examinations under the authority, syllabus, and rules of Yoddha Academy India.`;
+      ctx.font = '600 22px Arial, sans-serif';
+      ctx.fillText(`This is to officially certify that the above-named Master Instructor is recognized and accredited by Yoddha Academy India`, W / 2, 616);
+      ctx.fillText(`for the official branch at ${branch}, ${district} (${state}).`, W / 2, 650);
+      ctx.fillText(`He/She is fully empowered and authorized to impart authentic martial arts training, conduct student enrollments,`, W / 2, 686);
+      ctx.fillText(`and administer official 10-Star Level Examinations under the authority, syllabus, and rules of Yoddha Academy India.`, W / 2, 720);
 
-      ctx.fillText(legalLine1, W / 2, 650);
-      ctx.fillText(legalLine2, W / 2, 680);
-      ctx.fillText(legalLine3, W / 2, 715);
-      ctx.fillText(legalLine4, W / 2, 745);
+      // 9. Badges / Metadata Cards (4 Wide Cards Spanning 1630px!)
+      const boxY = 785;
+      const boxW = 390;
+      const boxH = 110;
+      const cardGap = 24;
 
-      // 9. Badges / Metadata Cards
-      const boxY = 820;
-      const boxW = 420;
-      const boxH = 90;
       const drawBadgeCard = (x, y, label, val, isAccent) => {
         ctx.fillStyle = isAccent ? '#fffbeb' : '#f8fafc';
-        drawCanvasRoundRect(ctx, x, y, boxW, boxH, 12, true, true, '#cbd5e1', 1.5);
+        drawCanvasRoundRect(ctx, x, y, boxW, boxH, 16, true, true, '#cbd5e1', 2);
         ctx.fillStyle = '#64748b';
-        ctx.font = '800 12px Arial, sans-serif';
+        ctx.font = '800 15px Arial, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(label.toUpperCase(), x + boxW / 2, y + 32);
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText(label.toUpperCase(), x + boxW / 2, y + 40);
         ctx.fillStyle = isAccent ? '#047857' : '#0f172a';
-        ctx.font = '900 19px Rajdhani, Arial, sans-serif';
-        ctx.fillText(val, x + boxW / 2, y + 64);
+        ctx.font = '900 26px Rajdhani, Arial, sans-serif';
+        ctx.fillText(val, x + boxW / 2, y + 82);
       };
 
-      drawBadgeCard(W / 2 - boxW * 2 - 30, boxY, 'Accreditation ID', tId, false);
-      drawBadgeCard(W / 2 - boxW - 10, boxY, 'Affiliation Status', 'Active & Authorized', true);
-      drawBadgeCard(W / 2 + 10, boxY, 'Date of Issue', dateStr, false);
-      drawBadgeCard(W / 2 + boxW + 30, boxY, 'Territorial Validity', 'All India (National)', false);
+      const startCardX = W / 2 - (boxW * 2 + cardGap * 1.5);
+      drawBadgeCard(startCardX, boxY, 'Accreditation ID', tId, false);
+      drawBadgeCard(startCardX + boxW + cardGap, boxY, 'Affiliation Status', 'Active & Authorized', true);
+      drawBadgeCard(startCardX + (boxW + cardGap) * 2, boxY, 'Date of Issue', dateStr, false);
+      drawBadgeCard(startCardX + (boxW + cardGap) * 3, boxY, 'Territorial Validity', 'All India (National)', false);
 
-      // 10. Unified Official Authorization Seal & Logo Footer (Single Name + Official Logo)
-      const authBoxY = 1040;
-      const authBoxW = 880;
-      const authBoxH = 140;
+      // 10. Unified Official Authorization Seal & Logo Footer (Grand 1400px Wide Box)
+      const authBoxY = 1010;
+      const authBoxW = 1400;
+      const authBoxH = 160;
       const authBoxX = (W - authBoxW) / 2;
 
       ctx.fillStyle = '#fffbeb';
-      drawCanvasRoundRect(ctx, authBoxX, authBoxY, authBoxW, authBoxH, 22, true, true, '#d97706', 2.5);
+      drawCanvasRoundRect(ctx, authBoxX, authBoxY, authBoxW, authBoxH, 24, true, true, '#d97706', 3);
 
       // Gold Seal / Crest on the left
-      const sealX = authBoxX + 75;
-      const sealY = authBoxY + 70;
-      const sealRadius = 46;
+      const sealX = authBoxX + 110;
+      const sealY = authBoxY + 80;
+      const sealRadius = 55;
 
       ctx.fillStyle = '#f59e0b';
       ctx.beginPath();
@@ -12275,46 +12288,48 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       ctx.fill();
 
       ctx.strokeStyle = '#78350f';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.setLineDash([4, 3]);
       ctx.beginPath();
-      ctx.arc(sealX, sealY, sealRadius - 5, 0, Math.PI * 2);
+      ctx.arc(sealX, sealY, sealRadius - 6, 0, Math.PI * 2);
       ctx.stroke();
       ctx.setLineDash([]);
 
       ctx.fillStyle = '#d97706';
       ctx.beginPath();
-      ctx.arc(sealX, sealY, sealRadius - 10, 0, Math.PI * 2);
+      ctx.arc(sealX, sealY, sealRadius - 12, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = '#ffffff';
-      ctx.font = '900 11px Rajdhani, Arial, sans-serif';
+      ctx.font = '900 13px Rajdhani, Arial, sans-serif';
       ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
       ctx.fillText('★ SEAL ★', sealX, sealY - 14);
-      ctx.font = '900 19px Rajdhani, Arial, sans-serif';
-      ctx.fillText('YODDHA', sealX, sealY + 6);
-      ctx.font = '800 10px Arial, sans-serif';
-      ctx.fillText('ACADEMY', sealX, sealY + 22);
+      ctx.font = '900 23px Rajdhani, Arial, sans-serif';
+      ctx.fillText('YODDHA', sealX, sealY + 10);
+      ctx.font = '800 12px Arial, sans-serif';
+      ctx.fillText('ACADEMY', sealX, sealY + 28);
 
-      // Authorization Text
-      const textX = authBoxX + 155;
+      // Authorization Text inside wide box
+      const textX = authBoxX + 210;
       ctx.textAlign = 'left';
       ctx.fillStyle = '#451a03';
-      ctx.font = '900 30px Rajdhani, Arial, sans-serif';
-      ctx.fillText('YODDHA ACADEMY INDIA AUTHORIZED', textX, authBoxY + 48);
+      ctx.font = '900 36px Rajdhani, Arial, sans-serif';
+      ctx.fillText('YODDHA ACADEMY INDIA AUTHORIZED', textX, authBoxY + 54);
 
       ctx.fillStyle = '#9a3412';
-      ctx.font = '800 17px Arial, sans-serif';
-      ctx.fillText('Central Directorate of Traditional Martial Arts & Defence • Govt. Regd.', textX, authBoxY + 80);
+      ctx.font = '800 20px Arial, sans-serif';
+      ctx.fillText('Central Directorate of Traditional Martial Arts & Defence • Govt. Regd.', textX, authBoxY + 92);
 
       ctx.fillStyle = '#64748b';
-      ctx.font = '700 14px Arial, sans-serif';
-      ctx.fillText('Accredited Master Instructor Certification • Valid Across All India (National)', textX, authBoxY + 108);
+      ctx.font = '700 17px Arial, sans-serif';
+      ctx.fillText('Accredited Master Instructor Certification • Valid Across All India (National)', textX, authBoxY + 126);
 
       // Bottom Authenticity Strip
       ctx.fillStyle = '#94a3b8';
-      ctx.font = '600 12px Arial, sans-serif';
-      ctx.fillText('Certified Accreditation Document • Issued by Central Directorate of Yoddha Academy India • Verify at https://yoddhaacademyindia.github.io/', W / 2, H - 75);
+      ctx.font = '600 15px Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Certified Accreditation Document • Issued by Central Directorate of Yoddha Academy India • Verify at https://yoddhaacademyindia.github.io/', W / 2, H - 55);
 
       // Convert to high-resolution PNG blob & trigger direct download
       canvas.toBlob((blob) => {
@@ -12331,19 +12346,15 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        const cleanTId = tId.replace(/[^a-zA-Z0-9\-]/g, '_');
         a.href = url;
-        a.download = `YAI_Affiliation_Certificate_${cleanTId}.png`;
+        a.download = `YAI_Affiliation_Cert_${tId}_${trainerName.replace(/\s+/g, '_')}.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        URL.revokeObjectURL(url);
       }, 'image/png');
     }
 
-    // =========================================================================
-    // 🎥 YOUTUBE EMBED HELPER & VIDEO LESSONS ENGINE
-    // =========================================================================
     function getYouTubeEmbedUrl(url) {
       if (!url) return null;
       const str = String(url).trim();
@@ -14587,32 +14598,16 @@ function handleAdminCreateCompetition(e) {
             localStorage.setItem('yoddha_admin_fee', JSON.stringify(adminState.feeStructure));
           }
 
-          // 5. Live Sync Courses from Google Sheet
-          if (Array.isArray(data.courses) && data.courses.length > 0) {
-            data.courses.forEach(crs => {
-              const crsId = (crs.id || '').toUpperCase();
-              if (!crsId) return;
-              const idx = adminState.courses.findIndex(c => (c.id || '').toUpperCase() === crsId);
-              if (idx !== -1) {
-                adminState.courses[idx] = { ...adminState.courses[idx], ...crs };
-              } else {
-                adminState.courses.push(crs);
-              }
-            });
+          // 5. Live Sync Courses from Google Sheet (Mirror exact sheet state)
+          if (Array.isArray(data.courses)) {
+            adminState.courses = data.courses;
+            localStorage.setItem('yoddha_admin_courses', JSON.stringify(adminState.courses));
           }
 
-          // 6. Live Sync Competitions from Google Sheet
-          if (Array.isArray(data.competitions) && data.competitions.length > 0) {
-            data.competitions.forEach(cmp => {
-              const cmpId = (cmp.id || '').toUpperCase();
-              if (!cmpId) return;
-              const idx = adminState.competitions.findIndex(c => (c.id || '').toUpperCase() === cmpId);
-              if (idx !== -1) {
-                adminState.competitions[idx] = { ...adminState.competitions[idx], ...cmp };
-              } else {
-                adminState.competitions.push(cmp);
-              }
-            });
+          // 6. Live Sync Competitions from Google Sheet (Mirror exact sheet state)
+          if (Array.isArray(data.competitions)) {
+            adminState.competitions = data.competitions;
+            localStorage.setItem('yoddha_admin_comps', JSON.stringify(adminState.competitions));
           }
 
           // 7. Live Sync Student Medals & Sports Records from Google Sheet
