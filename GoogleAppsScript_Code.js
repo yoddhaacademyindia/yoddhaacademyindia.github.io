@@ -405,7 +405,13 @@ function doGet(e) {
   }
 
   // 1C. Read Single Sheet (Fallback)
-  if (action === "readSheet") {
+    // 1D. 1-Click Master Setup of All 10 Sheets
+  if (action === "setupSheets" || action === "initSheets") {
+    var initRes = setupAllAcademySheets();
+    return ContentService.createTextOutput(JSON.stringify(initRes)).setMimeType(ContentService.MimeType.JSON);
+  }
+
+if (action === "readSheet") {
     var sheetName = (e && e.parameter && e.parameter.sheet) || "Trainers";
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName(sheetName);
@@ -1179,4 +1185,104 @@ function getOrCreateSheet(ss, sheetName, headers) {
     }
   }
   return sheet;
+}
+
+
+/**
+ * 🛠️ 1-CLICK ALL ACADEMY SHEETS INITIALIZER
+ * Automatically creates all 10 dedicated tabs with standardized orange headers.
+ */
+function setupAllAcademySheets() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // 1. Trainers
+  getOrCreateSheet(ss, "Trainers", [
+    "Timestamp", "Trainer ID", "Full Name", "Position", "Status",
+    "Calling Mobile", "WhatsApp Mobile", "Official Email", "State",
+    "District", "Branch", "Full Address", "Login PIN / Password",
+    "Trainer Photo", "Aadhaar Photo"
+  ]);
+
+  // 2. Students
+  getOrCreateSheet(ss, "Students", [
+    "Timestamp", "Student ID", "Student Name", "Date of Birth", "Age",
+    "Requested Level", "School Name", "Standard", "School Contact", "School Address",
+    "Parent Name", "Parent Mobile", "City / Village", "District", "State",
+    "Admission Date", "Trainer ID", "Trainer Name", "Status", "Fee Status",
+    "Fee Amount", "UPI UTR Number", "Live Exam Status", "Live AI Camera Score (/50)",
+    "Trainer Exam Score (/50)", "Grand Total Score (/100)", "Exam Passed Date",
+    "Level Up Pending", "Pending Next Level", "10-Level History & Passed Marks",
+    "Student Photo", "Aadhaar Photo"
+  ]);
+
+  // 3. Courses
+  getOrCreateSheet(ss, "Courses", [
+    "Timestamp", "Course ID", "Course Title", "Description", "Video Link", "Thumbnail URL", "Assigned Trainers"
+  ]);
+
+  // 4. Fee Structure
+  var feeSheet = getOrCreateSheet(ss, "Fee Structure", ["Fee Parameter", "Amount (₹) / Value"]);
+  if (feeSheet.getLastRow() <= 1) {
+    feeSheet.appendRow(["Level 1", 500]);
+    feeSheet.appendRow(["Level 2", 600]);
+    feeSheet.appendRow(["Level 3", 700]);
+    feeSheet.appendRow(["Level 4", 800]);
+    feeSheet.appendRow(["Level 5", 900]);
+    feeSheet.appendRow(["Level 6", 1000]);
+    feeSheet.appendRow(["Senior 1", 1200]);
+    feeSheet.appendRow(["Senior 2", 1400]);
+    feeSheet.appendRow(["Senior 3", 1600]);
+    feeSheet.appendRow(["Senior 4", 1800]);
+    feeSheet.appendRow(["Official UPI ID", "yoddhaacademy5@okicici"]);
+  }
+
+  // 5. AcademySettings
+  var setSheet = getOrCreateSheet(ss, "AcademySettings", [
+    "Setting Key", "Setting Value", "Updated By", "Last Updated"
+  ]);
+  if (setSheet.getLastRow() <= 1) {
+    setSheet.appendRow(["ACADEMY_NAME", "Yoddha Academy India", "Admin", new Date()]);
+    setSheet.appendRow(["DIRECTORATE", "Central Directorate of Traditional Martial Arts & Defence", "Admin", new Date()]);
+    setSheet.appendRow(["ADMIN_ID", "ADMIN-YODDHA-01", "Admin", new Date()]);
+    setSheet.appendRow(["ADMIN_PASSWORD", "@hupare25077", "Admin", new Date()]);
+    setSheet.appendRow(["ADMIN_NAME", "Central Headquarters", "Admin", new Date()]);
+    setSheet.appendRow(["CONTACT_MOBILE", "7766885311", "Admin", new Date()]);
+    setSheet.appendRow(["CONTACT_EMAIL", "yoddhaacademy5@gmail.com", "Admin", new Date()]);
+    setSheet.appendRow(["OFFICIAL_UPI", "yoddhaacademy5@okicici", "Admin", new Date()]);
+    setSheet.appendRow(["HQ_ADDRESS", "Central Directorate, Kolhapur, Maharashtra", "Admin", new Date()]);
+    setSheet.appendRow(["EXAM_MASTER_SWITCH", "OFF", "Admin", new Date()]);
+  }
+
+  // 6. Competitions
+  getOrCreateSheet(ss, "Competitions", [
+    "Timestamp", "Competition ID", "Championship Level", "Title", "Date", "Location", "Categories", "Entry Fee", "Status", "Eligible Scope"
+  ]);
+
+  // 7. TournamentEntries
+  getOrCreateSheet(ss, "TournamentEntries", [
+    "Timestamp", "Competition ID", "Tournament Title", "Championship Level",
+    "Student ID", "Student Name", "Event Discipline", "Age / Weight Division",
+    "Fee Status", "Fee Amount (Rs)", "UTR Number", "Payment Mode", "Trainer Name"
+  ]);
+
+  // 8. ExamResults
+  getOrCreateSheet(ss, "ExamResults", [
+    "Timestamp", "Exam Reference ID", "Student ID", "Student Name", "Akhada / Branch",
+    "District", "State", "Belt Level", "AI Camera Score (/50)", "Trainer Score (/50)",
+    "Grand Total (/100)", "Grade", "Exam Date", "Trainer / Ustad Name", "Status"
+  ]);
+
+  // 9. LevelUpApplications
+  getOrCreateSheet(ss, "LevelUpApplications", [
+    "Timestamp", "Student ID", "Student Name", "Promoted From Level", "Promoted To Level",
+    "Fee Amount (₹)", "UPI UTR Number", "Application Status", "Approval Date"
+  ]);
+
+  // 10. StudentSportsRecords
+  getOrCreateSheet(ss, "StudentSportsRecords", [
+    "Timestamp", "Student ID", "Student Name", "Tournament Title", "Event Date",
+    "Discipline / Category", "Medal / Achievement", "Certificate Number"
+  ]);
+
+  return { status: "success", message: "All 10 Academy Master Sheets initialized successfully with orange headers!" };
 }
