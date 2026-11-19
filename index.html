@@ -262,6 +262,12 @@
               <span id="auto-logout-timer-display">Active 🟢</span>
             </div>
 
+            <!-- DIRECT LIVE GOOGLE SHEET BUTTON (ADMIN ONLY) -->
+            <button id="btn-header-google-sheet" onclick="openConnectedGoogleSheet()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-2 border-emerald-300 rounded-xl transition flex items-center gap-1.5 text-xs font-black shadow-xs active:scale-95 cursor-pointer" title="Open Live Connected Google Sheet (YODDHA - Google Sheets)">
+              <i data-lucide="table-properties" class="w-4 h-4 text-emerald-600"></i>
+              <span class="hidden sm:inline">Google Sheet</span>
+            </button>
+
             <!-- MASTER ACADEMY EXCEL DATABASE (CORNER BUTTON) -->
             <button id="btn-master-excel" onclick="handleMasterExcelClick()" class="px-2.5 py-1.5 sm:px-3.5 sm:py-2 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white rounded-xl transition flex items-center gap-1.5 text-xs font-black shadow-md shadow-emerald-700/20 active:scale-95 cursor-pointer" title="Open Master Excel Database / All Academy Data">
               <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-200"></i>
@@ -6338,6 +6344,11 @@ function getOrCreateSheet(ss, sheetName, headers) {
       if (btnMasterExcel) {
         if (isTrainer) btnMasterExcel.classList.add('hidden');
         else btnMasterExcel.classList.remove('hidden');
+      }
+      const btnGoogleSheet = document.getElementById('btn-header-google-sheet');
+      if (btnGoogleSheet) {
+        if (isTrainer) btnGoogleSheet.classList.add('hidden');
+        else btnGoogleSheet.classList.remove('hidden');
       }
 
       // Toggle View Data Sections for Trainer (hide Verify and Trainers, show 5 boxes including Profile)
@@ -12683,22 +12694,9 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     }
 
     function openConnectedGoogleSheet() {
-      // If user saved a direct spreadsheet URL, open it
-      let sheetUrl = localStorage.getItem('yoddha_google_sheet_url');
-      if (!sheetUrl) {
-        // Default Google Sheets home or prompt
-        const promptUrl = prompt("Enter your Google Spreadsheet URL (e.g. https://docs.google.com/spreadsheets/d/.../edit):\n\nOnce entered, this will be saved forever so clicking 'Open Google Sheet' directly opens it:", "");
-        if (promptUrl && promptUrl.trim().startsWith('http')) {
-          sheetUrl = promptUrl.trim();
-          localStorage.setItem('yoddha_google_sheet_url', sheetUrl);
-          window.open(sheetUrl, '_blank');
-        } else {
-          // Open Google Drive / Sheets home
-          window.open('https://docs.google.com/spreadsheets/u/0/', '_blank');
-        }
-      } else {
-        window.open(sheetUrl, '_blank');
-      }
+      const defaultSheetUrl = 'https://docs.google.com/spreadsheets/d/1e2qJdFLy1C-EBE1tctokjPnJmDjP-DxQvKfIF0rSio0/edit';
+      const sheetUrl = localStorage.getItem('yoddha_google_sheet_url') || defaultSheetUrl;
+      window.open(sheetUrl, '_blank');
     }
 
         // 📊 NATIVE MICROSOFT EXCEL (.XLSX / .XLS) EXPORT ENGINE
