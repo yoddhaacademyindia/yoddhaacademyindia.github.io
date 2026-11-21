@@ -2382,6 +2382,127 @@
     </div>
   </div>
 
+
+  <!-- ================= ANIMATED MODAL 3B: EDIT COURSE FORM ================= -->
+  <div id="modal-edit-course" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white border-2 border-orange-200 rounded-3xl max-w-xl w-full p-5 sm:p-7 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto animate-modal-pop relative">
+      <div class="flex justify-between items-center border-b border-orange-100 pb-3">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-orange-100 text-orange-700 rounded-2xl">
+            <i data-lucide="edit-3" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-lg font-black text-slate-900">Edit Training Course</h3>
+              <span id="edit-crs-id-badge" class="font-mono text-[11px] font-bold text-orange-800 bg-orange-100 px-2 py-0.5 rounded-full border border-orange-200">CRS-01</span>
+            </div>
+            <p class="text-xs text-slate-500">Update syllabus, video lesson, thumbnail & trainer permissions</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeModal('modal-edit-course')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleEditCourseSubmit(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="edit-crs-id">
+        
+        <!-- 1. COURSE TITLE -->
+        <div>
+          <label class="block font-black text-slate-800 text-xs mb-1">Course Title *</label>
+          <input type="text" id="edit-crs-name" required placeholder="e.g. Level 1 - Basic Stances & Grips (Lathi Abhyaskram)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 font-bold text-xs transition">
+        </div>
+
+        <!-- 2. COURSE DESCRIPTION -->
+        <div>
+          <label class="block font-black text-slate-800 text-xs mb-1">Course Description & Syllabus Details *</label>
+          <textarea id="edit-crs-desc" required rows="3" placeholder="Enter course syllabus details, skills taught, training instructions, etc." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200 font-medium text-xs transition leading-relaxed"></textarea>
+        </div>
+
+        <!-- 3. COURSE VIDEO LINK -->
+        <div>
+          <label class="block font-black text-slate-800 text-xs mb-1 flex items-center justify-between">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="video" class="w-3.5 h-3.5 text-orange-600"></i> Course Video Link (YouTube Link)
+            </span>
+            <span class="text-[9.5px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">Plays directly on page</span>
+          </label>
+          <div class="relative">
+            <i data-lucide="link" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+            <input type="text" id="edit-crs-youtube" oninput="handleEditCourseVideoLinkInput(this.value)" placeholder="https://www.youtube.com/watch?v=... or YouTube Video ID (Optional)" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-slate-900 font-mono font-bold text-xs focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200">
+          </div>
+        </div>
+
+        <!-- 4. THUMBNAIL -->
+        <div>
+          <label class="block font-black text-slate-800 text-xs mb-1 flex items-center justify-between">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="image" class="w-3.5 h-3.5 text-orange-600"></i> Course Thumbnail Poster
+            </span>
+            <span class="text-[9.5px] font-bold text-slate-500">Auto-extracted or Upload</span>
+          </label>
+          
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-50/80 p-3 rounded-2xl border border-slate-200">
+            <!-- Live Thumbnail Preview Frame -->
+            <div class="w-32 h-20 rounded-xl overflow-hidden bg-slate-200 border border-slate-300 flex-shrink-0 flex items-center justify-center relative shadow-inner">
+              <img id="edit-crs-thumb-preview-img" src="" alt="Thumbnail Preview" class="hidden w-full h-full object-cover">
+              <div id="edit-crs-thumb-preview-placeholder" class="text-center p-2 text-slate-400">
+                <i data-lucide="image" class="w-5 h-5 mx-auto mb-0.5 text-slate-400"></i>
+                <span class="text-[9px] font-bold block">Preview</span>
+              </div>
+            </div>
+
+            <!-- Controls: Upload or URL -->
+            <div class="flex-1 min-w-0 space-y-1.5 w-full">
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 mb-0.5">Upload Custom Poster / Image:</label>
+                <input type="file" id="edit-crs-thumb-file" accept="image/*" onchange="handleEditCourseThumbnailFileUpload(event)" class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-1 text-xs text-slate-700 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-black file:bg-orange-600 file:text-white hover:file:bg-orange-700 cursor-pointer">
+              </div>
+              <div>
+                <input type="text" id="edit-crs-thumb-url" oninput="handleEditCourseThumbnailUrlInput(this.value)" placeholder="Or paste Image URL (auto-filled from YouTube)" class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-1 text-[11px] text-slate-800 font-medium focus:outline-none focus:border-orange-500">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. TRAINER VISIBILITY CHECKLIST -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="block font-black text-slate-800 text-xs flex items-center gap-1.5">
+              <i data-lucide="shield-check" class="w-4 h-4 text-orange-600"></i>
+              <span>Trainer Access: Who Can View This Course? *</span>
+            </label>
+            <span class="text-[10px] font-bold text-orange-800 bg-orange-100 px-2 py-0.5 rounded-full border border-orange-200">
+              Tick Allowed Trainers
+            </span>
+          </div>
+
+          <!-- Master Checkbox: Select All Trainers -->
+          <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-orange-100/80 border border-orange-300 cursor-pointer transition select-none text-xs font-black text-orange-950 hover:bg-orange-100">
+            <input type="checkbox" id="edit-crs-select-all-trainers" checked onchange="toggleSelectAllEditCourseTrainers(this.checked)" class="w-4 h-4 text-orange-600 rounded border-orange-400 focus:ring-orange-500 cursor-pointer">
+            <span>Select All Certified Trainers (All India Branches)</span>
+          </label>
+
+          <!-- Scrollable list of individual trainers with checkboxes -->
+          <div class="border border-slate-200 rounded-2xl p-2.5 bg-slate-50/70 max-h-44 overflow-y-auto space-y-1.5" id="edit-crs-trainers-checkbox-list">
+            <!-- Dynamically populated from adminState.trainers -->
+          </div>
+        </div>
+
+        <!-- MODAL FOOTER BUTTONS -->
+        <div class="pt-2 flex justify-end gap-3 border-t border-slate-100">
+          <button type="button" onclick="closeModal('modal-edit-course')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white font-extrabold rounded-xl shadow-md shadow-orange-500/25 transition flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Save Changes & Sync</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- ================= ANIMATED MODAL 4: FEE STRUCTURE FORM ================= -->
   <div id="modal-form-fee" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5">
     <div class="bg-white border-2 border-orange-200 rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl space-y-4 max-h-[92vh] overflow-y-auto animate-modal-pop relative">
@@ -7493,7 +7614,7 @@ lucide.createIcons();
 
       renderAdminStudents();
       updateTopMetrics();
-      e.target.reset();
+      if (e?.target?.reset) e.target.reset();
       closeFormModal('student');
 
       const successModal = document.getElementById('modal-student-success');
@@ -11849,7 +11970,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       // Read or retain trainer photo
       let photo = uploadedTrainerEditPhotoData || adminState.trainers[trnIndex].photo || null;
-      const editPhotoFile = document.getElementById('edit-trn-photo')?.files[0];
+      const editPhotoFile = document.getElementById('edit-trn-photo')?.files?.[0];
       if (editPhotoFile) {
         try {
           photo = await compressImageFile(editPhotoFile, 240, 0.68);
@@ -11865,7 +11986,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         mobile,
         phone: mobile,
         whatsapp,
-        position: 'Trainer',
+        position: position || 'Trainer',
         status,
         password,
         pin: password,
@@ -13811,7 +13932,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const password = document.getElementById('adm-trn-pass').value.trim() || '1234';
 
       let photo = uploadedTrainerRegPhotoData || null;
-      const photoFile = document.getElementById('adm-trn-photo')?.files[0];
+      const photoFile = document.getElementById('adm-trn-photo')?.files?.[0];
       if (photoFile && !photo) {
         try {
           photo = await compressImageFile(photoFile, 240, 0.68);
@@ -13834,7 +13955,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         branch: `${districtName} Branch`,
         address,
         status,
-        position: 'Trainer',
+        position: position || 'Trainer',
         password,
         pin: password,
         photo: photo || null,
@@ -13855,7 +13976,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       populateDropdowns();
       renderAdminTrainers();
-      e.target.reset();
+      if (e?.target?.reset) e.target.reset();
       closeFormModal('trainer');
 
       // Dispatch official confirmation via Email (Pure Official Email Delivery)
@@ -14233,7 +14354,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         syncToCloudServer({ type: "COURSE_CREATED", ...courseObj });
         renderAdminCourses();
         updateTopMetrics();
-        e.target.reset();
+        if (e?.target?.reset) e.target.reset();
         resetCourseThumbnailPreview();
         closeFormModal('course');
         alert(`🎉 Course "${name}" published successfully!\n\nCourse ID: ${courseId}\nVisible to: ${assignedTrainers.includes('ALL') ? 'All Certified Trainers' : assignedTrainers.length + ' Selected Trainers'}\nSynchronized to Central Cloud Server.`);
@@ -14451,7 +14572,7 @@ function handleAdminCreateCompetition(e) {
       
       syncToCloudServer({ type: "COMPETITION_CREATED", ...compObj });
       renderAdminCompetitions();
-      e.target.reset();
+      if (e?.target?.reset) e.target.reset();
       closeFormModal('competition');
       alert(`🎉 Tournament "${title}" announced successfully!\nID: ${compId}\nScope: ${scopeStr}\nSynchronized to Central Cloud Server.`);
       navigateToPage('competition');
