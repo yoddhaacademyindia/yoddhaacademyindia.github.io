@@ -7627,31 +7627,110 @@ lucide.createIcons();
       }
     }
 
-    // Quick 1-click toggle for Student Fee Status (Paid / Unpaid) with Live Cloud Sync
+    // Check if student admission and fees are verified & locked by Central Admin
+    function isStudentVerified(s) {
+      if (!s) return false;
+      if (s.isVerified === true || s.isVerified === 'true' || s.isVerified === 1) return true;
+      if (s.verifiedAt && String(s.verifiedAt).trim().length > 4) return true;
+      const feeStatus = (s.feeStatus || '').toLowerCase().trim();
+      const status = (s.status || '').toLowerCase().trim();
+      if (status === 'active' && feeStatus === 'paid' && status !== 'pending approval' && !s.levelUpPending) return true;
+      return false;
+    }
+
+    // Quick toggle / verification for Student Fee Status (Permanently Locked once verified)
     function toggleStudentFeeStatus(studentId) {
+      const user = adminState.currentUser || { role: 'Admin' };
+      
+      // 1. Trainers have zero authority to modify student fee status
+      if (user.role === 'Trainer') {
+        alert("🔒 Unauthorized (अधिकार नाही):\n\nकेवळ मुख्य ॲडमिन (Central Admin) फी किंवा स्टेटस बदलू शकतात. ट्रेनरला यात परस्पर बदल करण्याचा अधिकार नाही.");
+        return;
+      }
+
       const idx = adminState.students.findIndex(s => s.studentId === studentId);
       if (idx === -1) return;
       const student = adminState.students[idx];
-      const current = student.feeStatus || 'Unpaid';
-      
-      if (current === 'Paid') {
-        const confirmUnpaid = confirm(
-          `⚠️ विद्यार्थी "${student.studentName || 'Student'}" ची फी आधीच PAID (जमा) आहे.\n\n` +
-          `तुम्हाला खात्री आहे का की ही फी परत 'UNPAID' (प्रलंबित) करायची आहे?\n\n` +
-          `(Student fee is currently marked as PAID. Are you sure you want to change it to UNPAID?)`
+
+      // 2. Once verified by Admin, fee status is PERMANENTLY LOCKED
+      if (isStudentVerified(student)) {
+        alert(
+          `🔒 Verified Record Locked (व्हेरिफाय व लॉक):\n\n` +
+          `विद्यार्थी "${student.studentName || 'Student'}" ची नोंदणी Admin द्वारे अधिकृतरीत्या व्हेरिफाय व मंजूर (Approved) करण्यात आलेली आहे.\n\n` +
+          `फी स्टेटस 'PAID (जमा)' कायमस्वरूपी सुरक्षित लॉक केलेले आहे. यात परस्पर बदल करता येणार नाही.\n\n` +
+          `(This student admission has been verified by Admin. Fee status is permanently locked as PAID.)`
         );
-        if (!confirmUnpaid) return;
-        student.feeStatus = 'Unpaid';
-      } else {
-        const confirmPaid = confirm(
-          `✅ विद्यार्थी "${student.studentName || 'Student'}" ची फी PAID (जमा) म्हणून मार्क करायची आहे का?\n\n` +
-          `(Mark student fee as PAID?)`
-        );
-        if (!confirmPaid) return;
-        student.feeStatus = 'Paid';
-        if (!student.feeAmount) student.feeAmount = 1500;
+        return;
       }
+
+      // 3. If unverified student, Admin can Verify & Approve
+      const confirmVerify = confirm(
+        `✅ विद्यार्थी "${student.studentName || 'Student'}" ची फी आणि ॲडमिशन VERIFY & APPROVE (मंजूर) करायचे आहे का?\n\n` +
+        `एकदा Admin ने व्हेरिफाय केल्यावर फी 'PAID' आणि स्टेटस 'ACTIVE' कायमस्वरूपी लॉक होईल.\n\n` +
+        `(Verify student admission and permanently lock fee as PAID?)`
+      );
+      if (!confirmVerify) return;
+
+      student.feeStatus = 'Paid';
+      student.status = 'Active';
+      student.isVerified = true;
+      student.verifiedAt = new Date().toISOString();
+      if (!student.feeAmount) student.feeAmount = 1500;
+
+      saveAdminState();
       
+      // In-place sync to Central Cloud Server with ALL 32 points preserved!
+      syncToCloudServer({
+        type: "STUDENT_REGISTRATION_32_POINTS",
+        action: "approveStudent",
+        ...student,
+        studentId: studentId,
+        feeStatus: 'Paid',
+        status: 'Active',
+        verifiedAt: student.verifiedAt
+      });
+      
+      renderAdminStudents();
+      renderVerificationQueue();
+      updateTopMetrics();
+
+      alert(`🎉 ✅ विद्यार्थी "${student.studentName}" ची ॲडमिशन व्हेरिफाय व फी (PAID) सुरक्षित लॉक करण्यात आली आहे!`);
+    }
+
+    // Quick toggle for Student Active Status (Permanently Locked once verified)
+    function toggleStudentActiveStatus(studentId) {
+      const user = adminState.currentUser || { role: 'Admin' };
+      
+      // 1. Trainers have zero authority to modify student active status
+      if (user.role === 'Trainer') {
+        alert("🔒 Unauthorized (अधिकार नाही):\n\nकेवळ मुख्य ॲडमिन (Central Admin) विद्यार्थ्याचे स्टेटस बदलू शकतात. ट्रेनरला यात परस्पर बदल करण्याचा अधिकार नाही.");
+        return;
+      }
+
+      const idx = adminState.students.findIndex(s => s.studentId === studentId);
+      if (idx === -1) return;
+      const student = adminState.students[idx];
+
+      // 2. Once verified by Admin, active status is PERMANENTLY LOCKED
+      if (isStudentVerified(student)) {
+        alert(
+          `🔒 Verified Record Locked (व्हेरिफाय व लॉक):\n\n` +
+          `विद्यार्थी "${student.studentName || 'Student'}" ची नोंदणी Admin द्वारे अधिकृतरीत्या व्हेरिफाय व मंजूर (Approved) करण्यात आलेली आहे.\n\n` +
+          `विद्यार्थ्याचे स्टेटस 'ACTIVE (सक्रिय)' कायमस्वरूपी सुरक्षित लॉक केलेले आहे. यात परस्पर बदल करता येणार नाही.\n\n` +
+          `(This student admission has been verified by Admin. Status is permanently locked as ACTIVE.)`
+        );
+        return;
+      }
+
+      // 3. If unverified student, Admin can activate
+      const current = student.status || 'Pending Approval';
+      const newStatus = (current === 'Active') ? 'Inactive' : 'Active';
+      student.status = newStatus;
+      if (newStatus === 'Active') {
+        student.feeStatus = 'Paid';
+        student.isVerified = true;
+        student.verifiedAt = new Date().toISOString();
+      }
       saveAdminState();
       
       // In-place sync to Central Cloud Server with ALL 32 points preserved!
@@ -7659,33 +7738,6 @@ lucide.createIcons();
         type: "STUDENT_REGISTRATION_32_POINTS",
         action: "updateStudent",
         ...student,
-        studentId: studentId,
-        feeStatus: student.feeStatus
-      });
-      
-      renderAdminStudents();
-      renderVerificationQueue();
-      updateTopMetrics();
-    }
-
-    // Quick 1-click toggle for Student Active Status (Active / Inactive) with Live Cloud Sync
-    function toggleStudentActiveStatus(studentId) {
-      const idx = adminState.students.findIndex(s => s.studentId === studentId);
-      if (idx === -1) return;
-      const current = adminState.students[idx].status || 'Active';
-      const newStatus = (current === 'Active') ? 'Inactive' : 'Active';
-      adminState.students[idx].status = newStatus;
-      if (newStatus === 'Active') {
-        adminState.students[idx].feeStatus = 'Paid';
-        adminState.students[idx].verifiedAt = new Date().toISOString();
-      }
-      saveAdminState();
-      
-      // In-place sync to Central Cloud Server with ALL 32 points preserved!
-      syncToCloudServer({
-        type: "STUDENT_REGISTRATION_32_POINTS",
-        action: "updateStudent",
-        ...adminState.students[idx],
         studentId: studentId,
         status: newStatus
       });
@@ -8074,8 +8126,10 @@ lucide.createIcons();
         } else {
           filtered.forEach(s => {
             const levelNum = getStudentLevelNum(s.requestedLevel || s.level);
-            const isFeePaid = (s.feeStatus === 'Paid');
-            const isActive = (s.status === 'Active');
+            const isFeePaid = (s.feeStatus === 'Paid' || (s.feeStatus || '').toLowerCase() === 'paid');
+            const isActive = (s.status === 'Active' || (s.status || '').toLowerCase() === 'active');
+            const isVerified = isStudentVerified(s);
+            const isTrainer = (adminState.currentUser?.role === 'Trainer');
             const currentLevelName = s.requestedLevel || `Level ${levelNum}`;
             const isExamPassed = (s.examStatus === 'PASSED_PENDING_LEVELUP');
             const isLevelUpPending = (s.levelUpPending === true);
@@ -8199,33 +8253,53 @@ lucide.createIcons();
                   <span class="truncate">Trainer: <strong class="text-slate-800 font-mono font-bold">${s.trainerId || 'YAI-TR-001'}</strong></span>
                 </div>
 
-                <!-- 6. Fee Paid/Unpaid & Active/Inactive Side-by-Side -->
+                <!-- 6. Fee Paid/Unpaid & Active/Inactive Side-by-Side (Permanently Locked once verified) -->
                 <div class="flex items-center justify-center gap-1 sm:gap-2.5 mt-1.5 sm:mt-2.5 w-full">
                   <!-- Fee Status -->
-                  ${isFeePaid ? `
-                    <button type="button" onclick="toggleStudentFeeStatus('${s.studentId}')" title="Click to toggle Paid/Unpaid status (syncs to Cloud)" class="px-2 sm:px-3 py-0.5 sm:py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[8.5px] sm:text-[11px] font-black rounded-lg sm:rounded-xl border border-emerald-300 flex items-center gap-1 shadow-2xs transition active:scale-95 cursor-pointer">
+                  ${isVerified ? `
+                    <div class="px-2 sm:px-3 py-0.5 sm:py-1 bg-emerald-100 text-emerald-800 text-[8.5px] sm:text-[11px] font-black rounded-lg sm:rounded-xl border border-emerald-300 flex items-center gap-1 shadow-2xs select-none cursor-default" title="Verified by Admin • Fee Locked as PAID">
+                      <i data-lucide="shield-check" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600"></i>
+                      <span>Paid 🔒</span>
+                    </div>
+                  ` : (isFeePaid ? `
+                    <div class="px-2 sm:px-3 py-0.5 sm:py-1 bg-emerald-100 text-emerald-800 text-[8.5px] sm:text-[11px] font-black rounded-lg sm:rounded-xl border border-emerald-300 flex items-center gap-1 shadow-2xs select-none cursor-default" title="Fee Paid">
                       <i data-lucide="check-circle-2" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600"></i>
                       <span>Paid</span>
-                    </button>
+                    </div>
+                  ` : (isTrainer ? `
+                    <div class="px-2 sm:px-3 py-0.5 sm:py-1 bg-rose-100 text-rose-800 text-[8.5px] sm:text-[11px] font-black rounded-lg sm:rounded-xl border border-rose-300 flex items-center gap-1 shadow-2xs select-none cursor-default" title="Fee Unpaid (Pending Admin Verification)">
+                      <i data-lucide="alert-circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-rose-600"></i>
+                      <span>Unpaid</span>
+                    </div>
                   ` : `
-                    <button type="button" onclick="toggleStudentFeeStatus('${s.studentId}')" title="Click to toggle Paid/Unpaid status (syncs to Cloud)" class="px-2 sm:px-3 py-0.5 sm:py-1 bg-rose-100 hover:bg-rose-200 text-rose-800 text-[8.5px] sm:text-[11px] font-black rounded-lg sm:rounded-xl border border-rose-300 flex items-center gap-1 shadow-2xs transition active:scale-95 cursor-pointer">
+                    <button type="button" onclick="toggleStudentFeeStatus('${s.studentId}')" title="Click to Verify & Mark Fee as Paid (Permanently Locks Status)" class="px-2 sm:px-3 py-0.5 sm:py-1 bg-rose-100 hover:bg-emerald-100 text-rose-800 hover:text-emerald-800 text-[8.5px] sm:text-[11px] font-black rounded-lg sm:rounded-xl border border-rose-300 hover:border-emerald-300 flex items-center gap-1 shadow-2xs transition active:scale-95 cursor-pointer">
                       <i data-lucide="alert-circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-rose-600"></i>
                       <span>Unpaid</span>
                     </button>
-                  `}
+                  `))}
 
                   <!-- Active / Inactive Status -->
-                  ${isActive ? `
-                    <button type="button" onclick="toggleStudentActiveStatus('${s.studentId}')" title="Click to toggle Active/Inactive status (syncs to Cloud)" class="px-2 sm:px-3 py-0.5 sm:py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[8.5px] sm:text-[11px] font-black rounded-lg sm:rounded-xl border border-emerald-200 flex items-center gap-1 shadow-2xs transition active:scale-95 cursor-pointer">
-                      <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  ${isVerified ? `
+                    <div class="px-2 sm:px-3 py-0.5 sm:py-1 bg-emerald-50 text-emerald-700 text-[8.5px] sm:text-[11px] font-black rounded-lg sm:rounded-xl border border-emerald-200 flex items-center gap-1 shadow-2xs select-none cursor-default" title="Verified by Admin • Status Locked as ACTIVE">
+                      <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500"></span>
+                      <span>Active 🔒</span>
+                    </div>
+                  ` : (isActive ? `
+                    <div class="px-2 sm:px-3 py-0.5 sm:py-1 bg-emerald-50 text-emerald-700 text-[8.5px] sm:text-[11px] font-black rounded-lg sm:rounded-xl border border-emerald-200 flex items-center gap-1 shadow-2xs select-none cursor-default" title="Active Student">
+                      <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500"></span>
                       <span>Active</span>
-                    </button>
-                  ` : `
-                    <button type="button" onclick="toggleStudentActiveStatus('${s.studentId}')" title="Click to toggle Active/Inactive status (syncs to Cloud)" class="px-2 sm:px-3 py-0.5 sm:py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[8.5px] sm:text-[11px] font-black rounded-lg sm:rounded-xl border border-slate-300 flex items-center gap-1 shadow-2xs transition active:scale-95 cursor-pointer">
+                    </div>
+                  ` : (isTrainer ? `
+                    <div class="px-2 sm:px-3 py-0.5 sm:py-1 bg-slate-100 text-slate-700 text-[8.5px] sm:text-[11px] font-black rounded-lg sm:rounded-xl border border-slate-300 flex items-center gap-1 shadow-2xs select-none cursor-default" title="Student Inactive / Pending">
                       <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-slate-400"></span>
-                      <span>Inactive</span>
+                      <span>${s.status || 'Inactive'}</span>
+                    </div>
+                  ` : `
+                    <button type="button" onclick="toggleStudentActiveStatus('${s.studentId}')" title="Click to toggle Active status" class="px-2 sm:px-3 py-0.5 sm:py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[8.5px] sm:text-[11px] font-black rounded-lg sm:rounded-xl border border-slate-300 flex items-center gap-1 shadow-2xs transition active:scale-95 cursor-pointer">
+                      <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-slate-400"></span>
+                      <span>${s.status || 'Inactive'}</span>
                     </button>
-                  `}
+                  `))}
                 </div>
 
               </div>
@@ -11444,6 +11518,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         student.levelStartDate = new Date().toISOString();
         student.status = 'Active';
         student.feeStatus = 'Paid';
+        student.isVerified = true;
         student.verifiedAt = new Date().toISOString();
 
         saveAdminState();
@@ -11469,6 +11544,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       // Case B: Standard New Admission Approval!
       student.status = 'Active';
       student.feeStatus = 'Paid';
+      student.isVerified = true;
       student.verifiedAt = new Date().toISOString();
       saveAdminState();
 
@@ -14736,7 +14812,9 @@ function handleAdminCreateCompetition(e) {
                 photo: (stu.photo && stu.photo.length > 20) ? stu.photo : (existing.photo || ''),
                 aadharPhoto: (stu.aadharPhoto && stu.aadharPhoto.length > 20) ? stu.aadharPhoto : (existing.aadharPhoto || ''),
                 levelHistory: stu.levelHistory || existing.levelHistory || {},
-                lastExam: stu.lastExam || existing.lastExam || null
+                lastExam: stu.lastExam || existing.lastExam || null,
+                isVerified: existing.isVerified || ((stu.status || existing.status) === 'Active' && ((stu.feeStatus || existing.feeStatus || '').toLowerCase() === 'paid')),
+                verifiedAt: existing.verifiedAt || (stu.verifiedAt || null)
               };
               // Resilient backfill: If cloud row had empty trainerId but has trainerName or district
               if (!freshStu.trainerId && freshStu.trainerName) {
