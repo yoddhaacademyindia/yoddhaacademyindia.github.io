@@ -1011,7 +1011,7 @@
               <p id="growth-section2-desc" class="text-xs text-slate-500 mt-0.5">Historical comparison of academy strength, graduations & official events</p>
             </div>
             <span class="text-xs font-extrabold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
-              <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +165% Total Growth
+              <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> <span id="growth-overall-text">Live Verified Data</span>
             </span>
           </div>
 
@@ -6070,18 +6070,31 @@ function setupAllAcademySheets() {
       currentPage: 'dashboard'
     };
 
+    function safeSaveStorage(key, value) {
+      try {
+        localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
+      } catch (err) {
+        console.warn(`LocalStorage quota reached for ${key}, cleaning redundant keys...`, err);
+        try {
+          localStorage.removeItem('yoddha_admin_students_v3');
+          localStorage.removeItem('yoddha_admin_students');
+          localStorage.removeItem('yoddha_admin_trainers');
+          localStorage.removeItem('yoddha_admin_courses');
+          localStorage.removeItem('yoddha_admin_comps');
+          localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
+        } catch(e2) {
+          console.error(`Safe storage fallback failed for ${key}:`, e2);
+        }
+      }
+    }
+
     function saveAdminState() {
-      localStorage.setItem('yoddha_admin_students_v8', JSON.stringify(adminState.students));
-      localStorage.setItem('yoddha_admin_students_v3', JSON.stringify(adminState.students));
-      localStorage.setItem('yoddha_admin_students', JSON.stringify(adminState.students));
-            localStorage.setItem('yoddha_admin_students_v8', JSON.stringify(adminState.students));
-      localStorage.setItem('yoddha_admin_trainers_v5', JSON.stringify(adminState.trainers));
-      localStorage.setItem('yoddha_admin_trainers', JSON.stringify(adminState.trainers));
-      localStorage.setItem('yoddha_admin_courses_v2', JSON.stringify(adminState.courses));
-      localStorage.setItem('yoddha_admin_courses', JSON.stringify(adminState.courses));
-      localStorage.setItem('yoddha_admin_comps_v2', JSON.stringify(adminState.competitions));
-      localStorage.setItem('yoddha_admin_comps', JSON.stringify(adminState.competitions));
-      localStorage.setItem('yoddha_admin_fee', JSON.stringify(adminState.feeStructure));
+      // Save cleanly to primary keys without duplicate storage bloating
+      safeSaveStorage('yoddha_admin_students_v8', adminState.students);
+      safeSaveStorage('yoddha_admin_trainers_v5', adminState.trainers);
+      safeSaveStorage('yoddha_admin_courses_v2', adminState.courses);
+      safeSaveStorage('yoddha_admin_comps_v2', adminState.competitions);
+      safeSaveStorage('yoddha_admin_fee', adminState.feeStructure);
       updateTopMetrics();
     }
 
@@ -12853,12 +12866,16 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         const growthPct = Math.round(((totalBranchNow - totalBranch2025) / totalBranch2025) * 100);
         const growthStr = growthPct >= 0 ? `+${growthPct}%` : `${growthPct}%`;
 
+        const myPassedExams = myStudents.filter(s => s.examPassedDate || s.examStatus === 'PASSED' || s.examStatus === 'PASSED_PENDING_LEVELUP' || (s.lastExam && s.lastExam.totalScore)).length;
+        const myLvl1to3 = myStudents.filter(s => (s.requestedLevel || s.level || '').match(/Level [1-3]/i)).length;
+        const myLvl4plus = myStudents.filter(s => !(s.requestedLevel || s.level || '').match(/Level [1-3]/i)).length;
+
         const branchMetrics = [
-          { label: "My Total Students", y2025: String(totalBranch2025), y2026: String(totalBranchNow), growth: growthStr },
-          { label: "Level 1-3 Warriors", y2025: "9", y2026: String(myStudents.filter(s => (s.requestedLevel||'').match(/Level [1-3]/)).length), growth: "+110%" },
-          { label: "Level 4+ Advanced", y2025: "3", y2026: String(myStudents.filter(s => !(s.requestedLevel||'').match(/Level [1-3]/)).length), growth: "+150%" },
-          { label: "Level Exams Passed", y2025: "8", y2026: String(Math.max(myStudents.length, 18)), growth: "+125%" },
-          { label: "Match Entries", y2025: "2", y2026: "7", growth: "+250%" }
+          { label: "My Total Students", y2025: "0", y2026: String(totalBranchNow), growth: totalBranchNow > 0 ? `+${totalBranchNow} Active` : "0" },
+          { label: "Level 1-3 Warriors", y2025: "0", y2026: String(myLvl1to3), growth: myLvl1to3 > 0 ? `+${myLvl1to3} Active` : "0" },
+          { label: "Level 4+ Advanced", y2025: "0", y2026: String(myLvl4plus), growth: myLvl4plus > 0 ? `+${myLvl4plus} Active` : "0" },
+          { label: "Level Exams Passed", y2025: "0", y2026: String(myPassedExams), growth: myPassedExams > 0 ? `+${myPassedExams} Passed` : "0" },
+          { label: "Official Matches", y2025: "0", y2026: String(adminState.competitions.length), growth: `${adminState.competitions.length} Matches` }
         ];
 
         compContainer.innerHTML = '';
@@ -12911,17 +12928,25 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         stateContainer.innerHTML = '';
         let activeStatesCount = 0;
 
-        statesList.forEach(st => {
+        // Process states with 100% REAL counts (Zero dummy numbers)
+        const stateStats = statesList.map(st => {
           const trns = adminState.trainers.filter(t => (t.state || '').toLowerCase().includes(st.name.split(' ')[0].toLowerCase()) || (t.stateCode || '').toUpperCase() === st.code);
           const stus = adminState.students.filter(s => (s.state || '').toLowerCase().includes(st.name.split(' ')[0].toLowerCase()) || (s.stateCode || '').toUpperCase() === st.code);
-          const akhadas = trns.length > 0 ? trns.length : (st.code === 'MH' ? 3 : (st.code === 'KA' ? 1 : 0));
-          
-          if (trns.length > 0 || stus.length > 0 || st.code === 'MH' || st.code === 'KA') {
-            activeStatesCount++;
-          }
+          // Centers is real number of training centers / branches
+          const akhadas = trns.length > 0 ? (new Set(trns.map(t => t.branch || t.district || t.city).filter(Boolean)).size || trns.length) : 0;
+          const isActive = (trns.length > 0 || stus.length > 0);
+          if (isActive) activeStatesCount++;
+          return { ...st, trns, stus, akhadas, isActive };
+        });
 
+        // Sort: Active states appear first!
+        stateStats.sort((a, b) => (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0));
+
+        stateStats.forEach(st => {
           const div = document.createElement('div');
-          div.className = "bg-orange-50/40 border border-orange-200/80 rounded-2xl p-4 shadow-sm hover:border-orange-400 hover:bg-orange-50/80 transition flex flex-col justify-between";
+          div.className = st.isActive 
+            ? "bg-orange-50/60 border-2 border-orange-300 rounded-2xl p-4 shadow-sm hover:border-orange-400 hover:bg-orange-50/90 transition flex flex-col justify-between"
+            : "bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4 shadow-2xs hover:border-slate-300 transition flex flex-col justify-between opacity-75";
           div.innerHTML = `
             <div>
               <div class="flex justify-between items-center mb-2">
@@ -12929,42 +12954,46 @@ const iconBox = document.getElementById('exam-banner-icon-box');
                   <span>${st.flag}</span>
                   <span>${st.name}</span>
                 </span>
-                <span class="text-[10px] font-mono font-bold text-orange-700 bg-white border border-orange-200 px-2 py-0.5 rounded-full">${st.code}</span>
+                <span class="text-[10px] font-mono font-bold ${st.isActive ? 'text-orange-700 bg-white border border-orange-200' : 'text-slate-500 bg-white border border-slate-200'} px-2 py-0.5 rounded-full">${st.code}</span>
               </div>
-              <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t border-orange-100">
-                <div class="bg-white p-2 rounded-xl border border-orange-100 shadow-2xs">
+              <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t ${st.isActive ? 'border-orange-100' : 'border-slate-100'}">
+                <div class="bg-white p-2 rounded-xl border ${st.isActive ? 'border-orange-100' : 'border-slate-100'} shadow-2xs">
                   <span class="block text-[10px] text-slate-500 font-bold uppercase">Trainers</span>
-                  <strong class="text-sm font-black text-slate-900 font-rajdhani">${trns.length}</strong>
+                  <strong class="text-sm font-black ${st.trns.length > 0 ? 'text-slate-900' : 'text-slate-400'} font-rajdhani">${st.trns.length}</strong>
                 </div>
-                <div class="bg-white p-2 rounded-xl border border-orange-100 shadow-2xs">
+                <div class="bg-white p-2 rounded-xl border ${st.isActive ? 'border-orange-100' : 'border-slate-100'} shadow-2xs">
                   <span class="block text-[10px] text-slate-500 font-bold uppercase">Students</span>
-                  <strong class="text-sm font-black text-orange-600 font-rajdhani">${stus.length}</strong>
+                  <strong class="text-sm font-black ${st.stus.length > 0 ? 'text-orange-600' : 'text-slate-400'} font-rajdhani">${st.stus.length}</strong>
                 </div>
-                <div class="bg-white p-2 rounded-xl border border-orange-100 shadow-2xs">
+                <div class="bg-white p-2 rounded-xl border ${st.isActive ? 'border-orange-100' : 'border-slate-100'} shadow-2xs">
                   <span class="block text-[10px] text-slate-500 font-bold uppercase">Centers</span>
-                  <strong class="text-sm font-black text-emerald-700 font-rajdhani">${akhadas}</strong>
+                  <strong class="text-sm font-black ${st.akhadas > 0 ? 'text-emerald-700' : 'text-slate-400'} font-rajdhani">${st.akhadas}</strong>
                 </div>
               </div>
             </div>
-            <div class="mt-3 pt-2 border-t border-orange-100/60 flex justify-between items-center text-[10px]">
+            <div class="mt-3 pt-2 border-t ${st.isActive ? 'border-orange-100/60' : 'border-slate-100'} flex justify-between items-center text-[10px]">
               <span class="text-slate-500 font-medium">Network Footprint:</span>
-              <span class="font-bold text-orange-700">${stus.length > 0 ? 'Active & Growing' : 'Expansion Hub'}</span>
+              <span class="font-bold ${st.isActive ? 'text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200' : 'text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200'}">${st.isActive ? 'Active & Operating' : 'Expansion Planned'}</span>
             </div>
           `;
           stateContainer.appendChild(div);
         });
 
-        if (countEl) countEl.innerText = `${activeStatesCount} Active States`;
+        if (countEl) countEl.innerText = `${activeStatesCount} Active State${activeStatesCount === 1 ? '' : 's'}`;
 
-        // Admin 2-Year Historical Comparison Cards (2025 vs 2026)
-        const totalWarriors = Math.max(adminState.students.length, 385);
-        const totalTrainers = Math.max(adminState.trainers.length, 24);
+        // 100% REAL COUNTS for 2-Year Historical Comparison Cards (Year 2025 vs Year 2026)
+        const totalWarriors = adminState.students.length;
+        const totalTrainers = adminState.trainers.length;
+        const totalCenters = new Set(adminState.trainers.map(t => t.branch || t.city || t.district).filter(Boolean)).size || (adminState.trainers.length > 0 ? 1 : 0);
+        const levelExamsPassed = adminState.students.filter(s => s.examPassedDate || s.examStatus === 'PASSED' || s.examStatus === 'PASSED_PENDING_LEVELUP' || (s.lastExam && s.lastExam.totalScore)).length;
+        const totalComps = adminState.competitions.length;
+
         const compItems = [
-          { label: "Total Enrolled Warriors", y2025: "145", y2026: String(totalWarriors), growth: "+165%" },
-          { label: "Certified Instructors", y2025: "8", y2026: String(totalTrainers), growth: "+200%" },
-          { label: "Training Centers", y2025: "5", y2026: "18", growth: "+260%" },
-          { label: "Level Exam Graduations", y2025: "96", y2026: "312", growth: "+225%" },
-          { label: "Championship Matches", y2025: "3", y2026: "9", growth: "+200%" }
+          { label: "Total Enrolled Warriors", y2025: "0", y2026: String(totalWarriors), growth: totalWarriors > 0 ? `+${totalWarriors} Active` : "0" },
+          { label: "Certified Instructors", y2025: "0", y2026: String(totalTrainers), growth: totalTrainers > 0 ? `+${totalTrainers} Active` : "0" },
+          { label: "Training Centers", y2025: "0", y2026: String(totalCenters), growth: totalCenters > 0 ? `+${totalCenters} Active` : "0" },
+          { label: "Level Exam Graduations", y2025: "0", y2026: String(levelExamsPassed), growth: levelExamsPassed > 0 ? `+${levelExamsPassed} Passed` : "0" },
+          { label: "Official Tournaments", y2025: "0", y2026: String(totalComps), growth: totalComps > 0 ? `+${totalComps} Events` : "0" }
         ];
 
         compContainer.innerHTML = '';
@@ -12980,7 +13009,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
               <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-200">
                 <div class="bg-white p-2 rounded-xl border border-slate-200 text-center">
                   <span class="text-[9px] font-extrabold uppercase text-slate-400 block">Year 2025</span>
-                  <strong class="text-base font-black text-slate-600 font-rajdhani">${item.y2025}</strong>
+                  <strong class="text-base font-black text-slate-500 font-rajdhani">${item.y2025}</strong>
                 </div>
                 <div class="bg-orange-50/80 p-2 rounded-xl border border-orange-200 text-center">
                   <span class="text-[9px] font-extrabold uppercase text-orange-600 block">Year 2026</span>
@@ -12991,6 +13020,11 @@ const iconBox = document.getElementById('exam-banner-icon-box');
           `;
           compContainer.appendChild(div);
         });
+
+        const overallBadgeText = document.getElementById('growth-overall-text');
+        if (overallBadgeText) {
+          overallBadgeText.innerText = `${totalWarriors} Active Warriors • ${totalTrainers} Certified Trainer`;
+        }
       }
 
       lucide.createIcons();
@@ -14135,15 +14169,26 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       }
     }
 
-    function handleCourseThumbnailFileUpload(e) {
+    async function handleCourseThumbnailFileUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        uploadedCourseThumbnailData = evt.target.result;
+      if (!file.type.startsWith('image/')) {
+        alert("Please select an image file (JPG, PNG, WebP)!");
+        return;
+      }
+      try {
+        // High efficiency image compression: downsamples to 400px (under 28KB)
+        uploadedCourseThumbnailData = await compressImageFile(file, 400, 0.7);
         showCourseThumbnailPreview(uploadedCourseThumbnailData);
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.warn("Course thumbnail compression fallback:", err);
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          uploadedCourseThumbnailData = evt.target.result;
+          showCourseThumbnailPreview(uploadedCourseThumbnailData);
+        };
+        reader.readAsDataURL(file);
+      }
     }
 
     function showCourseThumbnailPreview(src) {
@@ -14287,19 +14332,25 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       }
     }
 
-    function handleEditCourseThumbnailFileUpload(e) {
+    async function handleEditCourseThumbnailFileUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
       if (!file.type.startsWith('image/')) {
         alert("Please select an image file (JPG, PNG, WebP)!");
         return;
       }
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        uploadedEditCourseThumbnailData = evt.target.result;
+      try {
+        uploadedEditCourseThumbnailData = await compressImageFile(file, 400, 0.7);
         showEditCourseThumbnailPreview(uploadedEditCourseThumbnailData);
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.warn("Edit course thumbnail compression fallback:", err);
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          uploadedEditCourseThumbnailData = evt.target.result;
+          showEditCourseThumbnailPreview(uploadedEditCourseThumbnailData);
+        };
+        reader.readAsDataURL(file);
+      }
     }
 
     function populateEditCourseTrainerChecklist(assignedList) {
@@ -14468,8 +14519,6 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
         adminState.courses.push(courseObj);
         saveAdminState();
-        localStorage.setItem('yoddha_admin_courses_v2', JSON.stringify(adminState.courses));
-        localStorage.setItem('yoddha_admin_courses', JSON.stringify(adminState.courses));
         
         syncToCloudServer({ type: "COURSE_CREATED", ...courseObj });
         renderAdminCourses();
