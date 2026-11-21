@@ -318,6 +318,8 @@ function doGet(e) {
             fee: Number(cm[7]) || 300,
             status: String(cm[8] || "Registrations Open").trim(),
             scope: String(cm[9] || "All").trim(),
+            allowedDistricts: (String(cm[9] || "").indexOf(",") !== -1 || (String(cm[9] || "").length > 0 && String(cm[9] || "") !== "All" && String(cm[9] || "") !== "All Branches" && String(cm[9] || "") !== "All India Open")) ? String(cm[9]).split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [],
+            allowedStates: (String(cm[9] || "").toLowerCase().indexOf("state") !== -1) ? String(cm[9]).split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [],
             entries: 0,
             athletes: []
           });

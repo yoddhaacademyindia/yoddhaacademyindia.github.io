@@ -945,10 +945,16 @@
               <p class="text-xs text-slate-500 font-medium">Standardized martial arts syllabus, duration, and fee structure</p>
             </div>
           </div>
-          <span class="bg-orange-100 text-orange-900 border border-orange-300 text-xs font-black px-3.5 py-1.5 rounded-full shadow-sm flex items-center gap-1.5">
-            <i data-lucide="video" class="w-3.5 h-3.5 text-orange-600"></i>
-            <span>Official Syllabus & Video Lessons</span>
-          </span>
+          <div class="flex items-center gap-2">
+            <span class="bg-orange-100 text-orange-900 border border-orange-300 text-xs font-black px-3.5 py-1.5 rounded-full shadow-sm hidden sm:flex items-center gap-1.5">
+              <i data-lucide="video" class="w-3.5 h-3.5 text-orange-600"></i>
+              <span>Official Syllabus & Video Lessons</span>
+            </span>
+            <button type="button" onclick="openFormModal('course')" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white rounded-2xl font-black text-xs flex items-center gap-1.5 shadow-md shadow-orange-500/20 transition active:scale-95 cursor-pointer">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>+ Create New Course</span>
+            </button>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="admin-courses-grid">
@@ -2299,7 +2305,7 @@
           </label>
           <div class="relative">
             <i data-lucide="link" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-            <input type="text" id="adm-crs-youtube" required oninput="handleCourseVideoLinkInput(this.value)" placeholder="https://www.youtube.com/watch?v=... or YouTube Video ID" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-slate-900 font-mono font-bold text-xs focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200">
+            <input type="text" id="adm-crs-youtube" oninput="handleCourseVideoLinkInput(this.value)" placeholder="https://www.youtube.com/watch?v=... or YouTube Video ID (Optional)" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-slate-900 font-mono font-bold text-xs focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-200">
           </div>
         </div>
 
@@ -3523,6 +3529,8 @@ function doGet(e) {
             fee: Number(cm[7]) || 300,
             status: String(cm[8] || "Registrations Open").trim(),
             scope: String(cm[9] || "All").trim(),
+            allowedDistricts: (String(cm[9] || "").indexOf(",") !== -1 || (String(cm[9] || "").length > 0 && String(cm[9] || "") !== "All" && String(cm[9] || "") !== "All Branches" && String(cm[9] || "") !== "All India Open")) ? String(cm[9]).split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [],
+            allowedStates: (String(cm[9] || "").toLowerCase().indexOf("state") !== -1) ? String(cm[9]).split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [],
             entries: 0,
             athletes: []
           });
@@ -7502,18 +7510,36 @@ lucide.createIcons();
     function toggleStudentFeeStatus(studentId) {
       const idx = adminState.students.findIndex(s => s.studentId === studentId);
       if (idx === -1) return;
-      const current = adminState.students[idx].feeStatus || 'Paid';
-      const newStatus = (current === 'Paid') ? 'Unpaid' : 'Paid';
-      adminState.students[idx].feeStatus = newStatus;
+      const student = adminState.students[idx];
+      const current = student.feeStatus || 'Unpaid';
+      
+      if (current === 'Paid') {
+        const confirmUnpaid = confirm(
+          `⚠️ विद्यार्थी "${student.studentName || 'Student'}" ची फी आधीच PAID (जमा) आहे.\n\n` +
+          `तुम्हाला खात्री आहे का की ही फी परत 'UNPAID' (प्रलंबित) करायची आहे?\n\n` +
+          `(Student fee is currently marked as PAID. Are you sure you want to change it to UNPAID?)`
+        );
+        if (!confirmUnpaid) return;
+        student.feeStatus = 'Unpaid';
+      } else {
+        const confirmPaid = confirm(
+          `✅ विद्यार्थी "${student.studentName || 'Student'}" ची फी PAID (जमा) म्हणून मार्क करायची आहे का?\n\n` +
+          `(Mark student fee as PAID?)`
+        );
+        if (!confirmPaid) return;
+        student.feeStatus = 'Paid';
+        if (!student.feeAmount) student.feeAmount = 1500;
+      }
+      
       saveAdminState();
       
       // In-place sync to Central Cloud Server with ALL 32 points preserved!
       syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
         action: "updateStudent",
-        ...adminState.students[idx],
+        ...student,
         studentId: studentId,
-        feeStatus: newStatus
+        feeStatus: student.feeStatus
       });
       
       renderAdminStudents();
@@ -12755,6 +12781,14 @@ const iconBox = document.getElementById('exam-banner-icon-box');
           levelIcon = "map-pin";
         }
 
+        // Ensure allowedDistricts and allowedStates are parsed from comp.scope if missing
+        if ((!comp.allowedDistricts || comp.allowedDistricts.length === 0) && comp.scope && comp.scope !== 'All' && comp.scope !== 'All Branches' && comp.scope !== 'All India Open' && level === 'District Level') {
+          comp.allowedDistricts = comp.scope.split(',').map(s => s.trim()).filter(Boolean);
+        }
+        if ((!comp.allowedStates || comp.allowedStates.length === 0) && comp.scope && comp.scope.toLowerCase().includes('state') && level === 'State Level') {
+          comp.allowedStates = comp.scope.split(',').map(s => s.trim()).filter(Boolean);
+        }
+
         // Scope description badge
         let scopeBadgeHtml = '';
         let isTrainerEligible = true;
@@ -12766,8 +12800,19 @@ const iconBox = document.getElementById('exam-banner-icon-box');
               <span class="font-bold text-blue-800">${comp.allowedDistricts.join(', ')}</span>
             </div>
           `;
-          if (isTrainer && trnDist) {
-            isTrainerEligible = comp.allowedDistricts.some(d => trnDist.includes(d.toLowerCase()) || d.toLowerCase().includes(trnDist));
+          if (isTrainer) {
+            const trnId = (user.id || user.trainerId || '').toUpperCase().trim();
+            isTrainerEligible = comp.allowedDistricts.some(d => {
+              const dl = d.toLowerCase().trim();
+              if (trnDist && (trnDist.includes(dl) || dl.includes(trnDist))) return true;
+              if (dl === 'satara' && trnId.includes('-SAT-')) return true;
+              if (dl === 'kolhapur' && trnId.includes('-KOP-')) return true;
+              if (dl === 'pune' && trnId.includes('-PUN-')) return true;
+              if (dl === 'mumbai' && (trnId.includes('-MUM-') || trnId.includes('-CSN-'))) return true;
+              if (dl === 'nashik' && trnId.includes('-NSK-')) return true;
+              if (dl === 'belgaum' && trnId.includes('-BGM-')) return true;
+              return false;
+            });
           }
         } else if (level === 'State Level' && comp.allowedStates && comp.allowedStates.length > 0) {
           scopeBadgeHtml = `
@@ -13358,100 +13403,40 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const comp = adminState.competitions.find(c => c.id === compId);
       const athletes = (comp && comp.athletes) ? comp.athletes : [];
       
-      const studentEntries = athletes.filter(a => 
+      const alreadyRegistered = athletes.some(a => 
         (a.studentId || '').toUpperCase() === studentId.toUpperCase()
       );
 
-      const hasSingle = studentEntries.some(a => (a.discipline || '').toLowerCase().includes('single'));
-      const hasGeneral = studentEntries.some(a => (a.discipline || '').toLowerCase().includes('general'));
-
-      if (hasSingle && hasGeneral) {
-        // Both Single and General already registered!
+      if (alreadyRegistered) {
         if (notice) {
           notice.innerHTML = `
-            <div class="p-3 bg-rose-50 border-2 border-rose-300 rounded-2xl text-rose-900 text-xs font-bold flex items-start gap-2.5 shadow-sm">
+            <div class="p-3.5 bg-rose-50 border-2 border-rose-300 rounded-2xl text-rose-900 text-xs font-bold flex items-start gap-2.5 shadow-sm">
               <i data-lucide="alert-octagon" class="w-5 h-5 flex-shrink-0 text-rose-600 mt-0.5"></i>
               <div>
-                <p class="font-black text-rose-950">Registration Complete (2/2 Events Registered)</p>
-                <p class="text-[11px] text-rose-700 font-medium mt-0.5">Candidate ${s.studentName} is ALREADY registered for both <strong>Single Event</strong> and <strong>General Event</strong> in this championship. No further entries permitted.</p>
+                <p class="font-black text-rose-950 text-sm">⚠️ Registration Already Completed (नोंदणी पूर्ण)</p>
+                <p class="text-[11px] text-rose-800 font-medium mt-1 leading-relaxed">
+                  खेळाडू <strong>${s.studentName}</strong> (${studentId}) या स्पर्धेसाठी आधीच नोंदणीकृत (Registered) आहे.<br>
+                  एका विद्यार्थ्याला एका स्पर्धेत फक्त एकदाच फॉर्म भरता येतो. पुन्हा फॉर्म भरण्याची परवानगी नाही.
+                </p>
               </div>
             </div>
           `;
           notice.classList.remove('hidden');
         }
         if (discSelect) {
-          discSelect.innerHTML = `<option value="" disabled selected>Both Events Already Registered (Single & General)</option>`;
+          discSelect.innerHTML = `<option value="" disabled selected>Already Registered (नोंदणी पूर्ण झालेली आहे)</option>`;
         }
         if (submitBtn) {
           submitBtn.disabled = true;
           submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-          submitBtn.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i><span>Already Registered for All Events</span>';
-        }
-      } else if (hasSingle && !hasGeneral) {
-        // Single Event already registered, ONLY General Event is available now!
-        if (notice) {
-          notice.innerHTML = `
-            <div class="p-3 bg-amber-50 border-2 border-amber-300 rounded-2xl text-amber-950 text-xs font-bold flex items-start gap-2.5 shadow-sm">
-              <i data-lucide="check-circle" class="w-5 h-5 flex-shrink-0 text-emerald-600 mt-0.5"></i>
-              <div>
-                <p class="font-black text-amber-900">Single Event Registered ✓</p>
-                <p class="text-[11px] text-amber-800 font-medium mt-0.5">Candidate has already submitted for Single Event. You can now submit for <strong>General Event</strong>.</p>
-              </div>
-            </div>
-          `;
-          notice.classList.remove('hidden');
-        }
-        if (discSelect) {
-          discSelect.innerHTML = `
-            <option value="General Event" selected>General Event</option>
-            <option value="Single Event" disabled>Single Event (Already Registered)</option>
-          `;
-        }
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-          submitBtn.innerHTML = '<i data-lucide="check-circle-2" class="w-4 h-4"></i><span>Register for General Event</span>';
-        }
-      } else if (!hasSingle && hasGeneral) {
-        // General Event already registered, ONLY Single Event is available now!
-        if (notice) {
-          notice.innerHTML = `
-            <div class="p-3 bg-amber-50 border-2 border-amber-300 rounded-2xl text-amber-950 text-xs font-bold flex items-start gap-2.5 shadow-sm">
-              <i data-lucide="check-circle" class="w-5 h-5 flex-shrink-0 text-emerald-600 mt-0.5"></i>
-              <div>
-                <p class="font-black text-amber-900">General Event Registered ✓</p>
-                <p class="text-[11px] text-amber-800 font-medium mt-0.5">Candidate has already submitted for General Event. You can now submit for <strong>Single Event</strong>.</p>
-              </div>
-            </div>
-          `;
-          notice.classList.remove('hidden');
-        }
-        if (discSelect) {
-          discSelect.innerHTML = `
-            <option value="Single Event" selected>Single Event</option>
-            <option value="General Event" disabled>General Event (Already Registered)</option>
-          `;
-        }
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-          submitBtn.innerHTML = '<i data-lucide="check-circle-2" class="w-4 h-4"></i><span>Register for Single Event</span>';
+          submitBtn.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i><span>Already Registered (नोंदणी पूर्ण)</span>';
         }
       } else {
-        // Neither registered yet: Default to Single Event, General Event also available
-        if (notice) {
-          notice.innerHTML = `
-            <div class="p-2.5 bg-blue-50 border border-blue-200 rounded-2xl text-blue-900 text-xs font-bold flex items-center gap-2">
-              <i data-lucide="info" class="w-4 h-4 flex-shrink-0 text-blue-600"></i>
-              <span class="text-[11px]">First submit for <strong>Single Event</strong>, then you can submit for <strong>General Event</strong>.</span>
-            </div>
-          `;
-          notice.classList.remove('hidden');
-        }
+        if (notice) notice.classList.add('hidden');
         if (discSelect) {
           discSelect.innerHTML = `
-            <option value="Single Event" selected>Single Event (Recommended First)</option>
-            <option value="General Event">General Event</option>
+            <option value="Single Event">Single Event (वैयक्तिक प्रकार)</option>
+            <option value="General Event">General Event (सांघिक प्रकार)</option>
           `;
         }
         if (submitBtn) {
@@ -13524,6 +13509,31 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     function openTournamentEntryModal(compId) {
       const comp = adminState.competitions.find(c => c.id === compId);
       if (!comp) return;
+
+      const user = adminState.currentUser || { role: 'Admin' };
+      const isTrainer = (user.role === 'Trainer');
+
+      // STRICT BRANCH RESTRICTION CHECK:
+      if (isTrainer && comp.level === 'District Level' && comp.allowedDistricts && comp.allowedDistricts.length > 0) {
+        const trnDist = (user.branch || user.district || '').toLowerCase();
+        const trnId = (user.id || user.trainerId || '').toUpperCase();
+        const isEligible = comp.allowedDistricts.some(d => {
+          const dl = d.toLowerCase().trim();
+          if (trnDist && (trnDist.includes(dl) || dl.includes(trnDist))) return true;
+          if (dl === 'satara' && trnId.includes('-SAT-')) return true;
+          if (dl === 'kolhapur' && trnId.includes('-KOP-')) return true;
+          if (dl === 'pune' && trnId.includes('-PUN-')) return true;
+          if (dl === 'mumbai' && (trnId.includes('-MUM-') || trnId.includes('-CSN-'))) return true;
+          if (dl === 'nashik' && trnId.includes('-NSK-')) return true;
+          if (dl === 'belgaum' && trnId.includes('-BGM-')) return true;
+          return false;
+        });
+
+        if (!isEligible) {
+          alert(`🔒 Branch Restricted (शाखा मर्यादा):\n\nही स्पर्धा फक्त खालील जिल्ह्यांसाठी आहे:\n[${comp.allowedDistricts.join(', ')}]\n\nतुमची शाखा ${user.branch || user.district || 'Satara'} आहे. या स्पर्धेत Satara शाखेतील खेळाडूंना नोंदणी करता येणार नाही.\n\n(This tournament is restricted to: ${comp.allowedDistricts.join(', ')}).`);
+          return;
+        }
+      }
 
       document.getElementById('tourn-comp-id').value = comp.id;
       document.getElementById('tourn-comp-title').innerText = comp.title;
@@ -13619,24 +13629,16 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         } else {
           activeStudents.forEach(s => {
             const compAthletes = comp.athletes || [];
-            const sEntries = compAthletes.filter(a => (a.studentId || '').toUpperCase() === (s.studentId || '').toUpperCase());
-            const hasSingle = sEntries.some(a => (a.discipline || '').toLowerCase().includes('single'));
-            const hasGen = sEntries.some(a => (a.discipline || '').toLowerCase().includes('general'));
-
-            let tag = '';
-            if (hasSingle && hasGen) {
-              tag = ' • [✓ 2/2 Registered: Single & General]';
-            } else if (hasSingle) {
-              tag = ' • [Single Done → General Available]';
-            } else if (hasGen) {
-              tag = ' • [General Done → Single Available]';
-            } else {
-              tag = ' • [New Athlete]';
-            }
+            const isAlreadyReg = compAthletes.some(a => (a.studentId || '').toUpperCase() === (s.studentId || '').toUpperCase());
 
             const opt = document.createElement('option');
             opt.value = s.studentId;
-            opt.textContent = `${s.studentName} (${s.studentId})${tag}`;
+            if (isAlreadyReg) {
+              opt.disabled = true;
+              opt.textContent = `❌ ${s.studentName} (${s.studentId}) • [ALREADY REGISTERED 🔒]`;
+            } else {
+              opt.textContent = `✓ ${s.studentName} (${s.studentId}) • [Eligible to Register]`;
+            }
             select.appendChild(opt);
           });
         }
@@ -13675,23 +13677,19 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       const discipline = rawDiscipline.toLowerCase().includes('general') ? 'General Event' : 'Single Event';
 
-      // STRICT DUPLICATE VALIDATION: One student cannot register for the same event multiple times!
+      // STRICT DUPLICATE VALIDATION: One student can register ONLY ONCE for a competition!
       comp.athletes = comp.athletes || [];
-      const studentEntries = comp.athletes.filter(a => 
+      const alreadyReg = comp.athletes.some(a => 
         (a.studentId || '').toUpperCase() === studentId.toUpperCase()
       );
 
-      const alreadyReg = studentEntries.some(a => 
-        (a.discipline || '').toLowerCase().includes(discipline.toLowerCase())
-      );
-
       if (alreadyReg) {
-        alert(`⚠️ DUPLICATE ENTRY RESTRICTED:\n\nCandidate ${student.studentName} (${studentId}) is ALREADY registered for event: "${discipline}".\n\nA student can only register once per event.`);
-        return;
-      }
-
-      if (studentEntries.length >= 2) {
-        alert(`⚠️ MAXIMUM REGISTRATIONS REACHED:\n\nCandidate ${student.studentName} has already registered for both Single Event and General Event in this competition.`);
+        alert(
+          `⚠️ Already Registered (नोंदणी आधीच झालेली आहे):\n\n` +
+          `खेळाडू "${student.studentName}" (${studentId}) या स्पर्धेसाठी आधीच नोंदणीकृत (Registered) आहे!\n\n` +
+          `एका विद्यार्थ्याला एका स्पर्धेत फक्त एकदाच फॉर्म भरता येतो.\n\n` +
+          `(Candidate ${student.studentName} is ALREADY registered for this tournament! Re-registration is strictly restricted.)`
+        );
         return;
       }
 
@@ -14196,44 +14194,54 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
     function handleAdminCreateCourse(e) {
       e.preventDefault();
-      const name = document.getElementById('adm-crs-name').value.trim();
-      const desc = document.getElementById('adm-crs-desc').value.trim();
-      const youtubeUrl = document.getElementById('adm-crs-youtube')?.value.trim() || '';
-      const thumbUrl = uploadedCourseThumbnailData || document.getElementById('adm-crs-thumb-url')?.value.trim() || '';
+      try {
+        const name = document.getElementById('adm-crs-name').value.trim();
+        const desc = document.getElementById('adm-crs-desc').value.trim();
+        const youtubeUrl = document.getElementById('adm-crs-youtube')?.value.trim() || '';
+        const thumbUrl = uploadedCourseThumbnailData || document.getElementById('adm-crs-thumb-url')?.value.trim() || '';
 
-      // Get selected trainers
-      const selectAll = document.getElementById('crs-select-all-trainers');
-      const checkedBoxes = Array.from(document.querySelectorAll('input[name="crs-assigned-trainer"]:checked')).map(cb => cb.value);
+        if (!name) {
+          alert("Please enter a Course Title!");
+          return;
+        }
 
-      const assignedTrainers = (selectAll && selectAll.checked) ? ['ALL'] : (checkedBoxes.length > 0 ? checkedBoxes : ['ALL']);
+        // Get selected trainers
+        const selectAll = document.getElementById('crs-select-all-trainers');
+        const checkedBoxes = Array.from(document.querySelectorAll('input[name="crs-assigned-trainer"]:checked')).map(cb => cb.value);
 
-      const courseId = `CRS-0${adminState.courses.length + 1}`;
-      const courseObj = {
-        id: courseId,
-        name,
-        title: name,
-        desc,
-        description: desc,
-        youtubeUrl,
-        videoUrl: youtubeUrl,
-        thumbnail: thumbUrl,
-        assignedTrainers
-      };
+        const assignedTrainers = (selectAll && selectAll.checked) ? ['ALL'] : (checkedBoxes.length > 0 ? checkedBoxes : ['ALL']);
 
-      adminState.courses.push(courseObj);
-      saveAdminState();
-      syncToCloudServer({ type: "COURSE_CREATED", ...courseObj });
-      renderAdminCourses();
-      updateTopMetrics();
-      e.target.reset();
-      resetCourseThumbnailPreview();
-      closeFormModal('course');
-      alert(`🎉 Course "${name}" published successfully!
+        const nextNum = (adminState.courses.length + 1).toString().padStart(2, '0');
+        const courseId = `CRS-${nextNum}`;
+        const courseObj = {
+          id: courseId,
+          name,
+          title: name,
+          desc,
+          description: desc,
+          youtubeUrl,
+          videoUrl: youtubeUrl,
+          thumbnail: thumbUrl,
+          assignedTrainers
+        };
 
-Course ID: ${courseId}
-Visible to: ${assignedTrainers.includes('ALL') ? 'All Certified Trainers' : assignedTrainers.length + ' Selected Trainers'}
-Synchronized to Central Cloud Server.`);
-      navigateToPage('courses');
+        adminState.courses.push(courseObj);
+        saveAdminState();
+        localStorage.setItem('yoddha_admin_courses_v2', JSON.stringify(adminState.courses));
+        localStorage.setItem('yoddha_admin_courses', JSON.stringify(adminState.courses));
+        
+        syncToCloudServer({ type: "COURSE_CREATED", ...courseObj });
+        renderAdminCourses();
+        updateTopMetrics();
+        e.target.reset();
+        resetCourseThumbnailPreview();
+        closeFormModal('course');
+        alert(`🎉 Course "${name}" published successfully!\n\nCourse ID: ${courseId}\nVisible to: ${assignedTrainers.includes('ALL') ? 'All Certified Trainers' : assignedTrainers.length + ' Selected Trainers'}\nSynchronized to Central Cloud Server.`);
+        navigateToPage('courses');
+      } catch (err) {
+        console.error("Course creation error:", err);
+        alert("⚠️ Error creating course: " + err.message);
+      }
     }
 
     // FORM 4: Fee Structure Submit
@@ -14403,6 +14411,21 @@ function handleAdminCreateCompetition(e) {
       const level = document.getElementById('adm-comp-level').value;
       const status = document.getElementById('adm-comp-status').value;
 
+      // Capture allowed districts or states based on level
+      let allowedDistricts = [];
+      let allowedStates = [];
+      let scopeStr = 'All India Open';
+
+      if (level === 'District Level') {
+        const checkedDistBoxes = Array.from(document.querySelectorAll('input[name="comp-scope-district"]:checked'));
+        allowedDistricts = checkedDistBoxes.map(cb => cb.value.trim()).filter(Boolean);
+        scopeStr = allowedDistricts.length > 0 ? allowedDistricts.join(', ') : 'All Districts';
+      } else if (level === 'State Level') {
+        const checkedStateBoxes = Array.from(document.querySelectorAll('input[name="comp-scope-state"]:checked'));
+        allowedStates = checkedStateBoxes.map(cb => cb.value.trim()).filter(Boolean);
+        scopeStr = allowedStates.length > 0 ? allowedStates.join(', ') : 'All States';
+      }
+
       const compId = `COMP-2026-0${adminState.competitions.length + 1}`;
       const compObj = {
         id: compId,
@@ -14415,16 +14438,22 @@ function handleAdminCreateCompetition(e) {
         publishedDate,
         entries: 0,
         athletes: [],
-        status
+        status,
+        allowedDistricts,
+        allowedStates,
+        scope: scopeStr
       };
 
       adminState.competitions.unshift(compObj);
       saveAdminState();
+      localStorage.setItem('yoddha_admin_comps_v2', JSON.stringify(adminState.competitions));
+      localStorage.setItem('yoddha_admin_comps', JSON.stringify(adminState.competitions));
+      
       syncToCloudServer({ type: "COMPETITION_CREATED", ...compObj });
       renderAdminCompetitions();
       e.target.reset();
       closeFormModal('competition');
-      alert(`Tournament "${title}" announced successfully!\nID: ${compId}\nSynchronized to Central Cloud Server.`);
+      alert(`🎉 Tournament "${title}" announced successfully!\nID: ${compId}\nScope: ${scopeStr}\nSynchronized to Central Cloud Server.`);
       navigateToPage('competition');
     }
 
@@ -14631,16 +14660,40 @@ function handleAdminCreateCompetition(e) {
             localStorage.setItem('yoddha_admin_fee', JSON.stringify(adminState.feeStructure));
           }
 
-          // 5. Live Sync Courses from Google Sheet (Mirror exact sheet state)
+          // 5. Live Sync Courses from Google Sheet (Merge with newly created local courses)
           if (Array.isArray(data.courses)) {
-            adminState.courses = data.courses;
+            const mergedCourses = [...data.courses];
+            (adminState.courses || []).forEach(localC => {
+              const localId = (localC.id || '').toUpperCase();
+              if (localId && !mergedCourses.some(mc => (mc.id || '').toUpperCase() === localId)) {
+                mergedCourses.push(localC);
+              }
+            });
+            adminState.courses = mergedCourses;
             localStorage.setItem('yoddha_admin_courses', JSON.stringify(adminState.courses));
+            localStorage.setItem('yoddha_admin_courses_v2', JSON.stringify(adminState.courses));
           }
 
-          // 6. Live Sync Competitions from Google Sheet (Mirror exact sheet state)
+          // 6. Live Sync Competitions from Google Sheet (Parse allowedDistricts & Merge)
           if (Array.isArray(data.competitions)) {
-            adminState.competitions = data.competitions;
+            data.competitions.forEach(comp => {
+              if ((!comp.allowedDistricts || comp.allowedDistricts.length === 0) && comp.scope && comp.scope !== 'All' && comp.scope !== 'All Branches' && comp.scope !== 'All India Open' && comp.level === 'District Level') {
+                comp.allowedDistricts = comp.scope.split(',').map(s => s.trim()).filter(Boolean);
+              }
+              if ((!comp.allowedStates || comp.allowedStates.length === 0) && comp.scope && comp.scope.toLowerCase().includes('state') && comp.level === 'State Level') {
+                comp.allowedStates = comp.scope.split(',').map(s => s.trim()).filter(Boolean);
+              }
+            });
+            const mergedComps = [...data.competitions];
+            (adminState.competitions || []).forEach(localComp => {
+              const localId = (localComp.id || '').toUpperCase();
+              if (localId && !mergedComps.some(mc => (mc.id || '').toUpperCase() === localId)) {
+                mergedComps.push(localComp);
+              }
+            });
+            adminState.competitions = mergedComps;
             localStorage.setItem('yoddha_admin_comps', JSON.stringify(adminState.competitions));
+            localStorage.setItem('yoddha_admin_comps_v2', JSON.stringify(adminState.competitions));
           }
 
           // 7. Live Sync Student Medals & Sports Records from Google Sheet
