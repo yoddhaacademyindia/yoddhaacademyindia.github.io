@@ -413,6 +413,29 @@ function doGet(e) {
     return ContentService.createTextOutput(JSON.stringify(initRes)).setMimeType(ContentService.MimeType.JSON);
   }
 
+  // 1E. Direct Set Exam Switch (Instant Zero-Preflight GET fallback)
+  if (action === "setExamSwitch" || action === "toggleExamSwitch") {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var val = (e && e.parameter && (e.parameter.active === "true" || e.parameter.active === "ON")) ? "ON" : "OFF";
+    var scriptProps = PropertiesService.getScriptProperties();
+    scriptProps.setProperty("EXAM_MASTER_SWITCH", val);
+    try {
+      var setSheet = getOrCreateSheet(ss, "AcademySettings", [
+        "Setting Key", "Setting Value", "Updated By", "Last Updated"
+      ]);
+      var rowData = ["EXAM_MASTER_SWITCH", val, "Admin", new Date()];
+      var updated = updateRowIfExistsOrMerge(setSheet, 1, "EXAM_MASTER_SWITCH", rowData);
+      if (!updated) setSheet.appendRow(rowData);
+    } catch(err) {
+      Logger.log("setExamSwitch error: " + err.toString());
+    }
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      message: "Exam master switch updated to " + val,
+      examSessionActive: (val === "ON")
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
 if (action === "readSheet") {
     var sheetName = (e && e.parameter && e.parameter.sheet) || "Trainers";
     var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -977,7 +1000,8 @@ function doPost(e) {
         "CONTACT_MOBILE": data.mobile || data.phone || "",
         "CONTACT_EMAIL": data.email || "",
         "OFFICIAL_UPI": data.upi || "",
-        "HQ_ADDRESS": data.address || ""
+        "HQ_ADDRESS": data.address || "",
+        "EXAM_MASTER_SWITCH": (data.examSessionActive !== undefined ? (data.examSessionActive ? "ON" : "OFF") : (data.EXAM_MASTER_SWITCH || ""))
       };
 
       for (var k in settingMap) {

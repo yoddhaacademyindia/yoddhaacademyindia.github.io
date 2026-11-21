@@ -3745,6 +3745,29 @@ function doGet(e) {
     return ContentService.createTextOutput(JSON.stringify(initRes)).setMimeType(ContentService.MimeType.JSON);
   }
 
+  // 1E. Direct Set Exam Switch (Instant Zero-Preflight GET fallback)
+  if (action === "setExamSwitch" || action === "toggleExamSwitch") {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var val = (e && e.parameter && (e.parameter.active === "true" || e.parameter.active === "ON")) ? "ON" : "OFF";
+    var scriptProps = PropertiesService.getScriptProperties();
+    scriptProps.setProperty("EXAM_MASTER_SWITCH", val);
+    try {
+      var setSheet = getOrCreateSheet(ss, "AcademySettings", [
+        "Setting Key", "Setting Value", "Updated By", "Last Updated"
+      ]);
+      var rowData = ["EXAM_MASTER_SWITCH", val, "Admin", new Date()];
+      var updated = updateRowIfExistsOrMerge(setSheet, 1, "EXAM_MASTER_SWITCH", rowData);
+      if (!updated) setSheet.appendRow(rowData);
+    } catch(err) {
+      Logger.log("setExamSwitch error: " + err.toString());
+    }
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      message: "Exam master switch updated to " + val,
+      examSessionActive: (val === "ON")
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
 if (action === "readSheet") {
     var sheetName = (e && e.parameter && e.parameter.sheet) || "Trainers";
     var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -4309,7 +4332,8 @@ function doPost(e) {
         "CONTACT_MOBILE": data.mobile || data.phone || "",
         "CONTACT_EMAIL": data.email || "",
         "OFFICIAL_UPI": data.upi || "",
-        "HQ_ADDRESS": data.address || ""
+        "HQ_ADDRESS": data.address || "",
+        "EXAM_MASTER_SWITCH": (data.examSessionActive !== undefined ? (data.examSessionActive ? "ON" : "OFF") : (data.EXAM_MASTER_SWITCH || ""))
       };
 
       for (var k in settingMap) {
@@ -5943,7 +5967,11 @@ function setupAllAcademySheets() {
 
     let adminState = {
       isLoggedIn: localStorage.getItem('yoddha_admin_logged') === 'true',
-      examSessionActive: localStorage.getItem('yoddha_exam_session_active') === 'true',
+      examSessionActive: (function() {
+        const choice = localStorage.getItem('yoddha_exam_session_admin_choice');
+        if (choice !== null) return (choice === 'true');
+        return localStorage.getItem('yoddha_exam_session_active') === 'true';
+      })(),
       adminId: 'ADMIN-YODDHA-01',
       adminPass: localStorage.getItem('yoddha_admin_pass') || '@hupare25077',
       students: (() => {
@@ -9863,14 +9891,30 @@ lucide.createIcons();
       }
 
       adminState.examSessionActive = !adminState.examSessionActive;
-      localStorage.setItem('yoddha_exam_session_active', adminState.examSessionActive ? 'true' : 'false');
-      
+      const statusStr = adminState.examSessionActive ? 'true' : 'false';
+      localStorage.setItem('yoddha_exam_session_active', statusStr);
+      localStorage.setItem('yoddha_exam_session_admin_choice', statusStr);
+      localStorage.setItem('yoddha_exam_session_admin_time', Date.now().toString());
+
+      const url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
+
+      // 1. Dual-format POST payload for cloud update
       syncToCloudServer({
         type: "EXAM_SESSION_TOGGLED",
+        action: "EXAM_SESSION_TOGGLED",
         examSessionActive: adminState.examSessionActive,
+        EXAM_MASTER_SWITCH: adminState.examSessionActive ? 'ON' : 'OFF',
         toggledBy: user.name || 'Master Admin',
         timestamp: new Date().toISOString()
       });
+
+      // 2. Direct GET trigger for instant zero-preflight persistence
+      if (url) {
+        try {
+          const getUrl = `${url}${url.includes('?') ? '&' : '?'}action=setExamSwitch&active=${statusStr}&t=${Date.now()}`;
+          fetch(getUrl, { mode: 'no-cors' }).catch(() => {});
+        } catch(e) {}
+      }
 
       updateMasterExamUI();
       renderAdminStudents();
@@ -14906,10 +14950,31 @@ function handleAdminCreateCompetition(e) {
 
           // 8. Live Sync Master Exam Switch from Google Sheet
           if (data.examSessionActive !== undefined) {
-            adminState.examSessionActive = (data.examSessionActive === true || data.examSessionActive === 'true');
+            const cloudActive = (data.examSessionActive === true || data.examSessionActive === 'true');
+            const user = adminState.currentUser || { role: 'Admin' };
+            const localChoice = localStorage.getItem('yoddha_exam_session_admin_choice');
+            const localActive = (localStorage.getItem('yoddha_exam_session_active') === 'true');
+
+            if (user.role === 'Admin') {
+              // Master Admin Central HQ: Local Admin decision is MASTER authority!
+              // If Admin explicitly turned the exam ON, cloud 'false' must NEVER close it!
+              if (localChoice === 'true') {
+                adminState.examSessionActive = true;
+              } else if (localChoice === 'false') {
+                // If cloud was opened from another admin instance, adopt it
+                adminState.examSessionActive = cloudActive;
+              } else {
+                adminState.examSessionActive = cloudActive || localActive;
+              }
+            } else {
+              // Trainer terminal: Active if cloud says active OR local terminal has it active
+              adminState.examSessionActive = cloudActive || localActive;
+            }
+
             localStorage.setItem('yoddha_exam_session_active', adminState.examSessionActive ? 'true' : 'false');
             const examSwitch = document.getElementById('admin-exam-master-switch');
             if (examSwitch) examSwitch.checked = adminState.examSessionActive;
+            updateMasterExamUI();
           }
 
           // Save and Refresh All UI Views Instantly!
