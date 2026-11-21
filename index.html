@@ -5970,7 +5970,9 @@ function setupAllAcademySheets() {
       examSessionActive: (function() {
         const choice = localStorage.getItem('yoddha_exam_session_admin_choice');
         if (choice !== null) return (choice === 'true');
-        return localStorage.getItem('yoddha_exam_session_active') === 'true';
+        const active = localStorage.getItem('yoddha_exam_session_active');
+        if (active !== null) return (active === 'true');
+        return true; // Default ON so exams are instantly available on all devices!
       })(),
       adminId: 'ADMIN-YODDHA-01',
       adminPass: localStorage.getItem('yoddha_admin_pass') || '@hupare25077',
@@ -8563,9 +8565,23 @@ lucide.createIcons();
         return;
       }
 
-      // STRICT ADMIN MASTER SWITCH CHECK:
+      // Level Exam Session Check with 1-Click Instant Activation
       if (adminState.examSessionActive !== true) {
-        alert("🔒 Live Level Exam Window is Closed\n\nThe Live Examination window is controlled strictly by Master Admin Central HQ.\n\nCurrently the exam session is closed. Trainers cannot start live exams until Master Admin turns ON the Master Live Exam Window from Admin Panel.");
+        const confirmStart = confirm(
+          "🟢 Live Level Exam सत्र सुरू करायचे आहे का?\n\n" +
+          "विद्यार्थी: " + (s.studentName || 'Student') + "\n\n" +
+          "[OK] वर क्लिक करताच Live AI कॅमेरा परीक्षा विंडो तात्काळ सुरू होईल!\n\n" +
+          "(Turn ON Live Level Exam session and start camera now?)"
+        );
+        if (confirmStart) {
+          adminState.examSessionActive = true;
+          localStorage.setItem('yoddha_exam_session_active', 'true');
+          localStorage.setItem('yoddha_exam_session_admin_choice', 'true');
+          updateMasterExamUI();
+          renderAdminStudents();
+          openBeltExamModal(studentId);
+          return;
+        }
         return;
       }
 
@@ -10001,14 +10017,16 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     }
 
     function handleExamComingSoonClick(studentId) {
-      const user = adminState.currentUser || { role: 'Admin' };
-      if (user.role === 'Admin') {
-        const confirmOpen = confirm("⏳ Level Exam is currently OFF for students ('Exam Coming Soon').\\n\\nWould you like to turn ON the Master Live Exam Window now so students can take the exam?");
-        if (confirmOpen) {
-          toggleMasterExamSession();
-        }
-      } else {
-        alert("⏳ Level Exam Coming Soon!\\n\\nThe Live AI Level Exam Window will be opened by Master Admin Central HQ. As soon as HQ switches it ON, the [ 📷 Level Exam ] camera button will appear here automatically!");
+      const s = adminState.students.find(stu => stu.studentId === studentId);
+      const sName = s ? (s.studentName || 'Student') : 'विद्यार्थी';
+      const confirmOpen = confirm("🟢 विद्यार्थी \"" + sName + "\" साठी Live Level Exam विंडो सुरू करायची आहे का?\n\n[OK] वर क्लिक करताच परीक्षा कॅमेरा सुरू होईल!\n\n(Turn ON Live Level Exam window now?)");
+      if (confirmOpen) {
+        adminState.examSessionActive = true;
+        localStorage.setItem('yoddha_exam_session_active', 'true');
+        localStorage.setItem('yoddha_exam_session_admin_choice', 'true');
+        updateMasterExamUI();
+        renderAdminStudents();
+        if (studentId) openBeltExamModal(studentId);
       }
     }
 
