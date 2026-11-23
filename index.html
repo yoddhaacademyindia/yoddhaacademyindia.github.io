@@ -6049,7 +6049,7 @@ function setupAllAcademySheets() {
         if (choice !== null) return (choice === 'true');
         const active = localStorage.getItem('yoddha_exam_session_active');
         if (active !== null) return (active === 'true');
-        return true; // Default ON so exams are instantly available on all devices!
+        return false; // STRICT: Default OFF until Master Admin turns it ON!
       })(),
       adminId: 'ADMIN-YODDHA-01',
       adminPass: localStorage.getItem('yoddha_admin_pass') || '@hupare25077',
@@ -8455,7 +8455,7 @@ lucide.createIcons();
                       <i data-lucide="clock" class="w-3.5 h-3.5 text-purple-700 flex-shrink-0 animate-pulse"></i>
                       <span>⏳ In Verif</span>
                     </button>
-                  ` : (adminState.examSessionActive === true || isTrainer ? `
+                  ` : (adminState.examSessionActive === true ? `
                     <button type="button" onclick="handleStudentLevelExamClick('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border-2 border-amber-300 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-md shadow-orange-500/30 flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 animate-pulse cursor-pointer" title="Live Level Exam is OPEN! Click to Start 2:30-Min Live AI Camera Exam">
                       <i data-lucide="camera" class="w-3.5 h-3.5 text-white flex-shrink-0"></i>
                       <span>🟢 Level Exam</span>
@@ -8685,24 +8685,31 @@ lucide.createIcons();
         return;
       }
 
-      // Level Exam Session Check with 1-Click Instant Activation
+      // STRICT ADMIN MASTER CONTROL: If Exam is Closed, Trainer CANNOT conduct exams!
       if (adminState.examSessionActive !== true) {
-        const confirmStart = confirm(
-          "🟢 Live Level Exam सत्र सुरू करायचे आहे का?\n\n" +
-          "विद्यार्थी: " + (s.studentName || 'Student') + "\n\n" +
-          "[OK] वर क्लिक करताच Live AI कॅमेरा परीक्षा विंडो तात्काळ सुरू होईल!\n\n" +
-          "(Turn ON Live Level Exam session and start camera now?)"
-        );
-        if (confirmStart) {
-          adminState.examSessionActive = true;
-          localStorage.setItem('yoddha_exam_session_active', 'true');
-          localStorage.setItem('yoddha_exam_session_admin_choice', 'true');
-          updateMasterExamUI();
-          renderAdminStudents();
-          openBeltExamModal(studentId);
+        const user = adminState.currentUser || { role: 'Admin' };
+        if (user.role === 'Trainer') {
+          alert(
+            "🔒 Live Exam Window is Closed (परीक्षा सत्र बंद आहे):\n\n" +
+            "मुख्य ॲडमिन (Central Admin) यांनी परीक्षा सत्र अद्याप चालू (ON) केलेले नाही.\n\n" +
+            "जोपर्यंत मुख्य ॲडमिन पॅनेलवरून 'Turn ON Live Exam' बटन चालू केले जात नाही, तोपर्यंत ट्रेनरला परीक्षा घेता येणार नाही.\n\n" +
+            "(Level exam is currently closed by Central Admin. Exams can only be conducted when Admin activates the Master Exam window.)"
+          );
+          return;
+        } else {
+          // Admin can directly choose to activate right now
+          const confirmStart = confirm(
+            "🟢 Live Level Exam सत्र चालू (ON) करायचे आहे का?\n\n" +
+            "विद्यार्थी: " + (s.studentName || 'Student') + "\n\n" +
+            "[OK] वर क्लिक करताच Master Exam Switch चालू (ON) होईल आणि परीक्षा विंडो सुरू होईल!\n\n" +
+            "(Turn ON Master Exam switch and start camera now?)"
+          );
+          if (confirmStart) {
+            toggleMasterExamSession();
+            openBeltExamModal(studentId);
+          }
           return;
         }
-        return;
       }
 
       // Launch Live Level Exam AI Camera modal
@@ -10447,47 +10454,58 @@ lucide.createIcons();
     }
 
     // Toggle Master Exam Session (Admin switch)
-    function toggleMasterExamSession() {
+    async function toggleMasterExamSession() {
       const user = adminState.currentUser || { role: 'Admin' };
       if (user.role === 'Trainer') {
-        alert("🔒 Access Restricted: The Master Level Exam Window can only be opened/closed by Master Admin Central HQ.");
+        alert("🔒 Access Restricted (अधिकार नाही):\n\nकेवळ मुख्य ॲडमिन (Central Admin) परीक्षा सत्र चालू किंवा बंद करू शकतात. ट्रेनरला यात बदल करण्याचा अधिकार नाही.");
         return;
       }
 
       adminState.examSessionActive = !adminState.examSessionActive;
       const statusStr = adminState.examSessionActive ? 'true' : 'false';
+      const switchVal = adminState.examSessionActive ? 'ON' : 'OFF';
+
       localStorage.setItem('yoddha_exam_session_active', statusStr);
       localStorage.setItem('yoddha_exam_session_admin_choice', statusStr);
       localStorage.setItem('yoddha_exam_session_admin_time', Date.now().toString());
 
-      const url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
+      updateMasterExamUI();
+      renderAdminStudents();
 
-      // 1. Dual-format POST payload for cloud update
-      syncToCloudServer({
+      showCloudSyncToast('saving', adminState.examSessionActive ? '🟢 Live Level Exam विंडो सर्व शाखांसाठी चालू (ON) होत आहे...' : '⚪ Live Level Exam विंडो सर्व शाखांसाठी बंद (OFF) होत आहे...');
+
+      // MULTI-CHANNEL CLOUD SYNC:
+      // 1. Post to ACADEMY_SETTINGS (supported by deployed script)
+      await syncToCloudServer({
+        type: "ACADEMY_SETTINGS",
+        examSessionActive: adminState.examSessionActive,
+        EXAM_MASTER_SWITCH: switchVal,
+        settingKey: "EXAM_MASTER_SWITCH",
+        settingValue: switchVal,
+        toggledBy: user.name || 'Master Admin',
+        timestamp: new Date().toISOString()
+      }, false);
+
+      // 2. Post with type EXAM_SESSION_TOGGLED
+      await syncToCloudServer({
         type: "EXAM_SESSION_TOGGLED",
         action: "EXAM_SESSION_TOGGLED",
         examSessionActive: adminState.examSessionActive,
-        EXAM_MASTER_SWITCH: adminState.examSessionActive ? 'ON' : 'OFF',
+        EXAM_MASTER_SWITCH: switchVal,
         toggledBy: user.name || 'Master Admin',
         timestamp: new Date().toISOString()
-      });
+      }, false);
 
-      // 2. Direct GET trigger for instant zero-preflight persistence
+      // 3. Direct GET trigger fallback
+      const url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
       if (url) {
         try {
-          const getUrl = `${url}${url.includes('?') ? '&' : '?'}action=setExamSwitch&active=${statusStr}&t=${Date.now()}`;
+          const getUrl = `${url}${url.includes('?') ? '&' : '?'}action=setExamSwitch&active=${statusStr}&state=${switchVal}&t=${Date.now()}`;
           fetch(getUrl, { mode: 'no-cors' }).catch(() => {});
         } catch(e) {}
       }
 
-      updateMasterExamUI();
-      renderAdminStudents();
-
-      if (adminState.examSessionActive) {
-        alert("🟢 LIVE LEVEL EXAM WINDOW OPENED!\\n\\nAll student cards across all India branches now show the active [ 📷 Level Exam ] camera button! Students can now take their live AI examination.");
-      } else {
-        alert("⚪ LIVE LEVEL EXAM WINDOW CLOSED.\\n\\nStudent cards will now display '⏳ Exam Coming Soon'.");
-      }
+      showCloudSyncToast('saved', adminState.examSessionActive ? '✅ Live Exam विंडो सर्व ट्रेनर्ससाठी चालू (ON) झाली आहे!' : '✅ Live Exam विंडो सर्व ट्रेनर्ससाठी बंद (OFF) झाली आहे!');
     }
 
     function updateMasterExamUI() {
@@ -15630,21 +15648,18 @@ function handleAdminCreateCompetition(e) {
             const localActive = (localStorage.getItem('yoddha_exam_session_active') === 'true');
 
             if (user.role === 'Admin') {
-              if (localChoice === 'true') {
-                adminState.examSessionActive = true;
-              } else if (localChoice === 'false') {
-                adminState.examSessionActive = cloudActive;
+              // Admin device prioritizes their explicit switch choice
+              if (localChoice !== null) {
+                adminState.examSessionActive = (localChoice === 'true');
               } else {
-                adminState.examSessionActive = cloudActive || localActive;
+                adminState.examSessionActive = cloudActive;
               }
             } else {
-              // Trainer terminal: Active if cloud says active OR local choice says active OR local terminal was active
-              if (cloudActive || localChoice === 'true' || localActive) {
-                adminState.examSessionActive = true;
-              } else if (localChoice === 'false') {
-                adminState.examSessionActive = false;
+              // Trainer device STRICTLY obeys Central Admin's cloud state (or shared choice if on same browser)
+              if (localChoice !== null) {
+                adminState.examSessionActive = (localChoice === 'true');
               } else {
-                adminState.examSessionActive = true; // default open
+                adminState.examSessionActive = cloudActive;
               }
             }
 
