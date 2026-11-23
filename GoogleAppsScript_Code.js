@@ -221,6 +221,11 @@ function doGet(e) {
       for (var j = 1; j < stuRows.length; j++) {
         var sr = stuRows[j];
         if (sr[1]) {
+          var stuStatus = String(sr[18] || "Active").trim();
+          // Skip deleted students from portal sync so they stay in sheet only!
+          if (stuStatus.toUpperCase().indexOf("DELETE") !== -1 || stuStatus.toUpperCase().indexOf("REMOVED") !== -1) {
+            continue;
+          }
           var stuObj = {
             studentId: String(sr[1]).trim(),
             id: String(sr[1]).trim(),
@@ -587,23 +592,33 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     if (type === "STUDENT_DELETE" || type === "DELETE_STUDENT") {
       var stuSheet = ss.getSheetByName("Students");
-      var deleted = false;
+      var markedDeleted = false;
       var targetId = String(data.studentId || data.id || "").trim().toUpperCase();
+      var deletedBy = data.deletedBy || "Admin";
+
       if (stuSheet && targetId) {
         var sData = stuSheet.getDataRange().getValues();
         for (var r = 1; r < sData.length; r++) {
           if (String(sData[r][1] || "").trim().toUpperCase() === targetId) {
-            stuSheet.deleteRow(r + 1);
-            deleted = true;
+            // Update Status (Col 19 -> Column S) to 'DELETED'
+            stuSheet.getRange(r + 1, 19).setValue("DELETED (" + deletedBy + " द्वारे डिलीट)");
+            // Also update Live Exam Status (Col 23 -> Column W)
+            stuSheet.getRange(r + 1, 23).setValue("STUDENT DELETED");
+            // Mark row visually in Google Sheet (light red background so admin can easily identify)
+            try {
+              stuSheet.getRange(r + 1, 1, 1, stuSheet.getLastColumn()).setBackground("#fee2e2");
+            } catch(bgErr) {}
+            markedDeleted = true;
             break;
           }
         }
       }
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        deleted: deleted,
+        deleted: markedDeleted,
+        softDelete: true,
         studentId: targetId,
-        message: deleted ? "Student deleted from sheet" : "Student not found"
+        message: markedDeleted ? "Student marked as DELETED in sheet (Record preserved)" : "Student not found"
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -622,7 +637,13 @@ function doPost(e) {
         "Student Photo", "Aadhaar Photo"
       ]);
 
-      var studentId = data.studentId || data.id || "";
+      var studentId = String(data.studentId || data.id || "").trim();
+      if (!studentId || studentId.toUpperCase().indexOf("TEST") !== -1 || studentId === "") {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "error",
+          message: "Cannot register or append student without a valid Student ID"
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
       var studentName = data.studentName || data.name || "Student";
       var parentEmail = (data.parentEmail || data.email || "").trim();
 

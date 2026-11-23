@@ -3607,6 +3607,11 @@ function doGet(e) {
       for (var j = 1; j < stuRows.length; j++) {
         var sr = stuRows[j];
         if (sr[1]) {
+          var stuStatus = String(sr[18] || "Active").trim();
+          // Skip deleted students from portal sync so they stay in sheet only!
+          if (stuStatus.toUpperCase().indexOf("DELETE") !== -1 || stuStatus.toUpperCase().indexOf("REMOVED") !== -1) {
+            continue;
+          }
           var stuObj = {
             studentId: String(sr[1]).trim(),
             id: String(sr[1]).trim(),
@@ -3959,23 +3964,33 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     if (type === "STUDENT_DELETE" || type === "DELETE_STUDENT") {
       var stuSheet = ss.getSheetByName("Students");
-      var deleted = false;
+      var markedDeleted = false;
       var targetId = String(data.studentId || data.id || "").trim().toUpperCase();
+      var deletedBy = data.deletedBy || "Admin";
+
       if (stuSheet && targetId) {
         var sData = stuSheet.getDataRange().getValues();
         for (var r = 1; r < sData.length; r++) {
           if (String(sData[r][1] || "").trim().toUpperCase() === targetId) {
-            stuSheet.deleteRow(r + 1);
-            deleted = true;
+            // Update Status (Col 19 -> Column S) to 'DELETED'
+            stuSheet.getRange(r + 1, 19).setValue("DELETED (" + deletedBy + " द्वारे डिलीट)");
+            // Also update Live Exam Status (Col 23 -> Column W)
+            stuSheet.getRange(r + 1, 23).setValue("STUDENT DELETED");
+            // Mark row visually in Google Sheet (light red background so admin can easily identify)
+            try {
+              stuSheet.getRange(r + 1, 1, 1, stuSheet.getLastColumn()).setBackground("#fee2e2");
+            } catch(bgErr) {}
+            markedDeleted = true;
             break;
           }
         }
       }
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        deleted: deleted,
+        deleted: markedDeleted,
+        softDelete: true,
         studentId: targetId,
-        message: deleted ? "Student deleted from sheet" : "Student not found"
+        message: markedDeleted ? "Student marked as DELETED in sheet (Record preserved)" : "Student not found"
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -3994,7 +4009,13 @@ function doPost(e) {
         "Student Photo", "Aadhaar Photo"
       ]);
 
-      var studentId = data.studentId || data.id || "";
+      var studentId = String(data.studentId || data.id || "").trim();
+      if (!studentId || studentId.toUpperCase().indexOf("TEST") !== -1 || studentId === "") {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "error",
+          message: "Cannot register or append student without a valid Student ID"
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
       var studentName = data.studentName || data.name || "Student";
       var parentEmail = (data.parentEmail || data.email || "").trim();
 
@@ -6062,6 +6083,8 @@ function setupAllAcademySheets() {
         list = list.filter(s => {
           const sId = (s.studentId || s.id || '').toUpperCase();
           const sName = (s.studentName || s.name || '').trim();
+          const sStatus = (s.status || '').toUpperCase();
+          if (sStatus.includes('DELETE') || sStatus.includes('REMOVED')) return false;
           if (sId.includes('999999') || sId.includes('TEST')) return false;
           if (sName.toLowerCase() === 'student' && !s.dob) return false;
           if (sId === 'YAI-STU-26-MH-KOP-000001' || sId === 'YAI-STU-26-MH-PUN-000001' || sId === 'YAI-STU-26-MH-KOP-000004' || sId === 'YAI-STU-26-MH-NSK-000001') {
@@ -7634,7 +7657,7 @@ lucide.createIcons();
       const parentName = (document.getElementById('p-stu-parent-name')?.value || '').trim();
       const parentMobile = (document.getElementById('p-stu-parent-mobile')?.value || '').trim();
 
-      const admissionDate = document.getElementById('p-stu-admission-date')?.value || new Date().toISOString().split('T')[0];
+      const admissionDate = formatStandardDate(document.getElementById('p-stu-admission-date')?.value || new Date());
       const status = 'Pending Approval';
       const feeStatus = 'Unpaid';
       const feeAmount = parseInt(document.getElementById('p-stu-fee-amount')?.value) || 500;
@@ -9250,43 +9273,62 @@ lucide.createIcons();
     }
 
     // Delete Student Card Handler
-    function deleteStudentCard(studentId) {
+    async function deleteStudentCard(studentId) {
       const s = adminState.students.find(stu => stu.studentId === studentId);
       if (!s) return;
 
       const user = adminState.currentUser || { role: 'Admin' };
-      const confirmMsg = "⚠️ PERMANENT STUDENT RECORD DELETION\n\n" +
-        "Student Name: " + s.studentName + "\n" +
-        "Student ID: " + s.studentId + "\n" +
-        "Branch: " + (s.city || s.state || 'N/A') + "\n" +
-        "Trainer: " + (s.trainerName || s.trainerId || 'N/A') + "\n\n" +
-        "Are you sure you want to permanently delete this student record from the directory and Central Cloud Server?";
+      const roleName = user.role === 'Trainer' ? 'Trainer' : 'Central Admin';
+
+      const confirmMsg =
+        `⚠️ विद्यार्थी रेकॉर्ड डिलीट करायचे आहे का?\n\n` +
+        `विद्यार्थी नाव: ${s.studentName}\n` +
+        `विद्यार्थी आयडी: ${s.studentId}\n` +
+        `शाखा: ${s.city || s.district || s.state || 'N/A'}\n` +
+        `ट्रेनर: ${s.trainerName || s.trainerId || 'N/A'}\n\n` +
+        `• ॲडमिन आणि ट्रेनर पॅनेलवरून हे नाव तात्काळ हटवले जाईल.\n` +
+        `• Google Sheet मध्ये नाव व संपूर्ण रेकॉर्ड सुरक्षित राहील आणि स्टेटस 'DELETED' म्हणून नोंदवले जाईल.\n\n` +
+        `(Remove from portal and mark as DELETED in Google Sheet?)`;
 
       if (!confirm(confirmMsg)) {
         return;
       }
 
-      // 1. Remove from local array
+      // 1. Remove immediately from local portal state so it disappears from UI
       adminState.students = adminState.students.filter(stu => stu.studentId !== studentId);
       saveAdminState();
 
-      // 2. Sync deletion to Central Cloud Server / Google Sheet
-      syncToCloudServer({
-        type: "STUDENT_DELETE",
-        action: "delete",
-        studentId: s.studentId,
-        studentName: s.studentName,
-        deletedBy: user.name || (user.role === 'Trainer' ? 'Trainer' : 'Master Admin'),
-        timestamp: new Date().toISOString()
-      });
-
-      // 3. Update UI
+      // 2. Immediate UI update: student vanishes from portal!
       renderAdminStudents();
       if (typeof renderVerificationQueue === 'function') renderVerificationQueue();
       if (typeof updateTopMetrics === 'function') updateTopMetrics();
       if (typeof updateTrainerDashboard === 'function') updateTrainerDashboard();
 
-      alert("🗑️ Student record for \"" + s.studentName + "\" (" + s.studentId + ") deleted successfully!");
+      showCloudSyncToast('saving', `🗑️ विद्यार्थी "${s.studentName}" Google Sheet मध्ये DELETED म्हणून सेव्ह होत आहे...`);
+
+      // 3. Sync to Google Sheet as SOFT DELETE:
+      // Updates Status to 'DELETED' in Sheet instead of deleting row!
+      await syncToCloudServer({
+        type: "STUDENT_DELETE",
+        action: "delete",
+        studentId: s.studentId,
+        studentName: s.studentName,
+        status: `DELETED (${roleName} द्वारे डिलीट)`,
+        deletedBy: user.name || roleName,
+        timestamp: new Date().toISOString()
+      }, false);
+
+      // Also send updateStudent with Status: DELETED as double insurance!
+      await syncToCloudServer({
+        type: "STUDENT_REGISTRATION_32_POINTS",
+        action: "updateStudent",
+        ...s,
+        studentId: s.studentId,
+        status: `DELETED (${roleName} द्वारे डिलीट)`,
+        examStatus: "STUDENT DELETED"
+      }, false);
+
+      showCloudSyncToast('saved', `✅ विद्यार्थी "${s.studentName}" पॅनेलवरून हटवला व Google Sheet मध्ये सुरक्षित 'DELETED' मार्क झाला!`);
     }
 
 
@@ -14740,7 +14782,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       }
     }
 
-    async async function handleCourseThumbnailFileUpload(e) {
+    async function handleCourseThumbnailFileUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
       if (!file.type.startsWith('image/')) {
@@ -15501,6 +15543,11 @@ function handleAdminCreateCompetition(e) {
             data.students.forEach(stu => {
               const stuId = (stu.studentId || stu.id || '').toUpperCase();
               const stuName = (stu.studentName || stu.name || '').trim();
+              const stuStatus = (stu.status || '').toUpperCase();
+
+              // SOFT DELETE: Never show deleted students on Admin or Trainer portal!
+              if (stuStatus.includes('DELETE') || stuStatus.includes('REMOVED')) return;
+
               if (!stuId || stuId.includes('999999') || stuId.includes('TEST')) return;
               if (stuName.toLowerCase() === 'student' && !stu.dob) return;
               if (stu.levelHistoryStr) {
