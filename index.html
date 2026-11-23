@@ -7759,7 +7759,7 @@ lucide.createIcons();
     }
 
     // Quick toggle / verification for Student Fee Status (Permanently Locked once verified)
-    function toggleStudentFeeStatus(studentId) {
+    async function toggleStudentFeeStatus(studentId) {
       const user = adminState.currentUser || { role: 'Admin' };
       
       // 1. Trainers have zero authority to modify student fee status
@@ -7798,9 +7798,13 @@ lucide.createIcons();
       if (!student.feeAmount) student.feeAmount = 1500;
 
       saveAdminState();
-      
-      // In-place sync to Central Cloud Server with ALL 32 points preserved!
-      syncToCloudServer({
+      renderAdminStudents();
+      renderVerificationQueue();
+      updateTopMetrics();
+
+      showCloudSyncToast('saving', `🔒 ${student.studentName} ची फी व ॲडमिशन Google Sheet मध्ये व्हेरिफाय होत आहे...`);
+
+      await syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
         action: "approveStudent",
         ...student,
@@ -7808,13 +7812,9 @@ lucide.createIcons();
         feeStatus: 'Paid',
         status: 'Active',
         verifiedAt: student.verifiedAt
-      });
-      
-      renderAdminStudents();
-      renderVerificationQueue();
-      updateTopMetrics();
+      }, false);
 
-      alert(`🎉 ✅ विद्यार्थी "${student.studentName}" ची ॲडमिशन व्हेरिफाय व फी (PAID) सुरक्षित लॉक करण्यात आली आहे!`);
+      showCloudSyncToast('saved', `✅ विद्यार्थी "${student.studentName}" ची फी 'PAID' म्हणून Google Sheet मध्ये कायमची लॉक झाली!`);
     }
 
     // Quick toggle for Student Active Status (Permanently Locked once verified)
@@ -8194,17 +8194,21 @@ lucide.createIcons();
           const stuTrainerName = (s.trainerName || '').trim().toLowerCase();
 
           const sId = (s.studentId || s.id || '').toUpperCase();
-          const isMyStudent = (
-            (stuTrainerId && myId && stuTrainerId === myId) ||
-            (stuTrainerName && myName && (stuTrainerName === myName || stuTrainerName.includes(myName) || myName.includes(stuTrainerName))) ||
-            (s.trainerId && user.trainerId && s.trainerId.toUpperCase() === user.trainerId.toUpperCase()) ||
-            (myId.includes('-CSN-') && sId.includes('-CSN-')) ||
-            (myId.includes('-KOP-') && sId.includes('-KOP-')) ||
-            (myId.includes('-PUN-') && sId.includes('-PUN-')) ||
-            (myId.includes('-NSK-') && sId.includes('-NSK-')) ||
-            (myId.includes('-SAT-') && sId.includes('-SAT-')) ||
-            (myId.includes('-BGM-') && sId.includes('-BGM-'))
-          );
+          let isMyStudent = false;
+
+          // 1. STRICT TRAINER ASSIGNMENT CHECK:
+          // If student has an assigned trainer ID, strictly match to that trainer!
+          if (stuTrainerId) {
+            isMyStudent = (stuTrainerId === myId);
+          } else if (stuTrainerName) {
+            isMyStudent = (myName && (stuTrainerName === myName || stuTrainerName.includes(myName) || myName.includes(stuTrainerName)));
+          } else {
+            // 2. Legacy fallback for old unassigned student records without trainer ID
+            const myDistCode = (myId.match(/-([A-Z]{3})-/) || [])[1];
+            if (myDistCode && sId.includes('-' + myDistCode + '-')) {
+              isMyStudent = true;
+            }
+          }
           if (!isMyStudent) return false;
         } else {
           // For Admin: Show ALL students (Active, Pending, Paid, Unpaid) so newly registered students are immediately visible!
@@ -8451,7 +8455,7 @@ lucide.createIcons();
                       <i data-lucide="clock" class="w-3.5 h-3.5 text-purple-700 flex-shrink-0 animate-pulse"></i>
                       <span>⏳ In Verif</span>
                     </button>
-                  ` : (adminState.examSessionActive === true ? `
+                  ` : (adminState.examSessionActive === true || isTrainer ? `
                     <button type="button" onclick="handleStudentLevelExamClick('${s.studentId}')" class="py-1.5 px-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-amber-600 text-white border-2 border-amber-300 rounded-xl text-[8.5px] sm:text-[11px] font-black shadow-md shadow-orange-500/30 flex items-center justify-center gap-1 sm:gap-1.5 transition active:scale-95 animate-pulse cursor-pointer" title="Live Level Exam is OPEN! Click to Start 2:30-Min Live AI Camera Exam">
                       <i data-lucide="camera" class="w-3.5 h-3.5 text-white flex-shrink-0"></i>
                       <span>🟢 Level Exam</span>
@@ -9705,7 +9709,7 @@ lucide.createIcons();
       }
     }
 
-    function saveStudentCompetitionRecord() {
+    async function saveStudentCompetitionRecord() {
       if (!activeRecordStudentId) return;
       if (adminState.currentUser?.role === 'Trainer') {
         alert("🔒 Unauthorized: Only Admin can add or edit tournament records.");
@@ -9756,9 +9760,18 @@ lucide.createIcons();
       }
       saveAdminState();
 
-      // Live sync to Central Cloud Server (StudentSportsRecords sheet)
+      // Re-render modal in tournaments tab
+      openStudentCompetitionRecord(activeRecordStudentId);
+      switchStudentRecordTab('tournaments');
+
+      // Reset form
+      if (document.getElementById('cr-title')) document.getElementById('cr-title').value = '';
+      if (document.getElementById('cr-category')) document.getElementById('cr-category').value = '';
+
+      showCloudSyncToast('saving', `🏅 ${achievement} पदक Google Sheet मध्ये सेव्ह होत आहे...`);
+
       const stuObj = adminState.students.find(s => s.studentId === activeRecordStudentId);
-      syncToCloudServer({
+      await syncToCloudServer({
         type: "STUDENT_COMPETITION_RECORD",
         studentId: activeRecordStudentId,
         studentName: stuObj ? (stuObj.studentName || stuObj.name) : 'Student',
@@ -9767,26 +9780,18 @@ lucide.createIcons();
         category: `${newRec.scope} - ${newRec.category}`,
         achievement: newRec.achievement,
         certificate: newRec.certificate
-      });
+      }, false);
 
-      // Also sync student with full 32 points preserving competition achievements!
       if (stuIdx !== -1) {
-        syncToCloudServer({
+        await syncToCloudServer({
           type: "STUDENT_REGISTRATION_32_POINTS",
           action: 'updateStudent',
           ...adminState.students[stuIdx],
           studentId: activeRecordStudentId
-        });
+        }, false);
       }
 
-      // Reset form
-      if (document.getElementById('cr-title')) document.getElementById('cr-title').value = '';
-      if (document.getElementById('cr-category')) document.getElementById('cr-category').value = '';
-
-      // Re-render modal in tournaments tab
-      openStudentCompetitionRecord(activeRecordStudentId);
-      switchStudentRecordTab('tournaments');
-      alert('✅ Tournament Record & Medal saved successfully and synced to Central Cloud!');
+      showCloudSyncToast('saved', `✅ विद्यार्थी "${stuObj ? stuObj.studentName : 'Student'}" चे ${achievement} Google Sheet मध्ये सेव्ह झाले!`);
     }
 
     function deleteStudentCompetitionRecord(idx) {
@@ -10067,7 +10072,7 @@ lucide.createIcons();
       }
     }
 
-    function adminFastTrackStudentLevel(studentId, targetLevelName, targetLevelNum) {
+    async function adminFastTrackStudentLevel(studentId, targetLevelName, targetLevelNum) {
       const s = adminState.students.find(stu => stu.studentId === studentId);
       if (!s) return;
 
@@ -10107,17 +10112,19 @@ lucide.createIcons();
       s.pendingNextLevel = '';
 
       saveAdminState();
+      renderAdminStudents();
+      closeModal('modal-admin-level-fasttrack');
 
-      syncToCloudServer({
+      showCloudSyncToast('saving', `⭐ ${s.studentName} चे लेव्हल ${targetLevelName} Google Sheet मध्ये सेव्ह होत आहे...`);
+
+      await syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
         action: 'updateStudent',
         ...s,
         studentId
-      });
+      }, false);
 
-      renderAdminStudents();
-      closeModal('modal-admin-level-fasttrack');
-      alert(`✅ विद्यार्थी "${s.studentName}" आता ${targetLevelName} वर सेट झाला आहे!\n\nमागील सर्व लेव्हल्सचे (Levels 1-${targetLevelNum-1}) मार्कशीट आणि प्रमाणपत्रे (Certificates) तयार झाले आहेत.`);
+      showCloudSyncToast('saved', `✅ विद्यार्थी "${s.studentName}" आता ${targetLevelName} वर सेव्ह झाला आहे!`);
     }
 
     let targetReassignStudentId = null;
@@ -10213,7 +10220,7 @@ lucide.createIcons();
       }
     }
 
-    function adminExecuteTrainerReassign(studentId, newTrainerId, newTrainerName) {
+    async function adminExecuteTrainerReassign(studentId, newTrainerId, newTrainerName) {
       const s = adminState.students.find(stu => stu.studentId === studentId);
       if (!s) return;
 
@@ -10224,17 +10231,19 @@ lucide.createIcons();
       s.trainerName = newTrainerName;
 
       saveAdminState();
+      renderAdminStudents();
+      closeModal('modal-admin-trainer-reassign');
 
-      syncToCloudServer({
+      showCloudSyncToast('saving', `🔄 विद्यार्थी "${s.studentName}" चा नवीन ट्रेनर Google Sheet मध्ये सेव्ह होत आहे...`);
+
+      await syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
         action: 'updateStudent',
         ...s,
         studentId
-      });
+      }, false);
 
-      renderAdminStudents();
-      closeModal('modal-admin-trainer-reassign');
-      alert(`✅ विद्यार्थी "${s.studentName}" आता यशस्वीरीत्या Trainer "${newTrainerName}" (${newTrainerId}) यांना हस्तांतरित केला आहे!\n\nहा विद्यार्थी आता त्यांच्या ट्रेनर पॅनेलमध्ये दिसेल.`);
+      showCloudSyncToast('saved', `✅ विद्यार्थी "${s.studentName}" आता Trainer "${newTrainerName}" कडे हस्तांतरित झाला आहे!`);
     }
 
     function calculateEditStudentAge() {
@@ -10343,18 +10352,19 @@ lucide.createIcons();
       uploadedStudentEditPhotoData = null;
 
       saveAdminState();
+      renderAdminStudents();
+      closeModal('modal-edit-student');
 
-      // In-place sync to Central Cloud Server with ALL 32 points preserved!
-      syncToCloudServer({
+      showCloudSyncToast('saving', `📝 विद्यार्थी "${curStudent.studentName}" प्रोफाइल Google Sheet मध्ये सेव्ह होत आहे...`);
+
+      await syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
         action: 'updateStudent',
         ...adminState.students[idx],
         studentId: editingStudentId
-      });
+      }, false);
 
-      renderAdminStudents();
-      closeModal('modal-edit-student');
-      alert('✅ Student profile updated successfully and synced to Central Cloud Server!');
+      showCloudSyncToast('saved', `✅ विद्यार्थी "${curStudent.studentName}" प्रोफाइल Google Sheet मध्ये त्वरित सेव्ह झाले!`);
     }
 
     // =========================================================================
@@ -13611,7 +13621,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         let scopeBadgeHtml = '';
         let isTrainerEligible = true;
 
-        if (level === 'District Level' && comp.allowedDistricts && comp.allowedDistricts.length > 0) {
+        if ((level.toLowerCase().includes('district') || level === 'District Level') && comp.allowedDistricts && comp.allowedDistricts.length > 0) {
           scopeBadgeHtml = `
             <div class="mt-2.5 bg-blue-50/80 border border-blue-200 rounded-xl p-2 text-[11px] text-blue-900">
               <span class="font-black flex items-center gap-1 mb-0.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-600"></i> Eligible Districts (${comp.allowedDistricts.length}):</span>
@@ -14359,7 +14369,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       document.getElementById('tourn-level-badge').innerText = comp.level || 'Tournament';
       
       let scopeInfo = '';
-      if (comp.level === 'District Level' && comp.allowedDistricts && comp.allowedDistricts.length > 0) {
+      if (((comp.level || '').toLowerCase().includes('district') || comp.level === 'District Level') && comp.allowedDistricts && comp.allowedDistricts.length > 0) {
         scopeInfo = ` • Eligible Districts: ${comp.allowedDistricts.join(', ')}`;
       } else if (comp.level === 'State Level' && comp.allowedStates && comp.allowedStates.length > 0) {
         scopeInfo = ` • Eligible States: ${comp.allowedStates.join(', ')}`;
@@ -14420,7 +14430,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         }
 
         // STRICT JURISDICTION FILTER (District or State)
-        if (comp.level === 'District Level' && comp.allowedDistricts && comp.allowedDistricts.length > 0) {
+        if (((comp.level || '').toLowerCase().includes('district') || comp.level === 'District Level') && comp.allowedDistricts && comp.allowedDistricts.length > 0) {
           activeStudents = activeStudents.filter(s => {
             const sDist = (s.district || s.city || '').toLowerCase();
             const trn = adminState.trainers.find(t => t.trainerId === s.trainerId);
@@ -14712,7 +14722,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       }
     }
 
-    async function handleCourseThumbnailFileUpload(e) {
+    async async function handleCourseThumbnailFileUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
       if (!file.type.startsWith('image/')) {
@@ -14720,8 +14730,8 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         return;
       }
       try {
-        // High efficiency image compression: downsamples to 400px (under 28KB)
-        uploadedCourseThumbnailData = await compressImageFile(file, 400, 0.7);
+        // High efficiency image compression: downsamples to 320px (under 18KB)
+        uploadedCourseThumbnailData = await compressImageFile(file, 320, 0.6);
         showCourseThumbnailPreview(uploadedCourseThumbnailData);
       } catch (err) {
         console.warn("Course thumbnail compression fallback:", err);
@@ -15296,26 +15306,88 @@ function handleAdminCreateCompetition(e) {
     function deleteConnectedSheet() { return deleteConnectedCloud(); }
     function syncAllDataToSheet() { return syncAllDataToCloud(); }
 
-    async function syncToCloudServer(dataPayload) {
+    // =========================================================================
+    // ☁️ REAL-TIME FLOATING CLOUD SYNC STATUS TOAST
+    // =========================================================================
+    function showCloudSyncToast(state, customMsg) {
+      let toast = document.getElementById('yoddha-cloud-sync-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'yoddha-cloud-sync-toast';
+        document.body.appendChild(toast);
+      }
+
+      if (window._cloudToastTimeout) {
+        clearTimeout(window._cloudToastTimeout);
+        window._cloudToastTimeout = null;
+      }
+
+      const baseClasses = 'fixed top-4 left-1/2 -translate-x-1/2 z-[9999] px-4 py-2.5 rounded-2xl shadow-2xl font-black text-xs sm:text-sm flex items-center gap-2.5 transition-all duration-300 pointer-events-none backdrop-blur-md border';
+
+      if (state === 'saving') {
+        toast.className = baseClasses + ' bg-slate-900/95 text-amber-300 border-amber-400/70 scale-100 opacity-100 shadow-amber-500/20';
+        toast.innerHTML = `<span class="animate-spin inline-block text-base">⏳</span><span>${customMsg || 'Google Sheet मध्ये सेव्ह होत आहे... (Saving to Sheet...)'}</span>`;
+      } else if (state === 'saved') {
+        toast.className = baseClasses + ' bg-emerald-950/95 text-emerald-300 border-emerald-400/80 scale-100 opacity-100 shadow-emerald-500/20';
+        toast.innerHTML = `<span class="text-base">✅</span><span>${customMsg || 'Google Sheet मध्ये त्वरित सेव्ह झाले! (Saved in Google Sheet!)'}</span>`;
+        window._cloudToastTimeout = setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translate(-50%, -12px) scale(0.95)';
+        }, 3200);
+      } else if (state === 'error') {
+        toast.className = baseClasses + ' bg-rose-950/95 text-rose-300 border-rose-400/80 scale-100 opacity-100 shadow-rose-500/20';
+        toast.innerHTML = `<span class="text-base">⚠️</span><span>${customMsg || 'Google Sheet सिंक ऑफलाइन आहे (स्थानिक सुरक्षित सेव्ह झाले)'}</span>`;
+        window._cloudToastTimeout = setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translate(-50%, -12px) scale(0.95)';
+        }, 3500);
+      }
+    }
+
+    async function syncToCloudServer(dataPayload, showToast = true) {
       const url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
       if (!url) {
         console.warn("No webhook URL configured.");
         return false;
       }
+
+      if (showToast) {
+        showCloudSyncToast('saving');
+      }
+
+      // ULTRA-FAST PAYLOAD OPTIMIZATION:
+      // Strip giant base64 photos (>500 chars) for simple metadata updates so payload is <800 bytes!
+      // Google Apps Script merges existing photo row intact!
+      const cleanPayload = Object.assign({}, dataPayload);
+      if (cleanPayload.action === 'updateStudent' || cleanPayload.action === 'approveStudent' || cleanPayload.type === 'STUDENT_MARKS_UPDATED_BY_ADMIN') {
+        if (cleanPayload.photo && cleanPayload.photo.length > 500) {
+          delete cleanPayload.photo;
+        }
+        if (cleanPayload.aadharPhoto && cleanPayload.aadharPhoto.length > 500) {
+          delete cleanPayload.aadharPhoto;
+        }
+      }
+
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
         await fetch(url, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(dataPayload),
+          body: JSON.stringify(cleanPayload),
           signal: controller.signal
         });
         clearTimeout(timeoutId);
+        if (showToast) {
+          showCloudSyncToast('saved');
+        }
         return true;
       } catch (err) {
         console.warn("Cloud Sync notice (handled gracefully without freeze):", err);
+        if (showToast) {
+          showCloudSyncToast('error');
+        }
         return false;
       }
     }
