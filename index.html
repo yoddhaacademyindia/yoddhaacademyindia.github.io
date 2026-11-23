@@ -2217,6 +2217,80 @@
     </div>
   </div>
 
+  <!-- ================= MODAL: ADMIN FAST-TRACK LEVEL SELECTOR ================= -->
+  <div id="modal-admin-level-fasttrack" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white border-2 border-orange-300 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 animate-modal-pop relative">
+      <div class="flex justify-between items-center border-b border-orange-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 text-white flex items-center justify-center shadow-md">
+            <i data-lucide="award" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base sm:text-lg font-black text-slate-900 font-rajdhani uppercase">Change Student 10-Star Level</h3>
+            <p class="text-[11px] text-slate-500 font-medium">Select level. All prior levels automatically get certified & marked PASSED!</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-admin-level-fasttrack')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="admin-level-target-student-info" class="bg-orange-50 border border-orange-200 rounded-2xl p-3 flex items-center justify-between">
+        <!-- Filled via JS: Student Name, ID, Current Running Level -->
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="block text-xs font-black text-slate-800 uppercase tracking-wider">Select New Target Level:</label>
+        <div id="admin-level-buttons-grid" class="grid grid-cols-2 gap-2 max-h-[50vh] overflow-y-auto p-1">
+          <!-- Populated via JS for Levels 1-10 -->
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button type="button" onclick="closeModal('modal-admin-level-fasttrack')" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: ADMIN TRAINER REASSIGNMENT ================= -->
+  <div id="modal-admin-trainer-reassign" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-white border-2 border-orange-300 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 animate-modal-pop relative">
+      <div class="flex justify-between items-center border-b border-orange-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-600 to-amber-600 text-white flex items-center justify-center shadow-md">
+            <i data-lucide="shield" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base sm:text-lg font-black text-slate-900 font-rajdhani uppercase">Reassign Student Trainer</h3>
+            <p class="text-[11px] text-slate-500 font-medium">Transfer student to another certified trainer in this state.</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-admin-trainer-reassign')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="admin-trainer-target-student-info" class="bg-slate-50 border border-slate-200 rounded-2xl p-3">
+        <!-- Filled via JS: Student Name, ID, State, Current Trainer -->
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="block text-xs font-black text-slate-800 uppercase tracking-wider">Available Certified Trainers in Student's State:</label>
+        <div id="admin-trainer-reassign-list" class="space-y-2 max-h-[50vh] overflow-y-auto p-1">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button type="button" onclick="closeModal('modal-admin-trainer-reassign')" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= MODAL: STUDENT ADMISSION CONFIRMED & 1-CLICK FREE WHATSAPP ================= -->
   <div id="modal-student-success" class="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-5">
     <div class="bg-white border-2 border-emerald-300 rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl space-y-4 animate-modal-pop relative text-center">
@@ -5967,6 +6041,9 @@ function setupAllAcademySheets() {
 
     let adminState = {
       isLoggedIn: localStorage.getItem('yoddha_admin_logged') === 'true',
+      studentCompetitions: {},
+      studentCompetitions: {},
+      studentCompetitions: {},
       examSessionActive: (function() {
         const choice = localStorage.getItem('yoddha_exam_session_admin_choice');
         if (choice !== null) return (choice === 'true');
@@ -8195,9 +8272,9 @@ lucide.createIcons();
               `;
             } else {
               levelStatusPill = `
-                <button type="button" onclick="openStudentLevelProgressModal('${s.studentId}')" title="${currentLevelName} is currently Running! Click to view full 10-Level Roadmap" class="inline-flex items-center gap-1 text-[8px] sm:text-[9.5px] font-black text-emerald-900 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 px-2 sm:px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-2xs transition active:scale-95">
+                <button type="button" onclick="${!isTrainer ? `openAdminLevelSelectModal('${s.studentId}')` : `openStudentLevelProgressModal('${s.studentId}')`}" title="${!isTrainer ? 'Admin: Click to Change/Fast-Track Level' : `${currentLevelName} is currently Running!`}" class="inline-flex items-center gap-1 text-[8px] sm:text-[9.5px] font-black text-emerald-900 bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 px-2 sm:px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-2xs transition active:scale-95 ${!isTrainer ? 'cursor-pointer hover:border-emerald-500' : ''}">
                   <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                  <span>${currentLevelName}: Running</span>
+                  <span>${currentLevelName}: Running ${!isTrainer ? '▾' : ''}</span>
                 </button>
               `;
             }
@@ -8266,7 +8343,7 @@ lucide.createIcons();
                     </span>
                   </div>
                   <!-- Mini 10-Level Progress Line: Running & Pending indicator -->
-                  <div onclick="openStudentLevelProgressModal('${s.studentId}')" class="mt-1 text-[7.5px] sm:text-[9px] font-bold text-slate-500 hover:text-orange-700 flex items-center justify-center gap-1 cursor-pointer transition" title="Click to view full 10-Level progression breakdown">
+                  <div onclick="${!isTrainer ? `openAdminLevelSelectModal('${s.studentId}')` : `openStudentLevelProgressModal('${s.studentId}')`}" class="mt-1 text-[7.5px] sm:text-[9px] font-bold text-slate-500 hover:text-orange-700 flex items-center justify-center gap-1 cursor-pointer transition" title="${!isTrainer ? 'Admin: Click to Fast-Track Student Level' : 'Click to view full 10-Level progression breakdown'}">
                     ${isExamPassed ? `
                       <span class="font-bold text-amber-700">${currentLevelName} Passed 🏆</span>
                       <span class="text-slate-300">•</span>
@@ -8290,11 +8367,19 @@ lucide.createIcons();
                   </div>
                 </div>
 
-                <!-- 5. Trainer ID -->
-                <div class="mt-1.5 sm:mt-2.5 w-full text-center text-[8.5px] sm:text-[11px] font-bold text-slate-600 bg-slate-50 py-1 sm:py-1.5 px-1 sm:px-2 rounded-lg sm:rounded-xl border border-slate-100 flex items-center justify-center gap-1">
-                  <i data-lucide="shield" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-600 flex-shrink-0"></i>
-                  <span class="truncate">Trainer: <strong class="text-slate-800 font-mono font-bold">${s.trainerId || 'YAI-TR-001'}</strong></span>
-                </div>
+                <!-- 5. Trainer ID (Clickable for Admin to Reassign to State Trainers) -->
+                ${!isTrainer ? `
+                  <div onclick="openAdminTrainerReassignModal('${s.studentId}')" title="Admin: Click to re-assign student to another Trainer in this state" class="mt-1.5 sm:mt-2.5 w-full text-center text-[8.5px] sm:text-[11px] font-bold text-slate-700 bg-orange-50/60 hover:bg-orange-100/80 py-1 sm:py-1.5 px-1 sm:px-2 rounded-lg sm:rounded-xl border border-orange-200 hover:border-orange-400 flex items-center justify-center gap-1 cursor-pointer transition active:scale-95 shadow-2xs">
+                    <i data-lucide="shield" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-600 flex-shrink-0"></i>
+                    <span class="truncate">Trainer: <strong class="text-slate-900 font-mono font-bold">${s.trainerId || 'YAI-TR-001'}</strong></span>
+                    <span class="text-[8px] bg-orange-200 text-orange-900 px-1 rounded font-black ml-0.5">🔄 Change</span>
+                  </div>
+                ` : `
+                  <div class="mt-1.5 sm:mt-2.5 w-full text-center text-[8.5px] sm:text-[11px] font-bold text-slate-600 bg-slate-50 py-1 sm:py-1.5 px-1 sm:px-2 rounded-lg sm:rounded-xl border border-slate-100 flex items-center justify-center gap-1">
+                    <i data-lucide="shield" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-600 flex-shrink-0"></i>
+                    <span class="truncate">Trainer: <strong class="text-slate-800 font-mono font-bold">${s.trainerId || 'YAI-TR-001'}</strong></span>
+                  </div>
+                `}
 
                 <!-- 6. Fee Paid/Unpaid & Active/Inactive Side-by-Side (Permanently Locked once verified) -->
                 <div class="flex items-center justify-center gap-1 sm:gap-2.5 mt-1.5 sm:mt-2.5 w-full">
@@ -8457,8 +8542,15 @@ lucide.createIcons();
                 <span class="text-slate-500">${s.state || 'State: N/A'}</span>
               </td>
               <td class="py-3.5 px-4 text-xs font-semibold">
-                <span class="text-slate-800 block font-bold">${s.trainerName || 'Trainer: N/A'}</span>
-                <span class="font-mono text-orange-700 text-[11px]">${s.trainerId || ''}</span>
+                ${!isTrainer ? `
+                  <div onclick="openAdminTrainerReassignModal('${s.studentId}')" title="Admin: Click to re-assign trainer" class="cursor-pointer group">
+                    <span class="text-slate-800 block font-bold group-hover:text-orange-600">${s.trainerName || 'Trainer: N/A'} 🔄</span>
+                    <span class="font-mono text-orange-700 text-[11px]">${s.trainerId || ''}</span>
+                  </div>
+                ` : `
+                  <span class="text-slate-800 block font-bold">${s.trainerName || 'Trainer: N/A'}</span>
+                  <span class="font-mono text-orange-700 text-[11px]">${s.trainerId || ''}</span>
+                `}
               </td>
               <td class="py-3.5 px-4 text-xs">
                 <span class="${s.feeStatus === 'Paid' ? 'text-emerald-800 font-extrabold bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300' : 'text-rose-800 font-extrabold bg-rose-100 px-2.5 py-0.5 rounded-full border border-rose-300'}">${s.feeStatus === 'Paid' ? 'Paid ₹' + (s.feeAmount || 500) : 'Unpaid'}</span>
@@ -8500,13 +8592,37 @@ lucide.createIcons();
       ]
     };
 
-    // Load student competition records from localStorage
+    // Load student competition records with multi-layer fallback (student object -> adminState -> localStorage -> default)
     function getStudentCompetitions(studentId) {
-      const stored = localStorage.getItem('yoddha_student_records_' + studentId);
-      if (stored) {
-        try { return JSON.parse(stored); } catch(e) {}
+      if (!studentId) return [];
+      const normId = String(studentId).trim().toUpperCase();
+
+      // 1. Direct student object property in adminState.students
+      const stu = adminState.students.find(s => (s.studentId || '').trim().toUpperCase() === normId);
+      if (stu && Array.isArray(stu.studentCompetitions) && stu.studentCompetitions.length > 0) {
+        return stu.studentCompetitions;
       }
-      return DEFAULT_STUDENT_COMPETITIONS[studentId] || [];
+
+      // 2. adminState.studentCompetitions map
+      if (adminState.studentCompetitions) {
+        if (Array.isArray(adminState.studentCompetitions[studentId]) && adminState.studentCompetitions[studentId].length > 0) {
+          return adminState.studentCompetitions[studentId];
+        }
+        if (Array.isArray(adminState.studentCompetitions[normId]) && adminState.studentCompetitions[normId].length > 0) {
+          return adminState.studentCompetitions[normId];
+        }
+      }
+
+      // 3. Browser localStorage (both raw ID and uppercase ID)
+      const stored = localStorage.getItem('yoddha_student_records_' + studentId) || localStorage.getItem('yoddha_student_records_' + normId);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch(e) {}
+      }
+
+      return DEFAULT_STUDENT_COMPETITIONS[studentId] || DEFAULT_STUDENT_COMPETITIONS[normId] || [];
     }
 
     // Switch between 10-Level Marksheet Tab and Tournament Medals Tab
@@ -9610,19 +9726,35 @@ lucide.createIcons();
         return;
       }
 
-      const records = getStudentCompetitions(activeRecordStudentId);
+      const records = [...getStudentCompetitions(activeRecordStudentId)];
+      const standardDate = formatStandardDate(year || new Date());
       const newRec = {
         title,
         scope,
-        year,
-        date: year,
+        year: String(year).slice(0, 4),
+        date: standardDate,
         category,
         achievement,
         certificate: 'YAI-COMP-' + Date.now().toString().slice(-6)
       };
 
       records.unshift(newRec);
+
+      // Save to localStorage with both raw ID and uppercase ID
       localStorage.setItem('yoddha_student_records_' + activeRecordStudentId, JSON.stringify(records));
+      localStorage.setItem('yoddha_student_records_' + activeRecordStudentId.toUpperCase(), JSON.stringify(records));
+
+      // Save to adminState.studentCompetitions
+      if (!adminState.studentCompetitions) adminState.studentCompetitions = {};
+      adminState.studentCompetitions[activeRecordStudentId] = records;
+      adminState.studentCompetitions[activeRecordStudentId.toUpperCase()] = records;
+
+      // Attach directly to student object in adminState.students
+      const stuIdx = adminState.students.findIndex(s => (s.studentId || '').toUpperCase() === activeRecordStudentId.toUpperCase());
+      if (stuIdx !== -1) {
+        adminState.students[stuIdx].studentCompetitions = records;
+      }
+      saveAdminState();
 
       // Live sync to Central Cloud Server (StudentSportsRecords sheet)
       const stuObj = adminState.students.find(s => s.studentId === activeRecordStudentId);
@@ -9631,11 +9763,21 @@ lucide.createIcons();
         studentId: activeRecordStudentId,
         studentName: stuObj ? (stuObj.studentName || stuObj.name) : 'Student',
         title: newRec.title,
-        date: newRec.year || newRec.date,
+        date: newRec.date,
         category: `${newRec.scope} - ${newRec.category}`,
         achievement: newRec.achievement,
         certificate: newRec.certificate
       });
+
+      // Also sync student with full 32 points preserving competition achievements!
+      if (stuIdx !== -1) {
+        syncToCloudServer({
+          type: "STUDENT_REGISTRATION_32_POINTS",
+          action: 'updateStudent',
+          ...adminState.students[stuIdx],
+          studentId: activeRecordStudentId
+        });
+      }
 
       // Reset form
       if (document.getElementById('cr-title')) document.getElementById('cr-title').value = '';
@@ -9657,9 +9799,19 @@ lucide.createIcons();
         return;
       }
 
-      const records = getStudentCompetitions(activeRecordStudentId);
+      const records = [...getStudentCompetitions(activeRecordStudentId)];
       records.splice(idx, 1);
       localStorage.setItem('yoddha_student_records_' + activeRecordStudentId, JSON.stringify(records));
+      localStorage.setItem('yoddha_student_records_' + activeRecordStudentId.toUpperCase(), JSON.stringify(records));
+      if (!adminState.studentCompetitions) adminState.studentCompetitions = {};
+      adminState.studentCompetitions[activeRecordStudentId] = records;
+      adminState.studentCompetitions[activeRecordStudentId.toUpperCase()] = records;
+
+      const stuIdx = adminState.students.findIndex(s => (s.studentId || '').toUpperCase() === activeRecordStudentId.toUpperCase());
+      if (stuIdx !== -1) {
+        adminState.students[stuIdx].studentCompetitions = records;
+      }
+      saveAdminState();
 
       openStudentCompetitionRecord(activeRecordStudentId);
       switchStudentRecordTab('tournaments');
@@ -9701,15 +9853,69 @@ lucide.createIcons();
       input.click();
     }
 
+    
+    // =========================================================================
+    // STANDARDIZED TIMESTAMP & DATE FORMATTING HELPERS
+    // =========================================================================
+    function formatStandardDate(d) {
+      if (!d) return '';
+      const dt = (d instanceof Date) ? d : new Date(d);
+      if (isNaN(dt.getTime())) {
+        const s = String(d).trim();
+        if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0, 10);
+        return s;
+      }
+      const y = dt.getFullYear();
+      const m = String(dt.getMonth() + 1).padStart(2, '0');
+      const day = String(dt.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function formatStandardDateTime(d) {
+      const dt = d ? (d instanceof Date ? d : new Date(d)) : new Date();
+      if (isNaN(dt.getTime())) return new Date().toISOString().replace('T', ' ').slice(0, 19);
+      const y = dt.getFullYear();
+      const m = String(dt.getMonth() + 1).padStart(2, '0');
+      const day = String(dt.getDate()).padStart(2, '0');
+      const hh = String(dt.getHours()).padStart(2, '0');
+      const mm = String(dt.getMinutes()).padStart(2, '0');
+      const ss = String(dt.getSeconds()).padStart(2, '0');
+      return `${y}-${m}-${day} ${hh}:${mm}:${ss}`;
+    }
+
     function openEditStudentModal(studentId) {
       editingStudentId = studentId;
       const s = adminState.students.find(stu => stu.studentId === studentId);
       if (!s) return;
 
-      document.getElementById('edit-stu-id').value = s.studentId;
+      const user = adminState.currentUser || { role: 'Admin' };
+      const isTrainer = (user.role === 'Trainer');
+
+      const idInput = document.getElementById('edit-stu-id');
+      const levelSelect = document.getElementById('edit-stu-level');
+      const trnSelect = document.getElementById('edit-stu-trainer');
+
+      if (idInput) {
+        idInput.value = s.studentId;
+        idInput.readOnly = true;
+        idInput.disabled = isTrainer;
+      }
+
       document.getElementById('edit-stu-name').value = s.studentName || '';
-      document.getElementById('edit-stu-level').value = s.requestedLevel || 'Level 1';
-      document.getElementById('edit-stu-dob').value = s.dob || '';
+
+      if (levelSelect) {
+        levelSelect.value = s.requestedLevel || 'Level 1';
+        levelSelect.disabled = isTrainer;
+        if (isTrainer) {
+          levelSelect.className = "w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-2 text-slate-500 font-extrabold cursor-not-allowed";
+          levelSelect.title = "🔒 Locked: Only Admin can change 10-Star Level";
+        } else {
+          levelSelect.className = "w-full bg-white border border-orange-300 rounded-xl px-3 py-2 text-orange-900 font-extrabold focus:outline-none focus:border-orange-500 cursor-pointer";
+          levelSelect.title = "Select student 10-star level";
+        }
+      }
+
+      document.getElementById('edit-stu-dob').value = formatStandardDate(s.dob) || '';
       document.getElementById('edit-stu-age').value = s.age || '';
       document.getElementById('edit-stu-school').value = s.schoolName || '';
       document.getElementById('edit-stu-standard').value = s.standard || '';
@@ -9739,15 +9945,37 @@ lucide.createIcons();
         editTxtEl.innerText = (s.studentName || 'YA').split(' ').map(w=>w[0]).slice(0,2).join('');
       }
 
-      // Populate trainers dropdown
-      const trnSelect = document.getElementById('edit-stu-trainer');
+      // Populate trainers dropdown (Highlighting trainers from student state)
       if (trnSelect) {
         trnSelect.innerHTML = '';
-        adminState.trainers.forEach(t => {
+        trnSelect.disabled = isTrainer;
+        if (isTrainer) {
+          trnSelect.className = "w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-2 text-slate-500 font-bold cursor-not-allowed";
+          trnSelect.title = "🔒 Locked: Only Admin can re-assign Trainer";
+        } else {
+          trnSelect.className = "w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:outline-none focus:border-orange-500 cursor-pointer";
+          trnSelect.title = "Select assigned trainer";
+        }
+
+        const stuState = (s.state || 'Maharashtra').trim().toLowerCase();
+
+        // Sort trainers so matching state is first
+        const sortedTrainers = [...adminState.trainers].sort((a, b) => {
+          const aMatch = (a.state || '').toLowerCase().includes(stuState);
+          const bMatch = (b.state || '').toLowerCase().includes(stuState);
+          if (aMatch && !bMatch) return -1;
+          if (!aMatch && bMatch) return 1;
+          return (a.fullName || a.name || '').localeCompare(b.fullName || b.name || '');
+        });
+
+        sortedTrainers.forEach(t => {
           const opt = document.createElement('option');
-          opt.value = `${t.trainerId || t.id}|${t.fullName || t.name}`;
-          opt.textContent = `${t.fullName || t.name} (${t.trainerId || t.id})`;
-          if ((s.trainerId && s.trainerId === (t.trainerId || t.id)) || (s.trainerName && s.trainerName === (t.fullName || t.name))) {
+          const tId = t.trainerId || t.id;
+          const tName = t.fullName || t.name;
+          const isSameState = (t.state || '').toLowerCase().includes(stuState);
+          opt.value = `${tId}|${tName}`;
+          opt.textContent = `${tName} (${tId}) - ${t.district || t.branch || t.state || 'All India'}${isSameState ? ' ★' : ''}`;
+          if ((s.trainerId && s.trainerId === tId) || (s.trainerName && s.trainerName === tName)) {
             opt.selected = true;
           }
           trnSelect.appendChild(opt);
@@ -9759,6 +9987,254 @@ lucide.createIcons();
         modal.classList.remove('hidden');
         lucide.createIcons();
       }
+    }
+
+    
+    // =========================================================================
+    // ADMIN FAST-TRACK LEVEL SELECTOR & TRAINER REASSIGNMENT (Req 1)
+    // =========================================================================
+    let targetFastTrackStudentId = null;
+
+    function openAdminLevelSelectModal(studentId) {
+      const user = adminState.currentUser || { role: 'Admin' };
+      if (user.role === 'Trainer') return;
+
+      const s = adminState.students.find(stu => stu.studentId === studentId);
+      if (!s) return;
+      targetFastTrackStudentId = studentId;
+
+      const currLevel = s.requestedLevel || s.level || 'Level 1';
+      const currLevelNum = getStudentLevelNum(currLevel);
+
+      const infoEl = document.getElementById('admin-level-target-student-info');
+      if (infoEl) {
+        infoEl.innerHTML = `
+          <div>
+            <div class="font-black text-slate-900 text-sm font-rajdhani uppercase">${s.studentName}</div>
+            <div class="font-mono text-xs text-orange-700 font-bold">${s.studentId} • ${s.state || 'Maharashtra'}</div>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] font-black uppercase text-emerald-800 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded-full">
+              Current: ${currLevel}
+            </span>
+          </div>
+        `;
+      }
+
+      const gridEl = document.getElementById('admin-level-buttons-grid');
+      if (gridEl) {
+        gridEl.innerHTML = '';
+        const allLevels = [
+          { name: 'Level 1', num: 1 },
+          { name: 'Level 2', num: 2 },
+          { name: 'Level 3', num: 3 },
+          { name: 'Level 4', num: 4 },
+          { name: 'Level 5', num: 5 },
+          { name: 'Level 6', num: 6 },
+          { name: 'Senior 1', num: 7 },
+          { name: 'Senior 2', num: 8 },
+          { name: 'Senior 3', num: 9 },
+          { name: 'Senior 4', num: 10 }
+        ];
+
+        allLevels.forEach(lvl => {
+          const isCurrent = (lvl.num === currLevelNum);
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `p-3 rounded-2xl border text-left flex flex-col justify-between transition cursor-pointer active:scale-95 ${
+            isCurrent
+              ? 'bg-emerald-50 border-emerald-400 text-emerald-950 font-black shadow-sm ring-2 ring-emerald-300'
+              : 'bg-white hover:bg-orange-50 border-slate-200 hover:border-orange-400 text-slate-800'
+          }`;
+          btn.innerHTML = `
+            <div class="flex items-center justify-between">
+              <strong class="font-black font-rajdhani text-sm">${lvl.name}</strong>
+              <span class="text-[10px] font-bold font-mono">(${lvl.num}/10 Stars)</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1 font-medium">
+              ${isCurrent ? '🟢 Currently Running Level' : (lvl.num > 1 ? `Certifies Level 1-${lvl.num - 1} & sets Running` : 'Set as Entry Level 1')}
+            </p>
+          `;
+          btn.onclick = () => adminFastTrackStudentLevel(studentId, lvl.name, lvl.num);
+          gridEl.appendChild(btn);
+        });
+      }
+
+      const modal = document.getElementById('modal-admin-level-fasttrack');
+      if (modal) {
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+      }
+    }
+
+    function adminFastTrackStudentLevel(studentId, targetLevelName, targetLevelNum) {
+      const s = adminState.students.find(stu => stu.studentId === studentId);
+      if (!s) return;
+
+      const confirmMsg = targetLevelNum > 1
+        ? `⭐ विद्यार्थी "${s.studentName}" ला ${targetLevelName} वर सेट करायचे आहे का?\n\n- Level 1 ते Level ${targetLevelNum - 1} चे प्रमाणपत्र (Certificates) आपोआप तयार होतील आणि PASSED मार्क होतील.\n- ${targetLevelName} हे RUNNING (सुरू) राहील.\n\n(Fast-track to ${targetLevelName} and auto-certify Levels 1-${targetLevelNum-1}?)`
+        : `⭐ विद्यार्थी "${s.studentName}" ला Level 1 (प्रारंभिक) वर सेट करायचे आहे का?`;
+
+      if (!confirm(confirmMsg)) return;
+
+      if (!s.levelHistory) s.levelHistory = {};
+      if (!s.levels) s.levels = {};
+
+      for (let l = 1; l < targetLevelNum; l++) {
+        const lKey = 'Level ' + l;
+        s.levels['l' + l] = true;
+        s.levelHistory[lKey] = {
+          level: lKey,
+          levelNum: l,
+          levelName: getLevelNameByNum(l),
+          passed: true,
+          status: 'PASSED',
+          score: 91 + (l % 5),
+          aiScore: 46,
+          trainerScore: 46,
+          passedDate: formatStandardDate(new Date()),
+          examDate: formatStandardDate(new Date()),
+          certificateId: `YAI-CERT-${studentId.replace(/[^A-Za-z0-9]/g, '').slice(-6)}-L${l}`,
+          certifiedBy: 'Central Headquarters HQ',
+          verifiedAt: new Date().toISOString()
+        };
+      }
+
+      s.requestedLevel = targetLevelName;
+      s.level = targetLevelName;
+      s.examStatus = 'TRAINING';
+      s.levelUpPending = false;
+      s.pendingNextLevel = '';
+
+      saveAdminState();
+
+      syncToCloudServer({
+        type: "STUDENT_REGISTRATION_32_POINTS",
+        action: 'updateStudent',
+        ...s,
+        studentId
+      });
+
+      renderAdminStudents();
+      closeModal('modal-admin-level-fasttrack');
+      alert(`✅ विद्यार्थी "${s.studentName}" आता ${targetLevelName} वर सेट झाला आहे!\n\nमागील सर्व लेव्हल्सचे (Levels 1-${targetLevelNum-1}) मार्कशीट आणि प्रमाणपत्रे (Certificates) तयार झाले आहेत.`);
+    }
+
+    let targetReassignStudentId = null;
+
+    function openAdminTrainerReassignModal(studentId) {
+      const user = adminState.currentUser || { role: 'Admin' };
+      if (user.role === 'Trainer') return;
+
+      const s = adminState.students.find(stu => stu.studentId === studentId);
+      if (!s) return;
+      targetReassignStudentId = studentId;
+
+      const stuState = (s.state || 'Maharashtra').trim();
+      const currentTrnId = (s.trainerId || '').trim();
+
+      const infoEl = document.getElementById('admin-trainer-target-student-info');
+      if (infoEl) {
+        infoEl.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="font-black text-slate-900 text-sm font-rajdhani uppercase">${s.studentName}</div>
+              <div class="font-mono text-xs text-orange-700 font-bold">${s.studentId} • State: <strong class="text-slate-800">${stuState}</strong></div>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] text-slate-500 font-semibold block">Current Assigned Trainer:</span>
+              <span class="font-mono text-xs font-bold text-slate-800 bg-white border border-slate-300 px-2 py-0.5 rounded-md">
+                ${s.trainerName || 'N/A'} (${currentTrnId || 'None'})
+              </span>
+            </div>
+          </div>
+        `;
+      }
+
+      const listEl = document.getElementById('admin-trainer-reassign-list');
+      if (listEl) {
+        listEl.innerHTML = '';
+
+        let stateTrainers = adminState.trainers.filter(t => {
+          const tState = (t.state || '').trim().toLowerCase();
+          const sSt = stuState.toLowerCase();
+          return tState.includes(sSt) || sSt.includes(tState);
+        });
+
+        if (stateTrainers.length === 0) {
+          stateTrainers = [...adminState.trainers];
+        }
+
+        stateTrainers.forEach(t => {
+          const trnId = t.trainerId || t.id;
+          const trnName = t.fullName || t.name || 'Trainer';
+          const isCurrent = (trnId === currentTrnId);
+
+          const card = document.createElement('div');
+          card.className = `p-3.5 rounded-2xl border transition flex items-center justify-between gap-3 ${
+            isCurrent
+              ? 'bg-emerald-50 border-emerald-300'
+              : 'bg-white hover:bg-orange-50 border-slate-200 hover:border-orange-300'
+          }`;
+          card.innerHTML = `
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <strong class="text-slate-900 font-bold text-xs sm:text-sm font-rajdhani uppercase truncate">${trnName}</strong>
+                ${isCurrent ? '<span class="bg-emerald-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase">Current</span>' : ''}
+              </div>
+              <div class="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5">
+                <span class="font-mono font-bold text-orange-700">${trnId}</span>
+                <span>•</span>
+                <span>${t.branch || (t.district ? t.district + ' Branch' : stuState + ' Branch')}</span>
+                <span>•</span>
+                <span>${t.mobile || ''}</span>
+              </div>
+            </div>
+            <div>
+              ${isCurrent ? `
+                <span class="text-xs font-bold text-emerald-700 px-3 py-1.5 bg-emerald-100 rounded-xl border border-emerald-200">
+                  Assigned ✓
+                </span>
+              ` : `
+                <button type="button" onclick="adminExecuteTrainerReassign('${studentId}', '${trnId}', '${trnName.replace(/'/g, "\\'")}')" class="px-3.5 py-1.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-black text-xs rounded-xl shadow-sm transition active:scale-95 cursor-pointer">
+                  Select & Transfer
+                </button>
+              `}
+            </div>
+          `;
+          listEl.appendChild(card);
+        });
+      }
+
+      const modal = document.getElementById('modal-admin-trainer-reassign');
+      if (modal) {
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+      }
+    }
+
+    function adminExecuteTrainerReassign(studentId, newTrainerId, newTrainerName) {
+      const s = adminState.students.find(stu => stu.studentId === studentId);
+      if (!s) return;
+
+      const confirmMsg = `विद्यार्थी "${s.studentName}" ला नवीन Trainer "${newTrainerName}" (${newTrainerId}) कडे हस्तांतरित (Re-assign) करायचे आहे का?\n\nहा विद्यार्थी तात्काळ नवीन ट्रेनरच्या पॅनेलमध्ये दिसेल आणि Central Cloud वर सेव्ह होईल.\n\n(Reassign student to Trainer ${newTrainerName}?)`;
+      if (!confirm(confirmMsg)) return;
+
+      s.trainerId = newTrainerId;
+      s.trainerName = newTrainerName;
+
+      saveAdminState();
+
+      syncToCloudServer({
+        type: "STUDENT_REGISTRATION_32_POINTS",
+        action: 'updateStudent',
+        ...s,
+        studentId
+      });
+
+      renderAdminStudents();
+      closeModal('modal-admin-trainer-reassign');
+      alert(`✅ विद्यार्थी "${s.studentName}" आता यशस्वीरीत्या Trainer "${newTrainerName}" (${newTrainerId}) यांना हस्तांतरित केला आहे!\n\nहा विद्यार्थी आता त्यांच्या ट्रेनर पॅनेलमध्ये दिसेल.`);
     }
 
     function calculateEditStudentAge() {
@@ -9792,14 +10268,62 @@ lucide.createIcons();
       const idx = adminState.students.findIndex(stu => stu.studentId === editingStudentId);
       if (idx === -1) return;
 
-      const trainerVal = document.getElementById('edit-stu-trainer').value;
-      const [trainerId, trainerName] = trainerVal.split('|');
+      const user = adminState.currentUser || { role: 'Admin' };
+      const isTrainer = (user.role === 'Trainer');
+      const curStudent = adminState.students[idx];
+
+      const oldLevel = curStudent.requestedLevel || curStudent.level || 'Level 1';
+      const targetLevel = isTrainer ? oldLevel : document.getElementById('edit-stu-level').value;
+      const oldLevelNum = getStudentLevelNum(oldLevel);
+      const newLevelNum = getStudentLevelNum(targetLevel);
+
+      let updatedLevelHistory = curStudent.levelHistory ? { ...curStudent.levelHistory } : {};
+      let updatedLevels = curStudent.levels ? { ...curStudent.levels } : {};
+
+      // If Admin advanced the level (e.g. Level 1 to Level 5): auto-certify all previous levels!
+      if (!isTrainer && newLevelNum > oldLevelNum) {
+        for (let l = 1; l < newLevelNum; l++) {
+          const lKey = 'Level ' + l;
+          updatedLevels['l' + l] = true;
+          if (!updatedLevelHistory[lKey] || !updatedLevelHistory[lKey].passed) {
+            updatedLevelHistory[lKey] = {
+              level: lKey,
+              levelNum: l,
+              levelName: getLevelNameByNum(l),
+              passed: true,
+              status: 'PASSED',
+              score: 91 + (l % 5),
+              aiScore: 46,
+              trainerScore: 46,
+              passedDate: formatStandardDate(new Date()),
+              examDate: formatStandardDate(new Date()),
+              certificateId: `YAI-CERT-${editingStudentId.replace(/[^A-Za-z0-9]/g, '').slice(-6)}-L${l}`,
+              certifiedBy: 'Central Headquarters HQ',
+              verifiedAt: new Date().toISOString()
+            };
+          }
+        }
+      }
+
+      let trainerId = curStudent.trainerId;
+      let trainerName = curStudent.trainerName;
+      if (!isTrainer) {
+        const trainerVal = document.getElementById('edit-stu-trainer').value;
+        const [selTrnId, selTrnName] = trainerVal.split('|');
+        if (selTrnId) trainerId = selTrnId;
+        if (selTrnName) trainerName = selTrnName;
+      }
 
       adminState.students[idx] = {
-        ...adminState.students[idx],
+        ...curStudent,
         studentName: document.getElementById('edit-stu-name').value.trim(),
-        requestedLevel: document.getElementById('edit-stu-level').value,
-        dob: document.getElementById('edit-stu-dob').value,
+        requestedLevel: targetLevel,
+        level: targetLevel,
+        levelHistory: updatedLevelHistory,
+        levels: updatedLevels,
+        examStatus: (!isTrainer && newLevelNum > oldLevelNum) ? 'TRAINING' : curStudent.examStatus,
+        levelUpPending: (!isTrainer && newLevelNum > oldLevelNum) ? false : curStudent.levelUpPending,
+        dob: formatStandardDate(document.getElementById('edit-stu-dob').value),
         age: parseInt(document.getElementById('edit-stu-age').value) || 0,
         schoolName: document.getElementById('edit-stu-school').value.trim(),
         standard: document.getElementById('edit-stu-standard').value.trim(),
@@ -9809,11 +10333,12 @@ lucide.createIcons();
         state: document.getElementById('edit-stu-state').value.trim(),
         trainerId,
         trainerName,
-        status: document.getElementById('edit-stu-status').value,
-        feeStatus: document.getElementById('edit-stu-fee-status').value,
+        admissionDate: formatStandardDate(curStudent.admissionDate || new Date()),
+        status: isTrainer ? curStudent.status : document.getElementById('edit-stu-status').value,
+        feeStatus: isTrainer ? curStudent.feeStatus : document.getElementById('edit-stu-fee-status').value,
         feeAmount: parseInt(document.getElementById('edit-stu-fee-amount').value) || 500,
         utrNumber: document.getElementById('edit-stu-utr').value.trim(),
-        photo: uploadedStudentEditPhotoData || adminState.students[idx].photo || null
+        photo: uploadedStudentEditPhotoData || curStudent.photo || null
       };
       uploadedStudentEditPhotoData = null;
 
@@ -15006,36 +15531,49 @@ function handleAdminCreateCompetition(e) {
             localStorage.setItem('yoddha_admin_comps_v2', JSON.stringify(adminState.competitions));
           }
 
-          // 7. Live Sync Student Medals & Sports Records from Google Sheet
+          // 7. Live Sync Student Sports & Tournament Records from Google Sheet
           if (data.studentCompetitions && typeof data.studentCompetitions === 'object') {
+            if (!adminState.studentCompetitions) adminState.studentCompetitions = {};
             Object.keys(data.studentCompetitions).forEach(sId => {
-              if (Array.isArray(data.studentCompetitions[sId]) && data.studentCompetitions[sId].length > 0) {
-                localStorage.setItem('yoddha_student_records_' + sId, JSON.stringify(data.studentCompetitions[sId]));
+              const list = data.studentCompetitions[sId];
+              if (Array.isArray(list) && list.length > 0) {
+                adminState.studentCompetitions[sId] = list;
+                adminState.studentCompetitions[sId.toUpperCase()] = list;
+                localStorage.setItem('yoddha_student_records_' + sId, JSON.stringify(list));
+                localStorage.setItem('yoddha_student_records_' + sId.toUpperCase(), JSON.stringify(list));
+
+                const st = adminState.students.find(s => (s.studentId || '').toUpperCase() === sId.toUpperCase());
+                if (st) {
+                  st.studentCompetitions = list;
+                }
               }
             });
           }
 
           // 8. Live Sync Master Exam Switch from Google Sheet
-          if (data.examSessionActive !== undefined) {
-            const cloudActive = (data.examSessionActive === true || data.examSessionActive === 'true');
+          if (data.examSessionActive !== undefined || data.EXAM_MASTER_SWITCH !== undefined) {
+            const cloudActive = (data.examSessionActive === true || data.examSessionActive === 'true' || data.examSessionActive === 'ON' || data.EXAM_MASTER_SWITCH === 'ON');
             const user = adminState.currentUser || { role: 'Admin' };
             const localChoice = localStorage.getItem('yoddha_exam_session_admin_choice');
             const localActive = (localStorage.getItem('yoddha_exam_session_active') === 'true');
 
             if (user.role === 'Admin') {
-              // Master Admin Central HQ: Local Admin decision is MASTER authority!
-              // If Admin explicitly turned the exam ON, cloud 'false' must NEVER close it!
               if (localChoice === 'true') {
                 adminState.examSessionActive = true;
               } else if (localChoice === 'false') {
-                // If cloud was opened from another admin instance, adopt it
                 adminState.examSessionActive = cloudActive;
               } else {
                 adminState.examSessionActive = cloudActive || localActive;
               }
             } else {
-              // Trainer terminal: Active if cloud says active OR local terminal has it active
-              adminState.examSessionActive = cloudActive || localActive;
+              // Trainer terminal: Active if cloud says active OR local choice says active OR local terminal was active
+              if (cloudActive || localChoice === 'true' || localActive) {
+                adminState.examSessionActive = true;
+              } else if (localChoice === 'false') {
+                adminState.examSessionActive = false;
+              } else {
+                adminState.examSessionActive = true; // default open
+              }
             }
 
             localStorage.setItem('yoddha_exam_session_active', adminState.examSessionActive ? 'true' : 'false');

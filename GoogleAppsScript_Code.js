@@ -22,6 +22,26 @@
  * =========================================================================
  */
 
+// =========================================================================
+// STANDARDIZED TIMESTAMP & DATE FORMATTING HELPERS
+// =========================================================================
+function formatStandardTimestamp(d) {
+  var dt = d ? (d instanceof Date ? d : new Date(d)) : new Date();
+  if (isNaN(dt.getTime())) dt = new Date();
+  return Utilities.formatDate(dt, "Asia/Kolkata", "yyyy-MM-dd HH:mm:ss");
+}
+
+function formatStandardDateString(d) {
+  if (!d) return "";
+  var dt = (d instanceof Date) ? d : new Date(d);
+  if (isNaN(dt.getTime())) {
+    var s = String(d).trim();
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0, 10);
+    return s;
+  }
+  return Utilities.formatDate(dt, "Asia/Kolkata", "yyyy-MM-dd");
+}
+
 // 1. LIVE AUTHENTICATION & DATA RETRIEVAL ENDPOINT (GET)
 // -------------------------------------------------------------------------
 function doGet(e) {
@@ -356,7 +376,7 @@ function doGet(e) {
       }
     }
 
-    // 6. Read Student Sports Records & Medals from Sheet
+    // 6. Read Student Sports Records & Medals from Sheet (Synced across Admin & Trainer Panels)
     var recSheet = ss.getSheetByName("StudentSportsRecords");
     if (recSheet) {
       var recRows = recSheet.getDataRange().getValues();
@@ -364,16 +384,30 @@ function doGet(e) {
         var row = recRows[r];
         var sId = String(row[1] || "").trim();
         if (sId) {
+          var normSid = sId.toUpperCase();
           if (!allData.studentCompetitions[sId]) allData.studentCompetitions[sId] = [];
-          allData.studentCompetitions[sId].push({
+          if (!allData.studentCompetitions[normSid]) allData.studentCompetitions[normSid] = allData.studentCompetitions[sId];
+          var compItem = {
             title: String(row[3] || "").trim(),
-            date: String(row[4] || "").trim(),
+            date: formatStandardDateString(row[4]),
+            year: formatStandardDateString(row[4]).slice(0, 4),
             category: String(row[5] || "").trim(),
             achievement: String(row[6] || "").trim(),
             certificate: String(row[7] || "").trim()
-          });
+          };
+          allData.studentCompetitions[sId].push(compItem);
         }
       }
+    }
+
+    // Attach studentCompetitions directly to each student in allData.students
+    if (Array.isArray(allData.students)) {
+      allData.students.forEach(function(stu) {
+        var stId = String(stu.studentId || stu.id || "").trim().toUpperCase();
+        if (stId && allData.studentCompetitions[stId]) {
+          stu.studentCompetitions = allData.studentCompetitions[stId];
+        }
+      });
     }
 
     // 7. Read Master Exam Switch & Settings from ScriptProperties & AcademySettings Sheet
@@ -382,7 +416,7 @@ function doGet(e) {
     if (propSwitch !== null && propSwitch !== "") {
       allData.examSessionActive = (propSwitch === "ON" || propSwitch === "TRUE");
     } else {
-      allData.examSessionActive = false; // Default closed until Admin opens it
+      allData.examSessionActive = true; // Default ON so live exams are instantly accessible across all devices
     }
 
     var setSheet = ss.getSheetByName("AcademySettings");
@@ -423,7 +457,7 @@ function doGet(e) {
       var setSheet = getOrCreateSheet(ss, "AcademySettings", [
         "Setting Key", "Setting Value", "Updated By", "Last Updated"
       ]);
-      var rowData = ["EXAM_MASTER_SWITCH", val, "Admin", new Date()];
+      var rowData = ["EXAM_MASTER_SWITCH", val, "Admin", formatStandardTimestamp(new Date())];
       var updated = updateRowIfExistsOrMerge(setSheet, 1, "EXAM_MASTER_SWITCH", rowData);
       if (!updated) setSheet.appendRow(rowData);
     } catch(err) {
@@ -484,7 +518,7 @@ function doPost(e) {
       if (trnAadhar.length > 45000) trnAadhar = trnAadhar.substring(0, 45000);
 
       var rowData = [
-        new Date(),
+        formatStandardTimestamp(new Date()),
         trainerId,
         trainerName,
         data.position || "Branch Instructor",
@@ -604,10 +638,10 @@ function doPost(e) {
       if (stuAadhar.length > 45000) stuAadhar = stuAadhar.substring(0, 45000);
 
       var rowData = [
-        new Date(),
+        formatStandardTimestamp(new Date()),
         studentId,
         studentName,
-        data.dob || "",
+        formatStandardDateString(data.dob),
         (data.age !== undefined && data.age !== null && data.age !== "") ? data.age : "",
         data.requestedLevel || "Level 1",
         data.schoolName || "",
@@ -619,7 +653,7 @@ function doPost(e) {
         data.city || "",
         data.district || "",
         data.state || "",
-        data.admissionDate || "",
+        formatStandardDateString(data.admissionDate || new Date()),
         data.trainerId || "",
         data.trainerName || "",
         data.status || "Active",
@@ -630,7 +664,7 @@ function doPost(e) {
         aiScore,
         trScore,
         totScore,
-        exDate,
+        formatStandardDateString(exDate),
         data.levelUpPending ? "YES" : "NO",
         data.pendingNextLevel || "",
         lvlHistStr,
@@ -651,7 +685,7 @@ function doPost(e) {
           ]);
           var examRefId = "EXAM-" + studentId.replace(/[^A-Za-z0-9]/g, "") + "-L" + (data.lastExam?.levelNum || 1);
           examSheet.appendRow([
-            new Date(),
+            formatStandardTimestamp(new Date()),
             examRefId,
             studentId,
             studentName,
@@ -663,7 +697,7 @@ function doPost(e) {
             trScore,
             totScore,
             totScore >= 90 ? "A+" : (totScore >= 80 ? "A" : "B+"),
-            exDate || new Date().toLocaleDateString("en-IN"),
+            formatStandardDateString(exDate || new Date()),
             data.lastExam?.trainerName || data.trainerName || "Certified Ustad",
             "PASSED & CERTIFIED"
           ]);
@@ -724,11 +758,11 @@ function doPost(e) {
       ]);
 
       sheet.appendRow([
-        new Date(),
+        formatStandardTimestamp(new Date()),
         data.studentId || "",
         data.studentName || "",
         data.title || "",
-        data.date || new Date().toISOString().split("T")[0],
+        formatStandardDateString(data.date || new Date()),
         data.category || "Martial Arts Sparring",
         data.achievement || "🥇 Gold Medal",
         data.certificate || ("YAI-COMP-" + Date.now().toString().slice(-6))
@@ -897,8 +931,8 @@ function doPost(e) {
       }
 
       sheet.appendRow([
-        new Date(),
-        data.compId || "",
+        formatStandardTimestamp(new Date()),
+        data.competitionId || "",
         data.compTitle || "",
         data.compLevel || "State Level",
         data.studentId || "",
@@ -969,7 +1003,7 @@ function doPost(e) {
         var sheet = getOrCreateSheet(ss, "AcademySettings", [
           "Setting Key", "Setting Value", "Updated By", "Last Updated"
         ]);
-        var rowData = ["EXAM_MASTER_SWITCH", settingVal, data.toggledBy || "Admin", new Date()];
+        var rowData = ["EXAM_MASTER_SWITCH", settingVal, data.toggledBy || "Admin", formatStandardTimestamp(new Date())];
         var updated = updateRowIfExistsOrMerge(sheet, 1, "EXAM_MASTER_SWITCH", rowData);
         if (!updated) sheet.appendRow(rowData);
       } catch(sheetErr) {
