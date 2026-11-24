@@ -33,12 +33,16 @@ function formatStandardTimestamp(d) {
 
 function formatStandardDateString(d) {
   if (!d) return "";
-  var dt = (d instanceof Date) ? d : new Date(d);
-  if (isNaN(dt.getTime())) {
-    var s = String(d).trim();
-    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.substring(0, 10);
-    return s;
+  var s = String(d).trim();
+  var m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+  if (m) {
+    var y = m[1];
+    var mo = m[2].length === 1 ? "0" + m[2] : m[2];
+    var day = m[3].length === 1 ? "0" + m[3] : m[3];
+    return y + "-" + mo + "-" + day;
   }
+  var dt = (d instanceof Date) ? d : new Date(d);
+  if (isNaN(dt.getTime())) return s;
   return Utilities.formatDate(dt, "Asia/Kolkata", "yyyy-MM-dd");
 }
 
@@ -236,9 +240,25 @@ function doGet(e) {
       }
     }
 
-    // 2. Read Students from Sheet (with complete 30-point columns)
+    // 2. Read Students from Sheet (with auto-purge of blank/ghost rows & date normalization)
     var stuSheet = ss.getSheetByName("Students");
     if (stuSheet) {
+      var sCheckData = stuSheet.getDataRange().getValues();
+      for (var rCheck = sCheckData.length - 1; rCheck >= 1; rCheck--) {
+        var chkId = String(sCheckData[rCheck][1] || "").trim();
+        var chkName = String(sCheckData[rCheck][2] || "").trim();
+        var chkDob = String(sCheckData[rCheck][3] || "").trim();
+        // Purge blank/corrupt student rows permanently
+        if (!chkId || chkId.toUpperCase().indexOf("TEST") !== -1 || (chkName.toLowerCase() === "student" && !chkDob)) {
+          try { stuSheet.deleteRow(rCheck + 1); } catch(delErr) {}
+        } else if (chkDob && (chkDob.indexOf("GMT") !== -1 || chkDob.indexOf("T") !== -1 || chkDob.length > 10)) {
+          // Normalize existing date strings in Google Sheet cell to clean YYYY-MM-DD
+          var cleanD = formatStandardDateString(chkDob);
+          if (cleanD && cleanD.length === 10) {
+            try { stuSheet.getRange(rCheck + 1, 4).setNumberFormat("@").setValue(cleanD); } catch(setErr) {}
+          }
+        }
+      }
       var stuRows = stuSheet.getDataRange().getValues();
       for (var j = 1; j < stuRows.length; j++) {
         var sr = stuRows[j];
@@ -298,29 +318,37 @@ function doGet(e) {
       }
     }
 
-    // 3. Read Level-wise Fee Structure from Sheet
-    var feeSheet = ss.getSheetByName("Fee Structure");
-    if (feeSheet) {
-      var feeRows = feeSheet.getDataRange().getValues();
-      var feeMap = {};
-      for (var k = 1; k < feeRows.length; k++) {
-        var fr = feeRows[k];
-        var param = String(fr[0] || "").toLowerCase().trim();
-        var val = fr[1];
-        if (param === "level 1") feeMap.level1 = Number(val) || 500;
-        else if (param === "level 2") feeMap.level2 = Number(val) || 600;
-        else if (param === "level 3") feeMap.level3 = Number(val) || 700;
-        else if (param === "level 4") feeMap.level4 = Number(val) || 800;
-        else if (param === "level 5") feeMap.level5 = Number(val) || 900;
-        else if (param === "level 6") feeMap.level6 = Number(val) || 1000;
-        else if (param === "senior 1") feeMap.senior1 = Number(val) || 1200;
-        else if (param === "senior 2") feeMap.senior2 = Number(val) || 1400;
-        else if (param === "senior 3") feeMap.senior3 = Number(val) || 1600;
-        else if (param === "senior 4") feeMap.senior4 = Number(val) || 1800;
-        else if (param.indexOf("upi") !== -1) feeMap.upi = String(val).trim();
+    // 3. Read Level-wise Fee Structure from ScriptProperties or Sheet
+    var feeMap = null;
+    try {
+      var feeProp = PropertiesService.getScriptProperties().getProperty("FEE_STRUCTURE");
+      if (feeProp) feeMap = JSON.parse(feeProp);
+    } catch(e) {}
+
+    if (!feeMap) {
+      var feeSheet = ss.getSheetByName("Fee Structure");
+      if (feeSheet) {
+        var feeRows = feeSheet.getDataRange().getValues();
+        feeMap = {};
+        for (var k = 1; k < feeRows.length; k++) {
+          var fr = feeRows[k];
+          var param = String(fr[0] || "").toLowerCase().trim();
+          var val = fr[1];
+          if (param === "level 1") feeMap.level1 = Number(val) || 500;
+          else if (param === "level 2") feeMap.level2 = Number(val) || 600;
+          else if (param === "level 3") feeMap.level3 = Number(val) || 700;
+          else if (param === "level 4") feeMap.level4 = Number(val) || 800;
+          else if (param === "level 5") feeMap.level5 = Number(val) || 900;
+          else if (param === "level 6") feeMap.level6 = Number(val) || 1000;
+          else if (param === "senior 1") feeMap.senior1 = Number(val) || 1200;
+          else if (param === "senior 2") feeMap.senior2 = Number(val) || 1400;
+          else if (param === "senior 3") feeMap.senior3 = Number(val) || 1600;
+          else if (param === "senior 4") feeMap.senior4 = Number(val) || 1800;
+          else if (param.indexOf("upi") !== -1) feeMap.upi = String(val).trim();
+        }
       }
-      allData.feeStructure = feeMap;
     }
+    allData.feeStructure = feeMap || {};
 
     // 4. Read Courses from Sheet
     var crsSheet = ss.getSheetByName("Courses");
@@ -660,13 +688,13 @@ function doPost(e) {
       ]);
 
       var studentId = String(data.studentId || data.id || "").trim();
-      if (!studentId || studentId.toUpperCase().indexOf("TEST") !== -1 || studentId === "") {
+      var studentName = String(data.studentName || data.name || "").trim();
+      if (!studentId || studentId.length < 5 || studentId.toUpperCase().indexOf("TEST") !== -1 || !studentName || studentName.toLowerCase() === "student") {
         return ContentService.createTextOutput(JSON.stringify({
           status: "error",
-          message: "Cannot register or append student without a valid Student ID"
+          message: "Rejected: Cannot register or append student without a valid Student ID and real Student Name"
         })).setMimeType(ContentService.MimeType.JSON);
       }
-      var studentName = data.studentName || data.name || "Student";
       var parentEmail = (data.parentEmail || data.email || "").trim();
 
       // Extract exam scores if present
@@ -893,23 +921,41 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     if (type.indexOf("FEE") !== -1) {
       var sheet = getOrCreateSheet(ss, "Fee Structure", ["Fee Parameter", "Amount (₹) / Value"]);
-      sheet.clearContents();
-      sheet.appendRow(["Fee Parameter", "Amount (₹) / Value"]);
-      sheet.appendRow(["Level 1", Number(data.level1) || 500]);
-      sheet.appendRow(["Level 2", Number(data.level2) || 600]);
-      sheet.appendRow(["Level 3", Number(data.level3) || 700]);
-      sheet.appendRow(["Level 4", Number(data.level4) || 800]);
-      sheet.appendRow(["Level 5", Number(data.level5) || 900]);
-      sheet.appendRow(["Level 6", Number(data.level6) || 1000]);
-      sheet.appendRow(["Senior 1", Number(data.senior1) || 1200]);
-      sheet.appendRow(["Senior 2", Number(data.senior2) || 1400]);
-      sheet.appendRow(["Senior 3", Number(data.senior3) || 1600]);
-      sheet.appendRow(["Senior 4", Number(data.senior4) || 1800]);
-      sheet.appendRow(["Official UPI ID", String(data.upi || "yoddhaacademy5@okicici").trim()]);
+      var feeRows = [
+        ["Fee Parameter", "Amount (₹) / Value"],
+        ["Level 1", Number(data.level1) || 500],
+        ["Level 2", Number(data.level2) || 600],
+        ["Level 3", Number(data.level3) || 700],
+        ["Level 4", Number(data.level4) || 800],
+        ["Level 5", Number(data.level5) || 900],
+        ["Level 6", Number(data.level6) || 1000],
+        ["Senior 1", Number(data.senior1) || 1200],
+        ["Senior 2", Number(data.senior2) || 1400],
+        ["Senior 3", Number(data.senior3) || 1600],
+        ["Senior 4", Number(data.senior4) || 1800],
+        ["Official UPI ID", String(data.upi || "yoddhaacademy5@okicici").trim()]
+      ];
+      sheet.getRange(1, 1, feeRows.length, 2).setValues(feeRows);
+
+      try {
+        PropertiesService.getScriptProperties().setProperty("FEE_STRUCTURE", JSON.stringify({
+          level1: Number(data.level1) || 500,
+          level2: Number(data.level2) || 600,
+          level3: Number(data.level3) || 700,
+          level4: Number(data.level4) || 800,
+          level5: Number(data.level5) || 900,
+          level6: Number(data.level6) || 1000,
+          senior1: Number(data.senior1) || 1200,
+          senior2: Number(data.senior2) || 1400,
+          senior3: Number(data.senior3) || 1600,
+          senior4: Number(data.senior4) || 1800,
+          upi: String(data.upi || "yoddhaacademy5@okicici").trim()
+        }));
+      } catch(propErr) {}
 
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        message: "Fee structure updated successfully in Fee Structure sheet"
+        message: "Fee structure updated in-place atomically in Fee Structure sheet"
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
