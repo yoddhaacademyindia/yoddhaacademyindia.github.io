@@ -826,19 +826,21 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     if (type === "COURSE_DELETE" || type === "DELETE_COURSE") {
       var sheet = ss.getSheetByName("Courses");
+      var deletedCount = 0;
       if (sheet) {
         var targetId = String(data.id || data.courseId || "").trim().toLowerCase();
         var rows = sheet.getDataRange().getValues();
-        for (var r = 1; r < rows.length; r++) {
+        for (var r = rows.length - 1; r >= 1; r--) {
           if (String(rows[r][1]).trim().toLowerCase() === targetId) {
             sheet.deleteRow(r + 1);
-            break;
+            deletedCount++;
           }
         }
       }
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        message: "Course deleted from cloud"
+        message: deletedCount > 0 ? "Course deleted from cloud" : "Course not found",
+        deletedCount: deletedCount
       })).setMimeType(ContentService.MimeType.JSON);
     }
 

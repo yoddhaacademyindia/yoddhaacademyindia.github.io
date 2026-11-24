@@ -6417,12 +6417,27 @@ function setupAllAcademySheets() {
       }
     });
 
-    // 2. Continuous background polling every 15 seconds silently
+    // 1B. Instant cross-tab sync via BroadcastChannel
+    try {
+      const portalChannel = new BroadcastChannel('yoddha_portal_realtime_sync');
+      portalChannel.onmessage = (ev) => {
+        if (ev && ev.data && ev.data.type === 'DATA_CHANGED' && adminState.isLoggedIn) {
+          pullLiveCloudRecords(true);
+        }
+      };
+      window.broadcastPortalChange = function() {
+        try { portalChannel.postMessage({ type: 'DATA_CHANGED', time: Date.now() }); } catch(e) {}
+      };
+    } catch(err) {
+      window.broadcastPortalChange = function() {};
+    }
+
+    // 2. High-speed continuous background polling (every 3 seconds for ~1s real-time sync across devices!)
     setInterval(() => {
       if (adminState.isLoggedIn) {
         pullLiveCloudRecords(true);
       }
-    }, 10000);
+    }, 3000);
 
 
     function checkAuth() {
@@ -15255,7 +15270,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       alert(`✅ Course "${name}" (${courseId}) updated successfully and synced to Central Cloud!`);
     }
 
-    function deleteAdminCourse(courseId) {
+    async function deleteAdminCourse(courseId) {
       const user = adminState.currentUser || { role: 'Admin' };
       if (user.role === 'Trainer') {
         alert("🔒 Access Restricted: Only Master Admin can delete courses.");
@@ -15271,20 +15286,31 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const confirmMsg = `Are you sure you want to delete this course?\n\nCourse ID: ${crs.id}\nTitle: ${crs.title || crs.name}\n\nThis will remove it permanently from all assigned trainers and the Central Cloud Server.`;
       if (!confirm(confirmMsg)) return;
 
-      adminState.courses = adminState.courses.filter(c => (c.id || '').toUpperCase() !== (courseId || '').toUpperCase());
+      const deletedTitle = crs.title || crs.name;
+      const targetId = crs.id;
+
+      // 1. Instantly remove locally from UI
+      adminState.courses = adminState.courses.filter(c => (c.id || '').toUpperCase() !== (targetId || '').toUpperCase());
       saveAdminState();
-
-      // Live Sync Deletion to Central Cloud
-      syncToCloudServer({
-        type: "COURSE_DELETE",
-        id: crs.id,
-        courseId: crs.id
-      });
-
       renderAdminCourses();
       updateTopMetrics();
       closeModal('modal-edit-course');
-      alert(`🗑️ Course "${crs.title || crs.name}" (${crs.id}) deleted successfully!`);
+
+      showCloudSyncToast('saving', `🗑️ Deleting course "${deletedTitle}" from Google Sheet...`);
+
+      // 2. Sync Deletion to Google Sheet immediately
+      await syncToCloudServer({
+        type: "COURSE_DELETE",
+        action: "deleteCourse",
+        id: targetId,
+        courseId: targetId
+      }, false);
+
+      if (typeof window.broadcastPortalChange === 'function') {
+        window.broadcastPortalChange();
+      }
+
+      showCloudSyncToast('saved', `✅ Course "${deletedTitle}" permanently deleted from cloud & all trainer panels!`);
     }
 
     function handleAdminCreateCourse(e) {
@@ -15632,6 +15658,9 @@ function handleAdminCreateCompetition(e) {
         if (showToast) {
           showCloudSyncToast('saved');
         }
+        if (typeof window.broadcastPortalChange === 'function') {
+          window.broadcastPortalChange();
+        }
         return true;
       } catch (err) {
         console.warn("Cloud Sync notice (handled gracefully without freeze):", err);
@@ -15645,6 +15674,9 @@ function handleAdminCreateCompetition(e) {
     async function pullLiveCloudRecords(silent = false) {
       const url = adminState.webhookUrl || localStorage.getItem('yoddha_webhook_url');
       if (!url) return false;
+
+      if (window._isPullingCloudRecords) return false;
+      window._isPullingCloudRecords = true;
 
       const refreshIcon = document.getElementById('icon-refresh-cloud');
       if (refreshIcon) refreshIcon.classList.add('animate-spin');
@@ -15822,21 +15854,14 @@ function handleAdminCreateCompetition(e) {
             localStorage.setItem('yoddha_admin_fee', JSON.stringify(adminState.feeStructure));
           }
 
-          // 5. Live Sync Courses from Google Sheet (Merge with newly created local courses)
+          // 5. Live Sync Courses from Google Sheet (Authoritative Single Source of Truth - Deleted courses NEVER reappear!)
           if (Array.isArray(data.courses)) {
-            const mergedCourses = [...data.courses];
-            (adminState.courses || []).forEach(localC => {
-              const localId = (localC.id || '').toUpperCase();
-              if (localId && !mergedCourses.some(mc => (mc.id || '').toUpperCase() === localId)) {
-                mergedCourses.push(localC);
-              }
-            });
-            adminState.courses = mergedCourses;
+            adminState.courses = data.courses.filter(c => (c.id !== 'SYSTEM-EXAM-SWITCH' && c.courseId !== 'SYSTEM-EXAM-SWITCH'));
             localStorage.setItem('yoddha_admin_courses', JSON.stringify(adminState.courses));
             localStorage.setItem('yoddha_admin_courses_v2', JSON.stringify(adminState.courses));
           }
 
-          // 6. Live Sync Competitions from Google Sheet (Parse allowedDistricts & Merge)
+          // 6. Live Sync Competitions from Google Sheet (Authoritative Single Source of Truth)
           if (Array.isArray(data.competitions)) {
             data.competitions.forEach(comp => {
               if ((!comp.allowedDistricts || comp.allowedDistricts.length === 0) && comp.scope && comp.scope !== 'All' && comp.scope !== 'All Branches' && comp.scope !== 'All India Open' && comp.level === 'District Level') {
@@ -15846,14 +15871,7 @@ function handleAdminCreateCompetition(e) {
                 comp.allowedStates = comp.scope.split(',').map(s => s.trim()).filter(Boolean);
               }
             });
-            const mergedComps = [...data.competitions];
-            (adminState.competitions || []).forEach(localComp => {
-              const localId = (localComp.id || '').toUpperCase();
-              if (localId && !mergedComps.some(mc => (mc.id || '').toUpperCase() === localId)) {
-                mergedComps.push(localComp);
-              }
-            });
-            adminState.competitions = mergedComps;
+            adminState.competitions = data.competitions;
             localStorage.setItem('yoddha_admin_comps', JSON.stringify(adminState.competitions));
             localStorage.setItem('yoddha_admin_comps_v2', JSON.stringify(adminState.competitions));
           }
@@ -15940,6 +15958,7 @@ function handleAdminCreateCompetition(e) {
       } catch (err) {
         console.warn("Live pull from Central Cloud Server:", err);
       } finally {
+        window._isPullingCloudRecords = false;
         if (refreshIcon) refreshIcon.classList.remove('animate-spin');
       }
       return false;
