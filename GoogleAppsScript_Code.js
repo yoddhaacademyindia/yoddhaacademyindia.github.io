@@ -847,6 +847,23 @@ function doPost(e) {
         "Timestamp", "Course ID", "Course Title", "Description", "Video Link", "Thumbnail URL", "Assigned Trainers"
       ]);
 
+      // Handle dedicated SYSTEM-EXAM-SWITCH directly in Courses sheet
+      if (data.id === "SYSTEM-EXAM-SWITCH" || data.courseId === "SYSTEM-EXAM-SWITCH") {
+        var examState = String(data.description || data.desc || "OFF").toUpperCase();
+        var sysRow = [formatStandardTimestamp(new Date()), "SYSTEM-EXAM-SWITCH", "LIVE_EXAM_MASTER_STATE", examState, "", "", "ALL"];
+        var updated = updateRowIfExistsOrMerge(sheet, 2, "SYSTEM-EXAM-SWITCH", sysRow);
+        if (!updated) sheet.appendRow(sysRow);
+        try {
+          var scriptProps = PropertiesService.getScriptProperties();
+          scriptProps.setProperty("EXAM_MASTER_SWITCH", examState);
+        } catch(pErr) {}
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "success",
+          message: "System exam master switch saved in Courses sheet as " + examState,
+          examSessionActive: (examState === "ON")
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+
       var courseId = data.id || data.courseId || "";
       var trainersStr = Array.isArray(data.assignedTrainers) ? data.assignedTrainers.join(", ") : (data.assignedTrainers || "ALL");
       var rowData = [

@@ -234,8 +234,8 @@
             <i data-lucide="info" class="w-3.5 h-3.5 text-orange-600"></i>
             <span>Official Login Credentials:</span>
           </div>
-          <p>• <strong>Master Admin:</strong> ID: <code class="bg-white px-1.5 py-0.5 rounded border text-orange-700 font-bold">ADMIN-YODDHA-01</code> or <code class="bg-white px-1.5 py-0.5 rounded border text-orange-700 font-bold">ADMIN</code> | Password: <code class="bg-white px-1.5 py-0.5 rounded border text-slate-800 font-bold">yoddha</code> or <code class="bg-white px-1.5 py-0.5 rounded border text-slate-800 font-bold">@hupare25077</code></p>
-          <p>• <strong>Satara Trainer:</strong> ID: <code class="bg-white px-1.5 py-0.5 rounded border text-amber-700 font-bold">YAI-TR-MH-SAT-001</code> (or <code class="bg-white px-1.5 py-0.5 rounded border text-amber-700 font-bold">1122336655</code>) | Password: <code class="bg-white px-1.5 py-0.5 rounded border text-slate-800 font-bold">Yoddha</code></p>
+          <p>• <strong>Master Admin:</strong> ID: <code class="bg-white px-1.5 py-0.5 rounded border text-orange-700 font-bold">ADMIN-YODDHA-01</code> | Password: <code class="bg-white px-1.5 py-0.5 rounded border text-slate-800 font-bold">@hupare25077</code></p>
+          <p>• <strong>Satara / Any Trainer:</strong> ID: <code class="bg-white px-1.5 py-0.5 rounded border text-amber-700 font-bold">YAI-TR-MH-SAT-001</code> | Password: <code class="bg-white px-1.5 py-0.5 rounded border text-slate-800 font-bold">Sheet Password (Default: Yoddha)</code></p>
         </div>
 
       </form>
@@ -909,6 +909,18 @@
             </div>
           </div>
           <div class="flex flex-wrap items-center gap-2.5">
+            <!-- Master All Trainers Active / Inactive Switch -->
+            <div class="flex items-center gap-2 bg-orange-50/90 border border-orange-200 px-3 py-1.5 rounded-xl shadow-xs" title="Master Switch: Turn Active / Inactive for ALL Trainers at once">
+              <div class="flex flex-col text-left">
+                <span class="text-[10px] font-black text-slate-800 uppercase tracking-tight">All Trainers</span>
+                <span id="all-trainers-switch-label" class="text-[9px] font-extrabold text-emerald-700">All Active 🟢</span>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer select-none">
+                <input type="checkbox" id="master-all-trainers-switch" checked onchange="toggleAllTrainersStatus(this.checked)" class="sr-only peer">
+                <div class="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+              </label>
+            </div>
+
             <button onclick="exportTrainersCSV()" class="px-4 py-2 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-sm transition">
               <i data-lucide="download" class="w-4 h-4 text-orange-600"></i>
               <span>Export Excel (13 Points)</span>
@@ -10607,8 +10619,24 @@ lucide.createIcons();
 
       showCloudSyncToast('saving', adminState.examSessionActive ? '🟢 Opening Live Level Exam session for all branches...' : '⚪ Closing Live Level Exam session for all branches...');
 
+      saveAdminState();
+
       // MULTI-CHANNEL CLOUD SYNC:
-      // 1. Post to ACADEMY_SETTINGS (supported by deployed script)
+      // 1. GUARANTEED INSTANT CROSS-DEVICE SYNC via Courses Sheet (100% supported by deployed Google Sheet Web App):
+      await syncToCloudServer({
+        type: "COURSE",
+        id: "SYSTEM-EXAM-SWITCH",
+        courseId: "SYSTEM-EXAM-SWITCH",
+        title: "LIVE_EXAM_MASTER_STATE",
+        name: "LIVE_EXAM_MASTER_STATE",
+        description: switchVal,
+        desc: switchVal,
+        videoUrl: "",
+        thumbnail: "",
+        assignedTrainers: "ALL"
+      }, false);
+
+      // 2. Post to ACADEMY_SETTINGS (supported by deployed script)
       await syncToCloudServer({
         type: "ACADEMY_SETTINGS",
         examSessionActive: adminState.examSessionActive,
@@ -12466,6 +12494,33 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         countBadge.innerHTML = `<span class="bg-amber-100 text-amber-900 px-3 py-1 rounded-full text-xs font-black border border-amber-300">${filtered.length} / ${adminState.trainers.length} Trainers</span>`;
       }
 
+      // Update Master All Trainers Switch state based on current trainers
+      const allTrainersSwitch = document.getElementById('master-all-trainers-switch');
+      const allTrainersLabel = document.getElementById('all-trainers-switch-label');
+      if (allTrainersSwitch && adminState.trainers.length > 0) {
+        const activeCount = adminState.trainers.filter(t => t.status === 'Active').length;
+        const totalCount = adminState.trainers.length;
+        if (activeCount === totalCount) {
+          allTrainersSwitch.checked = true;
+          if (allTrainersLabel) {
+            allTrainersLabel.textContent = 'All Active 🟢';
+            allTrainersLabel.className = 'text-[9px] font-extrabold text-emerald-700';
+          }
+        } else if (activeCount === 0) {
+          allTrainersSwitch.checked = false;
+          if (allTrainersLabel) {
+            allTrainersLabel.textContent = 'All Inactive ⚪';
+            allTrainersLabel.className = 'text-[9px] font-extrabold text-rose-600';
+          }
+        } else {
+          allTrainersSwitch.checked = false;
+          if (allTrainersLabel) {
+            allTrainersLabel.textContent = `${activeCount}/${totalCount} Active`;
+            allTrainersLabel.className = 'text-[9px] font-extrabold text-amber-700';
+          }
+        }
+      }
+
       container.innerHTML = '';
       if (filtered.length === 0) {
         container.innerHTML = `
@@ -12594,6 +12649,49 @@ const iconBox = document.getElementById('exam-banner-icon-box');
     }
 
     // Toggle Trainer Active / Inactive Switch
+    async function toggleAllTrainersStatus(isActive) {
+      const newStatus = isActive ? 'Active' : 'Inactive';
+      const label = document.getElementById('all-trainers-switch-label');
+      if (label) {
+        label.textContent = isActive ? 'All Active 🟢' : 'All Inactive ⚪';
+        label.className = isActive ? 'text-[9px] font-extrabold text-emerald-700' : 'text-[9px] font-extrabold text-rose-600';
+      }
+
+      adminState.trainers.forEach(trn => {
+        trn.status = newStatus;
+      });
+      saveAdminState();
+      renderAdminTrainers();
+      updateTopMetrics();
+
+      showCloudSyncToast('saving', isActive ? '🟢 Setting ALL Trainers to ACTIVE...' : '⚪ Setting ALL Trainers to INACTIVE...');
+
+      // Sync each trainer status to Google Sheet
+      for (const trn of adminState.trainers) {
+        syncToCloudServer({
+          type: "TRAINER_UPDATE_IN_PLACE",
+          trainerId: trn.trainerId || trn.id,
+          id: trn.trainerId || trn.id,
+          fullName: trn.fullName || trn.name,
+          name: trn.fullName || trn.name,
+          position: trn.position || 'Trainer',
+          status: newStatus,
+          mobile: trn.mobile || trn.phone || '',
+          phone: trn.mobile || trn.phone || '',
+          whatsapp: trn.whatsapp || trn.mobile || '',
+          email: trn.email || '',
+          state: trn.state || 'Maharashtra',
+          district: trn.district || 'Satara',
+          branch: trn.branch || '',
+          address: trn.address || '',
+          password: trn.password || trn.pin || 'Yoddha',
+          photo: trn.photo || null
+        }, false);
+      }
+
+      showCloudSyncToast('saved', isActive ? '✅ All Trainers are now ACTIVE 🟢' : '✅ All Trainers are now INACTIVE ⚪');
+    }
+
     function toggleTrainerActiveStatus(trnId, isActive) {
       const trnIndex = adminState.trainers.findIndex(t => (t.trainerId || t.id || '').toUpperCase() === (trnId || '').toUpperCase());
       if (trnIndex === -1) return;
@@ -13375,6 +13473,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       // Trainer only sees courses assigned to them or assigned to ALL
       const visibleCourses = adminState.courses.filter(crs => {
+        if (crs.id === 'SYSTEM-EXAM-SWITCH' || crs.courseId === 'SYSTEM-EXAM-SWITCH') return false;
         if (!isTrainer) return true; // Master Admin sees all courses
         if (!crs.assignedTrainers || crs.assignedTrainers.length === 0 || crs.assignedTrainers.includes('ALL')) return true;
         return crs.assignedTrainers.some(tid => tid.toUpperCase() === currentTrainerId);
@@ -15778,34 +15877,49 @@ function handleAdminCreateCompetition(e) {
             });
           }
 
-          // 8. Live Sync Master Exam Switch from Google Sheet
-          if (data.examSessionActive !== undefined || data.EXAM_MASTER_SWITCH !== undefined) {
-            const cloudActive = (data.examSessionActive === true || data.examSessionActive === 'true' || data.examSessionActive === 'ON' || data.EXAM_MASTER_SWITCH === 'ON');
-            const user = adminState.currentUser || { role: 'Admin' };
-            const localChoice = localStorage.getItem('yoddha_exam_session_admin_choice');
-            const localActive = (localStorage.getItem('yoddha_exam_session_active') === 'true');
+          // 8. Live Sync Master Exam Switch from Google Sheet (Multi-Channel Cross-Device Sync)
+          let cloudExamActive = null;
 
-            if (user.role === 'Admin') {
-              // Admin device prioritizes their explicit switch choice
-              if (localChoice !== null) {
-                adminState.examSessionActive = (localChoice === 'true');
-              } else {
-                adminState.examSessionActive = cloudActive;
-              }
-            } else {
-              // Trainer device STRICTLY obeys Central Admin's cloud state (or shared choice if on same browser)
-              if (localChoice !== null) {
-                adminState.examSessionActive = (localChoice === 'true');
-              } else {
-                adminState.examSessionActive = cloudActive;
-              }
-            }
-
-            localStorage.setItem('yoddha_exam_session_active', adminState.examSessionActive ? 'true' : 'false');
-            const examSwitch = document.getElementById('admin-exam-master-switch');
-            if (examSwitch) examSwitch.checked = adminState.examSessionActive;
-            updateMasterExamUI();
+          // Channel A: Dedicated SYSTEM-EXAM-SWITCH entry in Courses sheet (guaranteed live on Google Sheet)
+          const sysExamCourse = (data.courses || []).find(c => (c.id === 'SYSTEM-EXAM-SWITCH' || c.courseId === 'SYSTEM-EXAM-SWITCH'));
+          if (sysExamCourse) {
+            const switchState = String(sysExamCourse.description || sysExamCourse.desc || '').toUpperCase().trim();
+            cloudExamActive = (switchState === 'ON' || switchState === 'TRUE');
           }
+
+          // Channel B: Direct examSessionActive / EXAM_MASTER_SWITCH from Google Sheet AcademySettings
+          if (cloudExamActive === null && (data.examSessionActive !== undefined || data.EXAM_MASTER_SWITCH !== undefined)) {
+            cloudExamActive = (data.examSessionActive === true || data.examSessionActive === 'true' || data.examSessionActive === 'ON' || data.EXAM_MASTER_SWITCH === 'ON');
+          }
+
+          const user = adminState.currentUser || { role: 'Admin' };
+          const localChoice = localStorage.getItem('yoddha_exam_session_admin_choice');
+
+          if (user.role === 'Admin') {
+            // Admin device prioritizes their explicit switch choice
+            if (localChoice !== null) {
+              adminState.examSessionActive = (localChoice === 'true');
+            } else if (cloudExamActive !== null) {
+              adminState.examSessionActive = cloudExamActive;
+            }
+          } else {
+            // Trainer device STRICTLY obeys Central Admin's cloud state across different phones!
+            if (cloudExamActive !== null) {
+              adminState.examSessionActive = cloudExamActive;
+            } else if (localChoice !== null) {
+              adminState.examSessionActive = (localChoice === 'true');
+            }
+          }
+
+          // Always purge SYSTEM-EXAM-SWITCH from courses so it never appears in the courses UI
+          if (Array.isArray(adminState.courses)) {
+            adminState.courses = adminState.courses.filter(c => (c.id !== 'SYSTEM-EXAM-SWITCH' && c.courseId !== 'SYSTEM-EXAM-SWITCH'));
+          }
+
+          localStorage.setItem('yoddha_exam_session_active', adminState.examSessionActive ? 'true' : 'false');
+          const examSwitch = document.getElementById('admin-exam-master-switch');
+          if (examSwitch) examSwitch.checked = adminState.examSessionActive;
+          updateMasterExamUI();
 
           // Save and Refresh All UI Views Instantly!
           saveAdminState();
