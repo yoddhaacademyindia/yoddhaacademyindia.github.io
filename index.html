@@ -205,7 +205,7 @@
 
         <button type="submit" class="w-full py-3 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-extrabold rounded-xl shadow-lg shadow-orange-500/25 transition-all duration-300 flex items-center justify-center gap-2 text-sm transform active:scale-95">
           <i data-lucide="log-in" class="w-4 h-4"></i>
-          <span>Secure Sign In / सुरक्षित लॉगिन</span>
+          <span>Secure Sign In</span>
         </button>
 
         <!-- ⚡ 1-Click Instant Fast Login -->
@@ -213,7 +213,7 @@
           <div class="flex items-center justify-between">
             <span class="text-[10px] font-black uppercase tracking-wider text-slate-600 flex items-center gap-1">
               <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-600"></i>
-              १-क्लिक झटपट लॉगिन (Instant 1-Click Login):
+              Instant 1-Click Fast Login:
             </span>
           </div>
           <div class="grid grid-cols-2 gap-2">
@@ -232,10 +232,10 @@
         <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-[11px] text-slate-700 space-y-1">
           <div class="font-extrabold text-slate-800 flex items-center gap-1">
             <i data-lucide="info" class="w-3.5 h-3.5 text-orange-600"></i>
-            <span>लॉगिन आयडी व पासवर्ड माहिती (Credentials):</span>
+            <span>Official Login Credentials:</span>
           </div>
-          <p>• <strong>Master Admin:</strong> ID: <code class="bg-white px-1.5 py-0.5 rounded border text-orange-700 font-bold">ADMIN-YODDHA-01</code> किंवा <code class="bg-white px-1.5 py-0.5 rounded border text-orange-700 font-bold">ADMIN</code> | Pass: <code class="bg-white px-1.5 py-0.5 rounded border text-slate-800 font-bold">yoddha</code> किंवा <code class="bg-white px-1.5 py-0.5 rounded border text-slate-800 font-bold">@hupare25077</code></p>
-          <p>• <strong>Satara Trainer:</strong> ID: <code class="bg-white px-1.5 py-0.5 rounded border text-amber-700 font-bold">YAI-TR-MH-SAT-001</code> (किंवा <code class="bg-white px-1.5 py-0.5 rounded border text-amber-700 font-bold">1122336655</code>) | Pass: <code class="bg-white px-1.5 py-0.5 rounded border text-slate-800 font-bold">Yoddha</code></p>
+          <p>• <strong>Master Admin:</strong> ID: <code class="bg-white px-1.5 py-0.5 rounded border text-orange-700 font-bold">ADMIN-YODDHA-01</code> or <code class="bg-white px-1.5 py-0.5 rounded border text-orange-700 font-bold">ADMIN</code> | Password: <code class="bg-white px-1.5 py-0.5 rounded border text-slate-800 font-bold">yoddha</code> or <code class="bg-white px-1.5 py-0.5 rounded border text-slate-800 font-bold">@hupare25077</code></p>
+          <p>• <strong>Satara Trainer:</strong> ID: <code class="bg-white px-1.5 py-0.5 rounded border text-amber-700 font-bold">YAI-TR-MH-SAT-001</code> (or <code class="bg-white px-1.5 py-0.5 rounded border text-amber-700 font-bold">1122336655</code>) | Password: <code class="bg-white px-1.5 py-0.5 rounded border text-slate-800 font-bold">Yoddha</code></p>
         </div>
 
       </form>
@@ -3072,7 +3072,7 @@
               <!-- PhonePe -->
               <button type="button" onclick="triggerTournUpiPayment('phonepe')" class="p-2.5 bg-gradient-to-b from-white to-purple-50/60 hover:to-purple-100 border-2 border-purple-200 hover:border-purple-500 rounded-xl text-center transition cursor-pointer flex flex-col items-center justify-center gap-1 shadow-2xs active:scale-95">
                 <div class="w-6 h-6 rounded-lg bg-white border border-purple-100 flex items-center justify-center shadow-xs">
-                  <span class="font-black text-purple-600 text-xs">पे</span>
+                  <span class="font-black text-purple-600 text-xs">Pe</span>
                 </div>
                 <span class="font-black text-[11px] text-purple-900">PhonePe</span>
                 <span class="text-[9px] text-purple-600 font-bold">Auto-fills ₹</span>
@@ -4025,7 +4025,7 @@ function doPost(e) {
         for (var r = 1; r < sData.length; r++) {
           if (String(sData[r][1] || "").trim().toUpperCase() === targetId) {
             // Update Status (Col 19 -> Column S) to 'DELETED'
-            stuSheet.getRange(r + 1, 19).setValue("DELETED (" + deletedBy + " द्वारे डिलीट)");
+            stuSheet.getRange(r + 1, 19).setValue("DELETED (Deleted by " + deletedBy + ")");
             // Also update Live Exam Status (Col 23 -> Column W)
             stuSheet.getRange(r + 1, 23).setValue("STUDENT DELETED");
             // Mark row visually in Google Sheet (light red background so admin can easily identify)
@@ -4529,14 +4529,14 @@ function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, p
     + '<p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;">ALL INDIA MARTIAL ARTS & SPORTS TRAINING ACADEMY</p>'
     + '</div>'
     + '<div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;">'
-    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🥋 हार्दिक अभिनंदन व सहर्ष स्वागत!</h2>'
-    + '<p style="font-size: 14px; margin-bottom: 12px;">सस्नेह नमस्कार <strong>' + trainerName + '</strong> सर,</p>'
-    + '<p style="font-size: 14px; margin-bottom: 15px;">योध्या अकॅडमी इंडिया परिवारात आपले अधिकृत <strong>' + (position || "Certified Trainer") + '</strong> म्हणून नियुक्ती झाल्याबद्दल आपले मनःपूर्वक अभिनंदन!</p>'
+    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🥋 Welcome to Yoddha Academy India!</h2>'
+    + '<p style="font-size: 14px; margin-bottom: 12px;">Greetings <strong>' + trainerName + '</strong>,</p>'
+    + '<p style="font-size: 14px; margin-bottom: 15px;">Congratulations on your official appointment as <strong>' + (position || "Certified Trainer") + '</strong> with Yoddha Academy India!</p>'
     + '<div style="background: #fff7ed; padding: 14px 16px; border-left: 4px solid #ea580c; border-radius: 6px; font-size: 13px; color: #9a3412; margin-bottom: 20px;">'
-    + 'भारतीय पारंपरिक मार्शल आर्ट्स (लाठी-काठी, तलवारबाजी, कराटे व स्वसंरक्षण) या पवित्र विद्येचा प्रचार-प्रसार करण्यासाठी, तरुण पिढीला सुदृढ व शिस्तबद्ध बनवण्यासाठी आपल्या भावी वाटचालीस व कार्यासाठी <strong>योध्या अकॅडमी इंडिया</strong> कडून लाख लाख शुभेच्छा! 🚩'
+    + 'Wishing you great success in promoting Indian traditional martial arts, discipline, self-defense, and youth training. Warmest wishes from <strong>Yoddha Academy India Central Headquarters</strong>! 🚩'
     + '</div>'
     + '<div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;">'
-    + '<h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">🔐 आपले अधिकृत लॉगिन क्रेडेंशियल्स (Official Login Details):</h3>'
+    + '<h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">🔐 Your Official Login Credentials:</h3>'
     + '<table style="width: 100%; font-size: 14px;">'
     + '<tr><td style="padding: 6px 0; color: #64748b; width: 140px;"><strong>Trainer ID:</strong></td><td style="padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;">' + trainerId + '</td></tr>'
     + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Password / PIN:</strong></td><td style="padding: 6px 0; color: #0f172a; font-weight: bold; font-family: monospace; font-size: 16px; background: #fed7aa; padding: 3px 8px; border-radius: 6px; display: inline-block;">' + trainerPass + '</td></tr>'
@@ -4546,14 +4546,14 @@ function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, p
     + '</div>'
     + '<div style="text-align: center; margin: 25px 0;">'
     + '<a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);">'
-    + '🚀 ओपन ट्रेनर लॉगिन पॅनेल (Open Trainer Panel)'
+    + '🚀 Open Trainer Portal'
     + '</a>'
     + '</div>'
-    + '<p style="font-size: 12px; color: #64748b; margin-top: 15px;">⚠️ <em>सुरक्षितता सूचना: हा ईमेल आणि पासवर्ड गोपनीय ठेवा. लॉगिन पोर्टलवर जाऊन आपण आपला पासवर्ड कधीही बदलू शकता.</em></p>'
+    + '<p style="font-size: 12px; color: #64748b; margin-top: 15px;">⚠️ <em>Security Notice: Keep your credentials confidential. You can update your password anytime in your portal profile.</em></p>'
     + '</div>'
     + '<div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;">'
-    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">योध्या अकॅडमी इंडिया • केंद्रीय मुख्यालय</p>'
-    + '<p style="margin: 4px 0 0;">अधिकृत पोर्टल: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
+    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">Yoddha Academy India • Central Headquarters</p>'
+    + '<p style="margin: 4px 0 0;">Official Portal: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
     + '<p style="margin: 4px 0 0;">Traditional Martial Arts & Sports Training • All India Organization</p>'
     + '</div>'
     + '</div>';
@@ -4589,8 +4589,8 @@ function sendStudentAdmissionEmail(toEmail, studentName, studentId, level, train
     + '<p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;">OFFICIAL STUDENT ADMISSION CONFIRMATION</p>'
     + '</div>'
     + '<div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;">'
-    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🎉 प्रवेश निश्चित झाला आहे! (Admission Confirmed)</h2>'
-    + '<p style="font-size: 14px;">प्रिय पालक व <strong>' + studentName + '</strong>,<br><br>योध्या अकॅडमी इंडियामध्ये आपले अधिकृत ॲडमिशन यशस्वीरित्या पूर्ण झाले आहे. पारंपरिक युद्धकला आणि क्रीडा कौशल्यांमध्ये आपले सहर्ष स्वागत!</p>'
+    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🎉 Admission Confirmed!</h2>'
+    + '<p style="font-size: 14px;">Dear Parents and <strong>' + studentName + '</strong>,<br><br>Your official admission to Yoddha Academy India has been successfully confirmed. Welcome to traditional martial arts, discipline, and sports training!</p>'
     + '<div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;">'
     + '<table style="width: 100%; font-size: 14px;">'
     + '<tr><td style="padding: 6px 0; color: #64748b; width: 140px;"><strong>Student Name:</strong></td><td style="padding: 6px 0; color: #0f172a; font-weight: bold;">' + studentName + '</td></tr>'
@@ -4602,13 +4602,13 @@ function sendStudentAdmissionEmail(toEmail, studentName, studentId, level, train
     + '</div>'
     + '<div style="text-align: center; margin: 25px 0;">'
     + '<a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block;">'
-    + '🪪 व्ह्यू डिजिटल आयडी कार्ड (View Digital ID Card)'
+    + '🪪 View Digital ID Card'
     + '</a>'
     + '</div>'
     + '</div>'
     + '<div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;">'
-    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">योध्या अकॅडमी इंडिया • केंद्रीय मुख्यालय</p>'
-    + '<p style="margin: 4px 0 0;">अधिकृत पोर्टल: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
+    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">Yoddha Academy India • Central Headquarters</p>'
+    + '<p style="margin: 4px 0 0;">Official Portal: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
     + '</div>'
     + '</div>';
 
@@ -6542,7 +6542,7 @@ function setupAllAcademySheets() {
           } else {
             // Strictly reject wrong Admin password!
             if (errorMsg) {
-              errorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>Incorrect Admin Password! (पासवर्ड चुकीचा आहे. "yoddha" किंवा "@hupare25077" वापरा)</span>';
+              errorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>Incorrect Admin Password! Please use "yoddha" or "@hupare25077".</span>';
               errorMsg.classList.remove('hidden');
               lucide.createIcons();
             }
@@ -7876,7 +7876,7 @@ lucide.createIcons();
       
       // 1. Trainers have zero authority to modify student fee status
       if (user.role === 'Trainer') {
-        alert("🔒 Unauthorized (अधिकार नाही):\n\nकेवळ मुख्य ॲडमिन (Central Admin) फी किंवा स्टेटस बदलू शकतात. ट्रेनरला यात परस्पर बदल करण्याचा अधिकार नाही.");
+        alert("🔒 Unauthorized Access:\n\nOnly Central Master Admin can modify student fee verification or status. Trainers cannot alter verified records.");
         return;
       }
 
@@ -7887,9 +7887,9 @@ lucide.createIcons();
       // 2. Once verified by Admin, fee status is PERMANENTLY LOCKED
       if (isStudentVerified(student)) {
         alert(
-          `🔒 Verified Record Locked (व्हेरिफाय व लॉक):\n\n` +
-          `विद्यार्थी "${student.studentName || 'Student'}" ची नोंदणी Admin द्वारे अधिकृतरीत्या व्हेरिफाय व मंजूर (Approved) करण्यात आलेली आहे.\n\n` +
-          `फी स्टेटस 'PAID (जमा)' कायमस्वरूपी सुरक्षित लॉक केलेले आहे. यात परस्पर बदल करता येणार नाही.\n\n` +
+          `🔒 Verified Record Locked:\n\n` +
+          `Student "${student.studentName || 'Student'}" admission has been officially verified and approved by Central Admin.\n\n` +
+          `Fee status is permanently locked as 'PAID'. Unauthorized modifications are prohibited.\n\n` +
           `(This student admission has been verified by Admin. Fee status is permanently locked as PAID.)`
         );
         return;
@@ -7897,8 +7897,10 @@ lucide.createIcons();
 
       // 3. If unverified student, Admin can Verify & Approve
       const confirmVerify = confirm(
-        `✅ विद्यार्थी "${student.studentName || 'Student'}" ची फी आणि ॲडमिशन VERIFY & APPROVE (मंजूर) करायचे आहे का?\n\n` +
-        `एकदा Admin ने व्हेरिफाय केल्यावर फी 'PAID' आणि स्टेटस 'ACTIVE' कायमस्वरूपी लॉक होईल.\n\n` +
+        `✅ VERIFY & APPROVE STUDENT ADMISSION\n\n` +
+        `Student: "${student.studentName || 'Student'}"\n\n` +
+        `Do you want to verify student fee and approve enrollment?\n` +
+        `Once verified by Admin, fee will be locked as 'PAID' and student status set to 'ACTIVE'.\n\n` +
         `(Verify student admission and permanently lock fee as PAID?)`
       );
       if (!confirmVerify) return;
@@ -7914,7 +7916,7 @@ lucide.createIcons();
       renderVerificationQueue();
       updateTopMetrics();
 
-      showCloudSyncToast('saving', `🔒 ${student.studentName} ची फी व ॲडमिशन Google Sheet मध्ये व्हेरिफाय होत आहे...`);
+      showCloudSyncToast('saving', `🔒 Verifying fee and admission for "${student.studentName}" in Google Sheet...`);
 
       await syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
@@ -7926,7 +7928,7 @@ lucide.createIcons();
         verifiedAt: student.verifiedAt
       }, false);
 
-      showCloudSyncToast('saved', `✅ विद्यार्थी "${student.studentName}" ची फी 'PAID' म्हणून Google Sheet मध्ये कायमची लॉक झाली!`);
+      showCloudSyncToast('saved', `✅ Student "${student.studentName}" fee verified and locked as 'PAID' in Google Sheet!`);
     }
 
     // Quick toggle for Student Active Status (Permanently Locked once verified)
@@ -7935,7 +7937,7 @@ lucide.createIcons();
       
       // 1. Trainers have zero authority to modify student active status
       if (user.role === 'Trainer') {
-        alert("🔒 Unauthorized (अधिकार नाही):\n\nकेवळ मुख्य ॲडमिन (Central Admin) विद्यार्थ्याचे स्टेटस बदलू शकतात. ट्रेनरला यात परस्पर बदल करण्याचा अधिकार नाही.");
+        alert("🔒 Unauthorized Access:\n\nOnly Central Master Admin can modify student status. Trainers cannot alter verified records.");
         return;
       }
 
@@ -7946,9 +7948,9 @@ lucide.createIcons();
       // 2. Once verified by Admin, active status is PERMANENTLY LOCKED
       if (isStudentVerified(student)) {
         alert(
-          `🔒 Verified Record Locked (व्हेरिफाय व लॉक):\n\n` +
-          `विद्यार्थी "${student.studentName || 'Student'}" ची नोंदणी Admin द्वारे अधिकृतरीत्या व्हेरिफाय व मंजूर (Approved) करण्यात आलेली आहे.\n\n` +
-          `विद्यार्थ्याचे स्टेटस 'ACTIVE (सक्रिय)' कायमस्वरूपी सुरक्षित लॉक केलेले आहे. यात परस्पर बदल करता येणार नाही.\n\n` +
+          `🔒 Verified Record Locked:\n\n` +
+          `Student "${student.studentName || 'Student'}" admission has been officially verified and approved by Central Admin.\n\n` +
+          `Student status is permanently locked as 'ACTIVE'. Unauthorized modifications are prohibited.\n\n` +
           `(This student admission has been verified by Admin. Status is permanently locked as ACTIVE.)`
         );
         return;
@@ -8802,18 +8804,18 @@ lucide.createIcons();
         const user = adminState.currentUser || { role: 'Admin' };
         if (user.role === 'Trainer') {
           alert(
-            "🔒 Live Exam Window is Closed (परीक्षा सत्र बंद आहे):\n\n" +
-            "मुख्य ॲडमिन (Central Admin) यांनी परीक्षा सत्र अद्याप चालू (ON) केलेले नाही.\n\n" +
-            "जोपर्यंत मुख्य ॲडमिन पॅनेलवरून 'Turn ON Live Exam' बटन चालू केले जात नाही, तोपर्यंत ट्रेनरला परीक्षा घेता येणार नाही.\n\n" +
+            "🔒 Live Exam Window is Closed:\n\n" +
+            "Central Master Admin has not opened the live exam session yet.\n\n" +
+            "Level exams will remain locked until Master Admin turns ON the 'Turn ON Live Exam' session switch on the central dashboard.\n\n" +
             "(Level exam is currently closed by Central Admin. Exams can only be conducted when Admin activates the Master Exam window.)"
           );
           return;
         } else {
           // Admin can directly choose to activate right now
           const confirmStart = confirm(
-            "🟢 Live Level Exam सत्र चालू (ON) करायचे आहे का?\n\n" +
-            "विद्यार्थी: " + (s.studentName || 'Student') + "\n\n" +
-            "[OK] वर क्लिक करताच Master Exam Switch चालू (ON) होईल आणि परीक्षा विंडो सुरू होईल!\n\n" +
+            "🟢 Open Live Level Exam session now?\n\n" +
+            "Student: " + (s.studentName || 'Student') + "\n\n" +
+            "Click [OK] to turn ON the Master Exam Switch and launch the camera exam window.\n\n" +
             "(Turn ON Master Exam switch and start camera now?)"
           );
           if (confirmStart) {
@@ -9370,13 +9372,13 @@ lucide.createIcons();
       const roleName = user.role === 'Trainer' ? 'Trainer' : 'Central Admin';
 
       const confirmMsg =
-        `⚠️ विद्यार्थी रेकॉर्ड डिलीट करायचे आहे का?\n\n` +
-        `विद्यार्थी नाव: ${s.studentName}\n` +
-        `विद्यार्थी आयडी: ${s.studentId}\n` +
-        `शाखा: ${s.city || s.district || s.state || 'N/A'}\n` +
-        `ट्रेनर: ${s.trainerName || s.trainerId || 'N/A'}\n\n` +
-        `• ॲडमिन आणि ट्रेनर पॅनेलवरून हे नाव तात्काळ हटवले जाईल.\n` +
-        `• Google Sheet मध्ये नाव व संपूर्ण रेकॉर्ड सुरक्षित राहील आणि स्टेटस 'DELETED' म्हणून नोंदवले जाईल.\n\n` +
+        `⚠️ CONFIRM STUDENT RECORD DELETION\n\n` +
+        `Student Name: ${s.studentName}\n` +
+        `Student ID: ${s.studentId}\n` +
+        `Branch: ${s.city || s.district || s.state || 'N/A'}\n` +
+        `Trainer: ${s.trainerName || s.trainerId || 'N/A'}\n\n` +
+        `• The student card will be permanently removed from both Admin and Trainer dashboards.\n` +
+        `• In Google Sheet, the complete record remains safely preserved and marked as 'DELETED'.\n\n` +
         `(Remove from portal and mark as DELETED in Google Sheet?)`;
 
       if (!confirm(confirmMsg)) {
@@ -9393,7 +9395,7 @@ lucide.createIcons();
       if (typeof updateTopMetrics === 'function') updateTopMetrics();
       if (typeof updateTrainerDashboard === 'function') updateTrainerDashboard();
 
-      showCloudSyncToast('saving', `🗑️ विद्यार्थी "${s.studentName}" Google Sheet मध्ये DELETED म्हणून सेव्ह होत आहे...`);
+      showCloudSyncToast('saving', `🗑️ Marking student "${s.studentName}" as DELETED in Google Sheet...`);
 
       // 3. Sync to Google Sheet as SOFT DELETE:
       // Updates Status to 'DELETED' in Sheet instead of deleting row!
@@ -9402,7 +9404,7 @@ lucide.createIcons();
         action: "delete",
         studentId: s.studentId,
         studentName: s.studentName,
-        status: `DELETED (${roleName} द्वारे डिलीट)`,
+        status: `DELETED (Deleted by ${roleName})`,
         deletedBy: user.name || roleName,
         timestamp: new Date().toISOString()
       }, false);
@@ -9413,11 +9415,11 @@ lucide.createIcons();
         action: "updateStudent",
         ...s,
         studentId: s.studentId,
-        status: `DELETED (${roleName} द्वारे डिलीट)`,
+        status: `DELETED (Deleted by ${roleName})`,
         examStatus: "STUDENT DELETED"
       }, false);
 
-      showCloudSyncToast('saved', `✅ विद्यार्थी "${s.studentName}" पॅनेलवरून हटवला व Google Sheet मध्ये सुरक्षित 'DELETED' मार्क झाला!`);
+      showCloudSyncToast('saved', `✅ Student "${s.studentName}" removed from portal & marked as DELETED in Google Sheet!`);
     }
 
 
@@ -9906,7 +9908,7 @@ lucide.createIcons();
       if (document.getElementById('cr-title')) document.getElementById('cr-title').value = '';
       if (document.getElementById('cr-category')) document.getElementById('cr-category').value = '';
 
-      showCloudSyncToast('saving', `🏅 ${achievement} पदक Google Sheet मध्ये सेव्ह होत आहे...`);
+      showCloudSyncToast('saving', `🏅 Saving ${achievement} medal record to Google Sheet...`);
 
       const stuObj = adminState.students.find(s => s.studentId === activeRecordStudentId);
       await syncToCloudServer({
@@ -9929,7 +9931,7 @@ lucide.createIcons();
         }, false);
       }
 
-      showCloudSyncToast('saved', `✅ विद्यार्थी "${stuObj ? stuObj.studentName : 'Student'}" चे ${achievement} Google Sheet मध्ये सेव्ह झाले!`);
+      showCloudSyncToast('saved', `✅ Student "${stuObj ? stuObj.studentName : 'Student'}" achievement "${achievement}" saved in Google Sheet!`);
     }
 
     function deleteStudentCompetitionRecord(idx) {
@@ -10215,8 +10217,8 @@ lucide.createIcons();
       if (!s) return;
 
       const confirmMsg = targetLevelNum > 1
-        ? `⭐ विद्यार्थी "${s.studentName}" ला ${targetLevelName} वर सेट करायचे आहे का?\n\n- Level 1 ते Level ${targetLevelNum - 1} चे प्रमाणपत्र (Certificates) आपोआप तयार होतील आणि PASSED मार्क होतील.\n- ${targetLevelName} हे RUNNING (सुरू) राहील.\n\n(Fast-track to ${targetLevelName} and auto-certify Levels 1-${targetLevelNum-1}?)`
-        : `⭐ विद्यार्थी "${s.studentName}" ला Level 1 (प्रारंभिक) वर सेट करायचे आहे का?`;
+        ? `⭐ Fast-track student "${s.studentName}" to ${targetLevelName}?\n\n- Certificates for Level 1 to Level ${targetLevelNum - 1} will be automatically issued and marked as PASSED.\n- ${targetLevelName} will be set as RUNNING.\n\n(Fast-track to ${targetLevelName} and auto-certify Levels 1-${targetLevelNum-1}?)`
+        : `⭐ Set student "${s.studentName}" to Level 1 (Beginner)?`;
 
       if (!confirm(confirmMsg)) return;
 
@@ -10253,7 +10255,7 @@ lucide.createIcons();
       renderAdminStudents();
       closeModal('modal-admin-level-fasttrack');
 
-      showCloudSyncToast('saving', `⭐ ${s.studentName} चे लेव्हल ${targetLevelName} Google Sheet मध्ये सेव्ह होत आहे...`);
+      showCloudSyncToast('saving', `⭐ Setting level ${targetLevelName} for "${s.studentName}" in Google Sheet...`);
 
       await syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
@@ -10262,7 +10264,7 @@ lucide.createIcons();
         studentId
       }, false);
 
-      showCloudSyncToast('saved', `✅ विद्यार्थी "${s.studentName}" आता ${targetLevelName} वर सेव्ह झाला आहे!`);
+      showCloudSyncToast('saved', `✅ Student "${s.studentName}" successfully updated to ${targetLevelName}!`);
     }
 
     let targetReassignStudentId = null;
@@ -10362,7 +10364,7 @@ lucide.createIcons();
       const s = adminState.students.find(stu => stu.studentId === studentId);
       if (!s) return;
 
-      const confirmMsg = `विद्यार्थी "${s.studentName}" ला नवीन Trainer "${newTrainerName}" (${newTrainerId}) कडे हस्तांतरित (Re-assign) करायचे आहे का?\n\nहा विद्यार्थी तात्काळ नवीन ट्रेनरच्या पॅनेलमध्ये दिसेल आणि Central Cloud वर सेव्ह होईल.\n\n(Reassign student to Trainer ${newTrainerName}?)`;
+      const confirmMsg = `Reassign student "${s.studentName}" to Trainer "${newTrainerName}" (${newTrainerId})?\n\nThis student will immediately appear on the new trainer's dashboard and sync to Central Cloud.\n\n(Reassign student to Trainer ${newTrainerName}?)`;
       if (!confirm(confirmMsg)) return;
 
       s.trainerId = newTrainerId;
@@ -10372,7 +10374,7 @@ lucide.createIcons();
       renderAdminStudents();
       closeModal('modal-admin-trainer-reassign');
 
-      showCloudSyncToast('saving', `🔄 विद्यार्थी "${s.studentName}" चा नवीन ट्रेनर Google Sheet मध्ये सेव्ह होत आहे...`);
+      showCloudSyncToast('saving', `🔄 Reassigning student "${s.studentName}" to new trainer in Google Sheet...`);
 
       await syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
@@ -10381,7 +10383,7 @@ lucide.createIcons();
         studentId
       }, false);
 
-      showCloudSyncToast('saved', `✅ विद्यार्थी "${s.studentName}" आता Trainer "${newTrainerName}" कडे हस्तांतरित झाला आहे!`);
+      showCloudSyncToast('saved', `✅ Student "${s.studentName}" successfully reassigned to Trainer "${newTrainerName}"!`);
     }
 
     function calculateEditStudentAge() {
@@ -10493,7 +10495,7 @@ lucide.createIcons();
       renderAdminStudents();
       closeModal('modal-edit-student');
 
-      showCloudSyncToast('saving', `📝 विद्यार्थी "${curStudent.studentName}" प्रोफाइल Google Sheet मध्ये सेव्ह होत आहे...`);
+      showCloudSyncToast('saving', `📝 Saving profile for "${curStudent.studentName}" to Google Sheet...`);
 
       await syncToCloudServer({
         type: "STUDENT_REGISTRATION_32_POINTS",
@@ -10502,7 +10504,7 @@ lucide.createIcons();
         studentId: editingStudentId
       }, false);
 
-      showCloudSyncToast('saved', `✅ विद्यार्थी "${curStudent.studentName}" प्रोफाइल Google Sheet मध्ये त्वरित सेव्ह झाले!`);
+      showCloudSyncToast('saved', `✅ Student "${curStudent.studentName}" profile saved in Google Sheet!`);
     }
 
     // =========================================================================
@@ -10588,7 +10590,7 @@ lucide.createIcons();
     async function toggleMasterExamSession() {
       const user = adminState.currentUser || { role: 'Admin' };
       if (user.role === 'Trainer') {
-        alert("🔒 Access Restricted (अधिकार नाही):\n\nकेवळ मुख्य ॲडमिन (Central Admin) परीक्षा सत्र चालू किंवा बंद करू शकतात. ट्रेनरला यात बदल करण्याचा अधिकार नाही.");
+        alert("🔒 Access Restricted:\n\nOnly Central Master Admin can open or close the exam session. Trainers cannot change this master switch.");
         return;
       }
 
@@ -10603,7 +10605,7 @@ lucide.createIcons();
       updateMasterExamUI();
       renderAdminStudents();
 
-      showCloudSyncToast('saving', adminState.examSessionActive ? '🟢 Live Level Exam विंडो सर्व शाखांसाठी चालू (ON) होत आहे...' : '⚪ Live Level Exam विंडो सर्व शाखांसाठी बंद (OFF) होत आहे...');
+      showCloudSyncToast('saving', adminState.examSessionActive ? '🟢 Opening Live Level Exam session for all branches...' : '⚪ Closing Live Level Exam session for all branches...');
 
       // MULTI-CHANNEL CLOUD SYNC:
       // 1. Post to ACADEMY_SETTINGS (supported by deployed script)
@@ -10636,7 +10638,7 @@ lucide.createIcons();
         } catch(e) {}
       }
 
-      showCloudSyncToast('saved', adminState.examSessionActive ? '✅ Live Exam विंडो सर्व ट्रेनर्ससाठी चालू (ON) झाली आहे!' : '✅ Live Exam विंडो सर्व ट्रेनर्ससाठी बंद (OFF) झाली आहे!');
+      showCloudSyncToast('saved', adminState.examSessionActive ? '✅ Live Exam session is now OPEN for all branches!' : '✅ Live Exam session is now CLOSED.');
     }
 
     function updateMasterExamUI() {
@@ -10702,8 +10704,8 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
     function handleExamComingSoonClick(studentId) {
       const s = adminState.students.find(stu => stu.studentId === studentId);
-      const sName = s ? (s.studentName || 'Student') : 'विद्यार्थी';
-      const confirmOpen = confirm("🟢 विद्यार्थी \"" + sName + "\" साठी Live Level Exam विंडो सुरू करायची आहे का?\n\n[OK] वर क्लिक करताच परीक्षा कॅमेरा सुरू होईल!\n\n(Turn ON Live Level Exam window now?)");
+      const sName = s ? (s.studentName || 'Student') : 'Student';
+      const confirmOpen = confirm("🟢 Launch Live Level Exam camera window for student \"" + sName + "\"?\n\nClick [OK] to activate the camera exam window.\n\n(Turn ON Live Level Exam window now?)");
       if (confirmOpen) {
         adminState.examSessionActive = true;
         localStorage.setItem('yoddha_exam_session_active', 'true');
@@ -11578,7 +11580,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         ctx.fillText('YODDHA', W / 2, H / 2);
         ctx.restore();
 
-        // 4. OFFICIAL LOGO AT THE TOP (वर) - Authentic Academy Crest
+        // 4. OFFICIAL LOGO AT THE TOP - Authentic Academy Crest
         drawCircularLogoBadge(ctx, logoImg, W / 2, 135, 55);
 
         // 5. Header Badge Pill (Under Logo)
@@ -13287,7 +13289,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         drawBadgeCard(startCardX + (boxW + cardGap) * 2, boxY, 'Date of Issue', dateStr, false);
         drawBadgeCard(startCardX + (boxW + cardGap) * 3, boxY, 'Territorial Validity', 'All India (National)', false);
 
-        // 10. OFFICIAL LOGO & GRAND AUTHORIZATION BOX AT BOTTOM (खाली) - Grand 1600px Wide Box
+        // 10. OFFICIAL LOGO & GRAND AUTHORIZATION BOX AT BOTTOM - Grand 1600px Wide Box
         const authBoxY = 945;
         const authBoxW = 1600;
         const authBoxH = 180;
@@ -13296,7 +13298,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         ctx.fillStyle = '#fffbeb';
         drawCanvasRoundRect(ctx, authBoxX, authBoxY, authBoxW, authBoxH, 24, true, true, '#d97706', 3);
 
-        // OFFICIAL LOGO BADGE AT THE BOTTOM (खाली)
+        // OFFICIAL LOGO BADGE AT THE BOTTOM
         const sealX = authBoxX + 130;
         const sealY = authBoxY + 90;
         const sealRadius = 65;
@@ -14390,10 +14392,10 @@ const iconBox = document.getElementById('exam-banner-icon-box');
             <div class="p-3.5 bg-rose-50 border-2 border-rose-300 rounded-2xl text-rose-900 text-xs font-bold flex items-start gap-2.5 shadow-sm">
               <i data-lucide="alert-octagon" class="w-5 h-5 flex-shrink-0 text-rose-600 mt-0.5"></i>
               <div>
-                <p class="font-black text-rose-950 text-sm">⚠️ Registration Already Completed (नोंदणी पूर्ण)</p>
+                <p class="font-black text-rose-950 text-sm">⚠️ Registration Already Completed</p>
                 <p class="text-[11px] text-rose-800 font-medium mt-1 leading-relaxed">
-                  खेळाडू <strong>${s.studentName}</strong> (${studentId}) या स्पर्धेसाठी आधीच नोंदणीकृत (Registered) आहे.<br>
-                  एका विद्यार्थ्याला एका स्पर्धेत फक्त एकदाच फॉर्म भरता येतो. पुन्हा फॉर्म भरण्याची परवानगी नाही.
+                  Athlete <strong>${s.studentName}</strong> (${studentId}) is already registered for this competition.<br>
+                  Each student can submit only one registration form per tournament. Duplicate entries are strictly prohibited.
                 </p>
               </div>
             </div>
@@ -14401,19 +14403,19 @@ const iconBox = document.getElementById('exam-banner-icon-box');
           notice.classList.remove('hidden');
         }
         if (discSelect) {
-          discSelect.innerHTML = `<option value="" disabled selected>Already Registered (नोंदणी पूर्ण झालेली आहे)</option>`;
+          discSelect.innerHTML = `<option value="" disabled selected>Already Registered (Entry Completed)</option>`;
         }
         if (submitBtn) {
           submitBtn.disabled = true;
           submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-          submitBtn.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i><span>Already Registered (नोंदणी पूर्ण)</span>';
+          submitBtn.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i><span>Already Registered</span>';
         }
       } else {
         if (notice) notice.classList.add('hidden');
         if (discSelect) {
           discSelect.innerHTML = `
-            <option value="Single Event">Single Event (वैयक्तिक प्रकार)</option>
-            <option value="General Event">General Event (सांघिक प्रकार)</option>
+            <option value="Single Event">Single Event (Individual Category)</option>
+            <option value="General Event">General Event (Team Category)</option>
           `;
         }
         if (submitBtn) {
@@ -14507,7 +14509,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
         });
 
         if (!isEligible) {
-          alert(`🔒 Branch Restricted (शाखा मर्यादा):\n\nही स्पर्धा फक्त खालील जिल्ह्यांसाठी आहे:\n[${comp.allowedDistricts.join(', ')}]\n\nतुमची शाखा ${user.branch || user.district || 'Satara'} आहे. या स्पर्धेत Satara शाखेतील खेळाडूंना नोंदणी करता येणार नाही.\n\n(This tournament is restricted to: ${comp.allowedDistricts.join(', ')}).`);
+          alert(`🔒 District Restricted Tournament:\n\nThis competition is open only to the following districts:\n[${comp.allowedDistricts.join(', ')}]\n\nYour branch is ${user.branch || user.district || 'Satara'}. Athletes from this branch are not eligible to register for this event.\n\n(Restricted to: ${comp.allowedDistricts.join(', ')}).`);
           return;
         }
       }
@@ -14662,9 +14664,9 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       if (alreadyReg) {
         alert(
-          `⚠️ Already Registered (नोंदणी आधीच झालेली आहे):\n\n` +
-          `खेळाडू "${student.studentName}" (${studentId}) या स्पर्धेसाठी आधीच नोंदणीकृत (Registered) आहे!\n\n` +
-          `एका विद्यार्थ्याला एका स्पर्धेत फक्त एकदाच फॉर्म भरता येतो.\n\n` +
+          `⚠️ Already Registered:\n\n` +
+          `Athlete "${student.studentName}" (${studentId}) is already registered for this tournament!\n\n` +
+          `Each student can submit only one registration form per tournament.\n\n` +
           `(Candidate ${student.studentName} is ALREADY registered for this tournament! Re-registration is strictly restricted.)`
         );
         return;
@@ -15475,17 +15477,17 @@ function handleAdminCreateCompetition(e) {
 
       if (state === 'saving') {
         toast.className = baseClasses + ' bg-slate-900/95 text-amber-300 border-amber-400/70 scale-100 opacity-100 shadow-amber-500/20';
-        toast.innerHTML = `<span class="animate-spin inline-block text-base">⏳</span><span>${customMsg || 'Google Sheet मध्ये सेव्ह होत आहे... (Saving to Sheet...)'}</span>`;
+        toast.innerHTML = `<span class="animate-spin inline-block text-base">⏳</span><span>${customMsg || 'Saving to Google Sheet...'}</span>`;
       } else if (state === 'saved') {
         toast.className = baseClasses + ' bg-emerald-950/95 text-emerald-300 border-emerald-400/80 scale-100 opacity-100 shadow-emerald-500/20';
-        toast.innerHTML = `<span class="text-base">✅</span><span>${customMsg || 'Google Sheet मध्ये त्वरित सेव्ह झाले! (Saved in Google Sheet!)'}</span>`;
+        toast.innerHTML = `<span class="text-base">✅</span><span>${customMsg || 'Saved successfully in Google Sheet!'}</span>`;
         window._cloudToastTimeout = setTimeout(() => {
           toast.style.opacity = '0';
           toast.style.transform = 'translate(-50%, -12px) scale(0.95)';
         }, 3200);
       } else if (state === 'error') {
         toast.className = baseClasses + ' bg-rose-950/95 text-rose-300 border-rose-400/80 scale-100 opacity-100 shadow-rose-500/20';
-        toast.innerHTML = `<span class="text-base">⚠️</span><span>${customMsg || 'Google Sheet सिंक ऑफलाइन आहे (स्थानिक सुरक्षित सेव्ह झाले)'}</span>`;
+        toast.innerHTML = `<span class="text-base">⚠️</span><span>${customMsg || 'Google Sheet sync is offline (Saved locally)'}</span>`;
         window._cloudToastTimeout = setTimeout(() => {
           toast.style.opacity = '0';
           toast.style.transform = 'translate(-50%, -12px) scale(0.95)';

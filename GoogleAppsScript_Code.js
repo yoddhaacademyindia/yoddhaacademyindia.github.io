@@ -623,7 +623,7 @@ function doPost(e) {
         for (var r = 1; r < sData.length; r++) {
           if (String(sData[r][1] || "").trim().toUpperCase() === targetId) {
             // Update Status (Col 19 -> Column S) to 'DELETED'
-            stuSheet.getRange(r + 1, 19).setValue("DELETED (" + deletedBy + " द्वारे डिलीट)");
+            stuSheet.getRange(r + 1, 19).setValue("DELETED (Deleted by " + deletedBy + ")");
             // Also update Live Exam Status (Col 23 -> Column W)
             stuSheet.getRange(r + 1, 23).setValue("STUDENT DELETED");
             // Mark row visually in Google Sheet (light red background so admin can easily identify)
@@ -1127,14 +1127,14 @@ function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, p
     + '<p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;">ALL INDIA MARTIAL ARTS & SPORTS TRAINING ACADEMY</p>'
     + '</div>'
     + '<div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;">'
-    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🥋 हार्दिक अभिनंदन व सहर्ष स्वागत!</h2>'
-    + '<p style="font-size: 14px; margin-bottom: 12px;">सस्नेह नमस्कार <strong>' + trainerName + '</strong> सर,</p>'
-    + '<p style="font-size: 14px; margin-bottom: 15px;">योध्या अकॅडमी इंडिया परिवारात आपले अधिकृत <strong>' + (position || "Certified Trainer") + '</strong> म्हणून नियुक्ती झाल्याबद्दल आपले मनःपूर्वक अभिनंदन!</p>'
+    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🥋 Welcome to Yoddha Academy India!</h2>'
+    + '<p style="font-size: 14px; margin-bottom: 12px;">Greetings <strong>' + trainerName + '</strong>,</p>'
+    + '<p style="font-size: 14px; margin-bottom: 15px;">Congratulations on your official appointment as <strong>' + (position || "Certified Trainer") + '</strong> with Yoddha Academy India!</p>'
     + '<div style="background: #fff7ed; padding: 14px 16px; border-left: 4px solid #ea580c; border-radius: 6px; font-size: 13px; color: #9a3412; margin-bottom: 20px;">'
-    + 'भारतीय पारंपरिक मार्शल आर्ट्स (लाठी-काठी, तलवारबाजी, कराटे व स्वसंरक्षण) या पवित्र विद्येचा प्रचार-प्रसार करण्यासाठी, तरुण पिढीला सुदृढ व शिस्तबद्ध बनवण्यासाठी आपल्या भावी वाटचालीस व कार्यासाठी <strong>योध्या अकॅडमी इंडिया</strong> कडून लाख लाख शुभेच्छा! 🚩'
+    + 'Wishing you great success in promoting Indian traditional martial arts, discipline, self-defense, and youth training. Warmest wishes from <strong>Yoddha Academy India Central Headquarters</strong>! 🚩'
     + '</div>'
     + '<div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;">'
-    + '<h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">🔐 आपले अधिकृत लॉगिन क्रेडेंशियल्स (Official Login Details):</h3>'
+    + '<h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">🔐 Your Official Login Credentials:</h3>'
     + '<table style="width: 100%; font-size: 14px;">'
     + '<tr><td style="padding: 6px 0; color: #64748b; width: 140px;"><strong>Trainer ID:</strong></td><td style="padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;">' + trainerId + '</td></tr>'
     + '<tr><td style="padding: 6px 0; color: #64748b;"><strong>Password / PIN:</strong></td><td style="padding: 6px 0; color: #0f172a; font-weight: bold; font-family: monospace; font-size: 16px; background: #fed7aa; padding: 3px 8px; border-radius: 6px; display: inline-block;">' + trainerPass + '</td></tr>'
@@ -1144,14 +1144,14 @@ function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, p
     + '</div>'
     + '<div style="text-align: center; margin: 25px 0;">'
     + '<a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);">'
-    + '🚀 ओपन ट्रेनर लॉगिन पॅनेल (Open Trainer Panel)'
+    + '🚀 Open Trainer Portal'
     + '</a>'
     + '</div>'
-    + '<p style="font-size: 12px; color: #64748b; margin-top: 15px;">⚠️ <em>सुरक्षितता सूचना: हा ईमेल आणि पासवर्ड गोपनीय ठेवा. लॉगिन पोर्टलवर जाऊन आपण आपला पासवर्ड कधीही बदलू शकता.</em></p>'
+    + '<p style="font-size: 12px; color: #64748b; margin-top: 15px;">⚠️ <em>Security Notice: Keep your credentials confidential. You can update your password anytime in your portal profile.</em></p>'
     + '</div>'
     + '<div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;">'
-    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">योध्या अकॅडमी इंडिया • केंद्रीय मुख्यालय</p>'
-    + '<p style="margin: 4px 0 0;">अधिकृत पोर्टल: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
+    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">Yoddha Academy India • Central Headquarters</p>'
+    + '<p style="margin: 4px 0 0;">Official Portal: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
     + '<p style="margin: 4px 0 0;">Traditional Martial Arts & Sports Training • All India Organization</p>'
     + '</div>'
     + '</div>';
@@ -1187,8 +1187,8 @@ function sendStudentAdmissionEmail(toEmail, studentName, studentId, level, train
     + '<p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;">OFFICIAL STUDENT ADMISSION CONFIRMATION</p>'
     + '</div>'
     + '<div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;">'
-    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🎉 प्रवेश निश्चित झाला आहे! (Admission Confirmed)</h2>'
-    + '<p style="font-size: 14px;">प्रिय पालक व <strong>' + studentName + '</strong>,<br><br>योध्या अकॅडमी इंडियामध्ये आपले अधिकृत ॲडमिशन यशस्वीरित्या पूर्ण झाले आहे. पारंपरिक युद्धकला आणि क्रीडा कौशल्यांमध्ये आपले सहर्ष स्वागत!</p>'
+    + '<h2 style="color: #ea580c; margin-top: 0; font-size: 20px;">🎉 Admission Confirmed!</h2>'
+    + '<p style="font-size: 14px;">Dear Parents and <strong>' + studentName + '</strong>,<br><br>Your official admission to Yoddha Academy India has been successfully confirmed. Welcome to traditional martial arts, discipline, and sports training!</p>'
     + '<div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;">'
     + '<table style="width: 100%; font-size: 14px;">'
     + '<tr><td style="padding: 6px 0; color: #64748b; width: 140px;"><strong>Student Name:</strong></td><td style="padding: 6px 0; color: #0f172a; font-weight: bold;">' + studentName + '</td></tr>'
@@ -1200,13 +1200,13 @@ function sendStudentAdmissionEmail(toEmail, studentName, studentId, level, train
     + '</div>'
     + '<div style="text-align: center; margin: 25px 0;">'
     + '<a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block;">'
-    + '🪪 व्ह्यू डिजिटल आयडी कार्ड (View Digital ID Card)'
+    + '🪪 View Digital ID Card'
     + '</a>'
     + '</div>'
     + '</div>'
     + '<div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;">'
-    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">योध्या अकॅडमी इंडिया • केंद्रीय मुख्यालय</p>'
-    + '<p style="margin: 4px 0 0;">अधिकृत पोर्टल: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
+    + '<p style="margin: 0; color: #f8fafc; font-weight: bold;">Yoddha Academy India • Central Headquarters</p>'
+    + '<p style="margin: 4px 0 0;">Official Portal: <a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;">yoddhaacademyindia.github.io</a></p>'
     + '</div>'
     + '</div>';
 
