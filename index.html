@@ -208,36 +208,6 @@
           <span>Secure Sign In</span>
         </button>
 
-        <!-- ⚡ 1-Click Instant Fast Login -->
-        <div class="pt-3 border-t border-slate-200 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-[10px] font-black uppercase tracking-wider text-slate-600 flex items-center gap-1">
-              <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-600"></i>
-              Instant 1-Click Fast Login:
-            </span>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" onclick="quickLoginAs('admin')" class="py-2.5 px-2 bg-gradient-to-r from-orange-50 to-amber-50 hover:from-orange-100 hover:to-amber-100 border-2 border-orange-300 text-orange-950 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-sm transition active:scale-95">
-              <i data-lucide="shield-check" class="w-4 h-4 text-orange-600"></i>
-              <span>👑 Master Admin</span>
-            </button>
-            <button type="button" onclick="quickLoginAs('trainer')" class="py-2.5 px-2 bg-gradient-to-r from-amber-50 to-yellow-50 hover:from-amber-100 hover:to-yellow-100 border-2 border-amber-300 text-amber-950 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-sm transition active:scale-95">
-              <i data-lucide="user-check" class="w-4 h-4 text-amber-700"></i>
-              <span>🥋 Trainer (Satara)</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Helpful Credentials Info Box -->
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-[11px] text-slate-700 space-y-1">
-          <div class="font-extrabold text-slate-800 flex items-center gap-1">
-            <i data-lucide="info" class="w-3.5 h-3.5 text-orange-600"></i>
-            <span>Official Login Credentials:</span>
-          </div>
-          <p>• <strong>Master Admin:</strong> ID: <code class="bg-white px-1.5 py-0.5 rounded border text-orange-700 font-bold">ADMIN-YODDHA-01</code> | Password: <code class="bg-white px-1.5 py-0.5 rounded border text-slate-800 font-bold">@hupare25077</code></p>
-          <p>• <strong>Satara / Any Trainer:</strong> ID: <code class="bg-white px-1.5 py-0.5 rounded border text-amber-700 font-bold">YAI-TR-MH-SAT-001</code> | Password: <code class="bg-white px-1.5 py-0.5 rounded border text-slate-800 font-bold">Sheet Password (Default: Yoddha)</code></p>
-        </div>
-
       </form>
     </div>
   </div>
@@ -6569,7 +6539,7 @@ function setupAllAcademySheets() {
           } else {
             // Strictly reject wrong Admin password!
             if (errorMsg) {
-              errorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>Incorrect Admin Password! Please use "yoddha" or "@hupare25077".</span>';
+              errorMsg.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i><span>Incorrect Admin Password! Please verify and re-enter.</span>';
               errorMsg.classList.remove('hidden');
               lucide.createIcons();
             }
