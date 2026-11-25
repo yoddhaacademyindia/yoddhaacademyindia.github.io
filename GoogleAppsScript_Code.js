@@ -393,6 +393,7 @@ function doGet(e) {
             fee: Number(cm[7]) || 300,
             status: String(cm[8] || "Registrations Open").trim(),
             scope: String(cm[9] || "All").trim(),
+            assignedTrainers: (String(cm[10] || "").trim()) ? String(cm[10]).split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [],
             allowedDistricts: (String(cm[9] || "").indexOf(",") !== -1 || (String(cm[9] || "").length > 0 && String(cm[9] || "") !== "All" && String(cm[9] || "") !== "All Branches" && String(cm[9] || "") !== "All India Open")) ? String(cm[9]).split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [],
             allowedStates: (String(cm[9] || "").toLowerCase().indexOf("state") !== -1) ? String(cm[9]).split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [],
             entries: 0,
@@ -410,7 +411,9 @@ function doGet(e) {
         var tRow = tRows[tr];
         var cId = String(tRow[1] || "").trim();
         if (cId) {
-          var matchedComp = allData.competitions.find(function(c) { return c.id === cId; });
+          var matchedComp = allData.competitions.find(function(c) {
+            return String(c.id).trim().toUpperCase() === cId.toUpperCase();
+          });
           if (matchedComp) {
             if (!matchedComp.athletes) matchedComp.athletes = [];
             matchedComp.athletes.push({
@@ -440,17 +443,26 @@ function doGet(e) {
         var sId = String(row[1] || "").trim();
         if (sId) {
           var normSid = sId.toUpperCase();
-          if (!allData.studentCompetitions[sId]) allData.studentCompetitions[sId] = [];
-          if (!allData.studentCompetitions[normSid]) allData.studentCompetitions[normSid] = allData.studentCompetitions[sId];
+          if (!allData.studentCompetitions[normSid]) allData.studentCompetitions[normSid] = [];
+          allData.studentCompetitions[sId] = allData.studentCompetitions[normSid];
+          var rawCat = String(row[5] || "").trim();
+          var scopeVal = "State Level";
+          var discVal = rawCat || "Martial Arts Sparring";
+          if (rawCat.indexOf(" - ") !== -1) {
+            var parts = rawCat.split(" - ");
+            scopeVal = parts[0].trim();
+            discVal = parts.slice(1).join(" - ").trim();
+          }
           var compItem = {
             title: String(row[3] || "").trim(),
+            scope: scopeVal,
             date: formatStandardDateString(row[4]),
             year: formatStandardDateString(row[4]).slice(0, 4),
-            category: String(row[5] || "").trim(),
+            category: discVal,
             achievement: String(row[6] || "").trim(),
             certificate: String(row[7] || "").trim()
           };
-          allData.studentCompetitions[sId].push(compItem);
+          allData.studentCompetitions[normSid].push(compItem);
         }
       }
     }
@@ -983,8 +995,9 @@ function doPost(e) {
       ]);
 
       var compId = data.id || data.compId || "";
+      var assignedTrainersStr = Array.isArray(data.assignedTrainers) ? data.assignedTrainers.join(",") : String(data.assignedTrainers || "");
       var rowData = [
-        new Date(),
+        formatStandardTimestamp(new Date()),
         compId,
         data.level || "State Level",
         data.title || "",
@@ -993,7 +1006,8 @@ function doPost(e) {
         data.categories || "",
         data.fee || 300,
         data.status || "Registrations Open",
-        data.scope || "All Branches"
+        data.scope || "All Branches",
+        assignedTrainersStr
       ];
 
       var updated = updateRowIfExistsOrMerge(sheet, 2, compId, rowData);
@@ -1038,21 +1052,41 @@ function doPost(e) {
         })).setMimeType(ContentService.MimeType.JSON);
       }
 
-      sheet.appendRow([
-        formatStandardTimestamp(new Date()),
-        data.competitionId || "",
-        data.compTitle || "",
-        data.compLevel || "State Level",
-        data.studentId || "",
-        data.studentName || "",
-        data.discipline || "",
-        data.division || "",
-        data.feeStatus || "Unpaid",
-        data.feeAmount || 300,
-        data.utrNumber || "",
-        data.paymentMode || "Online UPI",
-        data.trainerName || ""
-      ]);
+      var compIdVal = String(data.competitionId || data.compId || data.id || "").trim();
+      var sIdVal = String(data.studentId || "").trim().toUpperCase();
+      var discVal = String(data.discipline || "").trim().toLowerCase();
+
+      // Check if entry already exists for same competition, student & discipline to prevent duplicates
+      var tRows = sheet.getDataRange().getValues();
+      var alreadyExists = false;
+      for (var r = 1; r < tRows.length; r++) {
+        if (String(tRows[r][1]).trim().toUpperCase() === compIdVal.toUpperCase() &&
+            String(tRows[r][4]).trim().toUpperCase() === sIdVal &&
+            String(tRows[r][6]).trim().toLowerCase() === discVal) {
+          alreadyExists = true;
+          if (data.feeStatus) sheet.getRange(r + 1, 9).setValue(data.feeStatus);
+          if (data.utrNumber) sheet.getRange(r + 1, 11).setValue(data.utrNumber);
+          break;
+        }
+      }
+
+      if (!alreadyExists) {
+        sheet.appendRow([
+          formatStandardTimestamp(new Date()),
+          compIdVal,
+          data.compTitle || "",
+          data.compLevel || "State Level",
+          data.studentId || "",
+          data.studentName || "",
+          data.discipline || "",
+          data.division || "",
+          data.feeStatus || "Unpaid",
+          data.feeAmount || 300,
+          data.utrNumber || "",
+          data.paymentMode || "Online UPI",
+          data.trainerName || ""
+        ]);
+      }
 
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",

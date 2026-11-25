@@ -652,7 +652,7 @@
             </div>
 
             <!-- Export -->
-            <button onclick="exportStudentsCSV()" class="px-3.5 py-2 bg-orange-50 hover:bg-orange-100 text-xs font-bold text-orange-800 rounded-xl border border-orange-200 flex items-center gap-1.5 shadow-sm transition">
+            <button id="btn-export-students-excel" onclick="exportStudentsCSV()" class="px-3.5 py-2 bg-orange-50 hover:bg-orange-100 text-xs font-bold text-orange-800 rounded-xl border border-orange-200 flex items-center gap-1.5 shadow-sm transition">
               <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-emerald-600"></i> Export Excel
             </button>
 
@@ -962,7 +962,7 @@
               <i data-lucide="video" class="w-3.5 h-3.5 text-orange-600"></i>
               <span>Official Syllabus & Video Lessons</span>
             </span>
-            <button type="button" onclick="openFormModal('course')" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white rounded-2xl font-black text-xs flex items-center gap-1.5 shadow-md shadow-orange-500/20 transition active:scale-95 cursor-pointer">
+            <button type="button" id="btn-create-course-header" onclick="openFormModal('course')" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white rounded-2xl font-black text-xs flex items-center gap-1.5 shadow-md shadow-orange-500/20 transition active:scale-95 cursor-pointer">
               <i data-lucide="plus-circle" class="w-4 h-4"></i>
               <span>+ Create New Course</span>
             </button>
@@ -2804,8 +2804,8 @@
             <i data-lucide="trophy" class="w-5 h-5 text-orange-600"></i>
           </div>
           <div>
-            <h3 class="text-lg font-black text-slate-900">5. Create Competition</h3>
-            <p class="text-xs text-slate-500">Announce tournament & select eligible Districts, States or National scope</p>
+            <h3 id="modal-comp-header-title" class="text-lg font-black text-slate-900">5. Create Competition</h3>
+            <p id="modal-comp-header-sub" class="text-xs text-slate-500">Announce tournament & select eligible Trainers, Districts or National scope</p>
           </div>
         </div>
         <button type="button" onclick="closeFormModal('competition')" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl transition">
@@ -2813,7 +2813,8 @@
         </button>
       </div>
 
-      <form onsubmit="handleAdminCreateCompetition(event)" class="space-y-4 text-xs">
+      <form onsubmit="handleAdminCreateOrUpdateCompetition(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="modal-comp-edit-id" value="">
         
         <!-- 1. TOURNAMENT TITLE -->
         <div>
@@ -2839,6 +2840,26 @@
               <option value="Upcoming Championship">Upcoming Championship</option>
             </select>
           </div>
+        </div>
+
+        <!-- 3. ACTIVE TRAINERS SELECTION CHECKLIST -->
+        <div id="comp-scope-trainers-box" class="bg-blue-50/70 border-2 border-blue-200 rounded-2xl p-3.5 space-y-2">
+          <div class="flex items-center justify-between border-b border-blue-200/80 pb-2">
+            <span class="font-black text-blue-900 text-xs flex items-center gap-1.5">
+              <i data-lucide="users" class="w-4 h-4 text-blue-600"></i>
+              <span>Select Eligible Trainers / Branches *</span>
+            </span>
+            <label class="flex items-center gap-1.5 text-[10.5px] font-black text-blue-800 cursor-pointer select-none">
+              <input type="checkbox" id="comp-select-all-trainers" onchange="toggleSelectAllScopeTrainers(this.checked)" class="w-3.5 h-3.5 text-blue-600 rounded border-blue-400">
+              <span>Select All Active Trainers</span>
+            </label>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-1" id="comp-trainers-list">
+            <!-- Dynamically populated trainer checkboxes -->
+          </div>
+          <p class="text-[10px] text-blue-800/85 font-medium leading-relaxed">
+            💡 Only checked trainers will see this tournament registration form on their Trainer panel. If unchecked, this championship remains completely hidden from that trainer.
+          </p>
         </div>
 
         <!-- 3A. DYNAMIC DISTRICT SELECTION -->
@@ -2922,7 +2943,7 @@
           </button>
           <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 text-white font-extrabold rounded-xl shadow-md shadow-orange-500/25 transition flex items-center gap-1.5 cursor-pointer">
             <i data-lucide="trophy" class="w-4 h-4"></i>
-            <span>Publish Tournament</span>
+            <span id="modal-comp-submit-btn-text">Publish Tournament</span>
           </button>
         </div>
       </form>
@@ -3423,16 +3444,16 @@
  * Complete A-to-Z Central Cloud Storage &amp; Real-Time Sync Engine for Martial Arts
  * 
  * 10 AUTOMATICALLY MANAGED CLOUD SHEETS:
- * 1. 'Students'             - 30-Point Complete Profile, Belt Ranks, Exam Marks &amp; Level History
- * 2. 'ExamResults'          - Permanent Audit Log of all Live Belt Exams &amp; Marks (AI + Trainer)
- * 3. 'LevelUpApplications'  - Log of all Belt Level-Up Applications, Fees, UTR &amp; Approvals
- * 4. 'Trainers'             - 13-Point Certified Trainer Profiles &amp; Secure Credentials
- * 5. 'Courses'              - Martial Arts Training Video Courses &amp; Assigned Trainers
- * 6. 'Competitions'         - District, State &amp; National Tournament Announcements
- * 7. 'TournamentEntries'    - Student Registrations for Tournaments &amp; Entry Fees
- * 8. 'StudentSportsRecords' - Medals (Gold/Silver/Bronze) &amp; Official Achievements Track Record
- * 9. 'Fee Structure'        - Level 1-6 &amp; Senior 1-4 Official Belt Pricing + Academy UPI ID
- * 10. 'AcademySettings'     - Master Exam Live Camera Switch (ON/OFF) &amp; System Settings
+ * 1. &#x27;Students&#x27;             - 30-Point Complete Profile, Belt Ranks, Exam Marks &amp; Level History
+ * 2. &#x27;ExamResults&#x27;          - Permanent Audit Log of all Live Belt Exams &amp; Marks (AI + Trainer)
+ * 3. &#x27;LevelUpApplications&#x27;  - Log of all Belt Level-Up Applications, Fees, UTR &amp; Approvals
+ * 4. &#x27;Trainers&#x27;             - 13-Point Certified Trainer Profiles &amp; Secure Credentials
+ * 5. &#x27;Courses&#x27;              - Martial Arts Training Video Courses &amp; Assigned Trainers
+ * 6. &#x27;Competitions&#x27;         - District, State &amp; National Tournament Announcements
+ * 7. &#x27;TournamentEntries&#x27;    - Student Registrations for Tournaments &amp; Entry Fees
+ * 8. &#x27;StudentSportsRecords&#x27; - Medals (Gold/Silver/Bronze) &amp; Official Achievements Track Record
+ * 9. &#x27;Fee Structure&#x27;        - Level 1-6 &amp; Senior 1-4 Official Belt Pricing + Academy UPI ID
+ * 10. &#x27;AcademySettings&#x27;     - Master Exam Live Camera Switch (ON/OFF) &amp; System Settings
  * 
  * 100% FREE AUTOMATED EMAIL NOTIFICATIONS (MailApp):
  * - Welcome &amp; Credentials Email to newly registered Trainers
@@ -3446,49 +3467,49 @@
 function formatStandardTimestamp(d) {
   var dt = d ? (d instanceof Date ? d : new Date(d)) : new Date();
   if (isNaN(dt.getTime())) dt = new Date();
-  return Utilities.formatDate(dt, "Asia/Kolkata", "yyyy-MM-dd HH:mm:ss");
+  return Utilities.formatDate(dt, &quot;Asia/Kolkata&quot;, &quot;yyyy-MM-dd HH:mm:ss&quot;);
 }
 
 function formatStandardDateString(d) {
-  if (!d) return "";
+  if (!d) return &quot;&quot;;
   var s = String(d).trim();
   var m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
   if (m) {
     var y = m[1];
-    var mo = m[2].length === 1 ? "0" + m[2] : m[2];
-    var day = m[3].length === 1 ? "0" + m[3] : m[3];
-    return y + "-" + mo + "-" + day;
+    var mo = m[2].length === 1 ? &quot;0&quot; + m[2] : m[2];
+    var day = m[3].length === 1 ? &quot;0&quot; + m[3] : m[3];
+    return y + &quot;-&quot; + mo + &quot;-&quot; + day;
   }
   var dt = (d instanceof Date) ? d : new Date(d);
   if (isNaN(dt.getTime())) return s;
-  return Utilities.formatDate(dt, "Asia/Kolkata", "yyyy-MM-dd");
+  return Utilities.formatDate(dt, &quot;Asia/Kolkata&quot;, &quot;yyyy-MM-dd&quot;);
 }
 
 // 1. LIVE AUTHENTICATION &amp; DATA RETRIEVAL ENDPOINT (GET)
 // -------------------------------------------------------------------------
 function doGet(e) {
-  var action = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.action) || "";
-  var id = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.id) ? e.parameter.id.trim() : "";
-  var pass = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.pass) ? e.parameter.pass.trim() : "";
+  var action = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.action) || &quot;&quot;;
+  var id = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.id) ? e.parameter.id.trim() : &quot;&quot;;
+  var pass = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.pass) ? e.parameter.pass.trim() : &quot;&quot;;
 
   var result = {
-    status: "ready",
-    server: "Yoddha Academy India Central Cloud Server",
-    version: "3.0",
+    status: &quot;ready&quot;,
+    server: &quot;Yoddha Academy India Central Cloud Server&quot;,
+    version: &quot;3.0&quot;,
     timestamp: new Date().toISOString()
   };
 
   // 1A. Dual Login Verification (Admin or Certified Trainer)
-  if (action === "verifyLogin") {
+  if (action === &quot;verifyLogin&quot;) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var customAdminPass = null;
-    var setSheet = ss.getSheetByName("AcademySettings");
+    var setSheet = ss.getSheetByName(&quot;AcademySettings&quot;);
     if (setSheet) {
       var setRows = setSheet.getDataRange().getValues();
       for (var s = 1; s &lt; setRows.length; s++) {
-        var sk = String(setRows[s][0] || "").toUpperCase().trim();
-        var sv = String(setRows[s][1] || "").trim();
-        if (sk === "ADMIN_PASSWORD" || sk === "ADMIN_PIN" || sk === "MASTER_PASSWORD") {
+        var sk = String(setRows[s][0] || &quot;&quot;).toUpperCase().trim();
+        var sv = String(setRows[s][1] || &quot;&quot;).trim();
+        if (sk === &quot;ADMIN_PASSWORD&quot; || sk === &quot;ADMIN_PIN&quot; || sk === &quot;MASTER_PASSWORD&quot;) {
           customAdminPass = sv;
         }
       }
@@ -3498,44 +3519,44 @@ function doGet(e) {
     var normIdUpper = id.toUpperCase();
     var normPassLower = pass.toLowerCase();
     var isAdminValid = (
-      normIdUpper === "ADMIN-YODDHA-01" || 
-      normIdUpper === "ADMIN" || 
-      normIdUpper === "ADMIN-01" || 
-      normIdUpper === "HQ" || 
-      normIdUpper === "CENTRAL-HQ" || 
-      normIdUpper === "YODDHA" || 
-      normIdUpper === "YODDHA-ADMIN" ||
-      normIdUpper === "YAI-ADMIN" ||
-      normIdUpper === "YODDHAACADEMY" ||
-      normIdUpper === "YODDHAACADEMYINDIA"
+      normIdUpper === &quot;ADMIN-YODDHA-01&quot; || 
+      normIdUpper === &quot;ADMIN&quot; || 
+      normIdUpper === &quot;ADMIN-01&quot; || 
+      normIdUpper === &quot;HQ&quot; || 
+      normIdUpper === &quot;CENTRAL-HQ&quot; || 
+      normIdUpper === &quot;YODDHA&quot; || 
+      normIdUpper === &quot;YODDHA-ADMIN&quot; ||
+      normIdUpper === &quot;YAI-ADMIN&quot; ||
+      normIdUpper === &quot;YODDHAACADEMY&quot; ||
+      normIdUpper === &quot;YODDHAACADEMYINDIA&quot;
     ) &amp;&amp; (
-      pass === "@hupare25077" || 
-      normPassLower === "yoddha" ||
-      normPassLower === "yoddha2026" || 
-      normPassLower === "yoddha@2026" || 
-      normPassLower === "admin" ||
-      normPassLower === "admin123" ||
-      pass === "776688" ||
-      pass === "123456" ||
+      pass === &quot;@hupare25077&quot; || 
+      normPassLower === &quot;yoddha&quot; ||
+      normPassLower === &quot;yoddha2026&quot; || 
+      normPassLower === &quot;yoddha@2026&quot; || 
+      normPassLower === &quot;admin&quot; ||
+      normPassLower === &quot;admin123&quot; ||
+      pass === &quot;776688&quot; ||
+      pass === &quot;123456&quot; ||
       (customAdminPass &amp;&amp; (pass === customAdminPass || normPassLower === customAdminPass.toLowerCase()))
     );
 
     if (isAdminValid) {
       result = {
-        status: "success",
+        status: &quot;success&quot;,
         authenticated: true,
-        role: "admin",
-        userId: "ADMIN-YODDHA-01",
-        userName: "Master Admin HQ",
-        message: "Admin authentication successful"
+        role: &quot;admin&quot;,
+        userId: &quot;ADMIN-YODDHA-01&quot;,
+        userName: &quot;Master Admin HQ&quot;,
+        message: &quot;Admin authentication successful&quot;
       };
     } else {
-      // Check Trainer Login against 'Trainers' sheet
+      // Check Trainer Login against &#x27;Trainers&#x27; sheet
       var ss = SpreadsheetApp.getActiveSpreadsheet();
-      var sheet = ss.getSheetByName("Trainers");
+      var sheet = ss.getSheetByName(&quot;Trainers&quot;);
 
       if (!sheet) {
-        result = { status: "error", authenticated: false, message: "Trainers section not found in Central Cloud Server" };
+        result = { status: &quot;error&quot;, authenticated: false, message: &quot;Trainers section not found in Central Cloud Server&quot; };
       } else {
         var data = sheet.getDataRange().getValues();
         var found = false;
@@ -3543,19 +3564,19 @@ function doGet(e) {
         // Row 0 is header. Col index: 1 = Trainer ID, 2 = Full Name, 4 = Status, 5 = Mobile, 7 = Email, 12 = Login PIN/Password, 13 = Photo
         for (var i = 1; i &lt; data.length; i++) {
           var row = data[i];
-          var trnId = String(row[1] || "").trim();
-          var trnPass = String(row[12] || "").trim();
-          var trnStatus = String(row[4] || "").trim();
-          var trnName = String(row[2] || "").trim();
-          var trnPosition = String(row[3] || "").trim();
-          var trnPhone = String(row[5] || "").replace(/[^0-9]/g, "");
-          var trnEmail = String(row[7] || "").trim().toLowerCase();
-          var trnState = String(row[8] || "").trim();
-          var trnDistrict = String(row[9] || "").trim();
-          var trnBranch = String(row[10] || "").trim();
-          var trnPhoto = String(row[13] || "").trim();
+          var trnId = String(row[1] || &quot;&quot;).trim();
+          var trnPass = String(row[12] || &quot;&quot;).trim();
+          var trnStatus = String(row[4] || &quot;&quot;).trim();
+          var trnName = String(row[2] || &quot;&quot;).trim();
+          var trnPosition = String(row[3] || &quot;&quot;).trim();
+          var trnPhone = String(row[5] || &quot;&quot;).replace(/[^0-9]/g, &quot;&quot;);
+          var trnEmail = String(row[7] || &quot;&quot;).trim().toLowerCase();
+          var trnState = String(row[8] || &quot;&quot;).trim();
+          var trnDistrict = String(row[9] || &quot;&quot;).trim();
+          var trnBranch = String(row[10] || &quot;&quot;).trim();
+          var trnPhoto = String(row[13] || &quot;&quot;).trim();
 
-          var cleanInDigits = id.replace(/[^0-9]/g, "");
+          var cleanInDigits = id.replace(/[^0-9]/g, &quot;&quot;);
           var matchTrnId = (trnId.toLowerCase() === id.toLowerCase() || (id.length &gt;= 3 &amp;&amp; trnId.toLowerCase().indexOf(id.toLowerCase()) !== -1));
           var matchTrnName = trnName &amp;&amp; (trnName.toLowerCase().indexOf(id.toLowerCase()) !== -1 || id.toLowerCase().indexOf(trnName.toLowerCase()) !== -1);
           var matchTrnPhone = cleanInDigits.length &gt;= 6 &amp;&amp; trnPhone &amp;&amp; (trnPhone.indexOf(cleanInDigits) !== -1 || cleanInDigits.indexOf(trnPhone) !== -1);
@@ -3568,22 +3589,22 @@ function doGet(e) {
               pass &amp;&amp; (
                 passLower === trnPassLower || 
                 (trnPhone &amp;&amp; cleanInDigits.length &gt;= 6 &amp;&amp; pass === trnPhone) ||
-                passLower === "yoddha" ||
-                passLower === "yoddha2026" ||
-                pass === "776688" ||
-                pass === "123456" ||
-                pass === "@hupare25077" ||
+                passLower === &quot;yoddha&quot; ||
+                passLower === &quot;yoddha2026&quot; ||
+                pass === &quot;776688&quot; ||
+                pass === &quot;123456&quot; ||
+                pass === &quot;@hupare25077&quot; ||
                 (customAdminPass &amp;&amp; passLower === customAdminPass.toLowerCase())
               )
             );
             if (isPassMatch) {
-              if (trnStatus.toLowerCase() === "inactive") {
-                result = { status: "error", authenticated: false, message: "Your Trainer Account is currently Inactive. Please contact Central HQ." };
+              if (trnStatus.toLowerCase() === &quot;inactive&quot;) {
+                result = { status: &quot;error&quot;, authenticated: false, message: &quot;Your Trainer Account is currently Inactive. Please contact Central HQ.&quot; };
               } else {
                 result = {
-                  status: "success",
+                  status: &quot;success&quot;,
                   authenticated: true,
-                  role: "trainer",
+                  role: &quot;trainer&quot;,
                   userId: trnId,
                   trainerId: trnId,
                   userName: trnName,
@@ -3593,11 +3614,11 @@ function doGet(e) {
                   state: trnState,
                   district: trnDistrict,
                   photo: trnPhoto,
-                  message: "Trainer authentication successful"
+                  message: &quot;Trainer authentication successful&quot;
                 };
               }
             } else {
-              result = { status: "error", authenticated: false, message: "Incorrect Password! Please enter valid credentials." };
+              result = { status: &quot;error&quot;, authenticated: false, message: &quot;Incorrect Password! Please enter valid credentials.&quot; };
             }
             found = true;
             break;
@@ -3605,18 +3626,18 @@ function doGet(e) {
         }
 
         if (!found) {
-          result = { status: "error", authenticated: false, message: "Unique ID not found in Central Cloud Server" };
+          result = { status: &quot;error&quot;, authenticated: false, message: &quot;Unique ID not found in Central Cloud Server&quot; };
         }
       }
     }
   }
 
   // 1B. Read All A-to-Z Academy Sections for Live Synchronization
-  if (action === "readAll" || action === "syncAll") {
+  if (action === &quot;readAll&quot; || action === &quot;syncAll&quot;) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var allData = {
-      status: "success",
-      server: "Yoddha Academy India Central Cloud Server",
+      status: &quot;success&quot;,
+      server: &quot;Yoddha Academy India Central Cloud Server&quot;,
       timestamp: new Date().toISOString(),
       trainers: [],
       students: [],
@@ -3628,7 +3649,7 @@ function doGet(e) {
     };
 
     // 1. Read Trainers from Sheet
-    var trnSheet = ss.getSheetByName("Trainers");
+    var trnSheet = ss.getSheetByName(&quot;Trainers&quot;);
     if (trnSheet) {
       var trnRows = trnSheet.getDataRange().getValues();
       for (var i = 1; i &lt; trnRows.length; i++) {
@@ -3637,43 +3658,43 @@ function doGet(e) {
           allData.trainers.push({
             trainerId: String(tr[1]).trim(),
             id: String(tr[1]).trim(),
-            fullName: String(tr[2] || "").trim(),
-            name: String(tr[2] || "").trim(),
-            position: String(tr[3] || "Instructor").trim(),
-            status: String(tr[4] || "Active").trim(),
-            mobile: String(tr[5] || "").trim(),
-            phone: String(tr[5] || "").trim(),
-            whatsapp: String(tr[6] || tr[5] || "").trim(),
-            email: String(tr[7] || "").trim(),
-            state: String(tr[8] || "Maharashtra").trim(),
-            district: String(tr[9] || "Kolhapur").trim(),
-            branch: String(tr[10] || "").trim(),
-            address: String(tr[11] || "").trim(),
-            password: String(tr[12] || "").trim(),
-            pin: String(tr[12] || "").trim(),
-            photo: String(tr[13] || "").trim(),
-            aadharPhoto: String(tr[14] || "").trim()
+            fullName: String(tr[2] || &quot;&quot;).trim(),
+            name: String(tr[2] || &quot;&quot;).trim(),
+            position: String(tr[3] || &quot;Instructor&quot;).trim(),
+            status: String(tr[4] || &quot;Active&quot;).trim(),
+            mobile: String(tr[5] || &quot;&quot;).trim(),
+            phone: String(tr[5] || &quot;&quot;).trim(),
+            whatsapp: String(tr[6] || tr[5] || &quot;&quot;).trim(),
+            email: String(tr[7] || &quot;&quot;).trim(),
+            state: String(tr[8] || &quot;Maharashtra&quot;).trim(),
+            district: String(tr[9] || &quot;Kolhapur&quot;).trim(),
+            branch: String(tr[10] || &quot;&quot;).trim(),
+            address: String(tr[11] || &quot;&quot;).trim(),
+            password: String(tr[12] || &quot;&quot;).trim(),
+            pin: String(tr[12] || &quot;&quot;).trim(),
+            photo: String(tr[13] || &quot;&quot;).trim(),
+            aadharPhoto: String(tr[14] || &quot;&quot;).trim()
           });
         }
       }
     }
 
     // 2. Read Students from Sheet (with auto-purge of blank/ghost rows &amp; date normalization)
-    var stuSheet = ss.getSheetByName("Students");
+    var stuSheet = ss.getSheetByName(&quot;Students&quot;);
     if (stuSheet) {
       var sCheckData = stuSheet.getDataRange().getValues();
       for (var rCheck = sCheckData.length - 1; rCheck &gt;= 1; rCheck--) {
-        var chkId = String(sCheckData[rCheck][1] || "").trim();
-        var chkName = String(sCheckData[rCheck][2] || "").trim();
-        var chkDob = String(sCheckData[rCheck][3] || "").trim();
+        var chkId = String(sCheckData[rCheck][1] || &quot;&quot;).trim();
+        var chkName = String(sCheckData[rCheck][2] || &quot;&quot;).trim();
+        var chkDob = String(sCheckData[rCheck][3] || &quot;&quot;).trim();
         // Purge blank/corrupt student rows permanently
-        if (!chkId || chkId.toUpperCase().indexOf("TEST") !== -1 || (chkName.toLowerCase() === "student" &amp;&amp; !chkDob)) {
+        if (!chkId || chkId.toUpperCase().indexOf(&quot;TEST&quot;) !== -1 || (chkName.toLowerCase() === &quot;student&quot; &amp;&amp; !chkDob)) {
           try { stuSheet.deleteRow(rCheck + 1); } catch(delErr) {}
-        } else if (chkDob &amp;&amp; (chkDob.indexOf("GMT") !== -1 || chkDob.indexOf("T") !== -1 || chkDob.length &gt; 10)) {
+        } else if (chkDob &amp;&amp; (chkDob.indexOf(&quot;GMT&quot;) !== -1 || chkDob.indexOf(&quot;T&quot;) !== -1 || chkDob.length &gt; 10)) {
           // Normalize existing date strings in Google Sheet cell to clean YYYY-MM-DD
           var cleanD = formatStandardDateString(chkDob);
           if (cleanD &amp;&amp; cleanD.length === 10) {
-            try { stuSheet.getRange(rCheck + 1, 4).setNumberFormat("@").setValue(cleanD); } catch(setErr) {}
+            try { stuSheet.getRange(rCheck + 1, 4).setNumberFormat(&quot;@&quot;).setValue(cleanD); } catch(setErr) {}
           }
         }
       }
@@ -3681,45 +3702,45 @@ function doGet(e) {
       for (var j = 1; j &lt; stuRows.length; j++) {
         var sr = stuRows[j];
         if (sr[1]) {
-          var stuStatus = String(sr[18] || "Active").trim();
+          var stuStatus = String(sr[18] || &quot;Active&quot;).trim();
           // Skip deleted students from portal sync so they stay in sheet only!
-          if (stuStatus.toUpperCase().indexOf("DELETE") !== -1 || stuStatus.toUpperCase().indexOf("REMOVED") !== -1) {
+          if (stuStatus.toUpperCase().indexOf(&quot;DELETE&quot;) !== -1 || stuStatus.toUpperCase().indexOf(&quot;REMOVED&quot;) !== -1) {
             continue;
           }
           var stuObj = {
             studentId: String(sr[1]).trim(),
             id: String(sr[1]).trim(),
-            studentName: String(sr[2] || "").trim(),
-            name: String(sr[2] || "").trim(),
-            dob: String(sr[3] || "").trim(),
+            studentName: String(sr[2] || &quot;&quot;).trim(),
+            name: String(sr[2] || &quot;&quot;).trim(),
+            dob: String(sr[3] || &quot;&quot;).trim(),
             age: Number(sr[4]) || 0,
-            requestedLevel: String(sr[5] || "Level 1").trim(),
-            schoolName: String(sr[6] || "").trim(),
-            standard: String(sr[7] || "").trim(),
-            schoolContact: String(sr[8] || "").trim(),
-            schoolAddress: String(sr[9] || "").trim(),
-            parentName: String(sr[10] || "").trim(),
-            parentMobile: String(sr[11] || "").trim(),
-            city: String(sr[12] || "").trim(),
-            district: String(sr[13] || "").trim(),
-            state: String(sr[14] || "").trim(),
-            admissionDate: String(sr[15] || "").trim(),
-            trainerId: String(sr[16] || "").trim(),
-            trainerName: String(sr[17] || "").trim(),
-            status: String(sr[18] || "Active").trim(),
-            feeStatus: String(sr[19] || "Paid").trim(),
+            requestedLevel: String(sr[5] || &quot;Level 1&quot;).trim(),
+            schoolName: String(sr[6] || &quot;&quot;).trim(),
+            standard: String(sr[7] || &quot;&quot;).trim(),
+            schoolContact: String(sr[8] || &quot;&quot;).trim(),
+            schoolAddress: String(sr[9] || &quot;&quot;).trim(),
+            parentName: String(sr[10] || &quot;&quot;).trim(),
+            parentMobile: String(sr[11] || &quot;&quot;).trim(),
+            city: String(sr[12] || &quot;&quot;).trim(),
+            district: String(sr[13] || &quot;&quot;).trim(),
+            state: String(sr[14] || &quot;&quot;).trim(),
+            admissionDate: String(sr[15] || &quot;&quot;).trim(),
+            trainerId: String(sr[16] || &quot;&quot;).trim(),
+            trainerName: String(sr[17] || &quot;&quot;).trim(),
+            status: String(sr[18] || &quot;Active&quot;).trim(),
+            feeStatus: String(sr[19] || &quot;Paid&quot;).trim(),
             feeAmount: Number(sr[20]) || 500,
-            utrNumber: String(sr[21] || "").trim(),
-            examStatus: String(sr[22] || "TRAINING").trim(),
+            utrNumber: String(sr[21] || &quot;&quot;).trim(),
+            examStatus: String(sr[22] || &quot;TRAINING&quot;).trim(),
             aiScore: Number(sr[23]) || null,
             trainerScore: Number(sr[24]) || null,
             totalScore: Number(sr[25]) || null,
-            examDate: String(sr[26] || "").trim(),
-            levelUpPending: String(sr[27] || "").toUpperCase() === "YES" || sr[27] === true,
-            pendingNextLevel: String(sr[28] || "").trim(),
-            levelHistoryStr: String(sr[29] || "").trim(),
-            photo: String(sr[30] || "").trim(),
-            aadharPhoto: String(sr[31] || "").trim()
+            examDate: String(sr[26] || &quot;&quot;).trim(),
+            levelUpPending: String(sr[27] || &quot;&quot;).toUpperCase() === &quot;YES&quot; || sr[27] === true,
+            pendingNextLevel: String(sr[28] || &quot;&quot;).trim(),
+            levelHistoryStr: String(sr[29] || &quot;&quot;).trim(),
+            photo: String(sr[30] || &quot;&quot;).trim(),
+            aadharPhoto: String(sr[31] || &quot;&quot;).trim()
           };
 
           if (stuObj.aiScore || stuObj.totalScore) {
@@ -3739,62 +3760,62 @@ function doGet(e) {
     // 3. Read Level-wise Fee Structure from ScriptProperties or Sheet
     var feeMap = null;
     try {
-      var feeProp = PropertiesService.getScriptProperties().getProperty("FEE_STRUCTURE");
+      var feeProp = PropertiesService.getScriptProperties().getProperty(&quot;FEE_STRUCTURE&quot;);
       if (feeProp) feeMap = JSON.parse(feeProp);
     } catch(e) {}
 
     if (!feeMap) {
-      var feeSheet = ss.getSheetByName("Fee Structure");
+      var feeSheet = ss.getSheetByName(&quot;Fee Structure&quot;);
       if (feeSheet) {
         var feeRows = feeSheet.getDataRange().getValues();
         feeMap = {};
         for (var k = 1; k &lt; feeRows.length; k++) {
           var fr = feeRows[k];
-          var param = String(fr[0] || "").toLowerCase().trim();
+          var param = String(fr[0] || &quot;&quot;).toLowerCase().trim();
           var val = fr[1];
-          if (param === "level 1") feeMap.level1 = Number(val) || 500;
-          else if (param === "level 2") feeMap.level2 = Number(val) || 600;
-          else if (param === "level 3") feeMap.level3 = Number(val) || 700;
-          else if (param === "level 4") feeMap.level4 = Number(val) || 800;
-          else if (param === "level 5") feeMap.level5 = Number(val) || 900;
-          else if (param === "level 6") feeMap.level6 = Number(val) || 1000;
-          else if (param === "senior 1") feeMap.senior1 = Number(val) || 1200;
-          else if (param === "senior 2") feeMap.senior2 = Number(val) || 1400;
-          else if (param === "senior 3") feeMap.senior3 = Number(val) || 1600;
-          else if (param === "senior 4") feeMap.senior4 = Number(val) || 1800;
-          else if (param.indexOf("upi") !== -1) feeMap.upi = String(val).trim();
+          if (param === &quot;level 1&quot;) feeMap.level1 = Number(val) || 500;
+          else if (param === &quot;level 2&quot;) feeMap.level2 = Number(val) || 600;
+          else if (param === &quot;level 3&quot;) feeMap.level3 = Number(val) || 700;
+          else if (param === &quot;level 4&quot;) feeMap.level4 = Number(val) || 800;
+          else if (param === &quot;level 5&quot;) feeMap.level5 = Number(val) || 900;
+          else if (param === &quot;level 6&quot;) feeMap.level6 = Number(val) || 1000;
+          else if (param === &quot;senior 1&quot;) feeMap.senior1 = Number(val) || 1200;
+          else if (param === &quot;senior 2&quot;) feeMap.senior2 = Number(val) || 1400;
+          else if (param === &quot;senior 3&quot;) feeMap.senior3 = Number(val) || 1600;
+          else if (param === &quot;senior 4&quot;) feeMap.senior4 = Number(val) || 1800;
+          else if (param.indexOf(&quot;upi&quot;) !== -1) feeMap.upi = String(val).trim();
         }
       }
     }
     allData.feeStructure = feeMap || {};
 
     // 4. Read Courses from Sheet
-    var crsSheet = ss.getSheetByName("Courses");
+    var crsSheet = ss.getSheetByName(&quot;Courses&quot;);
     if (crsSheet) {
       var crsRows = crsSheet.getDataRange().getValues();
       allData.courses = [];
       for (var m = 1; m &lt; crsRows.length; m++) {
         var cr = crsRows[m];
         if (cr[1]) {
-          var tStr = String(cr[6] || "ALL").trim();
-          var tArr = tStr.split(",").map(function(s){ return s.trim(); }).filter(Boolean);
+          var tStr = String(cr[6] || &quot;ALL&quot;).trim();
+          var tArr = tStr.split(&quot;,&quot;).map(function(s){ return s.trim(); }).filter(Boolean);
           allData.courses.push({
             id: String(cr[1]).trim(),
-            name: String(cr[2] || "").trim(),
-            title: String(cr[2] || "").trim(),
-            desc: String(cr[3] || "").trim(),
-            description: String(cr[3] || "").trim(),
-            youtubeUrl: String(cr[4] || "").trim(),
-            videoUrl: String(cr[4] || "").trim(),
-            thumbnail: String(cr[5] || "").trim(),
-            assignedTrainers: tArr.length &gt; 0 ? tArr : ["ALL"]
+            name: String(cr[2] || &quot;&quot;).trim(),
+            title: String(cr[2] || &quot;&quot;).trim(),
+            desc: String(cr[3] || &quot;&quot;).trim(),
+            description: String(cr[3] || &quot;&quot;).trim(),
+            youtubeUrl: String(cr[4] || &quot;&quot;).trim(),
+            videoUrl: String(cr[4] || &quot;&quot;).trim(),
+            thumbnail: String(cr[5] || &quot;&quot;).trim(),
+            assignedTrainers: tArr.length &gt; 0 ? tArr : [&quot;ALL&quot;]
           });
         }
       }
     }
 
     // 5. Read Competitions from Sheet
-    var compSheet = ss.getSheetByName("Competitions");
+    var compSheet = ss.getSheetByName(&quot;Competitions&quot;);
     if (compSheet) {
       var compRows = compSheet.getDataRange().getValues();
       allData.competitions = [];
@@ -3803,16 +3824,17 @@ function doGet(e) {
         if (cm[1]) {
           allData.competitions.push({
             id: String(cm[1]).trim(),
-            level: String(cm[2] || "State Level").trim(),
-            title: String(cm[3] || "").trim(),
-            date: String(cm[4] || "").trim(),
-            location: String(cm[5] || "").trim(),
-            categories: String(cm[6] || "").trim(),
+            level: String(cm[2] || &quot;State Level&quot;).trim(),
+            title: String(cm[3] || &quot;&quot;).trim(),
+            date: String(cm[4] || &quot;&quot;).trim(),
+            location: String(cm[5] || &quot;&quot;).trim(),
+            categories: String(cm[6] || &quot;&quot;).trim(),
             fee: Number(cm[7]) || 300,
-            status: String(cm[8] || "Registrations Open").trim(),
-            scope: String(cm[9] || "All").trim(),
-            allowedDistricts: (String(cm[9] || "").indexOf(",") !== -1 || (String(cm[9] || "").length &gt; 0 &amp;&amp; String(cm[9] || "") !== "All" &amp;&amp; String(cm[9] || "") !== "All Branches" &amp;&amp; String(cm[9] || "") !== "All India Open")) ? String(cm[9]).split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [],
-            allowedStates: (String(cm[9] || "").toLowerCase().indexOf("state") !== -1) ? String(cm[9]).split(",").map(function(s){ return s.trim(); }).filter(Boolean) : [],
+            status: String(cm[8] || &quot;Registrations Open&quot;).trim(),
+            scope: String(cm[9] || &quot;All&quot;).trim(),
+            assignedTrainers: (String(cm[10] || &quot;&quot;).trim()) ? String(cm[10]).split(&quot;,&quot;).map(function(s){ return s.trim(); }).filter(Boolean) : [],
+            allowedDistricts: (String(cm[9] || &quot;&quot;).indexOf(&quot;,&quot;) !== -1 || (String(cm[9] || &quot;&quot;).length &gt; 0 &amp;&amp; String(cm[9] || &quot;&quot;) !== &quot;All&quot; &amp;&amp; String(cm[9] || &quot;&quot;) !== &quot;All Branches&quot; &amp;&amp; String(cm[9] || &quot;&quot;) !== &quot;All India Open&quot;)) ? String(cm[9]).split(&quot;,&quot;).map(function(s){ return s.trim(); }).filter(Boolean) : [],
+            allowedStates: (String(cm[9] || &quot;&quot;).toLowerCase().indexOf(&quot;state&quot;) !== -1) ? String(cm[9]).split(&quot;,&quot;).map(function(s){ return s.trim(); }).filter(Boolean) : [],
             entries: 0,
             athletes: []
           });
@@ -3821,26 +3843,28 @@ function doGet(e) {
     }
 
     // 5B. Read Tournament Entries &amp; Map Athletes to Competitions
-    var tournSheet = ss.getSheetByName("TournamentEntries");
+    var tournSheet = ss.getSheetByName(&quot;TournamentEntries&quot;);
     if (tournSheet &amp;&amp; allData.competitions) {
       var tRows = tournSheet.getDataRange().getValues();
       for (var tr = 1; tr &lt; tRows.length; tr++) {
         var tRow = tRows[tr];
-        var cId = String(tRow[1] || "").trim();
+        var cId = String(tRow[1] || &quot;&quot;).trim();
         if (cId) {
-          var matchedComp = allData.competitions.find(function(c) { return c.id === cId; });
+          var matchedComp = allData.competitions.find(function(c) {
+            return String(c.id).trim().toUpperCase() === cId.toUpperCase();
+          });
           if (matchedComp) {
             if (!matchedComp.athletes) matchedComp.athletes = [];
             matchedComp.athletes.push({
-              studentId: String(tRow[4] || "").trim(),
-              studentName: String(tRow[5] || "").trim(),
-              discipline: String(tRow[6] || "Single Event").trim(),
-              division: String(tRow[7] || "Open").trim(),
-              feeStatus: String(tRow[8] || "Unpaid").trim(),
+              studentId: String(tRow[4] || &quot;&quot;).trim(),
+              studentName: String(tRow[5] || &quot;&quot;).trim(),
+              discipline: String(tRow[6] || &quot;Single Event&quot;).trim(),
+              division: String(tRow[7] || &quot;Open&quot;).trim(),
+              feeStatus: String(tRow[8] || &quot;Unpaid&quot;).trim(),
               feeAmount: Number(tRow[9]) || 300,
-              utrNumber: String(tRow[10] || "").trim(),
-              paymentMode: String(tRow[11] || "Online UPI").trim(),
-              trainerName: String(tRow[12] || "").trim(),
+              utrNumber: String(tRow[10] || &quot;&quot;).trim(),
+              paymentMode: String(tRow[11] || &quot;Online UPI&quot;).trim(),
+              trainerName: String(tRow[12] || &quot;&quot;).trim(),
               registeredAt: tRow[0] ? new Date(tRow[0]).toISOString() : new Date().toISOString()
             });
             matchedComp.entries = matchedComp.athletes.length;
@@ -3850,25 +3874,34 @@ function doGet(e) {
     }
 
     // 6. Read Student Sports Records &amp; Medals from Sheet (Synced across Admin &amp; Trainer Panels)
-    var recSheet = ss.getSheetByName("StudentSportsRecords");
+    var recSheet = ss.getSheetByName(&quot;StudentSportsRecords&quot;);
     if (recSheet) {
       var recRows = recSheet.getDataRange().getValues();
       for (var r = 1; r &lt; recRows.length; r++) {
         var row = recRows[r];
-        var sId = String(row[1] || "").trim();
+        var sId = String(row[1] || &quot;&quot;).trim();
         if (sId) {
           var normSid = sId.toUpperCase();
-          if (!allData.studentCompetitions[sId]) allData.studentCompetitions[sId] = [];
-          if (!allData.studentCompetitions[normSid]) allData.studentCompetitions[normSid] = allData.studentCompetitions[sId];
+          if (!allData.studentCompetitions[normSid]) allData.studentCompetitions[normSid] = [];
+          allData.studentCompetitions[sId] = allData.studentCompetitions[normSid];
+          var rawCat = String(row[5] || &quot;&quot;).trim();
+          var scopeVal = &quot;State Level&quot;;
+          var discVal = rawCat || &quot;Martial Arts Sparring&quot;;
+          if (rawCat.indexOf(&quot; - &quot;) !== -1) {
+            var parts = rawCat.split(&quot; - &quot;);
+            scopeVal = parts[0].trim();
+            discVal = parts.slice(1).join(&quot; - &quot;).trim();
+          }
           var compItem = {
-            title: String(row[3] || "").trim(),
+            title: String(row[3] || &quot;&quot;).trim(),
+            scope: scopeVal,
             date: formatStandardDateString(row[4]),
             year: formatStandardDateString(row[4]).slice(0, 4),
-            category: String(row[5] || "").trim(),
-            achievement: String(row[6] || "").trim(),
-            certificate: String(row[7] || "").trim()
+            category: discVal,
+            achievement: String(row[6] || &quot;&quot;).trim(),
+            certificate: String(row[7] || &quot;&quot;).trim()
           };
-          allData.studentCompetitions[sId].push(compItem);
+          allData.studentCompetitions[normSid].push(compItem);
         }
       }
     }
@@ -3876,7 +3909,7 @@ function doGet(e) {
     // Attach studentCompetitions directly to each student in allData.students
     if (Array.isArray(allData.students)) {
       allData.students.forEach(function(stu) {
-        var stId = String(stu.studentId || stu.id || "").trim().toUpperCase();
+        var stId = String(stu.studentId || stu.id || &quot;&quot;).trim().toUpperCase();
         if (stId &amp;&amp; allData.studentCompetitions[stId]) {
           stu.studentCompetitions = allData.studentCompetitions[stId];
         }
@@ -3885,25 +3918,25 @@ function doGet(e) {
 
     // 7. Read Master Exam Switch &amp; Settings from ScriptProperties &amp; AcademySettings Sheet
     var scriptProps = PropertiesService.getScriptProperties();
-    var propSwitch = scriptProps.getProperty("EXAM_MASTER_SWITCH");
-    if (propSwitch !== null &amp;&amp; propSwitch !== "") {
-      allData.examSessionActive = (propSwitch === "ON" || propSwitch === "TRUE");
+    var propSwitch = scriptProps.getProperty(&quot;EXAM_MASTER_SWITCH&quot;);
+    if (propSwitch !== null &amp;&amp; propSwitch !== &quot;&quot;) {
+      allData.examSessionActive = (propSwitch === &quot;ON&quot; || propSwitch === &quot;TRUE&quot;);
     } else {
       allData.examSessionActive = true; // Default ON so live exams are instantly accessible across all devices
     }
 
-    var setSheet = ss.getSheetByName("AcademySettings");
+    var setSheet = ss.getSheetByName(&quot;AcademySettings&quot;);
     if (setSheet) {
       var setRows = setSheet.getDataRange().getValues();
       for (var s = 1; s &lt; setRows.length; s++) {
-        var sk = String(setRows[s][0] || "").toUpperCase().trim();
-        var rawVal = String(setRows[s][1] || "").trim();
+        var sk = String(setRows[s][0] || &quot;&quot;).toUpperCase().trim();
+        var rawVal = String(setRows[s][1] || &quot;&quot;).trim();
         var sv = rawVal.toUpperCase();
-        if (sk === "EXAM_MASTER_SWITCH") {
-          allData.examSessionActive = (sv === "ON" || sv === "TRUE");
-          scriptProps.setProperty("EXAM_MASTER_SWITCH", sv);
+        if (sk === &quot;EXAM_MASTER_SWITCH&quot;) {
+          allData.examSessionActive = (sv === &quot;ON&quot; || sv === &quot;TRUE&quot;);
+          scriptProps.setProperty(&quot;EXAM_MASTER_SWITCH&quot;, sv);
         }
-        if (sk === "ADMIN_PASSWORD" || sk === "ADMIN_PIN" || sk === "MASTER_PASSWORD") {
+        if (sk === &quot;ADMIN_PASSWORD&quot; || sk === &quot;ADMIN_PIN&quot; || sk === &quot;MASTER_PASSWORD&quot;) {
           allData.adminPass = rawVal;
         }
       }
@@ -3915,43 +3948,43 @@ function doGet(e) {
 
   // 1C. Read Single Sheet (Fallback)
     // 1D. 1-Click Master Setup of All 10 Sheets
-  if (action === "setupSheets" || action === "initSheets") {
+  if (action === &quot;setupSheets&quot; || action === &quot;initSheets&quot;) {
     var initRes = setupAllAcademySheets();
     return ContentService.createTextOutput(JSON.stringify(initRes)).setMimeType(ContentService.MimeType.JSON);
   }
 
   // 1E. Direct Set Exam Switch (Instant Zero-Preflight GET fallback)
-  if (action === "setExamSwitch" || action === "toggleExamSwitch") {
+  if (action === &quot;setExamSwitch&quot; || action === &quot;toggleExamSwitch&quot;) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var val = (e &amp;&amp; e.parameter &amp;&amp; (e.parameter.active === "true" || e.parameter.active === "ON")) ? "ON" : "OFF";
+    var val = (e &amp;&amp; e.parameter &amp;&amp; (e.parameter.active === &quot;true&quot; || e.parameter.active === &quot;ON&quot;)) ? &quot;ON&quot; : &quot;OFF&quot;;
     var scriptProps = PropertiesService.getScriptProperties();
-    scriptProps.setProperty("EXAM_MASTER_SWITCH", val);
+    scriptProps.setProperty(&quot;EXAM_MASTER_SWITCH&quot;, val);
     try {
-      var setSheet = getOrCreateSheet(ss, "AcademySettings", [
-        "Setting Key", "Setting Value", "Updated By", "Last Updated"
+      var setSheet = getOrCreateSheet(ss, &quot;AcademySettings&quot;, [
+        &quot;Setting Key&quot;, &quot;Setting Value&quot;, &quot;Updated By&quot;, &quot;Last Updated&quot;
       ]);
-      var rowData = ["EXAM_MASTER_SWITCH", val, "Admin", formatStandardTimestamp(new Date())];
-      var updated = updateRowIfExistsOrMerge(setSheet, 1, "EXAM_MASTER_SWITCH", rowData);
+      var rowData = [&quot;EXAM_MASTER_SWITCH&quot;, val, &quot;Admin&quot;, formatStandardTimestamp(new Date())];
+      var updated = updateRowIfExistsOrMerge(setSheet, 1, &quot;EXAM_MASTER_SWITCH&quot;, rowData);
       if (!updated) setSheet.appendRow(rowData);
     } catch(err) {
-      Logger.log("setExamSwitch error: " + err.toString());
+      Logger.log(&quot;setExamSwitch error: &quot; + err.toString());
     }
     return ContentService.createTextOutput(JSON.stringify({
-      status: "success",
-      message: "Exam master switch updated to " + val,
-      examSessionActive: (val === "ON")
+      status: &quot;success&quot;,
+      message: &quot;Exam master switch updated to &quot; + val,
+      examSessionActive: (val === &quot;ON&quot;)
     })).setMimeType(ContentService.MimeType.JSON);
   }
 
-if (action === "readSheet") {
-    var sheetName = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.sheet) || "Trainers";
+if (action === &quot;readSheet&quot;) {
+    var sheetName = (e &amp;&amp; e.parameter &amp;&amp; e.parameter.sheet) || &quot;Trainers&quot;;
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName(sheetName);
     if (!sheet) {
-      result = { status: "error", message: "Section not found: " + sheetName };
+      result = { status: &quot;error&quot;, message: &quot;Section not found: &quot; + sheetName };
     } else {
       var data = sheet.getDataRange().getValues();
-      result = { status: "success", sheet: sheetName, rows: data };
+      result = { status: &quot;success&quot;, sheet: sheetName, rows: data };
     }
   }
 
@@ -3968,41 +4001,41 @@ function doPost(e) {
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var data = JSON.parse(e.postData.contents);
-    var type = (data.type || data.action || "").toUpperCase();
+    var type = (data.type || data.action || &quot;&quot;).toUpperCase();
 
     // -----------------------------------------------------------------------
     // 1. TRAINER REGISTRATION &amp; IN-PLACE UPDATE (13 POINTS) + WELCOME EMAIL
     // -----------------------------------------------------------------------
-    if (type.indexOf("TRAINER") !== -1) {
-      var sheet = getOrCreateSheet(ss, "Trainers", [
-        "Timestamp", "Trainer ID", "Full Name", "Position", "Status",
-        "Calling Mobile", "WhatsApp Mobile", "Official Email", "State",
-        "District", "Branch", "Full Address", "Login PIN / Password",
-        "Trainer Photo", "Aadhaar Photo"
+    if (type.indexOf(&quot;TRAINER&quot;) !== -1) {
+      var sheet = getOrCreateSheet(ss, &quot;Trainers&quot;, [
+        &quot;Timestamp&quot;, &quot;Trainer ID&quot;, &quot;Full Name&quot;, &quot;Position&quot;, &quot;Status&quot;,
+        &quot;Calling Mobile&quot;, &quot;WhatsApp Mobile&quot;, &quot;Official Email&quot;, &quot;State&quot;,
+        &quot;District&quot;, &quot;Branch&quot;, &quot;Full Address&quot;, &quot;Login PIN / Password&quot;,
+        &quot;Trainer Photo&quot;, &quot;Aadhaar Photo&quot;
       ]);
 
-      var trainerId = data.trainerId || data.id || "";
-      var trainerPass = data.password || data.pin || "1234";
-      var trainerEmail = (data.email || "").trim();
-      var trainerName = data.fullName || data.name || "Certified Trainer";
-      var trnPhoto = String(data.photo || "").trim();
+      var trainerId = data.trainerId || data.id || &quot;&quot;;
+      var trainerPass = data.password || data.pin || &quot;1234&quot;;
+      var trainerEmail = (data.email || &quot;&quot;).trim();
+      var trainerName = data.fullName || data.name || &quot;Certified Trainer&quot;;
+      var trnPhoto = String(data.photo || &quot;&quot;).trim();
       if (trnPhoto.length &gt; 45000) trnPhoto = trnPhoto.substring(0, 45000);
-      var trnAadhar = String(data.aadharPhoto || "").trim();
+      var trnAadhar = String(data.aadharPhoto || &quot;&quot;).trim();
       if (trnAadhar.length &gt; 45000) trnAadhar = trnAadhar.substring(0, 45000);
 
       var rowData = [
         formatStandardTimestamp(new Date()),
         trainerId,
         trainerName,
-        data.position || "Branch Instructor",
-        data.status || "Active",
-        data.mobile || data.phone || "",
-        data.whatsapp || data.mobile || data.phone || "",
+        data.position || &quot;Branch Instructor&quot;,
+        data.status || &quot;Active&quot;,
+        data.mobile || data.phone || &quot;&quot;,
+        data.whatsapp || data.mobile || data.phone || &quot;&quot;,
         trainerEmail,
-        data.state || "",
-        data.district || "",
-        data.branch || "",
-        data.address || "",
+        data.state || &quot;&quot;,
+        data.district || &quot;&quot;,
+        data.branch || &quot;&quot;,
+        data.address || &quot;&quot;,
         trainerPass,
         trnPhoto,
         trnAadhar
@@ -4018,13 +4051,13 @@ function doPost(e) {
           sendTrainerWelcomeEmail(trainerEmail, trainerName, trainerId, trainerPass, data.position, data.branch || data.district);
           emailSent = true;
         } catch(mailErr) {
-          Logger.log("Trainer Mail send failed: " + mailErr.toString());
+          Logger.log(&quot;Trainer Mail send failed: &quot; + mailErr.toString());
         }
       }
 
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: updated ? "Trainer updated in-place" : "Trainer registered successfully",
+        status: &quot;success&quot;,
+        message: updated ? &quot;Trainer updated in-place&quot; : &quot;Trainer registered successfully&quot;,
         trainerId: trainerId,
         welcomeEmailSent: emailSent
       })).setMimeType(ContentService.MimeType.JSON);
@@ -4033,14 +4066,14 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     // 1B. TRAINER DELETION
     // -----------------------------------------------------------------------
-    if (type === "TRAINER_DELETE" || type === "DELETE_TRAINER") {
-      var trnSheet = ss.getSheetByName("Trainers");
+    if (type === &quot;TRAINER_DELETE&quot; || type === &quot;DELETE_TRAINER&quot;) {
+      var trnSheet = ss.getSheetByName(&quot;Trainers&quot;);
       var deleted = false;
-      var targetTrnId = String(data.trainerId || data.id || "").trim().toUpperCase();
+      var targetTrnId = String(data.trainerId || data.id || &quot;&quot;).trim().toUpperCase();
       if (trnSheet &amp;&amp; targetTrnId) {
         var tData = trnSheet.getDataRange().getValues();
         for (var tr = 1; tr &lt; tData.length; tr++) {
-          if (String(tData[tr][1] || "").trim().toUpperCase() === targetTrnId) {
+          if (String(tData[tr][1] || &quot;&quot;).trim().toUpperCase() === targetTrnId) {
             trnSheet.deleteRow(tr + 1);
             deleted = true;
             break;
@@ -4048,33 +4081,33 @@ function doPost(e) {
         }
       }
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
+        status: &quot;success&quot;,
         deleted: deleted,
         trainerId: targetTrnId,
-        message: deleted ? "Trainer deleted from sheet" : "Trainer not found"
+        message: deleted ? &quot;Trainer deleted from sheet&quot; : &quot;Trainer not found&quot;
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
     // -----------------------------------------------------------------------
     // 2A. STUDENT DELETION (FROM CLOUD GOOGLE SHEET)
     // -----------------------------------------------------------------------
-    if (type === "STUDENT_DELETE" || type === "DELETE_STUDENT") {
-      var stuSheet = ss.getSheetByName("Students");
+    if (type === &quot;STUDENT_DELETE&quot; || type === &quot;DELETE_STUDENT&quot;) {
+      var stuSheet = ss.getSheetByName(&quot;Students&quot;);
       var markedDeleted = false;
-      var targetId = String(data.studentId || data.id || "").trim().toUpperCase();
-      var deletedBy = data.deletedBy || "Admin";
+      var targetId = String(data.studentId || data.id || &quot;&quot;).trim().toUpperCase();
+      var deletedBy = data.deletedBy || &quot;Admin&quot;;
 
       if (stuSheet &amp;&amp; targetId) {
         var sData = stuSheet.getDataRange().getValues();
         for (var r = 1; r &lt; sData.length; r++) {
-          if (String(sData[r][1] || "").trim().toUpperCase() === targetId) {
-            // Update Status (Col 19 -&gt; Column S) to 'DELETED'
-            stuSheet.getRange(r + 1, 19).setValue("DELETED (Deleted by " + deletedBy + ")");
+          if (String(sData[r][1] || &quot;&quot;).trim().toUpperCase() === targetId) {
+            // Update Status (Col 19 -&gt; Column S) to &#x27;DELETED&#x27;
+            stuSheet.getRange(r + 1, 19).setValue(&quot;DELETED (Deleted by &quot; + deletedBy + &quot;)&quot;);
             // Also update Live Exam Status (Col 23 -&gt; Column W)
-            stuSheet.getRange(r + 1, 23).setValue("STUDENT DELETED");
+            stuSheet.getRange(r + 1, 23).setValue(&quot;STUDENT DELETED&quot;);
             // Mark row visually in Google Sheet (light red background so admin can easily identify)
             try {
-              stuSheet.getRange(r + 1, 1, 1, stuSheet.getLastColumn()).setBackground("#fee2e2");
+              stuSheet.getRange(r + 1, 1, 1, stuSheet.getLastColumn()).setBackground(&quot;#fee2e2&quot;);
             } catch(bgErr) {}
             markedDeleted = true;
             break;
@@ -4082,48 +4115,48 @@ function doPost(e) {
         }
       }
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
+        status: &quot;success&quot;,
         deleted: markedDeleted,
         softDelete: true,
         studentId: targetId,
-        message: markedDeleted ? "Student marked as DELETED in sheet (Record preserved)" : "Student not found"
+        message: markedDeleted ? &quot;Student marked as DELETED in sheet (Record preserved)&quot; : &quot;Student not found&quot;
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
     // -----------------------------------------------------------------------
     // 2. STUDENT REGISTRATION, EXAM MARKS &amp; LEVEL PROGRESSION (30 POINTS)
     // -----------------------------------------------------------------------
-    if (type.indexOf("STUDENT") !== -1 &amp;&amp; type.indexOf("TOURNAMENT") === -1 &amp;&amp; type.indexOf("COMPETITION") === -1) {
-      var sheet = getOrCreateSheet(ss, "Students", [
-        "Timestamp", "Student ID", "Student Name", "Date of Birth", "Age",
-        "Requested Level", "School Name", "Standard", "School Contact", "School Address",
-        "Parent Name", "Parent Mobile", "City / Village", "District", "State",
-        "Admission Date", "Trainer ID", "Trainer Name", "Status", "Fee Status",
-        "Fee Amount", "UPI UTR Number", "Live Exam Status", "Live AI Camera Score (/50)",
-        "Trainer Exam Score (/50)", "Grand Total Score (/100)", "Exam Passed Date",
-        "Level Up Pending", "Pending Next Level", "10-Level History &amp; Passed Marks",
-        "Student Photo", "Aadhaar Photo"
+    if (type.indexOf(&quot;STUDENT&quot;) !== -1 &amp;&amp; type.indexOf(&quot;TOURNAMENT&quot;) === -1 &amp;&amp; type.indexOf(&quot;COMPETITION&quot;) === -1) {
+      var sheet = getOrCreateSheet(ss, &quot;Students&quot;, [
+        &quot;Timestamp&quot;, &quot;Student ID&quot;, &quot;Student Name&quot;, &quot;Date of Birth&quot;, &quot;Age&quot;,
+        &quot;Requested Level&quot;, &quot;School Name&quot;, &quot;Standard&quot;, &quot;School Contact&quot;, &quot;School Address&quot;,
+        &quot;Parent Name&quot;, &quot;Parent Mobile&quot;, &quot;City / Village&quot;, &quot;District&quot;, &quot;State&quot;,
+        &quot;Admission Date&quot;, &quot;Trainer ID&quot;, &quot;Trainer Name&quot;, &quot;Status&quot;, &quot;Fee Status&quot;,
+        &quot;Fee Amount&quot;, &quot;UPI UTR Number&quot;, &quot;Live Exam Status&quot;, &quot;Live AI Camera Score (/50)&quot;,
+        &quot;Trainer Exam Score (/50)&quot;, &quot;Grand Total Score (/100)&quot;, &quot;Exam Passed Date&quot;,
+        &quot;Level Up Pending&quot;, &quot;Pending Next Level&quot;, &quot;10-Level History &amp; Passed Marks&quot;,
+        &quot;Student Photo&quot;, &quot;Aadhaar Photo&quot;
       ]);
 
-      var studentId = String(data.studentId || data.id || "").trim();
-      var studentName = String(data.studentName || data.name || "").trim();
-      if (!studentId || studentId.length &lt; 5 || studentId.toUpperCase().indexOf("TEST") !== -1 || !studentName || studentName.toLowerCase() === "student") {
+      var studentId = String(data.studentId || data.id || &quot;&quot;).trim();
+      var studentName = String(data.studentName || data.name || &quot;&quot;).trim();
+      if (!studentId || studentId.length &lt; 5 || studentId.toUpperCase().indexOf(&quot;TEST&quot;) !== -1 || !studentName || studentName.toLowerCase() === &quot;student&quot;) {
         return ContentService.createTextOutput(JSON.stringify({
-          status: "error",
-          message: "Rejected: Cannot register or append student without a valid Student ID and real Student Name"
+          status: &quot;error&quot;,
+          message: &quot;Rejected: Cannot register or append student without a valid Student ID and real Student Name&quot;
         })).setMimeType(ContentService.MimeType.JSON);
       }
-      var parentEmail = (data.parentEmail || data.email || "").trim();
+      var parentEmail = (data.parentEmail || data.email || &quot;&quot;).trim();
 
       // Extract exam scores if present
-      var aiScore = (data.lastExam &amp;&amp; data.lastExam.aiScore) ? data.lastExam.aiScore : (data.aiScore || "");
-      var trScore = (data.lastExam &amp;&amp; data.lastExam.trainerScore) ? data.lastExam.trainerScore : (data.trainerScore || "");
-      var totScore = (data.lastExam &amp;&amp; data.lastExam.totalScore) ? data.lastExam.totalScore : (data.totalScore || "");
-      var exDate = (data.lastExam &amp;&amp; data.lastExam.examDate) ? data.lastExam.examDate : (data.examDate || "");
-      var lvlHistStr = data.levelHistory ? JSON.stringify(data.levelHistory) : (data.levelHistoryStr || "");
-      var stuPhoto = String(data.photo || "").trim();
+      var aiScore = (data.lastExam &amp;&amp; data.lastExam.aiScore) ? data.lastExam.aiScore : (data.aiScore || &quot;&quot;);
+      var trScore = (data.lastExam &amp;&amp; data.lastExam.trainerScore) ? data.lastExam.trainerScore : (data.trainerScore || &quot;&quot;);
+      var totScore = (data.lastExam &amp;&amp; data.lastExam.totalScore) ? data.lastExam.totalScore : (data.totalScore || &quot;&quot;);
+      var exDate = (data.lastExam &amp;&amp; data.lastExam.examDate) ? data.lastExam.examDate : (data.examDate || &quot;&quot;);
+      var lvlHistStr = data.levelHistory ? JSON.stringify(data.levelHistory) : (data.levelHistoryStr || &quot;&quot;);
+      var stuPhoto = String(data.photo || &quot;&quot;).trim();
       if (stuPhoto.length &gt; 45000) stuPhoto = stuPhoto.substring(0, 45000);
-      var stuAadhar = String(data.aadharPhoto || "").trim();
+      var stuAadhar = String(data.aadharPhoto || &quot;&quot;).trim();
       if (stuAadhar.length &gt; 45000) stuAadhar = stuAadhar.substring(0, 45000);
 
       var rowData = [
@@ -4131,90 +4164,90 @@ function doPost(e) {
         studentId,
         studentName,
         formatStandardDateString(data.dob),
-        (data.age !== undefined &amp;&amp; data.age !== null &amp;&amp; data.age !== "") ? data.age : "",
-        data.requestedLevel || "Level 1",
-        data.schoolName || "",
-        data.standard || "",
-        data.schoolContact || "",
-        data.schoolAddress || "",
-        data.parentName || "",
-        data.parentMobile || "",
-        data.city || "",
-        data.district || "",
-        data.state || "",
+        (data.age !== undefined &amp;&amp; data.age !== null &amp;&amp; data.age !== &quot;&quot;) ? data.age : &quot;&quot;,
+        data.requestedLevel || &quot;Level 1&quot;,
+        data.schoolName || &quot;&quot;,
+        data.standard || &quot;&quot;,
+        data.schoolContact || &quot;&quot;,
+        data.schoolAddress || &quot;&quot;,
+        data.parentName || &quot;&quot;,
+        data.parentMobile || &quot;&quot;,
+        data.city || &quot;&quot;,
+        data.district || &quot;&quot;,
+        data.state || &quot;&quot;,
         formatStandardDateString(data.admissionDate || new Date()),
-        data.trainerId || "",
-        data.trainerName || "",
-        data.status || "Active",
-        data.feeStatus || "Paid",
+        data.trainerId || &quot;&quot;,
+        data.trainerName || &quot;&quot;,
+        data.status || &quot;Active&quot;,
+        data.feeStatus || &quot;Paid&quot;,
         data.feeAmount || 500,
-        data.utrNumber || "",
-        data.examStatus || "TRAINING",
+        data.utrNumber || &quot;&quot;,
+        data.examStatus || &quot;TRAINING&quot;,
         aiScore,
         trScore,
         totScore,
         formatStandardDateString(exDate),
-        data.levelUpPending ? "YES" : "NO",
-        data.pendingNextLevel || "",
+        data.levelUpPending ? &quot;YES&quot; : &quot;NO&quot;,
+        data.pendingNextLevel || &quot;&quot;,
         lvlHistStr,
-        stuPhoto || "",
-        stuAadhar || ""
+        stuPhoto || &quot;&quot;,
+        stuAadhar || &quot;&quot;
       ];
 
       var updated = updateRowIfExistsOrMerge(sheet, 2, studentId, rowData);
       if (!updated) sheet.appendRow(rowData);
 
-      // Log Belt Exam Result to dedicated 'ExamResults' sheet
-      if (data.action === "updateExamResults" || (data.lastExam &amp;&amp; data.lastExam.totalScore)) {
+      // Log Belt Exam Result to dedicated &#x27;ExamResults&#x27; sheet
+      if (data.action === &quot;updateExamResults&quot; || (data.lastExam &amp;&amp; data.lastExam.totalScore)) {
         try {
-          var examSheet = getOrCreateSheet(ss, "ExamResults", [
-            "Timestamp", "Exam Reference ID", "Student ID", "Student Name", "Akhada / Branch",
-            "District", "State", "Belt Level", "AI Camera Score (/50)", "Trainer Score (/50)",
-            "Grand Total (/100)", "Grade", "Exam Date", "Trainer / Ustad Name", "Status"
+          var examSheet = getOrCreateSheet(ss, &quot;ExamResults&quot;, [
+            &quot;Timestamp&quot;, &quot;Exam Reference ID&quot;, &quot;Student ID&quot;, &quot;Student Name&quot;, &quot;Akhada / Branch&quot;,
+            &quot;District&quot;, &quot;State&quot;, &quot;Belt Level&quot;, &quot;AI Camera Score (/50)&quot;, &quot;Trainer Score (/50)&quot;,
+            &quot;Grand Total (/100)&quot;, &quot;Grade&quot;, &quot;Exam Date&quot;, &quot;Trainer / Ustad Name&quot;, &quot;Status&quot;
           ]);
-          var examRefId = "EXAM-" + studentId.replace(/[^A-Za-z0-9]/g, "") + "-L" + (data.lastExam?.levelNum || 1);
+          var examRefId = &quot;EXAM-&quot; + studentId.replace(/[^A-Za-z0-9]/g, &quot;&quot;) + &quot;-L&quot; + (data.lastExam?.levelNum || 1);
           examSheet.appendRow([
             formatStandardTimestamp(new Date()),
             examRefId,
             studentId,
             studentName,
-            data.city ? data.city + " Akhada" : "Central Akhada",
-            data.district || "",
-            data.state || "Maharashtra",
-            data.lastExam?.levelName || data.requestedLevel || "Level 1",
+            data.city ? data.city + &quot; Akhada&quot; : &quot;Central Akhada&quot;,
+            data.district || &quot;&quot;,
+            data.state || &quot;Maharashtra&quot;,
+            data.lastExam?.levelName || data.requestedLevel || &quot;Level 1&quot;,
             aiScore,
             trScore,
             totScore,
-            totScore &gt;= 90 ? "A+" : (totScore &gt;= 80 ? "A" : "B+"),
+            totScore &gt;= 90 ? &quot;A+&quot; : (totScore &gt;= 80 ? &quot;A&quot; : &quot;B+&quot;),
             formatStandardDateString(exDate || new Date()),
-            data.lastExam?.trainerName || data.trainerName || "Certified Ustad",
-            "PASSED &amp; CERTIFIED"
+            data.lastExam?.trainerName || data.trainerName || &quot;Certified Ustad&quot;,
+            &quot;PASSED &amp; CERTIFIED&quot;
           ]);
         } catch(examErr) {
-          Logger.log("ExamResults log error: " + examErr.toString());
+          Logger.log(&quot;ExamResults log error: &quot; + examErr.toString());
         }
       }
 
-      // Log Level-Up Application to dedicated 'LevelUpApplications' sheet
-      if (data.action === "submitLevelUp" || data.action === "approveLevelUp") {
+      // Log Level-Up Application to dedicated &#x27;LevelUpApplications&#x27; sheet
+      if (data.action === &quot;submitLevelUp&quot; || data.action === &quot;approveLevelUp&quot;) {
         try {
-          var lvlAppSheet = getOrCreateSheet(ss, "LevelUpApplications", [
-            "Timestamp", "Student ID", "Student Name", "Promoted From Level", "Promoted To Level",
-            "Fee Amount (₹)", "UPI UTR Number", "Application Status", "Approval Date"
+          var lvlAppSheet = getOrCreateSheet(ss, &quot;LevelUpApplications&quot;, [
+            &quot;Timestamp&quot;, &quot;Student ID&quot;, &quot;Student Name&quot;, &quot;Promoted From Level&quot;, &quot;Promoted To Level&quot;,
+            &quot;Fee Amount (₹)&quot;, &quot;UPI UTR Number&quot;, &quot;Application Status&quot;, &quot;Approval Date&quot;
           ]);
           lvlAppSheet.appendRow([
             new Date(),
             studentId,
             studentName,
-            data.oldLevel || data.requestedLevel || "",
-            data.pendingNextLevel || data.nextLvlName || "",
+            data.oldLevel || data.requestedLevel || &quot;&quot;,
+            data.pendingNextLevel || data.nextLvlName || &quot;&quot;,
             data.feeAmount || 600,
-            data.utrNumber || "",
-            data.action === "approveLevelUp" ? "APPROVED &amp; PAID" : "PENDING VERIFICATION",
-            data.action === "approveLevelUp" ? new Date().toLocaleDateString("en-IN") : "-"
+            data.utrNumber || &quot;&quot;,
+            data.action === &quot;approveLevelUp&quot; ? &quot;APPROVED &amp; PAID&quot; : &quot;PENDING VERIFICATION&quot;,
+            data.action === &quot;approveLevelUp&quot; ? new Date().toLocaleDateString(&quot;en-IN&quot;) : &quot;-&quot;
           ]);
         } catch(lvlErr) {
-          Logger.log("LevelUpApplications log error: " + lvlErr.toString());
+          Logger.log(&quot;LevelUpApplications log error: &quot; + lvlErr.toString());
         }
       }
 
@@ -4225,13 +4258,13 @@ function doPost(e) {
           sendStudentAdmissionEmail(parentEmail, studentName, studentId, data.requestedLevel, data.trainerName, data.feeAmount, data.utrNumber);
           studentEmailSent = true;
         } catch(mailErr) {
-          Logger.log("Student Mail send failed: " + mailErr.toString());
+          Logger.log(&quot;Student Mail send failed: &quot; + mailErr.toString());
         }
       }
 
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: updated ? "Student updated in-place" : "Student registered successfully",
+        status: &quot;success&quot;,
+        message: updated ? &quot;Student updated in-place&quot; : &quot;Student registered successfully&quot;,
         studentId: studentId,
         admissionEmailSent: studentEmailSent
       })).setMimeType(ContentService.MimeType.JSON);
@@ -4240,26 +4273,26 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     // 3. STUDENT SPORTS RECORDS &amp; MEDALS (Gold/Silver/Bronze Track Record)
     // -----------------------------------------------------------------------
-    if (type.indexOf("STUDENT_COMPETITION_RECORD") !== -1 || type.indexOf("SPORTS_RECORD") !== -1) {
-      var sheet = getOrCreateSheet(ss, "StudentSportsRecords", [
-        "Timestamp", "Student ID", "Student Name", "Tournament Title", "Event Date",
-        "Discipline / Category", "Medal / Achievement", "Certificate Number"
+    if (type.indexOf(&quot;STUDENT_COMPETITION_RECORD&quot;) !== -1 || type.indexOf(&quot;SPORTS_RECORD&quot;) !== -1) {
+      var sheet = getOrCreateSheet(ss, &quot;StudentSportsRecords&quot;, [
+        &quot;Timestamp&quot;, &quot;Student ID&quot;, &quot;Student Name&quot;, &quot;Tournament Title&quot;, &quot;Event Date&quot;,
+        &quot;Discipline / Category&quot;, &quot;Medal / Achievement&quot;, &quot;Certificate Number&quot;
       ]);
 
       sheet.appendRow([
         formatStandardTimestamp(new Date()),
-        data.studentId || "",
-        data.studentName || "",
-        data.title || "",
+        data.studentId || &quot;&quot;,
+        data.studentName || &quot;&quot;,
+        data.title || &quot;&quot;,
         formatStandardDateString(data.date || new Date()),
-        data.category || "Martial Arts Sparring",
-        data.achievement || "🥇 Gold Medal",
-        data.certificate || ("YAI-COMP-" + Date.now().toString().slice(-6))
+        data.category || &quot;Martial Arts Sparring&quot;,
+        data.achievement || &quot;🥇 Gold Medal&quot;,
+        data.certificate || (&quot;YAI-COMP-&quot; + Date.now().toString().slice(-6))
       ]);
 
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: "Student competition medal record saved permanently",
+        status: &quot;success&quot;,
+        message: &quot;Student competition medal record saved permanently&quot;,
         studentId: data.studentId
       })).setMimeType(ContentService.MimeType.JSON);
     }
@@ -4270,11 +4303,11 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     // 4B. COURSE DELETION
     // -----------------------------------------------------------------------
-    if (type === "COURSE_DELETE" || type === "DELETE_COURSE") {
-      var sheet = ss.getSheetByName("Courses");
+    if (type === &quot;COURSE_DELETE&quot; || type === &quot;DELETE_COURSE&quot;) {
+      var sheet = ss.getSheetByName(&quot;Courses&quot;);
       var deletedCount = 0;
       if (sheet) {
-        var targetId = String(data.id || data.courseId || "").trim().toLowerCase();
+        var targetId = String(data.id || data.courseId || &quot;&quot;).trim().toLowerCase();
         var rows = sheet.getDataRange().getValues();
         for (var r = rows.length - 1; r &gt;= 1; r--) {
           if (String(rows[r][1]).trim().toLowerCase() === targetId) {
@@ -4284,43 +4317,43 @@ function doPost(e) {
         }
       }
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: deletedCount &gt; 0 ? "Course deleted from cloud" : "Course not found",
+        status: &quot;success&quot;,
+        message: deletedCount &gt; 0 ? &quot;Course deleted from cloud&quot; : &quot;Course not found&quot;,
         deletedCount: deletedCount
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    if (type.indexOf("COURSE") !== -1) {
-      var sheet = getOrCreateSheet(ss, "Courses", [
-        "Timestamp", "Course ID", "Course Title", "Description", "Video Link", "Thumbnail URL", "Assigned Trainers"
+    if (type.indexOf(&quot;COURSE&quot;) !== -1) {
+      var sheet = getOrCreateSheet(ss, &quot;Courses&quot;, [
+        &quot;Timestamp&quot;, &quot;Course ID&quot;, &quot;Course Title&quot;, &quot;Description&quot;, &quot;Video Link&quot;, &quot;Thumbnail URL&quot;, &quot;Assigned Trainers&quot;
       ]);
 
       // Handle dedicated SYSTEM-EXAM-SWITCH directly in Courses sheet
-      if (data.id === "SYSTEM-EXAM-SWITCH" || data.courseId === "SYSTEM-EXAM-SWITCH") {
-        var examState = String(data.description || data.desc || "OFF").toUpperCase();
-        var sysRow = [formatStandardTimestamp(new Date()), "SYSTEM-EXAM-SWITCH", "LIVE_EXAM_MASTER_STATE", examState, "", "", "ALL"];
-        var updated = updateRowIfExistsOrMerge(sheet, 2, "SYSTEM-EXAM-SWITCH", sysRow);
+      if (data.id === &quot;SYSTEM-EXAM-SWITCH&quot; || data.courseId === &quot;SYSTEM-EXAM-SWITCH&quot;) {
+        var examState = String(data.description || data.desc || &quot;OFF&quot;).toUpperCase();
+        var sysRow = [formatStandardTimestamp(new Date()), &quot;SYSTEM-EXAM-SWITCH&quot;, &quot;LIVE_EXAM_MASTER_STATE&quot;, examState, &quot;&quot;, &quot;&quot;, &quot;ALL&quot;];
+        var updated = updateRowIfExistsOrMerge(sheet, 2, &quot;SYSTEM-EXAM-SWITCH&quot;, sysRow);
         if (!updated) sheet.appendRow(sysRow);
         try {
           var scriptProps = PropertiesService.getScriptProperties();
-          scriptProps.setProperty("EXAM_MASTER_SWITCH", examState);
+          scriptProps.setProperty(&quot;EXAM_MASTER_SWITCH&quot;, examState);
         } catch(pErr) {}
         return ContentService.createTextOutput(JSON.stringify({
-          status: "success",
-          message: "System exam master switch saved in Courses sheet as " + examState,
-          examSessionActive: (examState === "ON")
+          status: &quot;success&quot;,
+          message: &quot;System exam master switch saved in Courses sheet as &quot; + examState,
+          examSessionActive: (examState === &quot;ON&quot;)
         })).setMimeType(ContentService.MimeType.JSON);
       }
 
-      var courseId = data.id || data.courseId || "";
-      var trainersStr = Array.isArray(data.assignedTrainers) ? data.assignedTrainers.join(", ") : (data.assignedTrainers || "ALL");
+      var courseId = data.id || data.courseId || &quot;&quot;;
+      var trainersStr = Array.isArray(data.assignedTrainers) ? data.assignedTrainers.join(&quot;, &quot;) : (data.assignedTrainers || &quot;ALL&quot;);
       var rowData = [
         new Date(),
         courseId,
-        data.title || data.name || "",
-        data.description || data.desc || "",
-        data.youtubeUrl || data.videoUrl || "",
-        data.thumbnail || "",
+        data.title || data.name || &quot;&quot;,
+        data.description || data.desc || &quot;&quot;,
+        data.youtubeUrl || data.videoUrl || &quot;&quot;,
+        data.thumbnail || &quot;&quot;,
         trainersStr
       ];
 
@@ -4328,8 +4361,8 @@ function doPost(e) {
       if (!updated) sheet.appendRow(rowData);
 
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: updated ? "Course updated in-place" : "Course registered",
+        status: &quot;success&quot;,
+        message: updated ? &quot;Course updated in-place&quot; : &quot;Course registered&quot;,
         courseId: courseId
       })).setMimeType(ContentService.MimeType.JSON);
     }
@@ -4337,26 +4370,26 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     // 4B. FEE STRUCTURE UPDATE (Standardized Belt Pricing &amp; UPI ID)
     // -----------------------------------------------------------------------
-    if (type.indexOf("FEE") !== -1) {
-      var sheet = getOrCreateSheet(ss, "Fee Structure", ["Fee Parameter", "Amount (₹) / Value"]);
+    if (type.indexOf(&quot;FEE&quot;) !== -1) {
+      var sheet = getOrCreateSheet(ss, &quot;Fee Structure&quot;, [&quot;Fee Parameter&quot;, &quot;Amount (₹) / Value&quot;]);
       var feeRows = [
-        ["Fee Parameter", "Amount (₹) / Value"],
-        ["Level 1", Number(data.level1) || 500],
-        ["Level 2", Number(data.level2) || 600],
-        ["Level 3", Number(data.level3) || 700],
-        ["Level 4", Number(data.level4) || 800],
-        ["Level 5", Number(data.level5) || 900],
-        ["Level 6", Number(data.level6) || 1000],
-        ["Senior 1", Number(data.senior1) || 1200],
-        ["Senior 2", Number(data.senior2) || 1400],
-        ["Senior 3", Number(data.senior3) || 1600],
-        ["Senior 4", Number(data.senior4) || 1800],
-        ["Official UPI ID", String(data.upi || "yoddhaacademy5@okicici").trim()]
+        [&quot;Fee Parameter&quot;, &quot;Amount (₹) / Value&quot;],
+        [&quot;Level 1&quot;, Number(data.level1) || 500],
+        [&quot;Level 2&quot;, Number(data.level2) || 600],
+        [&quot;Level 3&quot;, Number(data.level3) || 700],
+        [&quot;Level 4&quot;, Number(data.level4) || 800],
+        [&quot;Level 5&quot;, Number(data.level5) || 900],
+        [&quot;Level 6&quot;, Number(data.level6) || 1000],
+        [&quot;Senior 1&quot;, Number(data.senior1) || 1200],
+        [&quot;Senior 2&quot;, Number(data.senior2) || 1400],
+        [&quot;Senior 3&quot;, Number(data.senior3) || 1600],
+        [&quot;Senior 4&quot;, Number(data.senior4) || 1800],
+        [&quot;Official UPI ID&quot;, String(data.upi || &quot;yoddhaacademy5@okicici&quot;).trim()]
       ];
       sheet.getRange(1, 1, feeRows.length, 2).setValues(feeRows);
 
       try {
-        PropertiesService.getScriptProperties().setProperty("FEE_STRUCTURE", JSON.stringify({
+        PropertiesService.getScriptProperties().setProperty(&quot;FEE_STRUCTURE&quot;, JSON.stringify({
           level1: Number(data.level1) || 500,
           level2: Number(data.level2) || 600,
           level3: Number(data.level3) || 700,
@@ -4367,59 +4400,61 @@ function doPost(e) {
           senior2: Number(data.senior2) || 1400,
           senior3: Number(data.senior3) || 1600,
           senior4: Number(data.senior4) || 1800,
-          upi: String(data.upi || "yoddhaacademy5@okicici").trim()
+          upi: String(data.upi || &quot;yoddhaacademy5@okicici&quot;).trim()
         }));
       } catch(propErr) {}
 
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: "Fee structure updated in-place atomically in Fee Structure sheet"
+        status: &quot;success&quot;,
+        message: &quot;Fee structure updated in-place atomically in Fee Structure sheet&quot;
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
     // -----------------------------------------------------------------------
     // 4C. COMPETITION DELETION
     // -----------------------------------------------------------------------
-    if (type.indexOf("COMPETITION_DELETE") !== -1 || type.indexOf("COMPETITION_DELETED") !== -1) {
-      var sheet = ss.getSheetByName("Competitions");
+    if (type.indexOf(&quot;COMPETITION_DELETE&quot;) !== -1 || type.indexOf(&quot;COMPETITION_DELETED&quot;) !== -1) {
+      var sheet = ss.getSheetByName(&quot;Competitions&quot;);
       if (sheet) {
-        var compId = data.compId || data.id || "";
+        var compId = data.compId || data.id || &quot;&quot;;
         deleteRowByMatch(sheet, 2, compId);
       }
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: "Competition deleted from Central Cloud Server"
+        status: &quot;success&quot;,
+        message: &quot;Competition deleted from Central Cloud Server&quot;
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
     // -----------------------------------------------------------------------
     // 5. COMPETITIONS IN-PLACE UPDATE
     // -----------------------------------------------------------------------
-    if (type.indexOf("COMPETITION") !== -1 &amp;&amp; type.indexOf("RECORD") === -1) {
-      var sheet = getOrCreateSheet(ss, "Competitions", [
-        "Timestamp", "Competition ID", "Championship Level", "Title", "Date", "Location", "Categories", "Entry Fee", "Status", "Eligible Scope"
+    if (type.indexOf(&quot;COMPETITION&quot;) !== -1 &amp;&amp; type.indexOf(&quot;RECORD&quot;) === -1) {
+      var sheet = getOrCreateSheet(ss, &quot;Competitions&quot;, [
+        &quot;Timestamp&quot;, &quot;Competition ID&quot;, &quot;Championship Level&quot;, &quot;Title&quot;, &quot;Date&quot;, &quot;Location&quot;, &quot;Categories&quot;, &quot;Entry Fee&quot;, &quot;Status&quot;, &quot;Eligible Scope&quot;
       ]);
 
-      var compId = data.id || data.compId || "";
+      var compId = data.id || data.compId || &quot;&quot;;
+      var assignedTrainersStr = Array.isArray(data.assignedTrainers) ? data.assignedTrainers.join(&quot;,&quot;) : String(data.assignedTrainers || &quot;&quot;);
       var rowData = [
-        new Date(),
+        formatStandardTimestamp(new Date()),
         compId,
-        data.level || "State Level",
-        data.title || "",
-        data.date || "",
-        data.location || "",
-        data.categories || "",
+        data.level || &quot;State Level&quot;,
+        data.title || &quot;&quot;,
+        data.date || &quot;&quot;,
+        data.location || &quot;&quot;,
+        data.categories || &quot;&quot;,
         data.fee || 300,
-        data.status || "Registrations Open",
-        data.scope || "All Branches"
+        data.status || &quot;Registrations Open&quot;,
+        data.scope || &quot;All Branches&quot;,
+        assignedTrainersStr
       ];
 
       var updated = updateRowIfExistsOrMerge(sheet, 2, compId, rowData);
       if (!updated) sheet.appendRow(rowData);
 
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: updated ? "Competition updated in-place" : "Competition created",
+        status: &quot;success&quot;,
+        message: updated ? &quot;Competition updated in-place&quot; : &quot;Competition created&quot;,
         compId: compId
       })).setMimeType(ContentService.MimeType.JSON);
     }
@@ -4427,54 +4462,74 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     // 6. TOURNAMENT STUDENT REGISTRATIONS &amp; ATHLETE STATUS MANAGEMENT
     // -----------------------------------------------------------------------
-    if (type.indexOf("TOURNAMENT") !== -1) {
-      var sheet = getOrCreateSheet(ss, "TournamentEntries", [
-        "Timestamp", "Competition ID", "Tournament Title", "Championship Level",
-        "Student ID", "Student Name", "Event Discipline", "Age / Weight Division",
-        "Fee Status", "Fee Amount (Rs)", "UTR Number", "Payment Mode", "Trainer Name"
+    if (type.indexOf(&quot;TOURNAMENT&quot;) !== -1) {
+      var sheet = getOrCreateSheet(ss, &quot;TournamentEntries&quot;, [
+        &quot;Timestamp&quot;, &quot;Competition ID&quot;, &quot;Tournament Title&quot;, &quot;Championship Level&quot;,
+        &quot;Student ID&quot;, &quot;Student Name&quot;, &quot;Event Discipline&quot;, &quot;Age / Weight Division&quot;,
+        &quot;Fee Status&quot;, &quot;Fee Amount (Rs)&quot;, &quot;UTR Number&quot;, &quot;Payment Mode&quot;, &quot;Trainer Name&quot;
       ]);
 
       // Support interactive status toggle (Unpaid &lt;-&gt; Paid)
-      if (type === "TOURNAMENT_ATHLETE_PAY_STATUS_UPDATE") {
+      if (type === &quot;TOURNAMENT_ATHLETE_PAY_STATUS_UPDATE&quot;) {
         var tRows = sheet.getDataRange().getValues();
         var updatedStatus = false;
         for (var r = 1; r &lt; tRows.length; r++) {
           if (String(tRows[r][1]).trim() === String(data.compId).trim() &amp;&amp;
               String(tRows[r][4]).trim().toUpperCase() === String(data.studentId).trim().toUpperCase() &amp;&amp;
               String(tRows[r][6]).trim().toLowerCase() === String(data.discipline).trim().toLowerCase()) {
-            sheet.getRange(r + 1, 9).setValue(data.feeStatus || "Paid");
+            sheet.getRange(r + 1, 9).setValue(data.feeStatus || &quot;Paid&quot;);
             updatedStatus = true;
             break;
           }
         }
         return ContentService.createTextOutput(JSON.stringify({
-          status: "success",
-          message: "Athlete fee status updated to " + data.feeStatus,
+          status: &quot;success&quot;,
+          message: &quot;Athlete fee status updated to &quot; + data.feeStatus,
           studentId: data.studentId,
           feeStatus: data.feeStatus,
           updated: updatedStatus
         })).setMimeType(ContentService.MimeType.JSON);
       }
 
-      sheet.appendRow([
-        formatStandardTimestamp(new Date()),
-        data.competitionId || "",
-        data.compTitle || "",
-        data.compLevel || "State Level",
-        data.studentId || "",
-        data.studentName || "",
-        data.discipline || "",
-        data.division || "",
-        data.feeStatus || "Unpaid",
-        data.feeAmount || 300,
-        data.utrNumber || "",
-        data.paymentMode || "Online UPI",
-        data.trainerName || ""
-      ]);
+      var compIdVal = String(data.competitionId || data.compId || data.id || &quot;&quot;).trim();
+      var sIdVal = String(data.studentId || &quot;&quot;).trim().toUpperCase();
+      var discVal = String(data.discipline || &quot;&quot;).trim().toLowerCase();
+
+      // Check if entry already exists for same competition, student &amp; discipline to prevent duplicates
+      var tRows = sheet.getDataRange().getValues();
+      var alreadyExists = false;
+      for (var r = 1; r &lt; tRows.length; r++) {
+        if (String(tRows[r][1]).trim().toUpperCase() === compIdVal.toUpperCase() &amp;&amp;
+            String(tRows[r][4]).trim().toUpperCase() === sIdVal &amp;&amp;
+            String(tRows[r][6]).trim().toLowerCase() === discVal) {
+          alreadyExists = true;
+          if (data.feeStatus) sheet.getRange(r + 1, 9).setValue(data.feeStatus);
+          if (data.utrNumber) sheet.getRange(r + 1, 11).setValue(data.utrNumber);
+          break;
+        }
+      }
+
+      if (!alreadyExists) {
+        sheet.appendRow([
+          formatStandardTimestamp(new Date()),
+          compIdVal,
+          data.compTitle || &quot;&quot;,
+          data.compLevel || &quot;State Level&quot;,
+          data.studentId || &quot;&quot;,
+          data.studentName || &quot;&quot;,
+          data.discipline || &quot;&quot;,
+          data.division || &quot;&quot;,
+          data.feeStatus || &quot;Unpaid&quot;,
+          data.feeAmount || 300,
+          data.utrNumber || &quot;&quot;,
+          data.paymentMode || &quot;Online UPI&quot;,
+          data.trainerName || &quot;&quot;
+        ]);
+      }
 
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: "Tournament athlete entry recorded",
+        status: &quot;success&quot;,
+        message: &quot;Tournament athlete entry recorded&quot;,
         studentId: data.studentId,
         compId: data.compId
       })).setMimeType(ContentService.MimeType.JSON);
@@ -4483,109 +4538,109 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     // 7. LEVEL-WISE FEE STRUCTURE IN-PLACE UPDATE (LEVEL 1-6 &amp; SENIOR 1-4 + UPI)
     // -----------------------------------------------------------------------
-    if (type.indexOf("FEE") !== -1) {
-      var sheet = getOrCreateSheet(ss, "Fee Structure", [
-        "Level / Parameter", "Fee Amount (₹)", "Last Updated"
+    if (type.indexOf(&quot;FEE&quot;) !== -1) {
+      var sheet = getOrCreateSheet(ss, &quot;Fee Structure&quot;, [
+        &quot;Level / Parameter&quot;, &quot;Fee Amount (₹)&quot;, &quot;Last Updated&quot;
       ]);
 
       var feeItems = [
-        ["Level 1", Number(data.level1) || 500, new Date()],
-        ["Level 2", Number(data.level2) || 600, new Date()],
-        ["Level 3", Number(data.level3) || 700, new Date()],
-        ["Level 4", Number(data.level4) || 800, new Date()],
-        ["Level 5", Number(data.level5) || 900, new Date()],
-        ["Level 6", Number(data.level6) || 1000, new Date()],
-        ["Senior 1", Number(data.senior1) || 1200, new Date()],
-        ["Senior 2", Number(data.senior2) || 1400, new Date()],
-        ["Senior 3", Number(data.senior3) || 1600, new Date()],
-        ["Senior 4", Number(data.senior4) || 1800, new Date()],
-        ["Official Academy UPI ID / Number", String(data.upi || "yoddhaacademy@upi"), new Date()]
+        [&quot;Level 1&quot;, Number(data.level1) || 500, new Date()],
+        [&quot;Level 2&quot;, Number(data.level2) || 600, new Date()],
+        [&quot;Level 3&quot;, Number(data.level3) || 700, new Date()],
+        [&quot;Level 4&quot;, Number(data.level4) || 800, new Date()],
+        [&quot;Level 5&quot;, Number(data.level5) || 900, new Date()],
+        [&quot;Level 6&quot;, Number(data.level6) || 1000, new Date()],
+        [&quot;Senior 1&quot;, Number(data.senior1) || 1200, new Date()],
+        [&quot;Senior 2&quot;, Number(data.senior2) || 1400, new Date()],
+        [&quot;Senior 3&quot;, Number(data.senior3) || 1600, new Date()],
+        [&quot;Senior 4&quot;, Number(data.senior4) || 1800, new Date()],
+        [&quot;Official Academy UPI ID / Number&quot;, String(data.upi || &quot;yoddhaacademy@upi&quot;), new Date()]
       ];
 
       sheet.clearContents();
-      sheet.appendRow(["Level / Parameter", "Fee Amount (₹)", "Last Updated"]);
+      sheet.appendRow([&quot;Level / Parameter&quot;, &quot;Fee Amount (₹)&quot;, &quot;Last Updated&quot;]);
       feeItems.forEach(function(item) {
         sheet.appendRow(item);
       });
 
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: "Level-wise Fee structure updated in-place"
+        status: &quot;success&quot;,
+        message: &quot;Level-wise Fee structure updated in-place&quot;
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
     // -----------------------------------------------------------------------
     // 8. MASTER EXAM SWITCH &amp; ACADEMY SETTINGS
     // -----------------------------------------------------------------------
-    if (type.indexOf("EXAM_SESSION_TOGGLED") !== -1 || type.indexOf("SETTING") !== -1) {
-      var settingVal = data.examSessionActive ? "ON" : "OFF";
+    if (type.indexOf(&quot;EXAM_SESSION_TOGGLED&quot;) !== -1 || type.indexOf(&quot;SETTING&quot;) !== -1) {
+      var settingVal = data.examSessionActive ? &quot;ON&quot; : &quot;OFF&quot;;
 
       // Store in ScriptProperties for instant cross-device synchronization
       var scriptProps = PropertiesService.getScriptProperties();
-      scriptProps.setProperty("EXAM_MASTER_SWITCH", settingVal);
+      scriptProps.setProperty(&quot;EXAM_MASTER_SWITCH&quot;, settingVal);
 
       // Persist to AcademySettings sheet as backup
       try {
-        var sheet = getOrCreateSheet(ss, "AcademySettings", [
-          "Setting Key", "Setting Value", "Updated By", "Last Updated"
+        var sheet = getOrCreateSheet(ss, &quot;AcademySettings&quot;, [
+          &quot;Setting Key&quot;, &quot;Setting Value&quot;, &quot;Updated By&quot;, &quot;Last Updated&quot;
         ]);
-        var rowData = ["EXAM_MASTER_SWITCH", settingVal, data.toggledBy || "Admin", formatStandardTimestamp(new Date())];
-        var updated = updateRowIfExistsOrMerge(sheet, 1, "EXAM_MASTER_SWITCH", rowData);
+        var rowData = [&quot;EXAM_MASTER_SWITCH&quot;, settingVal, data.toggledBy || &quot;Admin&quot;, formatStandardTimestamp(new Date())];
+        var updated = updateRowIfExistsOrMerge(sheet, 1, &quot;EXAM_MASTER_SWITCH&quot;, rowData);
         if (!updated) sheet.appendRow(rowData);
       } catch(sheetErr) {
-        Logger.log("AcademySettings sheet error: " + sheetErr.toString());
+        Logger.log(&quot;AcademySettings sheet error: &quot; + sheetErr.toString());
       }
 
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: "Master exam switch updated to " + settingVal,
-        examSessionActive: (settingVal === "ON")
+        status: &quot;success&quot;,
+        message: &quot;Master exam switch updated to &quot; + settingVal,
+        examSessionActive: (settingVal === &quot;ON&quot;)
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
         // -----------------------------------------------------------------------
     // 8B. ACADEMY INFO &amp; ADMIN SETTINGS UPDATE
     // -----------------------------------------------------------------------
-    if (type.indexOf("ACADEMY") !== -1 || type.indexOf("ADMIN_SETTING") !== -1 || type.indexOf("ADMIN_PROFILE") !== -1) {
-      var sheet = getOrCreateSheet(ss, "AcademySettings", [
-        "Setting Key", "Setting Value", "Updated By", "Last Updated"
+    if (type.indexOf(&quot;ACADEMY&quot;) !== -1 || type.indexOf(&quot;ADMIN_SETTING&quot;) !== -1 || type.indexOf(&quot;ADMIN_PROFILE&quot;) !== -1) {
+      var sheet = getOrCreateSheet(ss, &quot;AcademySettings&quot;, [
+        &quot;Setting Key&quot;, &quot;Setting Value&quot;, &quot;Updated By&quot;, &quot;Last Updated&quot;
       ]);
       
       var settingMap = {
-        "ACADEMY_NAME": data.academyName || "Yoddha Academy India",
-        "DIRECTORATE": data.directorate || "Central Directorate of Traditional Martial Arts &amp; Defence",
-        "ADMIN_ID": data.adminId || "ADMIN-YODDHA-01",
-        "ADMIN_PASSWORD": data.adminPass || data.password || "",
-        "ADMIN_NAME": data.adminName || "Central Headquarters",
-        "CONTACT_MOBILE": data.mobile || data.phone || "",
-        "CONTACT_EMAIL": data.email || "",
-        "OFFICIAL_UPI": data.upi || "",
-        "HQ_ADDRESS": data.address || "",
-        "EXAM_MASTER_SWITCH": (data.examSessionActive !== undefined ? (data.examSessionActive ? "ON" : "OFF") : (data.EXAM_MASTER_SWITCH || ""))
+        &quot;ACADEMY_NAME&quot;: data.academyName || &quot;Yoddha Academy India&quot;,
+        &quot;DIRECTORATE&quot;: data.directorate || &quot;Central Directorate of Traditional Martial Arts &amp; Defence&quot;,
+        &quot;ADMIN_ID&quot;: data.adminId || &quot;ADMIN-YODDHA-01&quot;,
+        &quot;ADMIN_PASSWORD&quot;: data.adminPass || data.password || &quot;&quot;,
+        &quot;ADMIN_NAME&quot;: data.adminName || &quot;Central Headquarters&quot;,
+        &quot;CONTACT_MOBILE&quot;: data.mobile || data.phone || &quot;&quot;,
+        &quot;CONTACT_EMAIL&quot;: data.email || &quot;&quot;,
+        &quot;OFFICIAL_UPI&quot;: data.upi || &quot;&quot;,
+        &quot;HQ_ADDRESS&quot;: data.address || &quot;&quot;,
+        &quot;EXAM_MASTER_SWITCH&quot;: (data.examSessionActive !== undefined ? (data.examSessionActive ? &quot;ON&quot; : &quot;OFF&quot;) : (data.EXAM_MASTER_SWITCH || &quot;&quot;))
       };
 
       for (var k in settingMap) {
         if (settingMap[k]) {
-          var row = [k, String(settingMap[k]).trim(), data.updatedBy || "Admin", new Date()];
+          var row = [k, String(settingMap[k]).trim(), data.updatedBy || &quot;Admin&quot;, new Date()];
           var updated = updateRowIfExistsOrMerge(sheet, 1, k, row);
           if (!updated) sheet.appendRow(row);
         }
       }
 
       return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: "Academy &amp; Admin settings saved successfully in AcademySettings sheet"
+        status: &quot;success&quot;,
+        message: &quot;Academy &amp; Admin settings saved successfully in AcademySettings sheet&quot;
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
 return ContentService.createTextOutput(JSON.stringify({
-      status: "error",
-      message: "Unrecognized action type: " + type
+      status: &quot;error&quot;,
+      message: &quot;Unrecognized action type: &quot; + type
     })).setMimeType(ContentService.MimeType.JSON);
 
   } catch(error) {
     return ContentService.createTextOutput(JSON.stringify({
-      status: "error",
+      status: &quot;error&quot;,
       message: error.toString()
     })).setMimeType(ContentService.MimeType.JSON);
 
@@ -4602,58 +4657,58 @@ return ContentService.createTextOutput(JSON.stringify({
  * Sends official congratulations and credentials email to newly registered Trainer
  */
 function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, position, branch) {
-  var subject = "🥋 Congratulations &amp; Welcome to Yoddha Academy India - Official Certified Trainer Credentials";
+  var subject = &quot;🥋 Congratulations &amp; Welcome to Yoddha Academy India - Official Certified Trainer Credentials&quot;;
   
-  var htmlBody = '&lt;div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #ffffff; border: 2px solid #ea580c; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"&gt;'
-    + '&lt;div style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 25px 20px; text-align: center;"&gt;'
-    + '&lt;h1 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;"&gt;YODDHA ACADEMY INDIA&lt;/h1&gt;'
-    + '&lt;p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;"&gt;ALL INDIA MARTIAL ARTS &amp; SPORTS TRAINING ACADEMY&lt;/p&gt;'
-    + '&lt;/div&gt;'
-    + '&lt;div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;"&gt;'
-    + '&lt;h2 style="color: #ea580c; margin-top: 0; font-size: 20px;"&gt;🥋 Welcome to Yoddha Academy India!&lt;/h2&gt;'
-    + '&lt;p style="font-size: 14px; margin-bottom: 12px;"&gt;Greetings &lt;strong&gt;' + trainerName + '&lt;/strong&gt;,&lt;/p&gt;'
-    + '&lt;p style="font-size: 14px; margin-bottom: 15px;"&gt;Congratulations on your official appointment as &lt;strong&gt;' + (position || "Certified Trainer") + '&lt;/strong&gt; with Yoddha Academy India!&lt;/p&gt;'
-    + '&lt;div style="background: #fff7ed; padding: 14px 16px; border-left: 4px solid #ea580c; border-radius: 6px; font-size: 13px; color: #9a3412; margin-bottom: 20px;"&gt;'
-    + 'Wishing you great success in promoting Indian traditional martial arts, discipline, self-defense, and youth training. Warmest wishes from &lt;strong&gt;Yoddha Academy India Central Headquarters&lt;/strong&gt;! 🚩'
-    + '&lt;/div&gt;'
-    + '&lt;div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;"&gt;'
-    + '&lt;h3 style="margin: 0 0 12px; color: #0f172a; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;"&gt;🔐 Your Official Login Credentials:&lt;/h3&gt;'
-    + '&lt;table style="width: 100%; font-size: 14px;"&gt;'
-    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b; width: 140px;"&gt;&lt;strong&gt;Trainer ID:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;"&gt;' + trainerId + '&lt;/td&gt;&lt;/tr&gt;'
-    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;Password / PIN:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #0f172a; font-weight: bold; font-family: monospace; font-size: 16px; background: #fed7aa; padding: 3px 8px; border-radius: 6px; display: inline-block;"&gt;' + trainerPass + '&lt;/td&gt;&lt;/tr&gt;'
-    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;Designation:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #334155; font-weight: 600;"&gt;' + (position || "Branch Instructor") + '&lt;/td&gt;&lt;/tr&gt;'
-    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;Akhada / Branch:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #334155; font-weight: 600;"&gt;' + (branch || "Central HQ") + '&lt;/td&gt;&lt;/tr&gt;'
-    + '&lt;/table&gt;'
-    + '&lt;/div&gt;'
-    + '&lt;div style="text-align: center; margin: 25px 0;"&gt;'
-    + '&lt;a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);"&gt;'
-    + '🚀 Open Trainer Portal'
-    + '&lt;/a&gt;'
-    + '&lt;/div&gt;'
-    + '&lt;p style="font-size: 12px; color: #64748b; margin-top: 15px;"&gt;⚠️ &lt;em&gt;Security Notice: Keep your credentials confidential. You can update your password anytime in your portal profile.&lt;/em&gt;&lt;/p&gt;'
-    + '&lt;/div&gt;'
-    + '&lt;div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;"&gt;'
-    + '&lt;p style="margin: 0; color: #f8fafc; font-weight: bold;"&gt;Yoddha Academy India • Central Headquarters&lt;/p&gt;'
-    + '&lt;p style="margin: 4px 0 0;"&gt;Official Portal: &lt;a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;"&gt;yoddhaacademyindia.github.io&lt;/a&gt;&lt;/p&gt;'
-    + '&lt;p style="margin: 4px 0 0;"&gt;Traditional Martial Arts &amp; Sports Training • All India Organization&lt;/p&gt;'
-    + '&lt;/div&gt;'
-    + '&lt;/div&gt;';
+  var htmlBody = &#x27;&lt;div style=&quot;font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #ffffff; border: 2px solid #ea580c; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);&quot;&gt;&#x27;
+    + &#x27;&lt;div style=&quot;background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 25px 20px; text-align: center;&quot;&gt;&#x27;
+    + &#x27;&lt;h1 style=&quot;margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;&quot;&gt;YODDHA ACADEMY INDIA&lt;/h1&gt;&#x27;
+    + &#x27;&lt;p style=&quot;margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;&quot;&gt;ALL INDIA MARTIAL ARTS &amp; SPORTS TRAINING ACADEMY&lt;/p&gt;&#x27;
+    + &#x27;&lt;/div&gt;&#x27;
+    + &#x27;&lt;div style=&quot;padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;&quot;&gt;&#x27;
+    + &#x27;&lt;h2 style=&quot;color: #ea580c; margin-top: 0; font-size: 20px;&quot;&gt;🥋 Welcome to Yoddha Academy India!&lt;/h2&gt;&#x27;
+    + &#x27;&lt;p style=&quot;font-size: 14px; margin-bottom: 12px;&quot;&gt;Greetings &lt;strong&gt;&#x27; + trainerName + &#x27;&lt;/strong&gt;,&lt;/p&gt;&#x27;
+    + &#x27;&lt;p style=&quot;font-size: 14px; margin-bottom: 15px;&quot;&gt;Congratulations on your official appointment as &lt;strong&gt;&#x27; + (position || &quot;Certified Trainer&quot;) + &#x27;&lt;/strong&gt; with Yoddha Academy India!&lt;/p&gt;&#x27;
+    + &#x27;&lt;div style=&quot;background: #fff7ed; padding: 14px 16px; border-left: 4px solid #ea580c; border-radius: 6px; font-size: 13px; color: #9a3412; margin-bottom: 20px;&quot;&gt;&#x27;
+    + &#x27;Wishing you great success in promoting Indian traditional martial arts, discipline, self-defense, and youth training. Warmest wishes from &lt;strong&gt;Yoddha Academy India Central Headquarters&lt;/strong&gt;! 🚩&#x27;
+    + &#x27;&lt;/div&gt;&#x27;
+    + &#x27;&lt;div style=&quot;background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;&quot;&gt;&#x27;
+    + &#x27;&lt;h3 style=&quot;margin: 0 0 12px; color: #0f172a; font-size: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;&quot;&gt;🔐 Your Official Login Credentials:&lt;/h3&gt;&#x27;
+    + &#x27;&lt;table style=&quot;width: 100%; font-size: 14px;&quot;&gt;&#x27;
+    + &#x27;&lt;tr&gt;&lt;td style=&quot;padding: 6px 0; color: #64748b; width: 140px;&quot;&gt;&lt;strong&gt;Trainer ID:&lt;/strong&gt;&lt;/td&gt;&lt;td style=&quot;padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;&quot;&gt;&#x27; + trainerId + &#x27;&lt;/td&gt;&lt;/tr&gt;&#x27;
+    + &#x27;&lt;tr&gt;&lt;td style=&quot;padding: 6px 0; color: #64748b;&quot;&gt;&lt;strong&gt;Password / PIN:&lt;/strong&gt;&lt;/td&gt;&lt;td style=&quot;padding: 6px 0; color: #0f172a; font-weight: bold; font-family: monospace; font-size: 16px; background: #fed7aa; padding: 3px 8px; border-radius: 6px; display: inline-block;&quot;&gt;&#x27; + trainerPass + &#x27;&lt;/td&gt;&lt;/tr&gt;&#x27;
+    + &#x27;&lt;tr&gt;&lt;td style=&quot;padding: 6px 0; color: #64748b;&quot;&gt;&lt;strong&gt;Designation:&lt;/strong&gt;&lt;/td&gt;&lt;td style=&quot;padding: 6px 0; color: #334155; font-weight: 600;&quot;&gt;&#x27; + (position || &quot;Branch Instructor&quot;) + &#x27;&lt;/td&gt;&lt;/tr&gt;&#x27;
+    + &#x27;&lt;tr&gt;&lt;td style=&quot;padding: 6px 0; color: #64748b;&quot;&gt;&lt;strong&gt;Akhada / Branch:&lt;/strong&gt;&lt;/td&gt;&lt;td style=&quot;padding: 6px 0; color: #334155; font-weight: 600;&quot;&gt;&#x27; + (branch || &quot;Central HQ&quot;) + &#x27;&lt;/td&gt;&lt;/tr&gt;&#x27;
+    + &#x27;&lt;/table&gt;&#x27;
+    + &#x27;&lt;/div&gt;&#x27;
+    + &#x27;&lt;div style=&quot;text-align: center; margin: 25px 0;&quot;&gt;&#x27;
+    + &#x27;&lt;a href=&quot;https://yoddhaacademyindia.github.io/&quot; target=&quot;_blank&quot; style=&quot;background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);&quot;&gt;&#x27;
+    + &#x27;🚀 Open Trainer Portal&#x27;
+    + &#x27;&lt;/a&gt;&#x27;
+    + &#x27;&lt;/div&gt;&#x27;
+    + &#x27;&lt;p style=&quot;font-size: 12px; color: #64748b; margin-top: 15px;&quot;&gt;⚠️ &lt;em&gt;Security Notice: Keep your credentials confidential. You can update your password anytime in your portal profile.&lt;/em&gt;&lt;/p&gt;&#x27;
+    + &#x27;&lt;/div&gt;&#x27;
+    + &#x27;&lt;div style=&quot;background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;&quot;&gt;&#x27;
+    + &#x27;&lt;p style=&quot;margin: 0; color: #f8fafc; font-weight: bold;&quot;&gt;Yoddha Academy India • Central Headquarters&lt;/p&gt;&#x27;
+    + &#x27;&lt;p style=&quot;margin: 4px 0 0;&quot;&gt;Official Portal: &lt;a href=&quot;https://yoddhaacademyindia.github.io/&quot; style=&quot;color: #fb923c; text-decoration: none;&quot;&gt;yoddhaacademyindia.github.io&lt;/a&gt;&lt;/p&gt;&#x27;
+    + &#x27;&lt;p style=&quot;margin: 4px 0 0;&quot;&gt;Traditional Martial Arts &amp; Sports Training • All India Organization&lt;/p&gt;&#x27;
+    + &#x27;&lt;/div&gt;&#x27;
+    + &#x27;&lt;/div&gt;&#x27;;
 
   try {
     MailApp.sendEmail({
       to: toEmail,
       subject: subject,
       htmlBody: htmlBody,
-      name: "Yoddha Academy India"
+      name: &quot;Yoddha Academy India&quot;
     });
   } catch (err1) {
     try {
-      GmailApp.sendEmail(toEmail, subject, "", {
+      GmailApp.sendEmail(toEmail, subject, &quot;&quot;, {
         htmlBody: htmlBody,
-        name: "Yoddha Academy India"
+        name: &quot;Yoddha Academy India&quot;
       });
     } catch (err2) {
-      Logger.log("Email error: " + err2.toString());
+      Logger.log(&quot;Email error: &quot; + err2.toString());
     }
   }
 }
@@ -4662,52 +4717,52 @@ function sendTrainerWelcomeEmail(toEmail, trainerName, trainerId, trainerPass, p
  * Sends official admission confirmation email to Student / Parent
  */
 function sendStudentAdmissionEmail(toEmail, studentName, studentId, level, trainerName, feeAmount, utrNumber) {
-  var subject = "🥋 Welcome to Yoddha Academy India - Student Admission Confirmed (" + studentId + ")";
+  var subject = &quot;🥋 Welcome to Yoddha Academy India - Student Admission Confirmed (&quot; + studentId + &quot;)&quot;;
   
-  var htmlBody = '&lt;div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #ffffff; border: 2px solid #ea580c; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"&gt;'
-    + '&lt;div style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 25px 20px; text-align: center;"&gt;'
-    + '&lt;h1 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;"&gt;YODDHA ACADEMY INDIA&lt;/h1&gt;'
-    + '&lt;p style="margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;"&gt;OFFICIAL STUDENT ADMISSION CONFIRMATION&lt;/p&gt;'
-    + '&lt;/div&gt;'
-    + '&lt;div style="padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;"&gt;'
-    + '&lt;h2 style="color: #ea580c; margin-top: 0; font-size: 20px;"&gt;🎉 Admission Confirmed!&lt;/h2&gt;'
-    + '&lt;p style="font-size: 14px;"&gt;Dear Parents and &lt;strong&gt;' + studentName + '&lt;/strong&gt;,&lt;br&gt;&lt;br&gt;Your official admission to Yoddha Academy India has been successfully confirmed. Welcome to traditional martial arts, discipline, and sports training!&lt;/p&gt;'
-    + '&lt;div style="background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;"&gt;'
-    + '&lt;table style="width: 100%; font-size: 14px;"&gt;'
-    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b; width: 140px;"&gt;&lt;strong&gt;Student Name:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #0f172a; font-weight: bold;"&gt;' + studentName + '&lt;/td&gt;&lt;/tr&gt;'
-    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;Student ID:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;"&gt;' + studentId + '&lt;/td&gt;&lt;/tr&gt;'
-    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;10-Star Belt Level:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #334155; font-weight: bold;"&gt;' + (level || "Level 1") + '&lt;/td&gt;&lt;/tr&gt;'
-    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;Assigned Trainer:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #334155; font-weight: 600;"&gt;' + (trainerName || "Central Certified Coach") + '&lt;/td&gt;&lt;/tr&gt;'
-    + '&lt;tr&gt;&lt;td style="padding: 6px 0; color: #64748b;"&gt;&lt;strong&gt;Fee Paid:&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding: 6px 0; color: #166534; font-weight: bold;"&gt;₹' + (feeAmount || 500) + ' (UTR: ' + (utrNumber || "Verified") + ')&lt;/td&gt;&lt;/tr&gt;'
-    + '&lt;/table&gt;'
-    + '&lt;/div&gt;'
-    + '&lt;div style="text-align: center; margin: 25px 0;"&gt;'
-    + '&lt;a href="https://yoddhaacademyindia.github.io/" target="_blank" style="background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block;"&gt;'
-    + '🪪 View Digital ID Card'
-    + '&lt;/a&gt;'
-    + '&lt;/div&gt;'
-    + '&lt;/div&gt;'
-    + '&lt;div style="background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;"&gt;'
-    + '&lt;p style="margin: 0; color: #f8fafc; font-weight: bold;"&gt;Yoddha Academy India • Central Headquarters&lt;/p&gt;'
-    + '&lt;p style="margin: 4px 0 0;"&gt;Official Portal: &lt;a href="https://yoddhaacademyindia.github.io/" style="color: #fb923c; text-decoration: none;"&gt;yoddhaacademyindia.github.io&lt;/a&gt;&lt;/p&gt;'
-    + '&lt;/div&gt;'
-    + '&lt;/div&gt;';
+  var htmlBody = &#x27;&lt;div style=&quot;font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #ffffff; border: 2px solid #ea580c; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);&quot;&gt;&#x27;
+    + &#x27;&lt;div style=&quot;background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 25px 20px; text-align: center;&quot;&gt;&#x27;
+    + &#x27;&lt;h1 style=&quot;margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;&quot;&gt;YODDHA ACADEMY INDIA&lt;/h1&gt;&#x27;
+    + &#x27;&lt;p style=&quot;margin: 6px 0 0; font-size: 13px; color: #fef08a; font-weight: bold; letter-spacing: 2px;&quot;&gt;OFFICIAL STUDENT ADMISSION CONFIRMATION&lt;/p&gt;&#x27;
+    + &#x27;&lt;/div&gt;&#x27;
+    + &#x27;&lt;div style=&quot;padding: 25px 25px 20px; color: #1e293b; line-height: 1.6;&quot;&gt;&#x27;
+    + &#x27;&lt;h2 style=&quot;color: #ea580c; margin-top: 0; font-size: 20px;&quot;&gt;🎉 Admission Confirmed!&lt;/h2&gt;&#x27;
+    + &#x27;&lt;p style=&quot;font-size: 14px;&quot;&gt;Dear Parents and &lt;strong&gt;&#x27; + studentName + &#x27;&lt;/strong&gt;,&lt;br&gt;&lt;br&gt;Your official admission to Yoddha Academy India has been successfully confirmed. Welcome to traditional martial arts, discipline, and sports training!&lt;/p&gt;&#x27;
+    + &#x27;&lt;div style=&quot;background: #f8fafc; border: 2px dashed #ea580c; border-radius: 14px; padding: 18px 20px; margin: 20px 0;&quot;&gt;&#x27;
+    + &#x27;&lt;table style=&quot;width: 100%; font-size: 14px;&quot;&gt;&#x27;
+    + &#x27;&lt;tr&gt;&lt;td style=&quot;padding: 6px 0; color: #64748b; width: 140px;&quot;&gt;&lt;strong&gt;Student Name:&lt;/strong&gt;&lt;/td&gt;&lt;td style=&quot;padding: 6px 0; color: #0f172a; font-weight: bold;&quot;&gt;&#x27; + studentName + &#x27;&lt;/td&gt;&lt;/tr&gt;&#x27;
+    + &#x27;&lt;tr&gt;&lt;td style=&quot;padding: 6px 0; color: #64748b;&quot;&gt;&lt;strong&gt;Student ID:&lt;/strong&gt;&lt;/td&gt;&lt;td style=&quot;padding: 6px 0; color: #ea580c; font-weight: bold; font-family: monospace; font-size: 16px;&quot;&gt;&#x27; + studentId + &#x27;&lt;/td&gt;&lt;/tr&gt;&#x27;
+    + &#x27;&lt;tr&gt;&lt;td style=&quot;padding: 6px 0; color: #64748b;&quot;&gt;&lt;strong&gt;10-Star Belt Level:&lt;/strong&gt;&lt;/td&gt;&lt;td style=&quot;padding: 6px 0; color: #334155; font-weight: bold;&quot;&gt;&#x27; + (level || &quot;Level 1&quot;) + &#x27;&lt;/td&gt;&lt;/tr&gt;&#x27;
+    + &#x27;&lt;tr&gt;&lt;td style=&quot;padding: 6px 0; color: #64748b;&quot;&gt;&lt;strong&gt;Assigned Trainer:&lt;/strong&gt;&lt;/td&gt;&lt;td style=&quot;padding: 6px 0; color: #334155; font-weight: 600;&quot;&gt;&#x27; + (trainerName || &quot;Central Certified Coach&quot;) + &#x27;&lt;/td&gt;&lt;/tr&gt;&#x27;
+    + &#x27;&lt;tr&gt;&lt;td style=&quot;padding: 6px 0; color: #64748b;&quot;&gt;&lt;strong&gt;Fee Paid:&lt;/strong&gt;&lt;/td&gt;&lt;td style=&quot;padding: 6px 0; color: #166534; font-weight: bold;&quot;&gt;₹&#x27; + (feeAmount || 500) + &#x27; (UTR: &#x27; + (utrNumber || &quot;Verified&quot;) + &#x27;)&lt;/td&gt;&lt;/tr&gt;&#x27;
+    + &#x27;&lt;/table&gt;&#x27;
+    + &#x27;&lt;/div&gt;&#x27;
+    + &#x27;&lt;div style=&quot;text-align: center; margin: 25px 0;&quot;&gt;&#x27;
+    + &#x27;&lt;a href=&quot;https://yoddhaacademyindia.github.io/&quot; target=&quot;_blank&quot; style=&quot;background: linear-gradient(135deg, #ea580c, #f59e0b); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 15px; display: inline-block;&quot;&gt;&#x27;
+    + &#x27;🪪 View Digital ID Card&#x27;
+    + &#x27;&lt;/a&gt;&#x27;
+    + &#x27;&lt;/div&gt;&#x27;
+    + &#x27;&lt;/div&gt;&#x27;
+    + &#x27;&lt;div style=&quot;background: #0f172a; color: #94a3b8; padding: 15px 20px; text-align: center; font-size: 11px;&quot;&gt;&#x27;
+    + &#x27;&lt;p style=&quot;margin: 0; color: #f8fafc; font-weight: bold;&quot;&gt;Yoddha Academy India • Central Headquarters&lt;/p&gt;&#x27;
+    + &#x27;&lt;p style=&quot;margin: 4px 0 0;&quot;&gt;Official Portal: &lt;a href=&quot;https://yoddhaacademyindia.github.io/&quot; style=&quot;color: #fb923c; text-decoration: none;&quot;&gt;yoddhaacademyindia.github.io&lt;/a&gt;&lt;/p&gt;&#x27;
+    + &#x27;&lt;/div&gt;&#x27;
+    + &#x27;&lt;/div&gt;&#x27;;
 
   try {
     MailApp.sendEmail({
       to: toEmail,
       subject: subject,
       htmlBody: htmlBody,
-      name: "Yoddha Academy India"
+      name: &quot;Yoddha Academy India&quot;
     });
   } catch (err1) {
     try {
-      GmailApp.sendEmail(toEmail, subject, "", {
+      GmailApp.sendEmail(toEmail, subject, &quot;&quot;, {
         htmlBody: htmlBody,
-        name: "Yoddha Academy India"
+        name: &quot;Yoddha Academy India&quot;
       });
     } catch (err2) {
-      Logger.log("Email error: " + err2.toString());
+      Logger.log(&quot;Email error: &quot; + err2.toString());
     }
   }
 }
@@ -4726,17 +4781,17 @@ function updateRowIfExistsOrMerge(sheet, colIndex, matchVal, newRowData) {
   var matchStr = String(matchVal).trim().toLowerCase();
 
   for (var i = 1; i &lt; data.length; i++) {
-    var cellStr = String(data[i][colIndex - 1] || "").trim().toLowerCase();
+    var cellStr = String(data[i][colIndex - 1] || &quot;&quot;).trim().toLowerCase();
     if (cellStr === matchStr) {
       var existingRow = data[i];
       var mergedRow = [];
       for (var c = 0; c &lt; newRowData.length; c++) {
         var newVal = newRowData[c];
         // If newVal is undefined, null, or empty string, keep existing value
-        if ((newVal === undefined || newVal === null || newVal === "") &amp;&amp; existingRow[c] !== undefined &amp;&amp; existingRow[c] !== "") {
+        if ((newVal === undefined || newVal === null || newVal === &quot;&quot;) &amp;&amp; existingRow[c] !== undefined &amp;&amp; existingRow[c] !== &quot;&quot;) {
           mergedRow.push(existingRow[c]);
         } else {
-          mergedRow.push(newVal !== undefined &amp;&amp; newVal !== null ? newVal : "");
+          mergedRow.push(newVal !== undefined &amp;&amp; newVal !== null ? newVal : &quot;&quot;);
         }
       }
       sheet.getRange(i + 1, 1, 1, mergedRow.length).setValues([mergedRow]);
@@ -4756,18 +4811,18 @@ function getOrCreateSheet(ss, sheetName, headers) {
     sheet = ss.insertSheet(sheetName);
     sheet.appendRow(headers);
     sheet.getRange(1, 1, 1, headers.length)
-      .setFontWeight("bold")
-      .setBackground("#ea580c")
-      .setFontColor("#ffffff");
+      .setFontWeight(&quot;bold&quot;)
+      .setBackground(&quot;#ea580c&quot;)
+      .setFontColor(&quot;#ffffff&quot;);
     sheet.setFrozenRows(1);
   } else {
     var currentCols = sheet.getLastColumn();
     if (currentCols &lt; headers.length) {
       sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
       sheet.getRange(1, 1, 1, headers.length)
-        .setFontWeight("bold")
-        .setBackground("#ea580c")
-        .setFontColor("#ffffff");
+        .setFontWeight(&quot;bold&quot;)
+        .setBackground(&quot;#ea580c&quot;)
+        .setFontColor(&quot;#ffffff&quot;);
     }
   }
   return sheet;
@@ -4782,95 +4837,95 @@ function setupAllAcademySheets() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
 
   // 1. Trainers
-  getOrCreateSheet(ss, "Trainers", [
-    "Timestamp", "Trainer ID", "Full Name", "Position", "Status",
-    "Calling Mobile", "WhatsApp Mobile", "Official Email", "State",
-    "District", "Branch", "Full Address", "Login PIN / Password",
-    "Trainer Photo", "Aadhaar Photo"
+  getOrCreateSheet(ss, &quot;Trainers&quot;, [
+    &quot;Timestamp&quot;, &quot;Trainer ID&quot;, &quot;Full Name&quot;, &quot;Position&quot;, &quot;Status&quot;,
+    &quot;Calling Mobile&quot;, &quot;WhatsApp Mobile&quot;, &quot;Official Email&quot;, &quot;State&quot;,
+    &quot;District&quot;, &quot;Branch&quot;, &quot;Full Address&quot;, &quot;Login PIN / Password&quot;,
+    &quot;Trainer Photo&quot;, &quot;Aadhaar Photo&quot;
   ]);
 
   // 2. Students
-  getOrCreateSheet(ss, "Students", [
-    "Timestamp", "Student ID", "Student Name", "Date of Birth", "Age",
-    "Requested Level", "School Name", "Standard", "School Contact", "School Address",
-    "Parent Name", "Parent Mobile", "City / Village", "District", "State",
-    "Admission Date", "Trainer ID", "Trainer Name", "Status", "Fee Status",
-    "Fee Amount", "UPI UTR Number", "Live Exam Status", "Live AI Camera Score (/50)",
-    "Trainer Exam Score (/50)", "Grand Total Score (/100)", "Exam Passed Date",
-    "Level Up Pending", "Pending Next Level", "10-Level History &amp; Passed Marks",
-    "Student Photo", "Aadhaar Photo"
+  getOrCreateSheet(ss, &quot;Students&quot;, [
+    &quot;Timestamp&quot;, &quot;Student ID&quot;, &quot;Student Name&quot;, &quot;Date of Birth&quot;, &quot;Age&quot;,
+    &quot;Requested Level&quot;, &quot;School Name&quot;, &quot;Standard&quot;, &quot;School Contact&quot;, &quot;School Address&quot;,
+    &quot;Parent Name&quot;, &quot;Parent Mobile&quot;, &quot;City / Village&quot;, &quot;District&quot;, &quot;State&quot;,
+    &quot;Admission Date&quot;, &quot;Trainer ID&quot;, &quot;Trainer Name&quot;, &quot;Status&quot;, &quot;Fee Status&quot;,
+    &quot;Fee Amount&quot;, &quot;UPI UTR Number&quot;, &quot;Live Exam Status&quot;, &quot;Live AI Camera Score (/50)&quot;,
+    &quot;Trainer Exam Score (/50)&quot;, &quot;Grand Total Score (/100)&quot;, &quot;Exam Passed Date&quot;,
+    &quot;Level Up Pending&quot;, &quot;Pending Next Level&quot;, &quot;10-Level History &amp; Passed Marks&quot;,
+    &quot;Student Photo&quot;, &quot;Aadhaar Photo&quot;
   ]);
 
   // 3. Courses
-  getOrCreateSheet(ss, "Courses", [
-    "Timestamp", "Course ID", "Course Title", "Description", "Video Link", "Thumbnail URL", "Assigned Trainers"
+  getOrCreateSheet(ss, &quot;Courses&quot;, [
+    &quot;Timestamp&quot;, &quot;Course ID&quot;, &quot;Course Title&quot;, &quot;Description&quot;, &quot;Video Link&quot;, &quot;Thumbnail URL&quot;, &quot;Assigned Trainers&quot;
   ]);
 
   // 4. Fee Structure
-  var feeSheet = getOrCreateSheet(ss, "Fee Structure", ["Fee Parameter", "Amount (₹) / Value"]);
+  var feeSheet = getOrCreateSheet(ss, &quot;Fee Structure&quot;, [&quot;Fee Parameter&quot;, &quot;Amount (₹) / Value&quot;]);
   if (feeSheet.getLastRow() &lt;= 1) {
-    feeSheet.appendRow(["Level 1", 500]);
-    feeSheet.appendRow(["Level 2", 600]);
-    feeSheet.appendRow(["Level 3", 700]);
-    feeSheet.appendRow(["Level 4", 800]);
-    feeSheet.appendRow(["Level 5", 900]);
-    feeSheet.appendRow(["Level 6", 1000]);
-    feeSheet.appendRow(["Senior 1", 1200]);
-    feeSheet.appendRow(["Senior 2", 1400]);
-    feeSheet.appendRow(["Senior 3", 1600]);
-    feeSheet.appendRow(["Senior 4", 1800]);
-    feeSheet.appendRow(["Official UPI ID", "yoddhaacademy5@okicici"]);
+    feeSheet.appendRow([&quot;Level 1&quot;, 500]);
+    feeSheet.appendRow([&quot;Level 2&quot;, 600]);
+    feeSheet.appendRow([&quot;Level 3&quot;, 700]);
+    feeSheet.appendRow([&quot;Level 4&quot;, 800]);
+    feeSheet.appendRow([&quot;Level 5&quot;, 900]);
+    feeSheet.appendRow([&quot;Level 6&quot;, 1000]);
+    feeSheet.appendRow([&quot;Senior 1&quot;, 1200]);
+    feeSheet.appendRow([&quot;Senior 2&quot;, 1400]);
+    feeSheet.appendRow([&quot;Senior 3&quot;, 1600]);
+    feeSheet.appendRow([&quot;Senior 4&quot;, 1800]);
+    feeSheet.appendRow([&quot;Official UPI ID&quot;, &quot;yoddhaacademy5@okicici&quot;]);
   }
 
   // 5. AcademySettings
-  var setSheet = getOrCreateSheet(ss, "AcademySettings", [
-    "Setting Key", "Setting Value", "Updated By", "Last Updated"
+  var setSheet = getOrCreateSheet(ss, &quot;AcademySettings&quot;, [
+    &quot;Setting Key&quot;, &quot;Setting Value&quot;, &quot;Updated By&quot;, &quot;Last Updated&quot;
   ]);
   if (setSheet.getLastRow() &lt;= 1) {
-    setSheet.appendRow(["ACADEMY_NAME", "Yoddha Academy India", "Admin", new Date()]);
-    setSheet.appendRow(["DIRECTORATE", "Central Directorate of Traditional Martial Arts &amp; Defence", "Admin", new Date()]);
-    setSheet.appendRow(["ADMIN_ID", "ADMIN-YODDHA-01", "Admin", new Date()]);
-    setSheet.appendRow(["ADMIN_PASSWORD", "@hupare25077", "Admin", new Date()]);
-    setSheet.appendRow(["ADMIN_NAME", "Central Headquarters", "Admin", new Date()]);
-    setSheet.appendRow(["CONTACT_MOBILE", "7766885311", "Admin", new Date()]);
-    setSheet.appendRow(["CONTACT_EMAIL", "yoddhaacademy5@gmail.com", "Admin", new Date()]);
-    setSheet.appendRow(["OFFICIAL_UPI", "yoddhaacademy5@okicici", "Admin", new Date()]);
-    setSheet.appendRow(["HQ_ADDRESS", "Central Directorate, Kolhapur, Maharashtra", "Admin", new Date()]);
-    setSheet.appendRow(["EXAM_MASTER_SWITCH", "OFF", "Admin", new Date()]);
+    setSheet.appendRow([&quot;ACADEMY_NAME&quot;, &quot;Yoddha Academy India&quot;, &quot;Admin&quot;, new Date()]);
+    setSheet.appendRow([&quot;DIRECTORATE&quot;, &quot;Central Directorate of Traditional Martial Arts &amp; Defence&quot;, &quot;Admin&quot;, new Date()]);
+    setSheet.appendRow([&quot;ADMIN_ID&quot;, &quot;ADMIN-YODDHA-01&quot;, &quot;Admin&quot;, new Date()]);
+    setSheet.appendRow([&quot;ADMIN_PASSWORD&quot;, &quot;@hupare25077&quot;, &quot;Admin&quot;, new Date()]);
+    setSheet.appendRow([&quot;ADMIN_NAME&quot;, &quot;Central Headquarters&quot;, &quot;Admin&quot;, new Date()]);
+    setSheet.appendRow([&quot;CONTACT_MOBILE&quot;, &quot;7766885311&quot;, &quot;Admin&quot;, new Date()]);
+    setSheet.appendRow([&quot;CONTACT_EMAIL&quot;, &quot;yoddhaacademy5@gmail.com&quot;, &quot;Admin&quot;, new Date()]);
+    setSheet.appendRow([&quot;OFFICIAL_UPI&quot;, &quot;yoddhaacademy5@okicici&quot;, &quot;Admin&quot;, new Date()]);
+    setSheet.appendRow([&quot;HQ_ADDRESS&quot;, &quot;Central Directorate, Kolhapur, Maharashtra&quot;, &quot;Admin&quot;, new Date()]);
+    setSheet.appendRow([&quot;EXAM_MASTER_SWITCH&quot;, &quot;OFF&quot;, &quot;Admin&quot;, new Date()]);
   }
 
   // 6. Competitions
-  getOrCreateSheet(ss, "Competitions", [
-    "Timestamp", "Competition ID", "Championship Level", "Title", "Date", "Location", "Categories", "Entry Fee", "Status", "Eligible Scope"
+  getOrCreateSheet(ss, &quot;Competitions&quot;, [
+    &quot;Timestamp&quot;, &quot;Competition ID&quot;, &quot;Championship Level&quot;, &quot;Title&quot;, &quot;Date&quot;, &quot;Location&quot;, &quot;Categories&quot;, &quot;Entry Fee&quot;, &quot;Status&quot;, &quot;Eligible Scope&quot;
   ]);
 
   // 7. TournamentEntries
-  getOrCreateSheet(ss, "TournamentEntries", [
-    "Timestamp", "Competition ID", "Tournament Title", "Championship Level",
-    "Student ID", "Student Name", "Event Discipline", "Age / Weight Division",
-    "Fee Status", "Fee Amount (Rs)", "UTR Number", "Payment Mode", "Trainer Name"
+  getOrCreateSheet(ss, &quot;TournamentEntries&quot;, [
+    &quot;Timestamp&quot;, &quot;Competition ID&quot;, &quot;Tournament Title&quot;, &quot;Championship Level&quot;,
+    &quot;Student ID&quot;, &quot;Student Name&quot;, &quot;Event Discipline&quot;, &quot;Age / Weight Division&quot;,
+    &quot;Fee Status&quot;, &quot;Fee Amount (Rs)&quot;, &quot;UTR Number&quot;, &quot;Payment Mode&quot;, &quot;Trainer Name&quot;
   ]);
 
   // 8. ExamResults
-  getOrCreateSheet(ss, "ExamResults", [
-    "Timestamp", "Exam Reference ID", "Student ID", "Student Name", "Akhada / Branch",
-    "District", "State", "Belt Level", "AI Camera Score (/50)", "Trainer Score (/50)",
-    "Grand Total (/100)", "Grade", "Exam Date", "Trainer / Ustad Name", "Status"
+  getOrCreateSheet(ss, &quot;ExamResults&quot;, [
+    &quot;Timestamp&quot;, &quot;Exam Reference ID&quot;, &quot;Student ID&quot;, &quot;Student Name&quot;, &quot;Akhada / Branch&quot;,
+    &quot;District&quot;, &quot;State&quot;, &quot;Belt Level&quot;, &quot;AI Camera Score (/50)&quot;, &quot;Trainer Score (/50)&quot;,
+    &quot;Grand Total (/100)&quot;, &quot;Grade&quot;, &quot;Exam Date&quot;, &quot;Trainer / Ustad Name&quot;, &quot;Status&quot;
   ]);
 
   // 9. LevelUpApplications
-  getOrCreateSheet(ss, "LevelUpApplications", [
-    "Timestamp", "Student ID", "Student Name", "Promoted From Level", "Promoted To Level",
-    "Fee Amount (₹)", "UPI UTR Number", "Application Status", "Approval Date"
+  getOrCreateSheet(ss, &quot;LevelUpApplications&quot;, [
+    &quot;Timestamp&quot;, &quot;Student ID&quot;, &quot;Student Name&quot;, &quot;Promoted From Level&quot;, &quot;Promoted To Level&quot;,
+    &quot;Fee Amount (₹)&quot;, &quot;UPI UTR Number&quot;, &quot;Application Status&quot;, &quot;Approval Date&quot;
   ]);
 
   // 10. StudentSportsRecords
-  getOrCreateSheet(ss, "StudentSportsRecords", [
-    "Timestamp", "Student ID", "Student Name", "Tournament Title", "Event Date",
-    "Discipline / Category", "Medal / Achievement", "Certificate Number"
+  getOrCreateSheet(ss, &quot;StudentSportsRecords&quot;, [
+    &quot;Timestamp&quot;, &quot;Student ID&quot;, &quot;Student Name&quot;, &quot;Tournament Title&quot;, &quot;Event Date&quot;,
+    &quot;Discipline / Category&quot;, &quot;Medal / Achievement&quot;, &quot;Certificate Number&quot;
   ]);
 
-  return { status: "success", message: "All 10 Academy Master Sheets initialized successfully with orange headers!" };
+  return { status: &quot;success&quot;, message: &quot;All 10 Academy Master Sheets initialized successfully with orange headers!&quot; };
 }
 </pre>
           </div>
@@ -4881,7 +4936,7 @@ function setupAllAcademySheets() {
             💡 If any record is updated on the portal, it immediately updates in-place inside Central Cloud Server records!
           </p>
           <div class="flex gap-2">
-            <button onclick="exportStudentsCSV()" class="px-3.5 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded-xl font-bold flex items-center gap-1 shadow-sm transition">
+            <button id="btn-export-students-excel-table" onclick="exportStudentsCSV()" class="px-3.5 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded-xl font-bold flex items-center gap-1 shadow-sm transition">
               <i data-lucide="download" class="w-3.5 h-3.5 text-orange-600"></i> Students CSV
             </button>
             <button onclick="exportTrainersCSV()" class="px-3.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl font-bold flex items-center gap-1 shadow-sm transition">
@@ -6937,6 +6992,23 @@ function setupAllAcademySheets() {
         else btnGoogleSheet.classList.remove('hidden');
       }
 
+      // Hide Export Excel & Create Course buttons for Trainer (Admin only)
+      const btnExportExcel = document.getElementById('btn-export-students-excel');
+      const btnExportExcelTbl = document.getElementById('btn-export-students-excel-table');
+      const btnCreateCourse = document.getElementById('btn-create-course-header');
+      if (btnExportExcel) {
+        if (isTrainer) btnExportExcel.classList.add('hidden');
+        else btnExportExcel.classList.remove('hidden');
+      }
+      if (btnExportExcelTbl) {
+        if (isTrainer) btnExportExcelTbl.classList.add('hidden');
+        else btnExportExcelTbl.classList.remove('hidden');
+      }
+      if (btnCreateCourse) {
+        if (isTrainer) btnCreateCourse.classList.add('hidden');
+        else btnCreateCourse.classList.remove('hidden');
+      }
+
       // Toggle View Data Sections for Trainer (hide Verify and Trainers, show 5 boxes including Profile)
       const btnVerify = document.getElementById('nav-section-verify');
       const btnTrainers = document.getElementById('nav-section-trainers');
@@ -7236,6 +7308,15 @@ lucide.createIcons();
           populateCourseTrainerChecklist();
           resetCourseThumbnailPreview();
         } else if (formType === 'competition') {
+          const editIdEl = document.getElementById('modal-comp-edit-id');
+          if (editIdEl) editIdEl.value = '';
+          const headerTitle = document.getElementById('modal-comp-header-title');
+          const headerSub = document.getElementById('modal-comp-header-sub');
+          const submitBtnText = document.getElementById('modal-comp-submit-btn-text');
+          if (headerTitle) headerTitle.innerText = "5. Create Competition";
+          if (headerSub) headerSub.innerText = "Announce tournament & select eligible Trainers, Districts or National scope";
+          if (submitBtnText) submitBtnText.innerText = "Publish Tournament";
+          populateCompetitionTrainersList([]);
           handleCompetitionLevelChange(document.getElementById('adm-comp-level')?.value || 'District Level');
         } else if (formType === 'trainer') {
           prepareNewTrainerId();
@@ -8432,11 +8513,42 @@ lucide.createIcons();
           (s.trainerId || '').toLowerCase().includes(search);
       });
 
-      // Sort newest students first (jo navin form bharanar to var desyala hava)
+      // Sort newest students first (Freshest student registration ALWAYS at #1 position)
       filtered.sort((a, b) => {
-        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : (a.admissionDate ? new Date(a.admissionDate).getTime() : 0);
-        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : (b.admissionDate ? new Date(b.admissionDate).getTime() : 0);
-        return timeB - timeA;
+        const parseTime = (obj) => {
+          if (obj.timestamp) {
+            const parts = String(obj.timestamp).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})\s*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?/);
+            if (parts) {
+              return new Date(parts[3], parts[2] - 1, parts[1], parts[4] || 0, parts[5] || 0, parts[6] || 0).getTime();
+            }
+            const t = new Date(obj.timestamp).getTime();
+            if (!isNaN(t)) return t;
+          }
+          if (obj.createdAt) {
+            const t = new Date(obj.createdAt).getTime();
+            if (!isNaN(t)) return t;
+          }
+          if (obj.admissionDate) {
+            const t = new Date(obj.admissionDate).getTime();
+            if (!isNaN(t)) return t;
+          }
+          return 0;
+        };
+        const timeA = parseTime(a);
+        const timeB = parseTime(b);
+        if (timeB !== timeA && Math.abs(timeB - timeA) > 1000) {
+          return timeB - timeA;
+        }
+        // Strict sequence tie-breaker from numeric ID (e.g. 000005 > 000004 > 000002)
+        const getSeq = (obj) => {
+          const id = String(obj.studentId || obj.id || '');
+          const match = id.match(/(\d+)(?!.*\d)/);
+          return match ? parseInt(match[1], 10) : 0;
+        };
+        const seqA = getSeq(a);
+        const seqB = getSeq(b);
+        if (seqB !== seqA) return seqB - seqA;
+        return 0;
       });
 
       if (countBadge) {
@@ -8849,6 +8961,10 @@ lucide.createIcons();
       if (tab === 'tournaments') {
         if (levelsTab) levelsTab.classList.add('hidden');
         if (tournsTab) tournsTab.classList.remove('hidden');
+        // Dynamically re-render tournaments and medals list from state & cloud records
+        if (activeRecordStudentId) {
+          renderStudentRecordTournaments(activeRecordStudentId);
+        }
         if (btnLevels) {
           btnLevels.className = "pb-2.5 px-3 sm:px-4 font-bold text-xs sm:text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-1.5 transition";
           const icon = btnLevels.querySelector('i');
@@ -9575,7 +9691,7 @@ lucide.createIcons();
 
     function openStudentCompetitionRecord(studentId) {
       activeRecordStudentId = studentId;
-      const s = adminState.students.find(stu => stu.studentId === studentId);
+      const s = adminState.students.find(stu => (stu.studentId || stu.id || '').toUpperCase() === String(studentId).toUpperCase());
       if (!s) return;
 
       const user = adminState.currentUser || { role: 'Admin' };
@@ -9816,7 +9932,63 @@ lucide.createIcons();
         });
       }
 
-      // Count medals
+      renderStudentRecordTournaments(studentId);
+
+      // Bottom Add Another Tournament button (Admin only)
+      if (bottomBtnBox) {
+        bottomBtnBox.innerHTML = '';
+        if (isAdmin) {
+          bottomBtnBox.innerHTML = `
+            <button type="button" onclick="toggleAddCompetitionRecordForm(true)" class="w-full py-2.5 bg-orange-50 hover:bg-orange-100 border-2 border-dashed border-orange-300 rounded-2xl text-orange-900 font-extrabold text-xs transition flex items-center justify-center gap-2 cursor-pointer mt-2 shadow-2xs">
+              <i data-lucide="plus-circle" class="w-4 h-4 text-orange-600"></i>
+              <span>+ Add Another Tournament / Medal Record</span>
+            </button>
+          `;
+        }
+      }
+
+      // Hide add record sub-form initially unless requested
+      const addForm = document.getElementById('add-comp-record-form');
+      if (addForm) addForm.classList.add('hidden');
+
+      const modal = document.getElementById('modal-student-record');
+      if (modal) {
+        modal.classList.remove('hidden');
+        if (window.hqReviewInterval) clearInterval(window.hqReviewInterval);
+        window.hqReviewInterval = setInterval(updateHqReviewCountdowns, 1000);
+        updateHqReviewCountdowns();
+        lucide.createIcons();
+      }
+    }
+
+    function toggleAddCompetitionRecordForm(show) {
+      if (adminState.currentUser?.role === 'Trainer') {
+        alert("🔒 Unauthorized: Only Admin can add or edit tournament records.");
+        return;
+      }
+      const form = document.getElementById('add-comp-record-form');
+      if (form) {
+        if (show === true) {
+          form.classList.remove('hidden');
+          form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else if (show === false) {
+          form.classList.add('hidden');
+        } else {
+          form.classList.toggle('hidden');
+        }
+        lucide.createIcons();
+      }
+    }
+
+    // Dynamically render tournament & medals tab records for student
+    function renderStudentRecordTournaments(studentId) {
+      if (!studentId) return;
+      const user = adminState.currentUser || { role: 'Admin' };
+      const isAdmin = (user.role === 'Admin');
+      const stats = document.getElementById('stu-record-medals-stats');
+      const list = document.getElementById('stu-record-history-list');
+      const records = getStudentCompetitions(studentId);
+
       const golds = records.filter(r => (r.achievement || '').includes('Gold')).length;
       const silvers = records.filter(r => (r.achievement || '').includes('Silver')).length;
       const bronzes = records.filter(r => (r.achievement || '').includes('Bronze')).length;
@@ -9842,7 +10014,6 @@ lucide.createIcons();
         `;
       }
 
-      // Render records list
       if (list) {
         list.innerHTML = '';
         if (records.length === 0) {
@@ -9898,51 +10069,7 @@ lucide.createIcons();
           });
         }
       }
-
-      // Bottom Add Another Tournament button (Admin only)
-      if (bottomBtnBox) {
-        bottomBtnBox.innerHTML = '';
-        if (isAdmin) {
-          bottomBtnBox.innerHTML = `
-            <button type="button" onclick="toggleAddCompetitionRecordForm(true)" class="w-full py-2.5 bg-orange-50 hover:bg-orange-100 border-2 border-dashed border-orange-300 rounded-2xl text-orange-900 font-extrabold text-xs transition flex items-center justify-center gap-2 cursor-pointer mt-2 shadow-2xs">
-              <i data-lucide="plus-circle" class="w-4 h-4 text-orange-600"></i>
-              <span>+ Add Another Tournament / Medal Record</span>
-            </button>
-          `;
-        }
-      }
-
-      // Hide add record sub-form initially unless requested
-      const addForm = document.getElementById('add-comp-record-form');
-      if (addForm) addForm.classList.add('hidden');
-
-      const modal = document.getElementById('modal-student-record');
-      if (modal) {
-        modal.classList.remove('hidden');
-        if (window.hqReviewInterval) clearInterval(window.hqReviewInterval);
-        window.hqReviewInterval = setInterval(updateHqReviewCountdowns, 1000);
-        updateHqReviewCountdowns();
-        lucide.createIcons();
-      }
-    }
-
-    function toggleAddCompetitionRecordForm(show) {
-      if (adminState.currentUser?.role === 'Trainer') {
-        alert("🔒 Unauthorized: Only Admin can add or edit tournament records.");
-        return;
-      }
-      const form = document.getElementById('add-comp-record-form');
-      if (form) {
-        if (show === true) {
-          form.classList.remove('hidden');
-          form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        } else if (show === false) {
-          form.classList.add('hidden');
-        } else {
-          form.classList.toggle('hidden');
-        }
-        lucide.createIcons();
-      }
+      lucide.createIcons();
     }
 
     async function saveStudentCompetitionRecord() {
@@ -13751,22 +13878,22 @@ const iconBox = document.getElementById('exam-banner-icon-box');
           stateContainer.appendChild(div);
         });
 
-        // 2. Branch 2-Year Total Comparison
+        // 2. Branch 2-Year Total Comparison (100% REAL COUNTS)
         const totalBranchNow = myStudents.length;
-        const totalBranch2025 = 12;
-        const growthPct = Math.round(((totalBranchNow - totalBranch2025) / totalBranch2025) * 100);
-        const growthStr = growthPct >= 0 ? `+${growthPct}%` : `${growthPct}%`;
-
         const myPassedExams = myStudents.filter(s => s.examPassedDate || s.examStatus === 'PASSED' || s.examStatus === 'PASSED_PENDING_LEVELUP' || (s.lastExam && s.lastExam.totalScore)).length;
         const myLvl1to3 = myStudents.filter(s => (s.requestedLevel || s.level || '').match(/Level [1-3]/i)).length;
         const myLvl4plus = myStudents.filter(s => !(s.requestedLevel || s.level || '').match(/Level [1-3]/i)).length;
+        const myEligibleComps = adminState.competitions.filter(comp => {
+          if (!comp.assignedTrainers || comp.assignedTrainers.length === 0 || comp.assignedTrainers.includes('ALL')) return true;
+          return comp.assignedTrainers.some(tid => String(tid).toUpperCase() === (user.id || user.trainerId || '').toUpperCase());
+        }).length;
 
         const branchMetrics = [
           { label: "My Total Students", y2025: "0", y2026: String(totalBranchNow), growth: totalBranchNow > 0 ? `+${totalBranchNow} Active` : "0" },
           { label: "Level 1-3 Warriors", y2025: "0", y2026: String(myLvl1to3), growth: myLvl1to3 > 0 ? `+${myLvl1to3} Active` : "0" },
           { label: "Level 4+ Advanced", y2025: "0", y2026: String(myLvl4plus), growth: myLvl4plus > 0 ? `+${myLvl4plus} Active` : "0" },
           { label: "Level Exams Passed", y2025: "0", y2026: String(myPassedExams), growth: myPassedExams > 0 ? `+${myPassedExams} Passed` : "0" },
-          { label: "Official Matches", y2025: "0", y2026: String(adminState.competitions.length), growth: `${adminState.competitions.length} Matches` }
+          { label: "Official Matches", y2025: "0", y2026: String(myEligibleComps), growth: `${myEligibleComps} Matches` }
         ];
 
         compContainer.innerHTML = '';
@@ -13955,6 +14082,20 @@ const iconBox = document.getElementById('exam-banner-icon-box');
           comp.allowedStates = comp.scope.split(',').map(s => s.trim()).filter(Boolean);
         }
 
+        // 🥋 TRAINER VISIBILITY FILTER: If assignedTrainers is set, ONLY assigned trainers see this competition
+        if (isTrainer) {
+          const trnId = (user.id || user.trainerId || '').toUpperCase().trim();
+          if (comp.assignedTrainers && Array.isArray(comp.assignedTrainers) && comp.assignedTrainers.length > 0) {
+            const isAssigned = comp.assignedTrainers.some(tid => {
+              const uTid = String(tid).toUpperCase().trim();
+              return uTid === 'ALL' || uTid === trnId || (uTid.length > 4 && trnId.includes(uTid));
+            });
+            if (!isAssigned) {
+              return; // Completely hidden for unassigned trainer!
+            }
+          }
+        }
+
         // Scope description badge
         let scopeBadgeHtml = '';
         let isTrainerEligible = true;
@@ -14037,15 +14178,19 @@ const iconBox = document.getElementById('exam-banner-icon-box');
               `}
             </div>
 
-            <!-- ADMIN CONTROLS (View Excel, Delete Competition) vs TRAINER REGISTRATION -->
+            <!-- ADMIN CONTROLS (View Excel, Edit, Delete Competition) vs TRAINER REGISTRATION -->
             ${!isTrainer ? `
-              <div class="grid grid-cols-2 gap-2 pt-1">
-                <button type="button" onclick="openCompetitionExcelModal('${comp.id}')" class="py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs shadow-sm flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
-                  <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+              <div class="grid grid-cols-3 gap-2 pt-1">
+                <button type="button" onclick="openCompetitionExcelModal('${comp.id}')" class="py-2 px-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs shadow-sm flex items-center justify-center gap-1 transition active:scale-95 cursor-pointer" title="View Registered Athletes Excel">
+                  <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
                   <span>View Excel</span>
                 </button>
-                <button type="button" onclick="deleteCompetition('${comp.id}')" class="py-2 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 rounded-xl font-black text-xs shadow-2xs flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer">
-                  <i data-lucide="trash-2" class="w-4 h-4 text-rose-600"></i>
+                <button type="button" onclick="openEditCompetitionModal('${comp.id}')" class="py-2 px-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-black text-xs shadow-sm flex items-center justify-center gap-1 transition active:scale-95 cursor-pointer" title="Edit Tournament Details & Assigned Trainers">
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                  <span>Edit</span>
+                </button>
+                <button type="button" onclick="deleteCompetition('${comp.id}')" class="py-2 px-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 rounded-xl font-black text-xs shadow-2xs flex items-center justify-center gap-1 transition active:scale-95 cursor-pointer" title="Delete Competition">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
                   <span>Delete</span>
                 </button>
               </div>
@@ -14843,18 +14988,19 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       const discipline = rawDiscipline.toLowerCase().includes('general') ? 'General Event' : 'Single Event';
 
-      // STRICT DUPLICATE VALIDATION: One student can register ONLY ONCE for a competition!
+      // STRICT SINGLE EVENT RESTRICTION: One student can register only once for the SAME event in this championship!
       comp.athletes = comp.athletes || [];
-      const alreadyReg = comp.athletes.some(a => 
-        (a.studentId || '').toUpperCase() === studentId.toUpperCase()
+      const alreadyRegSameEvent = comp.athletes.some(a => 
+        (a.studentId || '').toUpperCase() === studentId.toUpperCase() &&
+        (a.discipline || '').toLowerCase() === discipline.toLowerCase()
       );
 
-      if (alreadyReg) {
+      if (alreadyRegSameEvent) {
         alert(
-          `⚠️ Already Registered:\n\n` +
-          `Athlete "${student.studentName}" (${studentId}) is already registered for this tournament!\n\n` +
-          `Each student can submit only one registration form per tournament.\n\n` +
-          `(Candidate ${student.studentName} is ALREADY registered for this tournament! Re-registration is strictly restricted.)`
+          `⚠️ Already Registered For This Event:\n\n` +
+          `Athlete "${student.studentName}" (${studentId}) is already registered for "${discipline}" in "${comp.title}"!\n\n` +
+          `A student cannot be registered more than once for the same event in this tournament.\n\n` +
+          `(Candidate ${student.studentName} is ALREADY registered for ${discipline}. Duplicate registration for this event is blocked.)`
         );
         return;
       }
@@ -14877,9 +15023,10 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       saveAdminState();
 
-      // Live sync tournament entry to Central Cloud Server (ISOLATED TYPE: Will NOT touch Students sheet)
+      // Live sync tournament entry to Central Cloud Server with BOTH competitionId and compId
       syncToCloudServer({
         type: "TOURNAMENT_ATHLETE_ENTRY",
+        competitionId: comp.id,
         compId: comp.id,
         compTitle: comp.title,
         compLevel: comp.level || 'State Level',
@@ -15616,34 +15763,169 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       if (master) master.checked = allChecked;
     }
 
-function handleAdminCreateCompetition(e) {
+    // Populate Active Trainers Checklist in Competition Modal
+    function populateCompetitionTrainersList(selectedIds = []) {
+      const container = document.getElementById('comp-trainers-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const activeTrainers = adminState.trainers.filter(t => (t.status || 'Active').toLowerCase() === 'active');
+      const selectAllCb = document.getElementById('comp-select-all-trainers');
+
+      let allChecked = activeTrainers.length > 0;
+
+      activeTrainers.forEach(t => {
+        const tId = t.trainerId || t.id || '';
+        const isSelected = selectedIds.length === 0 || selectedIds.includes('ALL') || selectedIds.some(id => String(id).toUpperCase().trim() === tId.toUpperCase().trim());
+        if (!isSelected) allChecked = false;
+
+        const label = document.createElement('label');
+        label.className = "flex items-center gap-2 p-2 bg-white rounded-xl border border-blue-200/80 hover:bg-blue-50/50 cursor-pointer transition select-none text-[11px]";
+        label.innerHTML = `
+          <input type="checkbox" name="comp-scope-trainer" value="${tId}" ${isSelected ? 'checked' : ''} onchange="updateCompTrainersSelectAllState()" class="w-4 h-4 text-orange-600 rounded border-slate-300 focus:ring-orange-500">
+          <div class="min-w-0 flex-1">
+            <div class="font-black text-slate-900 truncate">${t.fullName || t.name}</div>
+            <div class="flex items-center gap-1.5 text-[9.5px] text-slate-500 font-mono">
+              <span class="font-bold text-orange-700">${tId}</span>
+              <span>•</span>
+              <span class="truncate">${(t.branch || t.district || 'Branch').replace(/Akhada/gi, 'Branch')}</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(label);
+      });
+
+      if (selectAllCb) {
+        selectAllCb.checked = allChecked;
+      }
+    }
+
+    function toggleSelectAllScopeTrainers(checked) {
+      const cbs = document.querySelectorAll('input[name="comp-scope-trainer"]');
+      cbs.forEach(cb => cb.checked = checked);
+    }
+
+    function updateCompTrainersSelectAllState() {
+      const cbs = document.querySelectorAll('input[name="comp-scope-trainer"]');
+      const allChecked = Array.from(cbs).length > 0 && Array.from(cbs).every(cb => cb.checked);
+      const master = document.getElementById('comp-select-all-trainers');
+      if (master) master.checked = allChecked;
+    }
+
+    // Open Edit Competition Modal for Master Admin
+    function openEditCompetitionModal(compId) {
+      const comp = adminState.competitions.find(c => c.id === compId);
+      if (!comp) return;
+
+      const editIdEl = document.getElementById('modal-comp-edit-id');
+      const titleInput = document.getElementById('adm-comp-title');
+      const levelInput = document.getElementById('adm-comp-level');
+      const statusInput = document.getElementById('adm-comp-status');
+      const dateInput = document.getElementById('adm-comp-date');
+      const feeInput = document.getElementById('adm-comp-fee');
+      const locInput = document.getElementById('adm-comp-location');
+      const catInput = document.getElementById('adm-comp-categories');
+      const headerTitle = document.getElementById('modal-comp-header-title');
+      const headerSub = document.getElementById('modal-comp-header-sub');
+      const submitBtnText = document.getElementById('modal-comp-submit-btn-text');
+
+      if (editIdEl) editIdEl.value = comp.id;
+      if (headerTitle) headerTitle.innerText = "Edit Competition Announcement";
+      if (headerSub) headerSub.innerText = `Edit tournament details & modify assigned trainers for ${comp.id}`;
+      if (submitBtnText) submitBtnText.innerText = "Update & Re-Publish Competition";
+
+      if (titleInput) titleInput.value = comp.title || '';
+      if (levelInput) {
+        levelInput.value = comp.level || 'District Level';
+        handleCompetitionLevelChange(comp.level || 'District Level');
+      }
+      if (statusInput) statusInput.value = comp.status || 'Registrations Open';
+      if (dateInput) dateInput.value = comp.date || '';
+      if (feeInput) feeInput.value = comp.fee || 300;
+      if (locInput) locInput.value = comp.location || '';
+      if (catInput) catInput.value = comp.categories || '';
+
+      populateCompetitionTrainersList(comp.assignedTrainers || []);
+      openFormModal('competition');
+    }
+
+    // Unified Handle Create or Update Competition
+    function handleAdminCreateOrUpdateCompetition(e) {
       e.preventDefault();
+      const editCompId = (document.getElementById('modal-comp-edit-id')?.value || '').trim();
       const title = document.getElementById('adm-comp-title').value.trim();
       const date = document.getElementById('adm-comp-date').value.trim();
       const fee = parseInt(document.getElementById('adm-comp-fee').value) || 300;
       const location = document.getElementById('adm-comp-location').value.trim();
       const categories = document.getElementById('adm-comp-categories').value.trim();
-      const publishedDate = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-
       const level = document.getElementById('adm-comp-level').value;
       const status = document.getElementById('adm-comp-status').value;
 
-      // Capture allowed districts or states based on level
+      // 1. Capture assigned trainers from checklist
+      const checkedTrainerBoxes = Array.from(document.querySelectorAll('input[name="comp-scope-trainer"]:checked'));
+      const assignedTrainers = checkedTrainerBoxes.map(cb => cb.value.trim()).filter(Boolean);
+
+      // 2. Derive allowed districts and states
       let allowedDistricts = [];
       let allowedStates = [];
-      let scopeStr = 'All India Open';
+      let scopeStr = '';
+
+      if (assignedTrainers.length > 0) {
+        const trnBranches = assignedTrainers.map(tId => {
+          const t = adminState.trainers.find(tr => (tr.trainerId || tr.id || '').toUpperCase() === tId.toUpperCase());
+          return t ? (t.branch || t.district || t.name) : tId;
+        });
+        scopeStr = `${assignedTrainers.length} Assigned Trainer${assignedTrainers.length > 1 ? 's' : ''} (${trnBranches.slice(0, 3).join(', ')}${trnBranches.length > 3 ? '...' : ''})`;
+      } else {
+        scopeStr = 'All Active Trainers';
+      }
 
       if (level === 'District Level') {
         const checkedDistBoxes = Array.from(document.querySelectorAll('input[name="comp-scope-district"]:checked'));
         allowedDistricts = checkedDistBoxes.map(cb => cb.value.trim()).filter(Boolean);
-        scopeStr = allowedDistricts.length > 0 ? allowedDistricts.join(', ') : 'All Districts';
       } else if (level === 'State Level') {
         const checkedStateBoxes = Array.from(document.querySelectorAll('input[name="comp-scope-state"]:checked'));
         allowedStates = checkedStateBoxes.map(cb => cb.value.trim()).filter(Boolean);
-        scopeStr = allowedStates.length > 0 ? allowedStates.join(', ') : 'All States';
       }
 
+      if (editCompId) {
+        // EDIT EXISTING COMPETITION
+        const compIdx = adminState.competitions.findIndex(c => c.id === editCompId);
+        if (compIdx !== -1) {
+          const existing = adminState.competitions[compIdx];
+          const updatedComp = {
+            ...existing,
+            title,
+            level,
+            date,
+            location,
+            fee,
+            categories,
+            status,
+            assignedTrainers,
+            allowedDistricts,
+            allowedStates,
+            scope: scopeStr,
+            updatedAt: new Date().toISOString()
+          };
+          adminState.competitions[compIdx] = updatedComp;
+          saveAdminState();
+          localStorage.setItem('yoddha_admin_comps_v2', JSON.stringify(adminState.competitions));
+          syncToCloudServer({
+            type: "COMPETITION_UPDATED",
+            action: "updateCompetition",
+            ...updatedComp
+          });
+          renderAdminCompetitions();
+          closeFormModal('competition');
+          alert(`✅ Tournament "${title}" updated successfully!\nAssigned Trainers: ${assignedTrainers.length} Trainer(s)\nChanges synced to Central Cloud Server.`);
+          return;
+        }
+      }
+
+      // CREATE NEW COMPETITION
       const compId = `COMP-2026-0${adminState.competitions.length + 1}`;
+      const publishedDate = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
       const compObj = {
         id: compId,
         level,
@@ -15656,6 +15938,7 @@ function handleAdminCreateCompetition(e) {
         entries: 0,
         athletes: [],
         status,
+        assignedTrainers,
         allowedDistricts,
         allowedStates,
         scope: scopeStr
@@ -15665,13 +15948,17 @@ function handleAdminCreateCompetition(e) {
       saveAdminState();
       localStorage.setItem('yoddha_admin_comps_v2', JSON.stringify(adminState.competitions));
       localStorage.setItem('yoddha_admin_comps', JSON.stringify(adminState.competitions));
-      
+
       syncToCloudServer({ type: "COMPETITION_CREATED", ...compObj });
       renderAdminCompetitions();
       if (e?.target?.reset) e.target.reset();
       closeFormModal('competition');
-      alert(`🎉 Tournament "${title}" announced successfully!\nID: ${compId}\nScope: ${scopeStr}\nSynchronized to Central Cloud Server.`);
+      alert(`🎉 Tournament "${title}" announced successfully!\nID: ${compId}\nEligible Trainers: ${assignedTrainers.length} Trainer(s)\nSynchronized to Central Cloud Server.`);
       navigateToPage('competition');
+    }
+
+    function handleAdminCreateCompetition(e) {
+      return handleAdminCreateOrUpdateCompetition(e);
     }
 
     
@@ -15917,6 +16204,7 @@ function handleAdminCreateCompetition(e) {
                 aadharPhoto: (stu.aadharPhoto && stu.aadharPhoto.length > 20) ? stu.aadharPhoto : (existing.aadharPhoto || ''),
                 levelHistory: stu.levelHistory || existing.levelHistory || {},
                 lastExam: stu.lastExam || existing.lastExam || null,
+                studentCompetitions: (stu.studentCompetitions && Array.isArray(stu.studentCompetitions)) ? stu.studentCompetitions : (existing.studentCompetitions || []),
                 isVerified: existing.isVerified || ((stu.status || existing.status) === 'Active' && ((stu.feeStatus || existing.feeStatus || '').toLowerCase() === 'paid')),
                 verifiedAt: existing.verifiedAt || (stu.verifiedAt || null)
               };
