@@ -404,30 +404,41 @@ function doGet(e) {
     }
 
     // 5B. Read Tournament Entries & Map Athletes to Competitions
+    if (!allData.tournamentEntries) allData.tournamentEntries = [];
     var tournSheet = ss.getSheetByName("TournamentEntries");
-    if (tournSheet && allData.competitions) {
+    if (tournSheet) {
       var tRows = tournSheet.getDataRange().getValues();
       for (var tr = 1; tr < tRows.length; tr++) {
         var tRow = tRows[tr];
-        var cId = String(tRow[1] || "").trim();
-        if (cId) {
+        var cId = String(tRow[1] || "").trim().toUpperCase();
+        var compTitle = String(tRow[2] || "").trim().toLowerCase();
+        var athleteObj = {
+          competitionId: cId,
+          compId: cId,
+          tournamentTitle: String(tRow[2] || "").trim(),
+          championshipLevel: String(tRow[3] || "State Level").trim(),
+          studentId: String(tRow[4] || "").trim(),
+          studentName: String(tRow[5] || "").trim(),
+          discipline: String(tRow[6] || "Single Event").trim(),
+          division: String(tRow[7] || "Open").trim(),
+          feeStatus: String(tRow[8] || "Unpaid").trim(),
+          feeAmount: Number(tRow[9]) || 300,
+          utrNumber: String(tRow[10] || "").trim(),
+          paymentMode: String(tRow[11] || "Online UPI").trim(),
+          trainerName: String(tRow[12] || "").trim(),
+          registeredAt: tRow[0] ? new Date(tRow[0]).toISOString() : new Date().toISOString()
+        };
+        allData.tournamentEntries.push(athleteObj);
+
+        if (allData.competitions) {
           var matchedComp = allData.competitions.find(function(c) {
-            return String(c.id).trim().toUpperCase() === cId.toUpperCase();
+            var thisId = String(c.id || "").trim().toUpperCase();
+            var thisTitle = String(c.title || "").trim().toLowerCase();
+            return (cId && thisId === cId) || (compTitle && thisTitle === compTitle);
           });
           if (matchedComp) {
             if (!matchedComp.athletes) matchedComp.athletes = [];
-            matchedComp.athletes.push({
-              studentId: String(tRow[4] || "").trim(),
-              studentName: String(tRow[5] || "").trim(),
-              discipline: String(tRow[6] || "Single Event").trim(),
-              division: String(tRow[7] || "Open").trim(),
-              feeStatus: String(tRow[8] || "Unpaid").trim(),
-              feeAmount: Number(tRow[9]) || 300,
-              utrNumber: String(tRow[10] || "").trim(),
-              paymentMode: String(tRow[11] || "Online UPI").trim(),
-              trainerName: String(tRow[12] || "").trim(),
-              registeredAt: tRow[0] ? new Date(tRow[0]).toISOString() : new Date().toISOString()
-            });
+            matchedComp.athletes.push(athleteObj);
             matchedComp.entries = matchedComp.athletes.length;
           }
         }
@@ -685,9 +696,37 @@ function doPost(e) {
     }
 
     // -----------------------------------------------------------------------
-    // 2. STUDENT REGISTRATION, EXAM MARKS & LEVEL PROGRESSION (30 POINTS)
+    // 2A. STUDENT SPORTS RECORDS & MEDALS (Gold/Silver/Bronze Track Record)
     // -----------------------------------------------------------------------
-    if (type.indexOf("STUDENT") !== -1 && type.indexOf("TOURNAMENT") === -1 && type.indexOf("COMPETITION") === -1) {
+    if (type.indexOf("SPORTS_RECORD") !== -1 || type.indexOf("STUDENT_SPORTS_RECORD") !== -1 || type.indexOf("STUDENT_COMPETITION_RECORD") !== -1 || type.indexOf("MEDAL") !== -1) {
+      var sheet = getOrCreateSheet(ss, "StudentSportsRecords", [
+        "Timestamp", "Student ID", "Student Name", "Tournament Title", "Event Date",
+        "Discipline / Category", "Medal / Achievement", "Certificate Number"
+      ]);
+
+      sheet.appendRow([
+        formatStandardTimestamp(new Date()),
+        data.studentId || "",
+        data.studentName || "",
+        data.title || "",
+        formatStandardDateString(data.date || new Date()),
+        data.category || "Martial Arts Sparring",
+        data.achievement || "🥇 Gold Medal",
+        data.certificate || ("YAI-COMP-" + Date.now().toString().slice(-6))
+      ]);
+      SpreadsheetApp.flush();
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Student competition medal record saved permanently",
+        studentId: data.studentId
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // -----------------------------------------------------------------------
+    // 2B. STUDENT REGISTRATION, EXAM MARKS & LEVEL PROGRESSION (30 POINTS)
+    // -----------------------------------------------------------------------
+    if (type.indexOf("STUDENT") !== -1 && type.indexOf("TOURNAMENT") === -1 && type.indexOf("COMPETITION") === -1 && type.indexOf("SPORTS") === -1 && type.indexOf("MEDAL") === -1) {
       var sheet = getOrCreateSheet(ss, "Students", [
         "Timestamp", "Student ID", "Student Name", "Date of Birth", "Age",
         "Requested Level", "School Name", "Standard", "School Contact", "School Address",
@@ -831,32 +870,7 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // -----------------------------------------------------------------------
-    // 3. STUDENT SPORTS RECORDS & MEDALS (Gold/Silver/Bronze Track Record)
-    // -----------------------------------------------------------------------
-    if (type.indexOf("STUDENT_COMPETITION_RECORD") !== -1 || type.indexOf("SPORTS_RECORD") !== -1) {
-      var sheet = getOrCreateSheet(ss, "StudentSportsRecords", [
-        "Timestamp", "Student ID", "Student Name", "Tournament Title", "Event Date",
-        "Discipline / Category", "Medal / Achievement", "Certificate Number"
-      ]);
 
-      sheet.appendRow([
-        formatStandardTimestamp(new Date()),
-        data.studentId || "",
-        data.studentName || "",
-        data.title || "",
-        formatStandardDateString(data.date || new Date()),
-        data.category || "Martial Arts Sparring",
-        data.achievement || "🥇 Gold Medal",
-        data.certificate || ("YAI-COMP-" + Date.now().toString().slice(-6))
-      ]);
-
-      return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        message: "Student competition medal record saved permanently",
-        studentId: data.studentId
-      })).setMimeType(ContentService.MimeType.JSON);
-    }
 
     // -----------------------------------------------------------------------
     // 4. COURSES IN-PLACE UPDATE (TITLE, DESC, VIDEO LINK, THUMBNAIL, ASSIGNED)
@@ -974,15 +988,43 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     // 4C. COMPETITION DELETION
     // -----------------------------------------------------------------------
-    if (type.indexOf("COMPETITION_DELETE") !== -1 || type.indexOf("COMPETITION_DELETED") !== -1) {
+    if (type.indexOf("COMPETITION_DELETE") !== -1 || type.indexOf("COMPETITION_DELETED") !== -1 || type === "DELETE_COMPETITION") {
       var sheet = ss.getSheetByName("Competitions");
+      var deleted = false;
+      var compId = String(data.compId || data.id || "").trim().toUpperCase();
+      var compTitle = String(data.title || "").trim().toLowerCase();
+
       if (sheet) {
-        var compId = data.compId || data.id || "";
-        deleteRowByMatch(sheet, 2, compId);
+        var rows = sheet.getDataRange().getValues();
+        for (var r = rows.length - 1; r >= 1; r--) {
+          var rowId = String(rows[r][1] || "").trim().toUpperCase();
+          var rowTitle = String(rows[r][3] || "").trim().toLowerCase();
+          if ((compId && rowId === compId) || (compTitle && rowTitle === compTitle)) {
+            sheet.deleteRow(r + 1);
+            deleted = true;
+          }
+        }
+        SpreadsheetApp.flush();
       }
+
+      // Also clean up any related tournament entries in TournamentEntries sheet
+      var tournSheet = ss.getSheetByName("TournamentEntries");
+      if (tournSheet) {
+        var tRows = tournSheet.getDataRange().getValues();
+        for (var tr = tRows.length - 1; tr >= 1; tr--) {
+          var tCompId = String(tRows[tr][1] || "").trim().toUpperCase();
+          var tCompTitle = String(tRows[tr][2] || "").trim().toLowerCase();
+          if ((compId && tCompId === compId) || (compTitle && tCompTitle === compTitle)) {
+            tournSheet.deleteRow(tr + 1);
+          }
+        }
+        SpreadsheetApp.flush();
+      }
+
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        message: "Competition deleted from Central Cloud Server"
+        message: deleted ? "Competition deleted from Central Cloud Server" : "Competition not found",
+        deleted: deleted
       })).setMimeType(ContentService.MimeType.JSON);
     }
 

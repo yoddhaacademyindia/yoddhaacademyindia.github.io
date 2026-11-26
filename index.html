@@ -2925,11 +2925,7 @@
           </div>
         </div>
 
-        <!-- 5. VENUE & LOCATION -->
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">Venue / Location *</label>
-          <input type="text" id="adm-comp-location" required placeholder="e.g. Balewadi Sports Stadium, Pune, Maharashtra" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white font-semibold text-xs">
-        </div>
+
 
         <!-- 6. CATEGORIES -->
         <div>
@@ -3843,30 +3839,41 @@ function doGet(e) {
     }
 
     // 5B. Read Tournament Entries &amp; Map Athletes to Competitions
+    if (!allData.tournamentEntries) allData.tournamentEntries = [];
     var tournSheet = ss.getSheetByName(&quot;TournamentEntries&quot;);
-    if (tournSheet &amp;&amp; allData.competitions) {
+    if (tournSheet) {
       var tRows = tournSheet.getDataRange().getValues();
       for (var tr = 1; tr &lt; tRows.length; tr++) {
         var tRow = tRows[tr];
-        var cId = String(tRow[1] || &quot;&quot;).trim();
-        if (cId) {
+        var cId = String(tRow[1] || &quot;&quot;).trim().toUpperCase();
+        var compTitle = String(tRow[2] || &quot;&quot;).trim().toLowerCase();
+        var athleteObj = {
+          competitionId: cId,
+          compId: cId,
+          tournamentTitle: String(tRow[2] || &quot;&quot;).trim(),
+          championshipLevel: String(tRow[3] || &quot;State Level&quot;).trim(),
+          studentId: String(tRow[4] || &quot;&quot;).trim(),
+          studentName: String(tRow[5] || &quot;&quot;).trim(),
+          discipline: String(tRow[6] || &quot;Single Event&quot;).trim(),
+          division: String(tRow[7] || &quot;Open&quot;).trim(),
+          feeStatus: String(tRow[8] || &quot;Unpaid&quot;).trim(),
+          feeAmount: Number(tRow[9]) || 300,
+          utrNumber: String(tRow[10] || &quot;&quot;).trim(),
+          paymentMode: String(tRow[11] || &quot;Online UPI&quot;).trim(),
+          trainerName: String(tRow[12] || &quot;&quot;).trim(),
+          registeredAt: tRow[0] ? new Date(tRow[0]).toISOString() : new Date().toISOString()
+        };
+        allData.tournamentEntries.push(athleteObj);
+
+        if (allData.competitions) {
           var matchedComp = allData.competitions.find(function(c) {
-            return String(c.id).trim().toUpperCase() === cId.toUpperCase();
+            var thisId = String(c.id || &quot;&quot;).trim().toUpperCase();
+            var thisTitle = String(c.title || &quot;&quot;).trim().toLowerCase();
+            return (cId &amp;&amp; thisId === cId) || (compTitle &amp;&amp; thisTitle === compTitle);
           });
           if (matchedComp) {
             if (!matchedComp.athletes) matchedComp.athletes = [];
-            matchedComp.athletes.push({
-              studentId: String(tRow[4] || &quot;&quot;).trim(),
-              studentName: String(tRow[5] || &quot;&quot;).trim(),
-              discipline: String(tRow[6] || &quot;Single Event&quot;).trim(),
-              division: String(tRow[7] || &quot;Open&quot;).trim(),
-              feeStatus: String(tRow[8] || &quot;Unpaid&quot;).trim(),
-              feeAmount: Number(tRow[9]) || 300,
-              utrNumber: String(tRow[10] || &quot;&quot;).trim(),
-              paymentMode: String(tRow[11] || &quot;Online UPI&quot;).trim(),
-              trainerName: String(tRow[12] || &quot;&quot;).trim(),
-              registeredAt: tRow[0] ? new Date(tRow[0]).toISOString() : new Date().toISOString()
-            });
+            matchedComp.athletes.push(athleteObj);
             matchedComp.entries = matchedComp.athletes.length;
           }
         }
@@ -4124,9 +4131,37 @@ function doPost(e) {
     }
 
     // -----------------------------------------------------------------------
-    // 2. STUDENT REGISTRATION, EXAM MARKS &amp; LEVEL PROGRESSION (30 POINTS)
+    // 2A. STUDENT SPORTS RECORDS &amp; MEDALS (Gold/Silver/Bronze Track Record)
     // -----------------------------------------------------------------------
-    if (type.indexOf(&quot;STUDENT&quot;) !== -1 &amp;&amp; type.indexOf(&quot;TOURNAMENT&quot;) === -1 &amp;&amp; type.indexOf(&quot;COMPETITION&quot;) === -1) {
+    if (type.indexOf(&quot;SPORTS_RECORD&quot;) !== -1 || type.indexOf(&quot;STUDENT_SPORTS_RECORD&quot;) !== -1 || type.indexOf(&quot;STUDENT_COMPETITION_RECORD&quot;) !== -1 || type.indexOf(&quot;MEDAL&quot;) !== -1) {
+      var sheet = getOrCreateSheet(ss, &quot;StudentSportsRecords&quot;, [
+        &quot;Timestamp&quot;, &quot;Student ID&quot;, &quot;Student Name&quot;, &quot;Tournament Title&quot;, &quot;Event Date&quot;,
+        &quot;Discipline / Category&quot;, &quot;Medal / Achievement&quot;, &quot;Certificate Number&quot;
+      ]);
+
+      sheet.appendRow([
+        formatStandardTimestamp(new Date()),
+        data.studentId || &quot;&quot;,
+        data.studentName || &quot;&quot;,
+        data.title || &quot;&quot;,
+        formatStandardDateString(data.date || new Date()),
+        data.category || &quot;Martial Arts Sparring&quot;,
+        data.achievement || &quot;🥇 Gold Medal&quot;,
+        data.certificate || (&quot;YAI-COMP-&quot; + Date.now().toString().slice(-6))
+      ]);
+      SpreadsheetApp.flush();
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: &quot;success&quot;,
+        message: &quot;Student competition medal record saved permanently&quot;,
+        studentId: data.studentId
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // -----------------------------------------------------------------------
+    // 2B. STUDENT REGISTRATION, EXAM MARKS &amp; LEVEL PROGRESSION (30 POINTS)
+    // -----------------------------------------------------------------------
+    if (type.indexOf(&quot;STUDENT&quot;) !== -1 &amp;&amp; type.indexOf(&quot;TOURNAMENT&quot;) === -1 &amp;&amp; type.indexOf(&quot;COMPETITION&quot;) === -1 &amp;&amp; type.indexOf(&quot;SPORTS&quot;) === -1 &amp;&amp; type.indexOf(&quot;MEDAL&quot;) === -1) {
       var sheet = getOrCreateSheet(ss, &quot;Students&quot;, [
         &quot;Timestamp&quot;, &quot;Student ID&quot;, &quot;Student Name&quot;, &quot;Date of Birth&quot;, &quot;Age&quot;,
         &quot;Requested Level&quot;, &quot;School Name&quot;, &quot;Standard&quot;, &quot;School Contact&quot;, &quot;School Address&quot;,
@@ -4270,32 +4305,7 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    // -----------------------------------------------------------------------
-    // 3. STUDENT SPORTS RECORDS &amp; MEDALS (Gold/Silver/Bronze Track Record)
-    // -----------------------------------------------------------------------
-    if (type.indexOf(&quot;STUDENT_COMPETITION_RECORD&quot;) !== -1 || type.indexOf(&quot;SPORTS_RECORD&quot;) !== -1) {
-      var sheet = getOrCreateSheet(ss, &quot;StudentSportsRecords&quot;, [
-        &quot;Timestamp&quot;, &quot;Student ID&quot;, &quot;Student Name&quot;, &quot;Tournament Title&quot;, &quot;Event Date&quot;,
-        &quot;Discipline / Category&quot;, &quot;Medal / Achievement&quot;, &quot;Certificate Number&quot;
-      ]);
 
-      sheet.appendRow([
-        formatStandardTimestamp(new Date()),
-        data.studentId || &quot;&quot;,
-        data.studentName || &quot;&quot;,
-        data.title || &quot;&quot;,
-        formatStandardDateString(data.date || new Date()),
-        data.category || &quot;Martial Arts Sparring&quot;,
-        data.achievement || &quot;🥇 Gold Medal&quot;,
-        data.certificate || (&quot;YAI-COMP-&quot; + Date.now().toString().slice(-6))
-      ]);
-
-      return ContentService.createTextOutput(JSON.stringify({
-        status: &quot;success&quot;,
-        message: &quot;Student competition medal record saved permanently&quot;,
-        studentId: data.studentId
-      })).setMimeType(ContentService.MimeType.JSON);
-    }
 
     // -----------------------------------------------------------------------
     // 4. COURSES IN-PLACE UPDATE (TITLE, DESC, VIDEO LINK, THUMBNAIL, ASSIGNED)
@@ -4413,15 +4423,43 @@ function doPost(e) {
     // -----------------------------------------------------------------------
     // 4C. COMPETITION DELETION
     // -----------------------------------------------------------------------
-    if (type.indexOf(&quot;COMPETITION_DELETE&quot;) !== -1 || type.indexOf(&quot;COMPETITION_DELETED&quot;) !== -1) {
+    if (type.indexOf(&quot;COMPETITION_DELETE&quot;) !== -1 || type.indexOf(&quot;COMPETITION_DELETED&quot;) !== -1 || type === &quot;DELETE_COMPETITION&quot;) {
       var sheet = ss.getSheetByName(&quot;Competitions&quot;);
+      var deleted = false;
+      var compId = String(data.compId || data.id || &quot;&quot;).trim().toUpperCase();
+      var compTitle = String(data.title || &quot;&quot;).trim().toLowerCase();
+
       if (sheet) {
-        var compId = data.compId || data.id || &quot;&quot;;
-        deleteRowByMatch(sheet, 2, compId);
+        var rows = sheet.getDataRange().getValues();
+        for (var r = rows.length - 1; r &gt;= 1; r--) {
+          var rowId = String(rows[r][1] || &quot;&quot;).trim().toUpperCase();
+          var rowTitle = String(rows[r][3] || &quot;&quot;).trim().toLowerCase();
+          if ((compId &amp;&amp; rowId === compId) || (compTitle &amp;&amp; rowTitle === compTitle)) {
+            sheet.deleteRow(r + 1);
+            deleted = true;
+          }
+        }
+        SpreadsheetApp.flush();
       }
+
+      // Also clean up any related tournament entries in TournamentEntries sheet
+      var tournSheet = ss.getSheetByName(&quot;TournamentEntries&quot;);
+      if (tournSheet) {
+        var tRows = tournSheet.getDataRange().getValues();
+        for (var tr = tRows.length - 1; tr &gt;= 1; tr--) {
+          var tCompId = String(tRows[tr][1] || &quot;&quot;).trim().toUpperCase();
+          var tCompTitle = String(tRows[tr][2] || &quot;&quot;).trim().toLowerCase();
+          if ((compId &amp;&amp; tCompId === compId) || (compTitle &amp;&amp; tCompTitle === compTitle)) {
+            tournSheet.deleteRow(tr + 1);
+          }
+        }
+        SpreadsheetApp.flush();
+      }
+
       return ContentService.createTextOutput(JSON.stringify({
         status: &quot;success&quot;,
-        message: &quot;Competition deleted from Central Cloud Server&quot;
+        message: deleted ? &quot;Competition deleted from Central Cloud Server&quot; : &quot;Competition not found&quot;,
+        deleted: deleted
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
@@ -6409,15 +6447,23 @@ function setupAllAcademySheets() {
     // =========================================================================
     // ⏱️ AUTO-LOGOUT SYSTEM (PAUSED DURING WORK / DEVELOPMENT AS REQUESTED)
     // =========================================================================
-    const AUTO_LOGOUT_ENABLED = false; // 🛑 Set to true when you want to re-enable auto-logout
-    const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+    // 🔒 TRAINER-ONLY IDLE AUTO-LOGOUT (Strictly 5 Minutes for Trainer, Admin NEVER logs out)
+    // =========================================================================
+    const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes inactivity for Trainer
     let autoLogoutTimer = null;
     let timerCountdownInterval = null;
-    let secondsRemaining = 1800;
+    let secondsRemaining = 300;
+
+    function isTrainerCurrentUser() {
+      return Boolean(adminState.isLoggedIn && adminState.currentUser && adminState.currentUser.role === 'Trainer');
+    }
 
     function resetInactivityTimer() {
       if (!adminState.isLoggedIn) return;
-      if (!AUTO_LOGOUT_ENABLED) {
+
+      // Security Immunity: Admin is NEVER auto-logged out due to inactivity!
+      if (!isTrainerCurrentUser()) {
+        if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
         updateTimerDisplay();
         return;
       }
@@ -6434,26 +6480,32 @@ function setupAllAcademySheets() {
     function updateTimerDisplay() {
       const display = document.getElementById('auto-logout-timer-display');
       if (!display) return;
-      if (!AUTO_LOGOUT_ENABLED) {
+
+      if (!isTrainerCurrentUser()) {
         display.textContent = 'Active 🟢';
         return;
       }
+
       const mins = Math.floor(secondsRemaining / 60);
       const secs = secondsRemaining % 60;
       display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
     function startCountdownTicker() {
-      if (!AUTO_LOGOUT_ENABLED) {
+      if (!isTrainerCurrentUser()) {
         updateTimerDisplay();
+        if (timerCountdownInterval) clearInterval(timerCountdownInterval);
         return;
       }
+
       if (timerCountdownInterval) clearInterval(timerCountdownInterval);
       timerCountdownInterval = setInterval(() => {
-        if (!adminState.isLoggedIn) {
+        if (!adminState.isLoggedIn || !isTrainerCurrentUser()) {
           clearInterval(timerCountdownInterval);
+          updateTimerDisplay();
           return;
         }
+
         const lastActive = parseInt(localStorage.getItem('yoddha_last_active_time') || '0');
         if (lastActive) {
           const elapsed = Date.now() - lastActive;
@@ -6467,15 +6519,23 @@ function setupAllAcademySheets() {
     }
 
     function setupActivityListeners() {
-      if (!AUTO_LOGOUT_ENABLED) return;
       const events = ['mousedown', 'mousemove', 'keypress', 'keydown', 'scroll', 'touchstart', 'click'];
       events.forEach(evt => {
-        window.addEventListener(evt, resetInactivityTimer, { passive: true });
+        window.addEventListener(evt, () => {
+          if (isTrainerCurrentUser()) {
+            resetInactivityTimer();
+          }
+        }, { passive: true });
       });
     }
 
     function triggerAutoLogout() {
-      if (!AUTO_LOGOUT_ENABLED) return;
+      if (!adminState.isLoggedIn) return;
+      if (!isTrainerCurrentUser()) {
+        // Security rule: Admin is strictly immune to auto-logout!
+        return;
+      }
+
       if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
       if (timerCountdownInterval) clearInterval(timerCountdownInterval);
 
@@ -6492,7 +6552,7 @@ function setupAllAcademySheets() {
       if (passInput) passInput.value = '';
 
       // Close all open modals
-      const allModals = ['modal-form-student', 'modal-form-trainer', 'modal-edit-trainer', 'modal-form-course', 'modal-form-fee', 'modal-form-competition', 'modal-sync', 'modal-level-up-form', 'modal-student-level-progress'];
+      const allModals = ['modal-form-student', 'modal-form-trainer', 'modal-edit-trainer', 'modal-form-course', 'modal-form-fee', 'modal-form-competition', 'modal-sync', 'modal-level-up-form', 'modal-student-level-progress', 'modal-comp-athletes-excel'];
       allModals.forEach(m => closeModal(m));
 
       checkAuth();
@@ -6500,16 +6560,16 @@ function setupAllAcademySheets() {
       const banner = document.getElementById('session-timeout-banner');
       if (banner) banner.classList.remove('hidden');
 
-      alert("⚠️ Security Notice (Session Expired):\n\nYou were logged out automatically due to inactivity.\n\nPlease sign in with your ID and Password to resume.");
+      alert("⚠️ Security Notice (Session Expired):\n\nYou were logged out automatically due to inactivity (5 minutes idle on Trainer panel).\n\nPlease sign in with your Trainer ID and Password to resume.");
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setupActivityListeners();
 
-      // Check session validity (Auto-logout paused during active work)
+      // Check session validity (Auto-logout active only for Trainer)
       if (adminState.isLoggedIn) {
-        if (typeof AUTO_LOGOUT_ENABLED !== 'undefined' && AUTO_LOGOUT_ENABLED) {
+        if (isTrainerCurrentUser()) {
           const lastActive = parseInt(localStorage.getItem('yoddha_last_active_time') || '0');
           if (lastActive && (Date.now() - lastActive > INACTIVITY_TIMEOUT_MS)) {
             triggerAutoLogout();
@@ -7154,23 +7214,16 @@ lucide.createIcons();
         }
         if (metricsGrid) metricsGrid.className = "grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-6";
 
-        // Filter only this trainer's students
+        // STRICT FILTER: Show ONLY this trainer's own assigned students (0 for newly registered trainer)
         const myTId = (user.id || user.trainerId || '').trim().toUpperCase();
         const myTName = (user.name || user.fullName || '').trim().toLowerCase();
         const myStudents = adminState.students.filter(s => {
           const sTId = (s.trainerId || '').trim().toUpperCase();
           const sTName = (s.trainerName || '').trim().toLowerCase();
-          const sId = (s.studentId || s.id || '').toUpperCase();
-          return (
+          return Boolean(
             (sTId && myTId && sTId === myTId) ||
             (sTName && myTName && (sTName === myTName || sTName.includes(myTName) || myTName.includes(sTName))) ||
-            (s.trainerId && user.trainerId && s.trainerId.toUpperCase() === user.trainerId.toUpperCase()) ||
-            (myTId.includes('-CSN-') && sId.includes('-CSN-')) ||
-            (myTId.includes('-KOP-') && sId.includes('-KOP-')) ||
-            (myTId.includes('-PUN-') && sId.includes('-PUN-')) ||
-            (myTId.includes('-NSK-') && sId.includes('-NSK-')) ||
-            (myTId.includes('-SAT-') && sId.includes('-SAT-')) ||
-            (myTId.includes('-BGM-') && sId.includes('-BGM-'))
+            (s.trainerId && user.trainerId && s.trainerId.toUpperCase() === user.trainerId.toUpperCase())
           );
         });
         document.getElementById('stat-top-students').innerText = myStudents.length;
@@ -8477,29 +8530,17 @@ lucide.createIcons();
 
       const filtered = adminState.students.filter(s => {
         if (isTrainer) {
-          // RESILIENT TRAINER MATCHING:
-          // Matches student by Trainer ID OR Trainer Name (case-insensitive & whitespace trimmed)
+          // STRICT TRAINER MATCHING (Strictly assigned students ONLY - 0 for newly registered trainer)
           const myId = (user.id || user.trainerId || '').trim().toUpperCase();
           const myName = (user.name || user.fullName || '').trim().toLowerCase();
           const stuTrainerId = (s.trainerId || '').trim().toUpperCase();
           const stuTrainerName = (s.trainerName || '').trim().toLowerCase();
 
-          const sId = (s.studentId || s.id || '').toUpperCase();
-          let isMyStudent = false;
-
-          // 1. STRICT TRAINER ASSIGNMENT CHECK:
-          // If student has an assigned trainer ID, strictly match to that trainer!
-          if (stuTrainerId) {
-            isMyStudent = (stuTrainerId === myId);
-          } else if (stuTrainerName) {
-            isMyStudent = (myName && (stuTrainerName === myName || stuTrainerName.includes(myName) || myName.includes(stuTrainerName)));
-          } else {
-            // 2. Legacy fallback for old unassigned student records without trainer ID
-            const myDistCode = (myId.match(/-([A-Z]{3})-/) || [])[1];
-            if (myDistCode && sId.includes('-' + myDistCode + '-')) {
-              isMyStudent = true;
-            }
-          }
+          const isMyStudent = Boolean(
+            (stuTrainerId && myId && stuTrainerId === myId) ||
+            (stuTrainerName && myName && (stuTrainerName === myName || stuTrainerName.includes(myName) || myName.includes(stuTrainerName))) ||
+            (s.trainerId && user.trainerId && s.trainerId.toUpperCase() === user.trainerId.toUpperCase())
+          );
           if (!isMyStudent) return false;
         } else {
           // For Admin: Show ALL students (Active, Pending, Paid, Unpaid) so newly registered students are immediately visible!
@@ -10133,11 +10174,14 @@ lucide.createIcons();
 
       showCloudSyncToast('saving', `🏅 Saving ${achievement} medal record to Google Sheet...`);
 
-      const stuObj = adminState.students.find(s => s.studentId === activeRecordStudentId);
+      const stuObj = adminState.students.find(s => (s.studentId || '').trim().toUpperCase() === activeRecordStudentId.trim().toUpperCase());
+      const studentRealName = stuObj ? (stuObj.studentName || stuObj.name) : 'Student';
+
+      // Send with STUDENT_SPORTS_RECORD and STUDENT_COMPETITION_RECORD so both new and legacy GAS match it instantly
       await syncToCloudServer({
-        type: "STUDENT_COMPETITION_RECORD",
+        type: "STUDENT_SPORTS_RECORD",
         studentId: activeRecordStudentId,
-        studentName: stuObj ? (stuObj.studentName || stuObj.name) : 'Student',
+        studentName: studentRealName,
         title: newRec.title,
         date: newRec.date,
         category: `${newRec.scope} - ${newRec.category}`,
@@ -10154,7 +10198,11 @@ lucide.createIcons();
         }, false);
       }
 
-      showCloudSyncToast('saved', `✅ Student "${stuObj ? stuObj.studentName : 'Student'}" achievement "${achievement}" saved in Google Sheet!`);
+      if (typeof window.broadcastPortalChange === 'function') {
+        window.broadcastPortalChange();
+      }
+
+      showCloudSyncToast('saved', `✅ Student "${studentRealName}" achievement "${achievement}" saved in Google Sheet!`);
     }
 
     function deleteStudentCompetitionRecord(idx) {
@@ -13806,249 +13854,207 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const compSecTitle = document.getElementById('growth-section2-title');
       const compSecDesc = document.getElementById('growth-section2-desc');
 
+      // 1. Determine student list based on role (Strict jurisdiction)
+      let studentsList = [];
       if (isTrainer) {
-        // =========================================================================
-        // 🥋 TRAINER VIEW: BRANCH-SPECIFIC 2-YEAR & LEVEL-WISE PROGRESSION
-        // =========================================================================
-        const myTId = (user.id || '').trim().toUpperCase();
-        const myTName = (user.name || '').trim().toLowerCase();
-        const myStudents = adminState.students.filter(s => {
+        const myTId = (user.id || user.trainerId || '').trim().toUpperCase();
+        const myTName = (user.name || user.fullName || '').trim().toLowerCase();
+        studentsList = adminState.students.filter(s => {
           const sTId = (s.trainerId || '').trim().toUpperCase();
           const sTName = (s.trainerName || '').trim().toLowerCase();
-          return (sTId && sTId === myTId) || (sTName && sTName === myTName && myTName.length > 2);
+          return Boolean(
+            (sTId && myTId && sTId === myTId) ||
+            (sTName && myTName && (sTName === myTName || sTName.includes(myTName) || myTName.includes(sTName))) ||
+            (s.trainerId && user.trainerId && s.trainerId.toUpperCase() === user.trainerId.toUpperCase())
+          );
         });
 
-        if (titleEl) titleEl.innerText = `${user.name} - Branch Growth Analytics`;
-        if (subEl) subEl.innerText = `${user.branch || 'Training Center Branch'} • 2-Year Level-Wise Student Progression (2025 vs 2026)`;
-        if (stateSecTitle) stateSecTitle.innerText = "Level-Wise Student Strength (Year 2025 vs Year 2026)";
-        if (stateSecDesc) stateSecDesc.innerText = "Historical breakdown of students in your academy across all martial arts levels (Only Your Students)";
-        if (countEl) countEl.innerText = `${myStudents.length} Branch Warriors`;
-        if (compSecTitle) compSecTitle.innerText = "2-Year Branch Scale Metrics (2025 vs 2026)";
-        if (compSecDesc) compSecDesc.innerText = "Comparative growth of your branch enrollment, level exams & tournament entries";
-
-        // 1. Level-wise breakdown for THIS trainer's students (2025 vs 2026)
-        const levelsDefinition = [
-          { level: "Level 1", rank: "Fundamental Lathi-Kathi", desc: "Basic Stances & Strikes", y2025: 4 },
-          { level: "Level 2", rank: "Pettebaji Footwork & Spins", desc: "Speed Footwork & Twirls", y2025: 3 },
-          { level: "Level 3", rank: "Stances, Grips & Defense", desc: "Block & Counter Drills", y2025: 2 },
-          { level: "Level 4", rank: "Combat Sparring & Attacks", desc: "Dual Combat Sparring", y2025: 2 },
-          { level: "Level 5", rank: "Speed Drills & Jump Spins", desc: "Dynamic Weapon Control", y2025: 1 },
-          { level: "Level 6", rank: "Shield Combat & Traditional Kata", desc: "Traditional Warfare Forms", y2025: 0 },
-          { level: "Senior Level 1 to 4", rank: "Senior Progression Ranks", desc: "Senior Tournament Levels", y2025: 0 }
-        ];
-
-        stateContainer.innerHTML = '';
-        levelsDefinition.forEach(ld => {
-          const matchingStudents = myStudents.filter(s => {
-            const req = s.requestedLevel || s.level || 'Level 1';
-            if (ld.level.includes('Senior')) return req.includes('Senior');
-            return req.includes(ld.level);
-          });
-          const count2026 = matchingStudents.length;
-          const studentNames = matchingStudents.map(s => s.studentName).join(', ');
-
-          const div = document.createElement('div');
-          div.className = "bg-orange-50/40 border border-orange-200/80 rounded-2xl p-4 shadow-sm hover:border-orange-400 hover:bg-orange-50/80 transition flex flex-col justify-between";
-          div.innerHTML = `
-            <div>
-              <div class="flex justify-between items-start mb-2">
-                <div>
-                  <span class="text-[10px] font-black uppercase text-orange-600 font-mono tracking-wide">${ld.level}</span>
-                  <h4 class="text-xs font-black text-slate-900">${ld.rank}</h4>
-                </div>
-                <span class="text-[10px] bg-white border border-orange-200 font-bold px-2 py-0.5 rounded-full text-slate-600">${ld.desc}</span>
-              </div>
-
-              <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-orange-100 text-center">
-                <div class="bg-white p-2 rounded-xl border border-orange-100 shadow-2xs">
-                  <span class="block text-[9px] font-extrabold text-slate-400 uppercase">Year 2025</span>
-                  <strong class="text-sm font-black text-slate-600 font-rajdhani">${ld.y2025} Students</strong>
-                </div>
-                <div class="bg-orange-100/70 p-2 rounded-xl border border-orange-200 shadow-2xs">
-                  <span class="block text-[9px] font-extrabold text-orange-700 uppercase">Year 2026</span>
-                  <strong class="text-sm font-black text-orange-800 font-rajdhani">${count2026} Students</strong>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-3 pt-2 border-t border-orange-100/60 text-[10px] text-slate-500 truncate">
-              ${matchingStudents.length > 0 ? `<strong class="text-slate-700">Enrolled:</strong> ${studentNames}` : '<span class="italic text-slate-400">Ready for upcoming admissions</span>'}
-            </div>
-          `;
-          stateContainer.appendChild(div);
-        });
-
-        // 2. Branch 2-Year Total Comparison (100% REAL COUNTS)
-        const totalBranchNow = myStudents.length;
-        const myPassedExams = myStudents.filter(s => s.examPassedDate || s.examStatus === 'PASSED' || s.examStatus === 'PASSED_PENDING_LEVELUP' || (s.lastExam && s.lastExam.totalScore)).length;
-        const myLvl1to3 = myStudents.filter(s => (s.requestedLevel || s.level || '').match(/Level [1-3]/i)).length;
-        const myLvl4plus = myStudents.filter(s => !(s.requestedLevel || s.level || '').match(/Level [1-3]/i)).length;
-        const myEligibleComps = adminState.competitions.filter(comp => {
-          if (!comp.assignedTrainers || comp.assignedTrainers.length === 0 || comp.assignedTrainers.includes('ALL')) return true;
-          return comp.assignedTrainers.some(tid => String(tid).toUpperCase() === (user.id || user.trainerId || '').toUpperCase());
-        }).length;
-
-        const branchMetrics = [
-          { label: "My Total Students", y2025: "0", y2026: String(totalBranchNow), growth: totalBranchNow > 0 ? `+${totalBranchNow} Active` : "0" },
-          { label: "Level 1-3 Warriors", y2025: "0", y2026: String(myLvl1to3), growth: myLvl1to3 > 0 ? `+${myLvl1to3} Active` : "0" },
-          { label: "Level 4+ Advanced", y2025: "0", y2026: String(myLvl4plus), growth: myLvl4plus > 0 ? `+${myLvl4plus} Active` : "0" },
-          { label: "Level Exams Passed", y2025: "0", y2026: String(myPassedExams), growth: myPassedExams > 0 ? `+${myPassedExams} Passed` : "0" },
-          { label: "Official Matches", y2025: "0", y2026: String(myEligibleComps), growth: `${myEligibleComps} Matches` }
-        ];
-
-        compContainer.innerHTML = '';
-        branchMetrics.forEach(item => {
-          const div = document.createElement('div');
-          div.className = "bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-orange-300 hover:bg-white transition";
-          div.innerHTML = `
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-[11px] font-bold text-slate-700 truncate">${item.label}</span>
-                <span class="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">${item.growth}</span>
-              </div>
-              <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-200">
-                <div class="bg-white p-2 rounded-xl border border-slate-200 text-center">
-                  <span class="text-[9px] font-extrabold uppercase text-slate-400 block">Year 2025</span>
-                  <strong class="text-base font-black text-slate-600 font-rajdhani">${item.y2025}</strong>
-                </div>
-                <div class="bg-orange-50/80 p-2 rounded-xl border border-orange-200 text-center">
-                  <span class="text-[9px] font-extrabold uppercase text-orange-600 block">Year 2026</span>
-                  <strong class="text-base font-black text-orange-700 font-rajdhani">${item.y2026}</strong>
-                </div>
-              </div>
-            </div>
-          `;
-          compContainer.appendChild(div);
-        });
-
+        if (titleEl) titleEl.innerText = `${user.name || 'Trainer'} - Branch Growth Analytics`;
+        if (subEl) subEl.innerText = `${user.branch || 'Training Center Branch'} • Visual 2-Year Comparison & Level-Wise Student Graph`;
+        if (stateSecTitle) stateSecTitle.innerText = "Level-Wise Student Strength Graph (Levels 1 to 6 & Senior)";
+        if (stateSecDesc) stateSecDesc.innerText = "Visual distribution of your enrolled students across all martial arts levels (Only Your Students)";
+        if (countEl) countEl.innerText = `${studentsList.length} Active Branch Students`;
+        if (compSecTitle) compSecTitle.innerText = "2-Year Student Strength Comparison (Year 2025 vs Year 2026)";
+        if (compSecDesc) compSecDesc.innerText = "Visual comparative graph of warrior registrations between Year 2025 and Year 2026";
       } else {
-        // =========================================================================
-        // 🏛️ ADMIN VIEW: ALL INDIA STATE-WISE FOOTPRINT & 2-YEAR HISTORICAL SCALE
-        // =========================================================================
-        if (titleEl) titleEl.innerText = "Academy Growth & Scale Analytics";
-        if (subEl) subEl.innerText = "State-wise warrior footprint, branch network & 2-Year historical comparison";
-        if (stateSecTitle) stateSecTitle.innerText = "State-wise Branch & Warrior Footprint";
-        if (stateSecDesc) stateSecDesc.innerText = "Live count of Certified Trainers, Active Students & Training Centers across states";
-        if (compSecTitle) compSecTitle.innerText = "2-Year Growth Comparison (Year 2025 vs Year 2026)";
-        if (compSecDesc) compSecDesc.innerText = "Historical comparison of academy strength, graduations & official events";
-
-        const statesList = [
-          { code: 'MH', name: 'Maharashtra (MH)', flag: '🚩' },
-          { code: 'KA', name: 'Karnataka (KA)', flag: '🔰' },
-          { code: 'MP', name: 'Madhya Pradesh (MP)', flag: '🏛️' },
-          { code: 'GJ', name: 'Gujarat (GJ)', flag: '⚔️' },
-          { code: 'GOA', name: 'Goa (GOA)', flag: '🌴' },
-          { code: 'DL', name: 'Delhi NCR (DL)', flag: '🦁' },
-          { code: 'RJ', name: 'Rajasthan (RJ)', flag: '🏰' },
-          { code: 'UP', name: 'Uttar Pradesh (UP)', flag: '🏹' }
-        ];
-
-        stateContainer.innerHTML = '';
-        let activeStatesCount = 0;
-
-        // Process states with 100% REAL counts (Zero dummy numbers)
-        const stateStats = statesList.map(st => {
-          const trns = adminState.trainers.filter(t => (t.state || '').toLowerCase().includes(st.name.split(' ')[0].toLowerCase()) || (t.stateCode || '').toUpperCase() === st.code);
-          const stus = adminState.students.filter(s => (s.state || '').toLowerCase().includes(st.name.split(' ')[0].toLowerCase()) || (s.stateCode || '').toUpperCase() === st.code);
-          // Centers is real number of training centers / branches
-          const akhadas = trns.length > 0 ? (new Set(trns.map(t => t.branch || t.district || t.city).filter(Boolean)).size || trns.length) : 0;
-          const isActive = (trns.length > 0 || stus.length > 0);
-          if (isActive) activeStatesCount++;
-          return { ...st, trns, stus, akhadas, isActive };
-        });
-
-        // Sort: Active states appear first!
-        stateStats.sort((a, b) => (b.isActive ? 1 : 0) - (a.isActive ? 1 : 0));
-
-        stateStats.forEach(st => {
-          const div = document.createElement('div');
-          div.className = st.isActive 
-            ? "bg-orange-50/60 border-2 border-orange-300 rounded-2xl p-4 shadow-sm hover:border-orange-400 hover:bg-orange-50/90 transition flex flex-col justify-between"
-            : "bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4 shadow-2xs hover:border-slate-300 transition flex flex-col justify-between opacity-75";
-          div.innerHTML = `
-            <div>
-              <div class="flex justify-between items-center mb-2">
-                <span class="text-xs font-black text-slate-900 flex items-center gap-1.5">
-                  <span>${st.flag}</span>
-                  <span>${st.name}</span>
-                </span>
-                <span class="text-[10px] font-mono font-bold ${st.isActive ? 'text-orange-700 bg-white border border-orange-200' : 'text-slate-500 bg-white border border-slate-200'} px-2 py-0.5 rounded-full">${st.code}</span>
-              </div>
-              <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t ${st.isActive ? 'border-orange-100' : 'border-slate-100'}">
-                <div class="bg-white p-2 rounded-xl border ${st.isActive ? 'border-orange-100' : 'border-slate-100'} shadow-2xs">
-                  <span class="block text-[10px] text-slate-500 font-bold uppercase">Trainers</span>
-                  <strong class="text-sm font-black ${st.trns.length > 0 ? 'text-slate-900' : 'text-slate-400'} font-rajdhani">${st.trns.length}</strong>
-                </div>
-                <div class="bg-white p-2 rounded-xl border ${st.isActive ? 'border-orange-100' : 'border-slate-100'} shadow-2xs">
-                  <span class="block text-[10px] text-slate-500 font-bold uppercase">Students</span>
-                  <strong class="text-sm font-black ${st.stus.length > 0 ? 'text-orange-600' : 'text-slate-400'} font-rajdhani">${st.stus.length}</strong>
-                </div>
-                <div class="bg-white p-2 rounded-xl border ${st.isActive ? 'border-orange-100' : 'border-slate-100'} shadow-2xs">
-                  <span class="block text-[10px] text-slate-500 font-bold uppercase">Centers</span>
-                  <strong class="text-sm font-black ${st.akhadas > 0 ? 'text-emerald-700' : 'text-slate-400'} font-rajdhani">${st.akhadas}</strong>
-                </div>
-              </div>
-            </div>
-            <div class="mt-3 pt-2 border-t ${st.isActive ? 'border-orange-100/60' : 'border-slate-100'} flex justify-between items-center text-[10px]">
-              <span class="text-slate-500 font-medium">Network Footprint:</span>
-              <span class="font-bold ${st.isActive ? 'text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200' : 'text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200'}">${st.isActive ? 'Active & Operating' : 'Expansion Planned'}</span>
-            </div>
-          `;
-          stateContainer.appendChild(div);
-        });
-
-        if (countEl) countEl.innerText = `${activeStatesCount} Active State${activeStatesCount === 1 ? '' : 's'}`;
-
-        // 100% REAL COUNTS for 2-Year Historical Comparison Cards (Year 2025 vs Year 2026)
-        const totalWarriors = adminState.students.length;
-        const totalTrainers = adminState.trainers.length;
-        const totalCenters = new Set(adminState.trainers.map(t => t.branch || t.city || t.district).filter(Boolean)).size || (adminState.trainers.length > 0 ? 1 : 0);
-        const levelExamsPassed = adminState.students.filter(s => s.examPassedDate || s.examStatus === 'PASSED' || s.examStatus === 'PASSED_PENDING_LEVELUP' || (s.lastExam && s.lastExam.totalScore)).length;
-        const totalComps = adminState.competitions.length;
-
-        const compItems = [
-          { label: "Total Enrolled Warriors", y2025: "0", y2026: String(totalWarriors), growth: totalWarriors > 0 ? `+${totalWarriors} Active` : "0" },
-          { label: "Certified Instructors", y2025: "0", y2026: String(totalTrainers), growth: totalTrainers > 0 ? `+${totalTrainers} Active` : "0" },
-          { label: "Training Centers", y2025: "0", y2026: String(totalCenters), growth: totalCenters > 0 ? `+${totalCenters} Active` : "0" },
-          { label: "Level Exam Graduations", y2025: "0", y2026: String(levelExamsPassed), growth: levelExamsPassed > 0 ? `+${levelExamsPassed} Passed` : "0" },
-          { label: "Official Tournaments", y2025: "0", y2026: String(totalComps), growth: totalComps > 0 ? `+${totalComps} Events` : "0" }
-        ];
-
-        compContainer.innerHTML = '';
-        compItems.forEach(item => {
-          const div = document.createElement('div');
-          div.className = "bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:border-orange-300 hover:bg-white transition";
-          div.innerHTML = `
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-[11px] font-bold text-slate-700 truncate">${item.label}</span>
-                <span class="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">${item.growth}</span>
-              </div>
-              <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-200">
-                <div class="bg-white p-2 rounded-xl border border-slate-200 text-center">
-                  <span class="text-[9px] font-extrabold uppercase text-slate-400 block">Year 2025</span>
-                  <strong class="text-base font-black text-slate-500 font-rajdhani">${item.y2025}</strong>
-                </div>
-                <div class="bg-orange-50/80 p-2 rounded-xl border border-orange-200 text-center">
-                  <span class="text-[9px] font-extrabold uppercase text-orange-600 block">Year 2026</span>
-                  <strong class="text-base font-black text-orange-700 font-rajdhani">${item.y2026}</strong>
-                </div>
-              </div>
-            </div>
-          `;
-          compContainer.appendChild(div);
-        });
-
-        const overallBadgeText = document.getElementById('growth-overall-text');
-        if (overallBadgeText) {
-          overallBadgeText.innerText = `${totalWarriors} Active Warriors • ${totalTrainers} Certified Trainer`;
-        }
+        studentsList = adminState.students;
+        if (titleEl) titleEl.innerText = "All India Academy Growth Analytics";
+        if (subEl) subEl.innerText = "Visual 2-Year Warrior Comparison (2025 vs 2026) & Level-Wise Distribution Graph";
+        if (stateSecTitle) stateSecTitle.innerText = "Level-Wise Student Strength Graph (Levels 1 to 6 & Senior)";
+        if (stateSecDesc) stateSecDesc.innerText = "Visual distribution of all academy students across martial arts belt ranks and levels";
+        if (countEl) countEl.innerText = `${studentsList.length} Total Academy Warriors`;
+        if (compSecTitle) compSecTitle.innerText = "2-Year Student Strength Comparison (Year 2025 vs Year 2026)";
+        if (compSecDesc) compSecDesc.innerText = "Visual comparative bar graph of total student enrollment between 2025 and 2026";
       }
+
+      const totalCount2026 = studentsList.length;
+      // 2025 historical baseline (0 for new trainer, or admissions with 2025 dates)
+      const count2025 = studentsList.filter(s => {
+        const adm = String(s.admissionDate || s.date || '').toLowerCase();
+        return adm.includes('2025');
+      }).length;
+
+      const growthDelta = totalCount2026 - count2025;
+      const maxYearVal = Math.max(count2025, totalCount2026, 5);
+      const h2025Pct = Math.round((count2025 / maxYearVal) * 100);
+      const h2026Pct = Math.round((totalCount2026 / maxYearVal) * 100);
+
+      // =========================================================================
+      // GRAPH 1: 2-YEAR VISUAL COMPARISON (Year 2025 vs Year 2026)
+      // Rendered inside compContainer
+      // =========================================================================
+      compContainer.className = "space-y-4";
+      compContainer.innerHTML = `
+        <div class="bg-gradient-to-br from-slate-900 via-orange-950 to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-orange-500/30">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+            <div>
+              <span class="text-orange-400 font-mono text-xs font-black tracking-wider uppercase">Annual Warrior Growth Comparison</span>
+              <h4 class="text-xl sm:text-2xl font-black text-white mt-0.5">Year 2025 vs Year 2026 Student Enrollment</h4>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-3.5 py-1.5 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5">
+                <i data-lucide="trending-up" class="w-4 h-4"></i>
+                <span>${growthDelta >= 0 ? `+${growthDelta}` : growthDelta} Active Warriors</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- VISUAL DUAL BAR GRAPH -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 bg-slate-950/60 p-4 sm:p-6 rounded-2xl border border-slate-800">
+            <!-- 2025 BAR CARD -->
+            <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800 flex flex-col justify-between">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-extrabold text-slate-400 uppercase tracking-wide">Historical Baseline</span>
+                <span class="text-[11px] font-black px-2 py-0.5 bg-slate-800 text-slate-300 rounded-md">Year 2025</span>
+              </div>
+              <div class="flex items-baseline gap-2 mb-3">
+                <span class="text-3xl sm:text-4xl font-black text-slate-300 font-rajdhani">${count2025}</span>
+                <span class="text-xs text-slate-400 font-bold">Enrolled Students</span>
+              </div>
+              <!-- Visual Progress Bar -->
+              <div class="w-full bg-slate-800 rounded-full h-4 overflow-hidden border border-slate-700">
+                <div class="bg-gradient-to-r from-slate-500 to-slate-400 h-full rounded-full transition-all duration-700 flex items-center justify-end pr-2 text-[10px] font-black text-slate-950" style="width: ${Math.max(8, h2025Pct)}%">
+                  ${count2025}
+                </div>
+              </div>
+            </div>
+
+            <!-- 2026 BAR CARD -->
+            <div class="bg-gradient-to-br from-orange-950/80 to-amber-950/60 rounded-2xl p-4 border-2 border-orange-500/50 flex flex-col justify-between shadow-lg shadow-orange-950/50">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-extrabold text-orange-300 uppercase tracking-wide flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  Active Strength
+                </span>
+                <span class="text-[11px] font-black px-2.5 py-0.5 bg-orange-600 text-white rounded-md shadow-xs">Year 2026</span>
+              </div>
+              <div class="flex items-baseline gap-2 mb-3">
+                <span class="text-3xl sm:text-4xl font-black text-orange-400 font-rajdhani">${totalCount2026}</span>
+                <span class="text-xs text-orange-200 font-bold">Active Warriors</span>
+              </div>
+              <!-- Visual Progress Bar -->
+              <div class="w-full bg-orange-950/80 rounded-full h-4 overflow-hidden border border-orange-500/50">
+                <div class="bg-gradient-to-r from-orange-500 via-amber-500 to-emerald-400 h-full rounded-full transition-all duration-700 flex items-center justify-end pr-2 text-[10px] font-black text-slate-950 shadow-sm" style="width: ${Math.max(8, h2026Pct)}%">
+                  ${totalCount2026}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUMMARY PILLS -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 mt-4 pt-4 border-t border-slate-800 text-center">
+            <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
+              <span class="text-[10px] font-bold text-slate-400 uppercase block">Total Warriors</span>
+              <strong class="text-lg font-black text-white font-rajdhani">${totalCount2026}</strong>
+            </div>
+            <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
+              <span class="text-[10px] font-bold text-slate-400 uppercase block">Level 1 Foundation</span>
+              <strong class="text-lg font-black text-amber-400 font-rajdhani">${studentsList.filter(s => (s.requestedLevel || s.level || '').includes('Level 1')).length}</strong>
+            </div>
+            <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
+              <span class="text-[10px] font-bold text-slate-400 uppercase block">Level 2 to 4 Intermediate</span>
+              <strong class="text-lg font-black text-orange-400 font-rajdhani">${studentsList.filter(s => (s.requestedLevel || s.level || '').match(/Level [2-4]/i)).length}</strong>
+            </div>
+            <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
+              <span class="text-[10px] font-bold text-slate-400 uppercase block">Advanced & Senior</span>
+              <strong class="text-lg font-black text-emerald-400 font-rajdhani">${studentsList.filter(s => (s.requestedLevel || s.level || '').match(/Level [5-6]|Senior/i)).length}</strong>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // =========================================================================
+      // GRAPH 2: LEVEL-WISE WARRIOR STRENGTH BREAKDOWN (Levels 1 to 6 & Senior)
+      // Rendered inside stateContainer
+      // =========================================================================
+      const levelsDefinition = [
+        { level: "Level 1", belt: "⚪ White Belt", title: "Fundamental Lathi-Kathi", desc: "Basic Stances, Grips & Strikes", color: "from-slate-100 to-slate-200 text-slate-800 border-slate-300", barColor: "from-slate-400 to-slate-600" },
+        { level: "Level 2", belt: "🟡 Yellow Belt", title: "Pettebaji Footwork & Spins", desc: "Footwork, Wrist Twirls & Angles", color: "from-amber-100 to-yellow-200 text-amber-900 border-amber-300", barColor: "from-yellow-400 to-amber-500" },
+        { level: "Level 3", belt: "🟠 Orange Belt", title: "Stances, Grips & Defense", desc: "Blocks, Counters & Thrusts", color: "from-orange-100 to-amber-200 text-orange-900 border-orange-300", barColor: "from-orange-400 to-orange-600" },
+        { level: "Level 4", belt: "🟢 Green Belt", title: "Combat Sparring & Attacks", desc: "Sparring, Dual Weapon Combos", color: "from-emerald-100 to-green-200 text-emerald-900 border-emerald-300", barColor: "from-emerald-400 to-emerald-600" },
+        { level: "Level 5", belt: "🔵 Blue Belt", title: "Speed Drills & Jump Spins", desc: "Aerial Spins & Velocity Strikes", color: "from-blue-100 to-cyan-200 text-blue-900 border-blue-300", barColor: "from-blue-500 to-indigo-600" },
+        { level: "Level 6", belt: "🟣 Purple Belt", title: "Traditional Kata & Shields", desc: "Dhal-Talwar & Ancient Warfare", color: "from-purple-100 to-violet-200 text-purple-900 border-purple-300", barColor: "from-purple-500 to-purple-700" },
+        { level: "Senior Level 1 to 4", belt: "🟤 Brown / Black Belt", title: "Senior Progression Ranks", desc: "Master Ranks & Championship Ranks", color: "from-stone-200 to-amber-200 text-stone-900 border-stone-400", barColor: "from-amber-700 to-stone-900" }
+      ];
+
+      stateContainer.className = "space-y-3";
+      stateContainer.innerHTML = '';
+
+      levelsDefinition.forEach(ld => {
+        const matchingStudents = studentsList.filter(s => {
+          const req = (s.requestedLevel || s.level || 'Level 1').trim();
+          if (ld.level.includes('Senior')) return req.toLowerCase().includes('senior');
+          return req.toLowerCase().includes(ld.level.toLowerCase());
+        });
+
+        const count = matchingStudents.length;
+        const pct = totalCount2026 > 0 ? Math.round((count / totalCount2026) * 100) : 0;
+        const studentNames = matchingStudents.map(s => s.studentName).join(', ');
+
+        const card = document.createElement('div');
+        card.className = "bg-white border-2 border-slate-200/90 rounded-2xl p-4 shadow-sm hover:border-orange-400 hover:shadow-md transition flex flex-col gap-2.5";
+        card.innerHTML = `
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div class="flex items-center gap-2.5">
+              <span class="text-xs font-black px-2.5 py-1 rounded-xl bg-gradient-to-r ${ld.color} border shadow-2xs">
+                ${ld.belt}
+              </span>
+              <div>
+                <strong class="text-sm font-black text-slate-900">${ld.level}</strong>
+                <span class="text-xs text-slate-500 font-semibold ml-1.5">• ${ld.title}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 self-end sm:self-auto">
+              <span class="text-xs font-extrabold text-slate-500">${pct}% of warriors</span>
+              <span class="text-xs font-black px-3 py-1 rounded-full ${count > 0 ? 'bg-orange-100 text-orange-800 border border-orange-300' : 'bg-slate-100 text-slate-500'}">
+                ${count} ${count === 1 ? 'Student' : 'Students'}
+              </span>
+            </div>
+          </div>
+
+          <!-- VISUAL PROGRESS BAR FOR THIS LEVEL -->
+          <div class="w-full bg-slate-100 rounded-full h-3.5 overflow-hidden border border-slate-200">
+            <div class="bg-gradient-to-r ${ld.barColor} h-full rounded-full transition-all duration-700 flex items-center justify-end pr-2 text-[9px] font-black text-white" style="width: ${count > 0 ? Math.max(7, pct) : 0}%">
+              ${count > 0 ? `${count}` : ''}
+            </div>
+          </div>
+
+          <!-- ENROLLED STUDENTS NAMES -->
+          <div class="pt-1.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+            <div class="text-slate-600 truncate max-w-[85%]">
+              ${matchingStudents.length > 0 
+                ? `<span class="font-bold text-slate-800">Enrolled:</span> ${studentNames}` 
+                : `<span class="italic text-slate-400">No students currently at this level</span>`}
+            </div>
+            <span class="text-[10px] font-bold text-slate-400">${ld.desc}</span>
+          </div>
+        `;
+        stateContainer.appendChild(card);
+      });
 
       lucide.createIcons();
     }
 
-    // 4. RENDER COMPETITIONS (MATCHES WITH DISTRICT, STATE, NATIONAL BADGES & STUDENT REGISTRATION)
     function renderAdminCompetitions() {
       const container = document.getElementById('admin-competition-cards');
       if (!container) return;
@@ -14549,7 +14555,13 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const subEl = document.getElementById('comp-excel-modal-sub');
       if (subEl) subEl.innerText = `${comp.title} • ID: ${comp.id}`;
 
-      const athletes = comp.athletes || [];
+      let athletes = comp.athletes || [];
+      if (athletes.length === 0 && Array.isArray(adminState.tournamentEntries)) {
+        athletes = adminState.tournamentEntries.filter(te => 
+          (te.compId && te.compId.toUpperCase() === comp.id.toUpperCase()) ||
+          (te.tournamentTitle && comp.title && te.tournamentTitle.toLowerCase() === comp.title.toLowerCase())
+        );
+      }
       const totalFee = athletes.reduce((sum, a) => sum + (Number(a.feeAmount) || 0), 0);
 
       document.getElementById('comp-excel-stat-count').innerText = athletes.length;
@@ -14649,15 +14661,22 @@ const iconBox = document.getElementById('exam-banner-icon-box');
 
       if (confirm(`⚠️ Are you sure you want to permanently delete this competition?\n\n• ${comp.title} (${comp.id})\n• Level: ${comp.level}\n\nThis action cannot be undone.`)) {
         adminState.competitions = adminState.competitions.filter(c => c.id !== compId);
+        safeSaveStorage('yoddha_admin_comps_v2', adminState.competitions);
+        safeSaveStorage('yoddha_admin_comps', adminState.competitions);
         saveAdminState();
 
         syncToCloudServer({
           type: "COMPETITION_DELETED",
-          compId: compId
-        });
+          compId: compId,
+          id: compId,
+          title: comp.title
+        }, true);
 
         renderAdminCompetitions();
-        alert("✅ Competition deleted successfully!");
+        if (typeof window.broadcastPortalChange === 'function') {
+          window.broadcastPortalChange();
+        }
+        alert("✅ Competition deleted successfully from academy and Google Sheet!");
       }
     }
 
@@ -15856,7 +15875,7 @@ const iconBox = document.getElementById('exam-banner-icon-box');
       const title = document.getElementById('adm-comp-title').value.trim();
       const date = document.getElementById('adm-comp-date').value.trim();
       const fee = parseInt(document.getElementById('adm-comp-fee').value) || 300;
-      const location = document.getElementById('adm-comp-location').value.trim();
+      const location = (document.getElementById('adm-comp-location')?.value || '').trim() || 'State / District Academy Ground';
       const categories = document.getElementById('adm-comp-categories').value.trim();
       const level = document.getElementById('adm-comp-level').value;
       const status = document.getElementById('adm-comp-status').value;
@@ -16264,7 +16283,10 @@ const iconBox = document.getElementById('exam-banner-icon-box');
             localStorage.setItem('yoddha_admin_courses_v2', JSON.stringify(adminState.courses));
           }
 
-          // 6. Live Sync Competitions from Google Sheet (Authoritative Single Source of Truth)
+          // 6. Live Sync Competitions & Tournament Athletes from Google Sheet
+          if (Array.isArray(data.tournamentEntries)) {
+            adminState.tournamentEntries = data.tournamentEntries;
+          }
           if (Array.isArray(data.competitions)) {
             data.competitions.forEach(comp => {
               if ((!comp.allowedDistricts || comp.allowedDistricts.length === 0) && comp.scope && comp.scope !== 'All' && comp.scope !== 'All Branches' && comp.scope !== 'All India Open' && comp.level === 'District Level') {
@@ -16273,6 +16295,43 @@ const iconBox = document.getElementById('exam-banner-icon-box');
               if ((!comp.allowedStates || comp.allowedStates.length === 0) && comp.scope && comp.scope.toLowerCase().includes('state') && comp.level === 'State Level') {
                 comp.allowedStates = comp.scope.split(',').map(s => s.trim()).filter(Boolean);
               }
+
+              // Preserve locally registered athletes against cloud race conditions
+              const existingComp = adminState.competitions.find(c => c.id === comp.id);
+              if (existingComp && Array.isArray(existingComp.athletes) && existingComp.athletes.length > 0) {
+                if (!comp.athletes || comp.athletes.length === 0) {
+                  comp.athletes = existingComp.athletes;
+                } else {
+                  const setKeys = new Set(comp.athletes.map(a => `${a.studentId}_${a.discipline}`));
+                  existingComp.athletes.forEach(a => {
+                    const k = `${a.studentId}_${a.discipline}`;
+                    if (!setKeys.has(k)) {
+                      comp.athletes.push(a);
+                      setKeys.add(k);
+                    }
+                  });
+                }
+              }
+
+              // Map any matching entries from data.tournamentEntries
+              if (Array.isArray(data.tournamentEntries)) {
+                const matchedEntries = data.tournamentEntries.filter(te => 
+                  (te.compId && te.compId.toUpperCase() === comp.id.toUpperCase()) ||
+                  (te.tournamentTitle && comp.title && te.tournamentTitle.toLowerCase() === comp.title.toLowerCase())
+                );
+                if (matchedEntries.length > 0) {
+                  if (!comp.athletes) comp.athletes = [];
+                  const setKeys = new Set(comp.athletes.map(a => `${a.studentId}_${a.discipline}`));
+                  matchedEntries.forEach(me => {
+                    const k = `${me.studentId}_${me.discipline}`;
+                    if (!setKeys.has(k)) {
+                      comp.athletes.push(me);
+                      setKeys.add(k);
+                    }
+                  });
+                }
+              }
+              comp.entries = (comp.athletes || []).length;
             });
             adminState.competitions = data.competitions;
             localStorage.setItem('yoddha_admin_comps', JSON.stringify(adminState.competitions));
