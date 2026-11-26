@@ -174,7 +174,7 @@
       <!-- Auto Logout / Session Expired Notification -->
       <div id="session-timeout-banner" class="hidden text-xs text-amber-900 bg-amber-50 p-3 rounded-xl border border-amber-300 flex items-center gap-2 mb-3">
         <i data-lucide="clock" class="w-4 h-4 flex-shrink-0 text-amber-600"></i>
-        <span><strong>Session Expired:</strong> You were logged out due to 10 minutes of inactivity. Please enter your credentials to login again.</span>
+        <span><strong>Session Expired:</strong> You were logged out automatically due to 5 minutes of inactivity on Trainer Panel. Please enter your credentials to login again.</span>
       </div>
 
       <form id="admin-login-form" onsubmit="handleAdminLogin(event)" class="space-y-4">
@@ -256,10 +256,10 @@
               <span id="portal-user-id" class="text-[11px] text-orange-700 font-mono font-bold">ID: ADMIN-YODDHA-01</span>
             </div>
 
-            <!-- Inactivity Timer Display Pill -->
-            <div class="hidden md:flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-xl" title="Session stays active indefinitely while working (Auto-logout paused)">
-              <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
-              <span id="auto-logout-timer-display">Active 🟢</span>
+            <!-- Inactivity Timer Display Pill (Visible on All Devices) -->
+            <div id="portal-inactivity-badge" class="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 sm:px-2.5 py-1 rounded-xl shadow-xs flex-shrink-0" title="Session Status">
+              <i id="portal-inactivity-icon" data-lucide="shield-check" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 flex-shrink-0"></i>
+              <span id="auto-logout-timer-display">HQ Admin 🟢</span>
             </div>
 
             <!-- DIRECT LIVE GOOGLE SHEET BUTTON (ADMIN ONLY) -->
@@ -6397,6 +6397,11 @@ function setupAllAcademySheets() {
 
     let adminState = {
       isLoggedIn: localStorage.getItem('yoddha_admin_logged') === 'true',
+      currentUser: (() => {
+        try {
+          return JSON.parse(localStorage.getItem('yoddha_current_user') || 'null');
+        } catch(e) { return null; }
+      })(),
       studentCompetitions: {},
       examSessionActive: (function() {
         const choice = localStorage.getItem('yoddha_exam_session_admin_choice');
@@ -6543,17 +6548,26 @@ function setupAllAcademySheets() {
     let autoLogoutTimer = null;
     let timerCountdownInterval = null;
     let secondsRemaining = 300;
+    let lastActivityThrottleTime = 0;
 
     function isTrainerCurrentUser() {
-      return Boolean(adminState.isLoggedIn && adminState.currentUser && adminState.currentUser.role === 'Trainer');
+      const logged = Boolean(adminState.isLoggedIn || localStorage.getItem('yoddha_admin_logged') === 'true');
+      if (!logged) return false;
+      const user = adminState.currentUser || (() => {
+        try { return JSON.parse(localStorage.getItem('yoddha_current_user') || 'null'); } catch(e) { return null; }
+      })();
+      if (!user) return false;
+      const role = String(user.role || '').toLowerCase();
+      return role === 'trainer';
     }
 
     function resetInactivityTimer() {
-      if (!adminState.isLoggedIn) return;
+      if (!adminState.isLoggedIn && localStorage.getItem('yoddha_admin_logged') !== 'true') return;
 
       // Security Immunity: Admin is NEVER auto-logged out due to inactivity!
       if (!isTrainerCurrentUser()) {
         if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
+        if (timerCountdownInterval) clearInterval(timerCountdownInterval);
         updateTimerDisplay();
         return;
       }
@@ -6569,16 +6583,33 @@ function setupAllAcademySheets() {
 
     function updateTimerDisplay() {
       const display = document.getElementById('auto-logout-timer-display');
+      const badge = document.getElementById('portal-inactivity-badge');
+      const icon = document.getElementById('portal-inactivity-icon');
       if (!display) return;
 
       if (!isTrainerCurrentUser()) {
-        display.textContent = 'Active 🟢';
+        display.textContent = 'HQ Admin 🟢';
+        if (badge) {
+          badge.className = 'flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 sm:px-2.5 py-1 rounded-xl shadow-xs flex-shrink-0';
+          badge.title = 'Master Admin 24/7 Session Active (Auto-logout strictly disabled)';
+        }
+        if (icon) {
+          icon.className = 'w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 flex-shrink-0';
+        }
         return;
       }
 
       const mins = Math.floor(secondsRemaining / 60);
       const secs = secondsRemaining % 60;
-      display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      const formatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      display.textContent = `⏱️ ${formatted}`;
+      if (badge) {
+        badge.className = 'flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-amber-900 bg-amber-50 border border-amber-300 px-2 sm:px-2.5 py-1 rounded-xl shadow-xs flex-shrink-0 animate-pulse';
+        badge.title = `Trainer Idle Auto-Logout: ${formatted} remaining. Tap/scroll screen to reset.`;
+      }
+      if (icon) {
+        icon.className = 'w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-600 flex-shrink-0';
+      }
     }
 
     function startCountdownTicker() {
@@ -6590,7 +6621,7 @@ function setupAllAcademySheets() {
 
       if (timerCountdownInterval) clearInterval(timerCountdownInterval);
       timerCountdownInterval = setInterval(() => {
-        if (!adminState.isLoggedIn || !isTrainerCurrentUser()) {
+        if (!isTrainerCurrentUser()) {
           clearInterval(timerCountdownInterval);
           updateTimerDisplay();
           return;
@@ -6601,26 +6632,45 @@ function setupAllAcademySheets() {
           const elapsed = Date.now() - lastActive;
           secondsRemaining = Math.max(0, Math.floor((INACTIVITY_TIMEOUT_MS - elapsed) / 1000));
           updateTimerDisplay();
-          if (secondsRemaining <= 0) {
+          if (secondsRemaining <= 0 || elapsed >= INACTIVITY_TIMEOUT_MS) {
             triggerAutoLogout();
           }
         }
       }, 1000);
     }
 
+    function checkIdleOnResume() {
+      if (!isTrainerCurrentUser()) return;
+      const lastActive = parseInt(localStorage.getItem('yoddha_last_active_time') || '0');
+      if (lastActive) {
+        const elapsed = Date.now() - lastActive;
+        if (elapsed >= INACTIVITY_TIMEOUT_MS) {
+          triggerAutoLogout();
+          return;
+        }
+        secondsRemaining = Math.max(0, Math.floor((INACTIVITY_TIMEOUT_MS - elapsed) / 1000));
+        updateTimerDisplay();
+        if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
+        autoLogoutTimer = setTimeout(triggerAutoLogout, Math.max(1000, INACTIVITY_TIMEOUT_MS - elapsed));
+      }
+    }
+
     function setupActivityListeners() {
-      const events = ['mousedown', 'mousemove', 'keypress', 'keydown', 'scroll', 'touchstart', 'click'];
+      const events = ['mousedown', 'mousemove', 'keypress', 'keydown', 'scroll', 'touchstart', 'touchmove', 'click'];
+      const onActivity = () => {
+        if (!isTrainerCurrentUser()) return;
+        const now = Date.now();
+        if (now - lastActivityThrottleTime > 1000) {
+          lastActivityThrottleTime = now;
+          resetInactivityTimer();
+        }
+      };
       events.forEach(evt => {
-        window.addEventListener(evt, () => {
-          if (isTrainerCurrentUser()) {
-            resetInactivityTimer();
-          }
-        }, { passive: true });
+        window.addEventListener(evt, onActivity, { passive: true });
       });
     }
 
     function triggerAutoLogout() {
-      if (!adminState.isLoggedIn) return;
       if (!isTrainerCurrentUser()) {
         // Security rule: Admin is strictly immune to auto-logout!
         return;
@@ -6658,18 +6708,16 @@ function setupAllAcademySheets() {
       setupActivityListeners();
 
       // Check session validity (Auto-logout active only for Trainer)
-      if (adminState.isLoggedIn) {
-        if (isTrainerCurrentUser()) {
-          const lastActive = parseInt(localStorage.getItem('yoddha_last_active_time') || '0');
-          if (lastActive && (Date.now() - lastActive > INACTIVITY_TIMEOUT_MS)) {
-            triggerAutoLogout();
-            return;
-          }
-          resetInactivityTimer();
-          startCountdownTicker();
-        } else {
-          updateTimerDisplay();
+      if (isTrainerCurrentUser()) {
+        const lastActive = parseInt(localStorage.getItem('yoddha_last_active_time') || '0');
+        if (lastActive && (Date.now() - lastActive >= INACTIVITY_TIMEOUT_MS)) {
+          triggerAutoLogout();
+          return;
         }
+        resetInactivityTimer();
+        startCountdownTicker();
+      } else {
+        updateTimerDisplay();
       }
       checkAuth();
       updateCloudSyncUI();
@@ -6678,16 +6726,24 @@ function setupAllAcademySheets() {
     // =========================================================================
     // 🔄 REAL-TIME GOOGLE SHEET TWO-WAY SYNC (AUTO-POLL & TAB FOCUS)
     // =========================================================================
-    // 1. Instant re-fetch when user switches back to this browser tab (Focus / Visibility)
+    // 1. Instant re-fetch & idle session check when user switches back to this browser tab (Focus / Visibility)
     window.addEventListener('focus', () => {
       if (adminState.isLoggedIn) {
+        checkIdleOnResume();
         pullLiveCloudRecords(true);
       }
     });
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible' && adminState.isLoggedIn) {
+        checkIdleOnResume();
         pullLiveCloudRecords(true);
+      }
+    });
+
+    window.addEventListener('pageshow', () => {
+      if (adminState.isLoggedIn) {
+        checkIdleOnResume();
       }
     });
 
@@ -7064,6 +7120,7 @@ function setupAllAcademySheets() {
 
     function updatePortalRoleUI() {
       updateTopMetrics();
+      updateTimerDisplay();
       updateMasterExamUI();
       renderAdminStudents();
       const user = adminState.currentUser || { role: 'Admin', name: 'Central Headquarters', id: 'ADMIN-YODDHA-01' };
@@ -7228,6 +7285,14 @@ lucide.createIcons();
         return;
       }
       updatePortalRoleUI();
+      if (isTrainerCurrentUser()) {
+        resetInactivityTimer();
+        startCountdownTicker();
+      } else {
+        if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
+        if (timerCountdownInterval) clearInterval(timerCountdownInterval);
+        updateTimerDisplay();
+      }
       updateTopMetrics();
       populateDropdowns();
       renderAdminStudents();
